@@ -35,19 +35,10 @@ jobs:
         run: python3 tools/build_site.py _site
 
       - name: Check the build is actually loadable
-        # Cheap guards against publishing something broken. A syntax error in
-        # the one source file would otherwise ship straight to the phone.
-        run: |
-          node --check <(sed -n '/<script>/,/<\/script>/p' _site/index.html \
-            | sed '1d;$d')
-          python3 -c "import json,sys; json.load(open('_site/manifest.webmanifest'))"
-          node --check _site/sw.js
-          test -s _site/icons/icon-192.png
-          test -s _site/icons/icon-512.png
-          test -s _site/icons/maskable-512.png
-          grep -q 'dopamine-drop-' _site/sw.js
-          # The page must actually contain the game, not just a shell.
-          grep -q 'id="playBtn"' _site/index.html
+        # The app caches itself offline the moment a phone opens it, so a
+        # broken deploy is a bad page that installs itself. Kept as a script
+        # rather than inline shell so it can be run locally before pushing.
+        run: python3 tools/check_site.py _site
 
       - uses: actions/upload-pages-artifact@v3
         with:
