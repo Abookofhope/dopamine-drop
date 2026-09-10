@@ -341,7 +341,87 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;cursor:po
   color:var(--cream);letter-spacing:-.04em;box-shadow:inset 0 -3px 0 #00000030;
 }
 .cell.num.sel{background:var(--flare);color:#1A0A04;border-color:var(--flare)}
-.sumcol{display:flex;flex-direction:column;align-items:center;width:100%}
+/* The board has to give way to the label above it, not slide under it: a
+   square grid at 100% width overflows a square surface once anything shares
+   the column, and the overflow lands on top of the header. Height-driven
+   sizing lets the grid shrink instead. */
+.sumcol{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;height:100%;gap:10px;min-height:0;
+}
+/* No explicit height: `height:100%` on a flex child claims the whole column
+   and pushes its own siblings underneath it. Let flex hand it what is left,
+   and let aspect-ratio derive the width from that. */
+.sumcol > .grid,.sumcol > .countfield{
+  flex:1 1 auto;min-height:0;min-width:0;
+  width:auto;height:auto;max-width:100%;aspect-ratio:1;margin-inline:auto;
+}
+
+/* Colour assist: the shape drawn inside a swatch or dot */
+.shp{width:100%;height:100%;display:block}
+.stroopline{display:flex;align-items:center;justify-content:center;gap:12px;width:100%}
+.wordshape{width:42px;height:42px;flex:none}
+.swatch .shp{padding:6px;box-sizing:border-box}
+
+/* Count Fast */
+.countfield{position:relative;width:100%;max-width:380px;aspect-ratio:1}
+.cdot{position:absolute;border-radius:50%;transform:translate(-50%,-50%);overflow:hidden}
+.cdot .shp{padding:14%;box-sizing:border-box}
+.answers{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.abtn{
+  width:58px;height:52px;border-radius:var(--r-md);
+  background:var(--ink-3);border:1px solid var(--edge);color:var(--cream);
+  font-family:var(--f-data);font-weight:700;font-size:19px;letter-spacing:-.04em;
+  transition:transform var(--t-fast),border-color var(--t-fast);
+}
+.abtn:active{transform:scale(.93)}
+.abtn:hover{border-color:var(--haze)}
+
+/* Mirror */
+.cell.given{background:#ffffff08;border-color:#ffffff0d}
+.cell.given.on{background:var(--flare);border-color:var(--flare)}
+.cell.mcell{background:#ffffff08;border-color:var(--edge-soft)}
+.cell.mcell.on{background:var(--cool);border-color:var(--cool)}
+
+/* Rising Tap. Named `.riser`, not `.target`: that class already belongs to Sum
+   Snap's header, and reusing it made a position:absolute rule win over the
+   header's layout. */
+.riser{
+  position:absolute;border-radius:50%;transform:translate(-50%,-50%);
+  background:var(--flare);border:2px solid var(--zap);
+  box-shadow:0 0 22px #ff5b3966;
+}
+
+/* Slide Path */
+.cell.empty{background:#ffffff05;border-color:transparent}
+.cell.corridor{background:#33e6c814;border-color:#33e6c84d}
+.cell.corridor.clear{background:#33e6c84d}
+.cell.car{background:var(--flare);border-color:var(--flare)}
+.cell.car.capL{border-radius:var(--r-sm) 0 0 var(--r-sm)}
+.cell.car.capR{border-radius:0 var(--r-sm) var(--r-sm) 0}
+.cell.bar{background:#9c90c459;border-color:var(--edge);color:var(--cream)}
+.cell.bar.stuck{background:var(--ink-3);color:var(--edge)}
+.cell.bar svg{width:60%;height:60%;display:block}
+
+/* Word Snap */
+.wordcol{display:flex;flex-direction:column;align-items:center;gap:26px;width:100%}
+.slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.slot{
+  width:38px;height:46px;border-radius:var(--r-sm);
+  border:1px solid var(--edge-soft);background:#ffffff08;
+  display:grid;place-items:center;
+  font-family:var(--f-data);font-weight:700;font-size:19px;color:var(--cream);
+}
+.slot.on{background:var(--cool);border-color:var(--cool);color:var(--ink)}
+.rack{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ltile{
+  width:52px;height:56px;border-radius:var(--r-md);
+  background:var(--ink-3);border:1px solid var(--edge);color:var(--cream);
+  font-family:var(--f-data);font-weight:700;font-size:21px;
+  transition:transform var(--t-fast),opacity var(--t-fast);
+}
+.ltile:active{transform:scale(.92)}
+.ltile.used{opacity:.25;pointer-events:none}
 
 /* Floating score + particles */
 .float{
@@ -400,6 +480,39 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;cursor:po
 }
 @keyframes cdpop{0%{transform:scale(.5);opacity:0}40%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:1}}
 
+/* Settings */
+.setrow{
+  display:flex;align-items:center;gap:12px;padding:11px 0;
+  border-bottom:1px solid var(--edge-soft);
+}
+.setrow .txt{flex:1;min-width:0}
+.setrow .txt b{display:block;font-size:14.5px;font-weight:650}
+.setrow .txt small{display:block;font-size:11.5px;color:var(--haze);line-height:1.4}
+.sw{
+  width:46px;height:27px;border-radius:99px;flex:none;position:relative;
+  background:var(--ink-3);border:1px solid var(--edge);
+  transition:background var(--t-fast),border-color var(--t-fast);
+}
+.sw::after{
+  content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;
+  background:var(--haze);transition:transform var(--t-fast),background var(--t-fast);
+}
+.sw[aria-checked="true"]{background:var(--cool);border-color:var(--cool)}
+.sw[aria-checked="true"]::after{transform:translateX(19px);background:var(--ink)}
+.setpanel{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:0}
+.assistprev{
+  display:flex;align-items:center;gap:8px;padding:10px 11px;margin:2px 0 10px;
+  border:1px solid var(--edge-soft);border-radius:var(--r-md);background:#ffffff05;
+}
+.assistprev .sq{width:32px;height:32px;border-radius:9px;flex:none}
+.assistprev .sq .shp{padding:5px;box-sizing:border-box}
+.assistprev span{font-size:11px;color:var(--haze)}
+.danger b{color:var(--bad)}
+.verline{
+  flex:none;text-align:right;font-family:var(--f-data);font-size:9.5px;
+  color:var(--haze);opacity:.55;padding-top:8px;letter-spacing:0;
+}
+
 /* Prototype-only. Grinding to level 250 to evaluate a ladder is not a
    reasonable ask, so the level is scrubbable here. */
 .devbar{
@@ -435,10 +548,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;cursor:po
   <div class="chrome">
     <h2 class="wordmark">Dopamine<span>&nbsp;Drop</span></h2>
     <div class="sp"></div>
-    <button class="icobtn" id="muteBtn" type="button" aria-label="Mute sound" aria-pressed="false">
-      <svg id="muteIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"></polygon>
-        <path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
+    <button class="icobtn" id="setBtn" type="button" aria-label="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 7h10M18 7h2M4 12h2M10 12h10M4 17h12M20 17h0"/>
+        <circle cx="16" cy="7" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="17" r="2"/>
       </svg>
     </button>
   </div>
@@ -485,11 +598,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;cursor:po
       <p class="seclbl">Brain snacks &middot; play one solo</p>
       <ul class="modelist" id="modeList"></ul>
 
-      <div class="devbar">
-        <label for="lvlPreview">Preview level</label>
-        <input type="range" id="lvlPreview" min="1" max="260" step="1" value="1">
-        <output id="lvlPreviewOut">1</output>
-      </div>
+      <p class="verline" id="verLine"></p>
     </section>
 
     <!-- ── PLAY ────────────────────────────────────────────────────── -->
@@ -513,6 +622,56 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;cursor:po
       <p class="prompt" id="prompt">Get ready</p>
       <div id="surface">
         <div id="count"><b>3</b></div>
+      </div>
+    </section>
+
+    <!-- ── SETTINGS ────────────────────────────────────────────────── -->
+    <section class="screen" id="settings" hidden>
+      <div class="chrome" style="padding:0">
+        <button class="icobtn" id="setBack" type="button" aria-label="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span class="kind">Settings</span>
+      </div>
+
+      <div class="setpanel">
+        <p class="seclbl">Feedback</p>
+        <div class="setrow">
+          <span class="txt"><b>Sound</b><small>Taps, streak chimes and the run-over sting</small></span>
+          <button class="sw" id="swSound" role="switch" aria-checked="true" aria-label="Sound"></button>
+        </div>
+        <div class="setrow">
+          <span class="txt"><b>Vibration</b><small>A short pulse on every answer</small></span>
+          <button class="sw" id="swHaptics" role="switch" aria-checked="true" aria-label="Vibration"></button>
+        </div>
+        <div class="setrow">
+          <span class="txt"><b>Reduce motion</b><small>No particles, no screen shake</small></span>
+          <button class="sw" id="swMotion" role="switch" aria-checked="false" aria-label="Reduce motion"></button>
+        </div>
+
+        <p class="seclbl">Accessibility</p>
+        <div class="setrow">
+          <span class="txt"><b>Colour assist</b><small>Adds shapes and brightness so no puzzle depends on telling two colours apart</small></span>
+          <button class="sw" id="swAssist" role="switch" aria-checked="false" aria-label="Colour assist"></button>
+        </div>
+        <div class="assistprev" id="assistPrev" hidden></div>
+
+        <p class="seclbl">Data</p>
+        <div class="setrow danger">
+          <span class="txt"><b>Reset progress</b><small>Level, XP and every best score. Settings are kept.</small></span>
+          <button class="ghost" id="resetBtn" type="button" style="padding:8px 14px;font-size:13px">Reset</button>
+        </div>
+
+        <p class="seclbl">Prototype</p>
+        <div class="devbar" style="margin-top:6px">
+          <label for="lvlPreview">Preview level</label>
+          <input type="range" id="lvlPreview" min="1" max="310" step="1" value="1">
+          <output id="lvlPreviewOut">1</output>
+        </div>
+        <p class="note" style="border:0;text-align:left;padding-top:8px">
+          Progress is saved on this device only. There is no account, and nothing
+          here is uploaded.
+        </p>
       </div>
     </section>
 
@@ -569,12 +728,20 @@ function mulberry32(a){
   };
 }
 function hashStr(s){ let h = 2166136261; for (let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+const pick = (arr, rnd) => arr[Math.floor(rnd()*arr.length)];
 function shuffle(arr, rnd){ for (let i=arr.length-1;i>0;i--){ const j = Math.floor(rnd()*(i+1)); [arr[i],arr[j]] = [arr[j],arr[i]]; } return arr; }
 function todayKey(){ const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
+/* Bumped by hand with each published build. Nobody is here to read a version
+   number, but a bug report is useless without one. */
+const VERSION = 'v0.2.0 (4)';
+
 /* ═══ Persistence (best-effort — private windows can throw on both ends) ══ */
 const KEY = 'dd.v1';
-const defaults = { pbBlitz:0, pbStreak:0, runs:0, xp:0, muted:false, marathon:{}, daily:{} };
+const defaults = {
+  pbBlitz:0, pbStreak:0, runs:0, xp:0, marathon:{}, daily:{},
+  sound:true, haptics:true, reduceMotion:false, colorAssist:false
+};
 let save = Object.assign({}, defaults);
 try { const raw = localStorage.getItem(KEY); if (raw) save = Object.assign({}, defaults, JSON.parse(raw)); } catch(e){}
 function persist(){ try { localStorage.setItem(KEY, JSON.stringify(save)); } catch(e){} }
@@ -582,7 +749,7 @@ function persist(){ try { localStorage.setItem(KEY, JSON.stringify(save)); } cat
 /* ═══ Feedback: sound + haptics ═══════════════════════════════════════════ */
 let actx = null;
 function tone(freq, dur, type, gain){
-  if (save.muted) return;
+  if (!save.sound) return;
   try {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
@@ -604,7 +771,18 @@ const sfx = {
   over:  () => { [420,340,260].forEach((f,i)=>setTimeout(()=>tone(f,0.2,'triangle',0.045), i*130)); },
   go:    () => tone(760, 0.14, 'triangle', 0.05)
 };
-function buzz(ms){ try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e){} }
+function buzz(ms){
+  if (!save.haptics) return;
+  try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e){}
+}
+
+/* The player's switch, on top of the platform's own. A system asking for less
+   motion always wins. */
+const prefersLessMotion = () => {
+  try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  catch(e){ return false; }
+};
+const motionOff = () => save.reduceMotion || prefersLessMotion();
 
 /* ═══ Progression ═════════════════════════════════════════════════════════
    The level count is unbounded. Difficulty is not, and cannot be — a 12x12
@@ -659,11 +837,16 @@ const LADDER_MIDDLE = [
   /* Modes 7-12 from DESIGN.md section 4. Each grants nothing and can never
      enter the playable pool — it exists so the road ahead is visible past the
      last real unlock. Swap in a real `mode:` as each one ships. */
-  { level:50,  planned:'Slide Path' },
-  { level:100, planned:'Rising Tap' },
-  { level:150, planned:'Mirror' },
-  { level:200, planned:'Count Fast' },
-  { level:250, planned:'Word Snap' }
+  /* Ordered by how immediately they land: the first new mode after the base
+     game has to be an easy delight, and the two heaviest puzzles are the
+     long-tail prizes. Word Snap is last — it is the only mode with a language
+     dependency. */
+  { level:50,  mode:'count' },
+  { level:100, mode:'mirror' },
+  { level:150, mode:'rising' },
+  { level:200, mode:'blink' },
+  { level:250, mode:'slide' },
+  { level:300, mode:'word' }
 ];
 
 /* One mode every fifty levels, run types together at 250. Strongest long-tail
@@ -714,13 +897,35 @@ const playerLevel = () => previewLevel ?? Prog.levelForXp(save.xp);
 
 /* ═══ Colour set used by Color Trap ═══════════════════════════════════════ */
 const INKS = [
-  { name:'RED',    hex:'#FF3D4E' },
-  { name:'BLUE',   hex:'#3D7BFF' },
-  { name:'GREEN',  hex:'#2ED66F' },
-  { name:'YELLOW', hex:'#FFC53D' },
-  { name:'PURPLE', hex:'#A75BFF' },
-  { name:'ORANGE', hex:'#FF8A2B' }
+  { name:'RED',    hex:'#FF3D4E', shape:'circle' },
+  { name:'BLUE',   hex:'#3D7BFF', shape:'square' },
+  { name:'GREEN',  hex:'#2ED66F', shape:'triangle' },
+  { name:'YELLOW', hex:'#FFC53D', shape:'diamond' },
+  { name:'PURPLE', hex:'#A75BFF', shape:'cross' },
+  { name:'ORANGE', hex:'#FF8A2B', shape:'chevron' }
 ];
+
+/* Red and green sit at opposite ends of the shape list on purpose: they are the
+   pair most often confused, so they get the two least similar outlines. */
+const SHAPE_WORD = {
+  circle:'circles', square:'squares', triangle:'triangles',
+  diamond:'diamonds', cross:'crosses', chevron:'arrows'
+};
+const SHAPE_PATH = {
+  circle:   '<circle cx="50" cy="50" r="21"/>',
+  square:   '<rect x="30" y="30" width="40" height="40" rx="2"/>',
+  triangle: '<path d="M50 27 L73 67 L27 67 Z"/>',
+  diamond:  '<path d="M50 25 L73 50 L50 75 L27 50 Z"/>',
+  cross:    '<path d="M33 33 L67 67 M67 33 L33 67"/>',
+  chevron:  '<path d="M29 60 L50 35 L71 60"/>'
+};
+function shapeSvg(shape, stroke){
+  return '<svg viewBox="0 0 100 100" aria-hidden="true" class="shp">'
+    + '<g fill="none" stroke="' + stroke + '" stroke-width="9" '
+    + 'stroke-linecap="round" stroke-linejoin="round">'
+    + SHAPE_PATH[shape] + '</g></svg>';
+}
+const assistOn = () => save.colorAssist;
 
 /* ═══ Mode engine ═════════════════════════════════════════════════════════
    Every puzzle implements the same contract:
@@ -744,13 +949,18 @@ const MODES = {
     build(ctx){
       const n = clamp(2 + Math.floor(ctx.level/2), 2, 5);
       const delta = Math.max(7, 52 - ctx.level*3.4);
+      /* Floored, not ramped to nothing: past this point difficulty comes from
+         the grid growing, never from making the tile invisible to someone who
+         cannot use hue at all. */
+      const light = assistOn() ? clamp(20 - ctx.level*1.2, 8.5, 20) : 0;
       const hue = Math.floor(ctx.rnd()*360);
       const odd = Math.floor(ctx.rnd()*n*n);
       const g = gridEl(n);
       for (let i=0;i<n*n;i++){
         const b = mk('button','cell tile');
         b.type = 'button';
-        b.style.background = 'hsl(' + (i===odd ? (hue+delta)%360 : hue) + ' 68% 58%)';
+        b.style.background = 'hsl(' + (i===odd ? (hue+delta)%360 : hue)
+          + ' 68% ' + (i===odd ? 58+light : 58) + '%)';
         b.setAttribute('aria-label','Tile '+(i+1));
         b.addEventListener('click', () => i===odd ? ctx.win(b) : ctx.miss(b));
         g.appendChild(b);
@@ -813,17 +1023,25 @@ const MODES = {
       const word = others.length ? others[Math.floor(ctx.rnd()*others.length)] : ink;
 
       const wrap = mk('div','stroopwrap');
+      const line = mk('div','stroopline');
       const w = mk('div','stroopword');
       w.textContent = word.name;
       w.style.color = ink.hex;
       w.setAttribute('aria-label','The word ' + word.name + ' printed in ' + ink.name.toLowerCase());
-      wrap.appendChild(w);
+      line.appendChild(w);
+      if (assistOn()){
+        const badge = mk('div','wordshape');
+        badge.innerHTML = shapeSvg(ink.shape, ink.hex);
+        line.appendChild(badge);
+      }
+      wrap.appendChild(line);
 
       const row = mk('div','swatches');
       shuffle(pool.slice(), ctx.rnd).forEach(c => {
         const b = mk('button','swatch');
         b.type = 'button';
         b.style.background = c.hex;
+        if (assistOn()) b.innerHTML = shapeSvg(c.shape, 'var(--ink)');
         b.setAttribute('aria-label', c.name.toLowerCase());
         b.addEventListener('click', () => c === ink ? ctx.win(b) : ctx.miss(b));
         row.appendChild(b);
@@ -1042,6 +1260,308 @@ const MODES = {
       ctx.prompt('Tap two that add to ' + target);
     }
   }
+,
+
+  /* ── 7. Count Fast — enumeration, an axis nothing else touches ───────── */
+  count: {
+    name:'Count Fast', blurb:'Count the target before the clock does', par:4200, bonus:1600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="8" r="3" fill="#FF5B39"/><circle cx="16" cy="7" r="3" fill="#6C6191"/><circle cx="9" cy="16" r="3" fill="#6C6191"/><circle cx="17" cy="16" r="3" fill="#FF5B39"/></svg>',
+    build(ctx){
+      const pal = shuffle(INKS.slice(), ctx.rnd).slice(0,3);
+      const target = pal[0];
+      const total = Math.round(clamp(10 + ctx.level*1.4, 10, 26));
+      const answer = 3 + Math.floor(ctx.rnd()*clamp(4 + Math.floor(ctx.level/3), 4, 8));
+
+      const box = mk('div','countfield');
+      const dots = [];
+      for (let i=0;i<total;i++){
+        const isT = i < answer;
+        const ink = isT ? target : pal[1 + Math.floor(ctx.rnd()*2)];
+        const size = 9 + ctx.rnd()*3.5;
+        /* Dots must not overlap: two of the target colour merging into one blob
+           makes the right answer genuinely unknowable. */
+        let x=0, y=0;
+        for (let a=0;a<60;a++){
+          x = size/2 + ctx.rnd()*(100-size);
+          y = size/2 + ctx.rnd()*(100-size);
+          if (dots.every(d => Math.hypot(d.x-x, d.y-y) > (d.size+size)/2 + 1.2)) break;
+        }
+        dots.push({ x, y, size, ink });
+      }
+      shuffle(dots, ctx.rnd).forEach(d => {
+        const e = mk('div','cdot');
+        e.style.left = d.x + '%'; e.style.top = d.y + '%';
+        e.style.width = d.size + '%'; e.style.height = d.size + '%';
+        if (assistOn()){ e.style.background = d.ink.hex; e.innerHTML = shapeSvg(d.ink.shape, 'var(--ink)'); }
+        else e.style.background = d.ink.hex;
+        box.appendChild(e);
+      });
+
+      const near = new Set([answer]);
+      for (let d=1; near.size<4; d++){
+        if (answer-d >= 1) near.add(answer-d);
+        if (near.size<4) near.add(answer+d);
+      }
+      const row = mk('div','answers');
+      shuffle(Array.from(near), ctx.rnd).forEach(v => {
+        const b = mk('button','abtn'); b.type='button'; b.textContent = String(v);
+        b.addEventListener('click', () => v === answer ? ctx.win(b) : ctx.miss(b));
+        row.appendChild(b);
+      });
+
+      const col = mk('div','sumcol');
+      col.appendChild(box); col.appendChild(row);
+      ctx.surface.appendChild(col);
+      ctx.prompt(assistOn()
+        ? 'How many ' + SHAPE_WORD[target.shape] + '?'
+        : 'How many ' + target.name.toLowerCase() + '?');
+    }
+  },
+
+  /* ── 8. Mirror — spatial reflection. Taps toggle, so it costs time ───── */
+  mirror: {
+    name:'Mirror', blurb:'Reflect the pattern across the line', par:7500, bonus:2400,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="7" height="14" rx="2" fill="#FF5B39"/><rect x="14" y="5" width="7" height="14" rx="2" fill="#33E6C8" opacity=".5"/></svg>',
+    build(ctx){
+      const half = ctx.level < 5 ? 2 : 3;
+      const w = half*2, h = half*2;
+      const cells = half*h;
+      const lit = clamp(2 + Math.floor(ctx.level/2), 2, cells-1);
+      const pattern = new Set(shuffle(Array.from({length:cells},(_,i)=>i), ctx.rnd).slice(0,lit));
+      const wanted = new Set(Array.from(pattern).map(i => {
+        const x = i % half, y = Math.floor(i/half);
+        return y*w + (w-1-x);
+      }));
+      const placed = new Set();
+
+      const g = gridEl(w);
+      g.style.aspectRatio = '1';
+      for (let y=0;y<h;y++) for (let x=0;x<w;x++){
+        const idx = y*w + x;
+        if (x < half){
+          const d = mk('div','cell given');
+          if (pattern.has(y*half + x)) d.classList.add('on');
+          g.appendChild(d);
+          continue;
+        }
+        const b = mk('button','cell mcell'); b.type='button';
+        b.setAttribute('aria-label','Column ' + (x+1) + ', row ' + (y+1));
+        b.addEventListener('click', () => {
+          if (placed.has(idx)){ placed.delete(idx); b.classList.remove('on'); }
+          else { placed.add(idx); b.classList.add('on'); }
+          sfx.tap(); buzz(6);
+          if (placed.size === wanted.size && Array.from(wanted).every(i => placed.has(i))) ctx.win(b);
+        });
+        g.appendChild(b);
+      }
+      ctx.surface.appendChild(g);
+      ctx.prompt('Mirror it to the right');
+    }
+  },
+
+  /* ── 9. Rising Tap — the only mode where doing nothing is a mistake ──── */
+  rising: {
+    name:'Rising Tap', blurb:'Catch the targets before they vanish', par:5200, bonus:1800,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="5" fill="#FF5B39"/><circle cx="16" cy="16" r="3" fill="#FF5B39" opacity=".5"/></svg>',
+    build(ctx){
+      const need = clamp(3 + Math.floor(ctx.level/3), 3, 7);
+      const life = clamp(1500 - ctx.level*55, 700, 1500);
+      const gap  = clamp(850 - ctx.level*30, 420, 850);
+      const R = 11;
+      const box = mk('div','orderbox');
+      ctx.surface.appendChild(box);
+
+      let caught = 0, done = false, raf = 0;
+      const live = [];
+
+      function spawn(){
+        if (done) return;
+        /* Never on top of a live target: overlapping circles make a tap
+           ambiguous and read as one blob rather than two things to catch. */
+        let x=0, y=0;
+        for (let a=0;a<40;a++){
+          x = R + ctx.rnd()*(100-2*R);
+          y = R + ctx.rnd()*(100-2*R);
+          if (live.every(t => Math.hypot(t.x-x, t.y-y) > R*2.2)) break;
+        }
+        const e = mk('button','riser'); e.type='button';
+        e.setAttribute('aria-label','Target');
+        e.style.left = x+'%'; e.style.top = y+'%';
+        e.style.width = (2*R)+'%'; e.style.height = (2*R)+'%';
+        const t = { x, y, el:e, born: performance.now() };
+        e.addEventListener('click', () => {
+          if (done) return;
+          const i = live.indexOf(t); if (i < 0) return;
+          live.splice(i,1); e.remove(); caught++;
+          sfx.tap(); buzz(8);
+          ctx.prompt('Catch ' + need + ' — ' + (need-caught) + ' to go');
+          if (caught >= need){ done = true; cancelAnimationFrame(raf); ctx.win(e); }
+        });
+        live.push(t); box.appendChild(e);
+        ctx.after(gap, spawn);
+      }
+
+      function frame(){
+        if (done) return;
+        const now = performance.now();
+        for (const t of live.slice()){
+          const age = (now - t.born) / life;
+          if (age >= 1){
+            done = true; cancelAnimationFrame(raf);
+            return ctx.miss(t.el);
+          }
+          t.el.style.transform = 'translate(-50%,-50%) scale(' + (1-age).toFixed(3) + ')';
+        }
+        raf = requestAnimationFrame(frame);
+      }
+
+      spawn();
+      raf = requestAnimationFrame(frame);
+      ctx.prompt('Catch ' + need + ' — ' + need + ' to go');
+    }
+  },
+
+  /* ── 10. Blink — spatial memory, where Echo is sequential ────────────── */
+  blink: {
+    name:'Blink', blurb:'Rebuild the pattern you just saw', par:5000, bonus:2000,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" fill="#FFC53D"/><rect x="13" y="13" width="8" height="8" rx="2" fill="#FFC53D"/><rect x="13" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="3" y="13" width="8" height="8" rx="2" fill="#6C6191"/></svg>',
+    build(ctx){
+      const n = ctx.level < 5 ? 3 : 4;
+      const count = clamp(3 + Math.floor(ctx.level/3), 3, n*n - 2);
+      const pattern = new Set(shuffle(Array.from({length:n*n},(_,i)=>i), ctx.rnd).slice(0,count));
+      const found = new Set();
+      let showing = true;
+
+      const g = gridEl(n);
+      const cells = [];
+      for (let i=0;i<n*n;i++){
+        const b = mk('button','cell pad'); b.type='button'; b.disabled = true;
+        b.setAttribute('aria-label','Cell ' + (i+1));
+        if (pattern.has(i)) b.classList.add('lit');
+        b.addEventListener('click', () => {
+          if (showing || found.has(i)) return;
+          if (!pattern.has(i)) return ctx.miss(b);
+          found.add(i); b.classList.add('ok'); sfx.tap(); buzz(8);
+          if (found.size === pattern.size) ctx.win(b);
+        });
+        cells.push(b); g.appendChild(b);
+      }
+      ctx.surface.appendChild(g);
+      ctx.prompt('Remember these…');
+
+      /* Long enough to take in, short enough that nobody counts it out loud. */
+      ctx.after(700 + count*110, () => {
+        showing = false;
+        cells.forEach(c => { c.classList.remove('lit'); c.disabled = false; });
+        ctx.prompt('Tap the ' + count + ' you saw');
+      });
+    }
+  },
+
+  /* ── 11. Slide Path — planning about order and space ─────────────────── */
+  slide: {
+    name:'Slide Path', blurb:'Clear the corridor so the car can leave', par:9000, bonus:2800,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="10" width="9" height="4" rx="1.5" fill="#FF5B39"/><rect x="15" y="4" width="4" height="9" rx="1.5" fill="#6C6191"/></svg>',
+    build(ctx){
+      const n = ctx.level < 6 ? 4 : 5;
+      /* Row 2 always leaves a bar room to retreat upward whatever the grid
+         size, so a generated board is solvable by construction. */
+      const carRow = 2;
+      const count = clamp(1 + Math.floor(ctx.level/4), 1, n-2);
+      const cols = shuffle(Array.from({length:n-2},(_,i)=>i+2), ctx.rnd).slice(0,count);
+      const bars = cols.map(c => ({ col:c, top: ctx.rnd() < 0.5 ? carRow-1 : carRow }));
+      const covers = (b,row) => row === b.top || row === b.top+1;
+      let solved = false;
+
+      const canMove = (b,d) => {
+        const top = b.top + d;
+        if (top < 0 || top+1 >= n) return false;
+        return !bars.some(o => o !== b && o.col === b.col && (covers(o,top) || covers(o,top+1)));
+      };
+
+      function render(){
+        ctx.surface.innerHTML = '';
+        const g = gridEl(n);
+        for (let y=0;y<n;y++) for (let x=0;x<n;x++){
+          const bar = bars.find(b => b.col === x && covers(b,y));
+          if (bar){
+            const d = y === bar.top ? -1 : 1;
+            const blocked = !canMove(bar,d);
+            const b = mk('button','cell bar' + (blocked ? ' stuck' : '')); b.type='button';
+            b.setAttribute('aria-label','Bar in column ' + (x+1) + ', tap to slide ' + (d<0?'up':'down'));
+            b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="' + (d<0 ? 'M7 14l5-5 5 5' : 'M7 10l5 5 5-5') + '"/></svg>';
+            b.addEventListener('click', () => {
+              if (solved || !canMove(bar,d)) return;
+              bar.top += d; sfx.tap(); buzz(6);
+              if (!bars.some(o => covers(o,carRow))){ solved = true; render(); return ctx.win(b); }
+              render();
+            });
+            g.appendChild(b);
+            continue;
+          }
+          if (y === carRow && x <= 1){
+            const c = mk('div','cell car' + (x===0 ? ' capL' : ' capR'));
+            g.appendChild(c); continue;
+          }
+          const c = mk('div','cell' + (y === carRow ? ' corridor' + (solved ? ' clear' : '') : ' empty'));
+          g.appendChild(c);
+        }
+        ctx.surface.appendChild(g);
+      }
+      render();
+      ctx.prompt('Tap above or below a bar to slide it');
+    }
+  },
+
+  /* ── 12. Word Snap — the verbal axis, and the only localisation blocker ─ */
+  word: {
+    name:'Word Snap', blurb:'Unscramble the word, letter by letter', par:6500, bonus:2000,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="7" height="8" rx="1.5" fill="#FF5B39"/><rect x="14" y="8" width="7" height="8" rx="1.5" fill="#6C6191"/></svg>',
+    build(ctx){
+      const len = ctx.level < 5 ? 4 : ctx.level < 12 ? 5 : 6;
+      const w = pick(WORDS[len], ctx.rnd);
+      let tiles = shuffle(w.split(''), ctx.rnd);
+      /* A word already spelled out is a free point, not a puzzle — and with
+         four letters it happens more often than you would think. */
+      for (let i=0;i<20 && tiles.join('') === w; i++) tiles = shuffle(w.split(''), ctx.rnd);
+
+      const col = mk('div','wordcol');
+      const slots = mk('div','slots');
+      const slotEls = [];
+      for (let i=0;i<w.length;i++){
+        const sEl = mk('div','slot'); slots.appendChild(sEl); slotEls.push(sEl);
+      }
+      col.appendChild(slots);
+
+      const rack = mk('div','rack');
+      let at = 0;
+      tiles.forEach((ch, i) => {
+        const b = mk('button','ltile'); b.type='button'; b.textContent = ch;
+        b.setAttribute('aria-label', ch);
+        b.addEventListener('click', () => {
+          if (b.classList.contains('used')) return;
+          if (ch !== w[at]) return ctx.miss(b);
+          b.classList.add('used');
+          slotEls[at].textContent = ch;
+          slotEls[at].classList.add('on');
+          at++; sfx.tap(); buzz(8);
+          if (at >= w.length) ctx.win(b);
+        });
+        rack.appendChild(b);
+      });
+      col.appendChild(rack);
+      ctx.surface.appendChild(col);
+      ctx.prompt('Spell the ' + w.length + '-letter word');
+    }
+  }
+};
+
+/* Short, common, unambiguous. A puzzle that hinges on vocabulary stops being a
+   reaction game and starts being a quiz. */
+const WORDS = {
+  4: ['CALM','DRIP','GLOW','LOOP','MIND','RUSH','SNAP','TIDE','WAVE','ZONE'],
+  5: ['BLINK','CHASE','DRIFT','FLASH','PULSE','QUICK','SHIFT','SPARK','TRACE','BURST'],
+  6: ['BOUNCE','CIRCLE','FIDGET','MIRROR','PUZZLE','REWIRE','SIGNAL','STREAK']
 };
 
 const MODE_IDS = Object.keys(MODES);
@@ -1057,6 +1577,7 @@ const KINDS = {
 /* ═══ Shell state ═════════════════════════════════════════════════════════ */
 const el = {
   stage:$('stage'), home:$('home'), play:$('play'), over:$('over'),
+  settings:$('settings'),
   surface:$('surface'), prompt:$('prompt'), count:$('count'),
   score:$('hudScore'), streak:$('hudStreak'), kind:$('hudKind'),
   meter:$('hudMeter'), fill:$('hudMeterFill'), lives:$('hudLives'),
@@ -1078,10 +1599,12 @@ function show(name){
   el.home.hidden = name !== 'home';
   el.play.hidden = name !== 'play';
   el.over.hidden = name !== 'over';
+  el.settings.hidden = name !== 'settings';
 }
 
 /* ═══ Effects ═════════════════════════════════════════════════════════════ */
 function burst(target, color){
+  if (motionOff()) return;
   const host = el.surface.getBoundingClientRect();
   const r = target ? target.getBoundingClientRect() : host;
   const cx = r.left - host.left + r.width/2;
@@ -1099,6 +1622,7 @@ function burst(target, color){
   }
 }
 function floatPts(target, text){
+  if (motionOff()) return;
   const host = el.surface.getBoundingClientRect();
   const r = target ? target.getBoundingClientRect() : host;
   const f = mk('div','float');
@@ -1223,7 +1747,7 @@ function resolve(ok, node){
     if (k.timed) run.time = Math.max(0, run.time - k.penalty);
     if (k.lives) run.lives--;
     flash('flash-bad');
-    el.surface.classList.add('shake');
+    if (!motionOff()) el.surface.classList.add('shake');
     setTimeout(() => el.surface.classList.remove('shake'), 360);
     sfx.bad(); buzz([26,40,26]);
     el.prompt.textContent = k.timed ? '−' + (k.penalty/1000) + ' seconds' : 'Missed';
@@ -1415,6 +1939,54 @@ function paintHome(){
 }
 
 /* ═══ Wiring ══════════════════════════════════════════════════════════════ */
+/* ═══ Settings ════════════════════════════════════════════════════════════ */
+const SWITCHES = [
+  ['swSound',   'sound'],
+  ['swHaptics', 'haptics'],
+  ['swMotion',  'reduceMotion'],
+  ['swAssist',  'colorAssist']
+];
+
+function paintSettings(){
+  SWITCHES.forEach(([id, key]) => $(id).setAttribute('aria-checked', String(!!save[key])));
+  const prev = $('assistPrev');
+  prev.hidden = !save.colorAssist;
+  if (save.colorAssist && !prev.dataset.built){
+    prev.innerHTML = INKS.slice(0,5).map(c =>
+      '<span class="sq" style="background:' + c.hex + '">' + shapeSvg(c.shape, 'var(--ink)') + '</span>'
+    ).join('') + '<span>Every colour also carries a shape</span>';
+    prev.dataset.built = '1';
+  }
+  $('lvlPreview').value = String(previewLevel ?? 1);
+  $('lvlPreviewOut').textContent = String(previewLevel ?? 1);
+}
+
+SWITCHES.forEach(([id, key]) => {
+  $(id).addEventListener('click', () => {
+    save[key] = !save[key];
+    persist();
+    paintSettings();
+    /* Confirm the switch with the thing it controls, so the effect is audible
+       or tangible immediately rather than a run later. */
+    if (key === 'sound' && save.sound) sfx.tap();
+    if (key === 'haptics' && save.haptics) buzz(14);
+  });
+});
+
+$('setBtn').addEventListener('click', () => { paintSettings(); show('settings'); });
+$('setBack').addEventListener('click', () => { paintHome(); show('home'); });
+
+$('resetBtn').addEventListener('click', () => {
+  if (!window.confirm('Reset your level, XP and every best score?\n\nSettings are kept. This cannot be undone.')) return;
+  /* Settings are not progress: someone clearing their scores has not asked to
+     have sound turned back on. */
+  ['pbBlitz','pbStreak','runs','xp'].forEach(k => { save[k] = defaults[k]; });
+  save.marathon = {}; save.daily = {};
+  previewLevel = null;
+  persist();
+  paintSettings(); paintHome();
+});
+
 $('playBtn').addEventListener('click', () => startRun('blitz'));
 $('dailyBtn').addEventListener('click', () => startRun('daily'));
 $('zenBtn').addEventListener('click', () => startRun('zen', unlockedModes(playerLevel())[0]));
@@ -1422,7 +1994,7 @@ $('zenBtn').addEventListener('click', () => startRun('zen', unlockedModes(player
 /* Prototype-only level scrubber. */
 $('lvlPreview').addEventListener('input', e => {
   const v = Number(e.target.value);
-  previewLevel = v;
+  previewLevel = v === 1 ? null : v;
   $('lvlPreviewOut').textContent = String(v);
   paintHome();
 });
@@ -1437,15 +2009,7 @@ $('quitBtn').addEventListener('click', () => {
   if (run && (run.solved || run.missed)) return endRun();
   run = null; paintHome(); show('home');
 });
-$('muteBtn').addEventListener('click', () => {
-  save.muted = !save.muted; persist();
-  const btn = $('muteBtn');
-  btn.setAttribute('aria-pressed', String(save.muted));
-  btn.setAttribute('aria-label', save.muted ? 'Unmute sound' : 'Mute sound');
-  btn.style.color = save.muted ? 'var(--bad)' : '';
-  $('muteIcon').style.opacity = save.muted ? '.5' : '1';
-  if (!save.muted) sfx.tap();
-});
+
 
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && run && KINDS[run.kind].timed && screen === 'play'){
@@ -1458,8 +2022,8 @@ document.addEventListener('visibilitychange', () => {
 
 /* ═══ Boot (survives a republish while someone is mid-run) ════════════════ */
 function boot(data){
-  $('muteBtn').setAttribute('aria-pressed', String(save.muted));
-  $('muteIcon').style.opacity = save.muted ? '.5' : '1';
+  $('verLine').textContent = VERSION;
+  paintSettings();
   paintHome();
   show('home');
   if (data && data.resume) startRun(data.resume.kind, data.resume.mode);
