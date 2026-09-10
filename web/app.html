@@ -668,6 +668,15 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;cursor:po
         <div class="assistprev" id="assistPrev" hidden></div>
 
         <p class="seclbl">Data</p>
+        <div class="setrow">
+          <span class="txt"><b>Back up progress</b><small>Save a file you can move to another phone</small></span>
+          <button class="ghost" id="exportBtn" type="button" style="padding:8px 14px;font-size:13px">Export</button>
+        </div>
+        <div class="setrow">
+          <span class="txt"><b>Restore progress</b><small>Load a backup file. This replaces what is on this device.</small></span>
+          <button class="ghost" id="importBtn" type="button" style="padding:8px 14px;font-size:13px">Import</button>
+          <input type="file" id="importFile" accept="application/json,.json" hidden>
+        </div>
         <div class="setrow danger">
           <span class="txt"><b>Reset progress</b><small>Level, XP and every best score. Settings are kept.</small></span>
           <button class="ghost" id="resetBtn" type="button" style="padding:8px 14px;font-size:13px">Reset</button>
@@ -2041,6 +2050,61 @@ SWITCHES.forEach(([id, key]) => {
 
 $('setBtn').addEventListener('click', () => { paintSettings(); show('settings'); });
 $('setBack').addEventListener('click', () => { paintHome(); show('home'); });
+
+/* Progress lives in this device's local storage and nowhere else, which is a
+   deliberate choice — no account, no sign-in wall. The cost of that choice is
+   that a lost phone is a lost save, so there has to be a way out. */
+$('exportBtn').addEventListener('click', () => {
+  const payload = JSON.stringify({
+    app: 'dopamine-drop',
+    version: VERSION,
+    exportedAt: new Date().toISOString(),
+    save
+  }, null, 2);
+  const stamp = new Date().toISOString().slice(0,10);
+  const url = URL.createObjectURL(new Blob([payload], { type:'application/json' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'dopamine-drop-' + stamp + '.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+$('importBtn').addEventListener('click', () => $('importFile').click());
+$('importFile').addEventListener('change', ev => {
+  const file = ev.target.files && ev.target.files[0];
+  ev.target.value = '';
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let incoming = null;
+    try {
+      const parsed = JSON.parse(String(reader.result));
+      /* Accept a wrapped export or a bare save object, so a file someone has
+         opened and edited still loads. */
+      incoming = parsed && parsed.save && typeof parsed.save === 'object' ? parsed.save : parsed;
+    } catch(e){ incoming = null; }
+
+    if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming) ||
+        typeof incoming.xp !== 'number'){
+      window.alert('That does not look like a Dopamine Drop backup.');
+      return;
+    }
+    const lvl = Prog.levelForXp(incoming.xp);
+    if (!window.confirm('Restore level ' + lvl + ' and its scores?\n\nWhat is on this device will be replaced.')) return;
+
+    /* Run it through the same migration as a save read from storage, so a
+       backup taken from an older build lands upgraded rather than raw. */
+    save = Object.assign({}, defaults, migrate(incoming));
+    previewLevel = null;
+    persist();
+    paintSettings(); paintHome();
+    window.alert('Restored. Welcome back to level ' + Prog.levelForXp(save.xp) + '.');
+  };
+  reader.readAsText(file);
+});
 
 $('resetBtn').addEventListener('click', () => {
   if (!window.confirm('Reset your level, XP and every best score?\n\nSettings are kept. This cannot be undone.')) return;

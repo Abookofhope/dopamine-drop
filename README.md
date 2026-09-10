@@ -3,7 +3,11 @@
 A rotating-mode puzzle game for short attention spans. The puzzle type changes
 every round, so novelty never runs out.
 
-**Playable web prototype:** https://claude.ai/code/artifact/814ca54b-4129-41f8-b687-a45ca8bca233
+**Play it:** https://abookofhope.github.io/dopamine-drop/
+
+Installs to the home screen from Chrome, runs full screen, works fully offline.
+Built from one source file (`web/app.html`) and deployed by a GitHub Action on
+every push to `main` — see `web/README.md`.
 
 The three names each do a different job:
 
