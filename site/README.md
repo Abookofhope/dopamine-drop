@@ -6,6 +6,12 @@ One source file, `app.html`, built into an installable offline app by
 
 **Live:** https://abookofhope.github.io/dopamine-drop/
 
+## Why it lives here and not in `web/`
+
+`flutter create .` generates a `web/` target and would overwrite anything kept
+there. The Flutter `.gitignore` also excludes that path, which silently dropped
+this directory's icons from its first commit and failed the build.
+
 ## Why it is shaped like this
 
 `app.html` has no `<html>`, `<head>` or `<body>` — it is page content only,

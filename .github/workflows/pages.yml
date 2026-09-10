@@ -1,4 +1,4 @@
-# Builds the installable web app from web/app.html and publishes it to GitHub
+# Builds the installable web app from site/app.html and publishes it to GitHub
 # Pages. Runs on every push to main that touches the app, plus on demand.
 #
 # One-time setup: repository Settings -> Pages -> Build and deployment ->
@@ -9,7 +9,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'web/**'
+      - 'site/**'
       - 'tools/build_site.py'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
@@ -43,8 +43,11 @@ jobs:
           python3 -c "import json,sys; json.load(open('_site/manifest.webmanifest'))"
           node --check _site/sw.js
           test -s _site/icons/icon-192.png
+          test -s _site/icons/icon-512.png
           test -s _site/icons/maskable-512.png
           grep -q 'dopamine-drop-' _site/sw.js
+          # The page must actually contain the game, not just a shell.
+          grep -q 'id="playBtn"' _site/index.html
 
       - uses: actions/upload-pages-artifact@v3
         with:

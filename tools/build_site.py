@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """Build the installable web app from the single source file.
 
+The source lives in `site/`, deliberately not `web/`: Flutter generates its own
+`web/` target on `flutter create .` and would overwrite anything kept there —
+and the Flutter .gitignore excludes that path, which silently dropped these
+files from the first commit.
+
     python3 tools/build_site.py [outdir]
 
-`web/app.html` is the only source. It is written as page content — no
+`site/app.html` is the only source. It is written as page content — no
 document shell — because the same file is also published as an Artifact, where
 the host supplies the head. This script wraps it into a real document, adds the
 manifest and icon links, and emits a service worker.
@@ -22,13 +27,29 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "web" / "app.html"
+SRC = ROOT / "site" / "app.html"
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "_site"
 
 TITLE = "Dopamine Drop: Brain Snacks"
 DESCRIPTION = ("Quick puzzle games that switch every round. "
                "60-second runs for restless brains.")
 GROUND = "#0D0918"
+
+ICONS = ROOT / "site" / "icons"
+REQUIRED_ICONS = ["icon-192.png", "icon-512.png", "maskable-512.png"]
+
+# Fail here, with the reason, rather than three steps later with a confusing
+# one. The first version of this build died on a runner because .gitignore had
+# quietly excluded the icons, and the error gave no hint of that.
+missing = [n for n in REQUIRED_ICONS if not (ICONS / n).is_file()]
+if not SRC.is_file():
+    sys.exit(f"missing source: {SRC}")
+if missing:
+    sys.exit(
+        f"missing icons in {ICONS}: {', '.join(missing)}\n"
+        "If they exist on disk but not here, check .gitignore — they may never "
+        "have been committed."
+    )
 
 body = SRC.read_text(encoding="utf-8")
 
@@ -106,7 +127,7 @@ page = head + body + tail
 digest = hashlib.sha256()
 digest.update(page.encode("utf-8"))
 digest.update(manifest_text.encode("utf-8"))
-for icon in sorted((ROOT / "web" / "icons").glob("*.png")):
+for icon in sorted(ICONS.glob("*.png")):
     digest.update(icon.read_bytes())
 build_id = digest.hexdigest()[:12]
 
@@ -187,10 +208,13 @@ OUT.mkdir(parents=True)
 (OUT / "sw.js").write_text(sw, encoding="utf-8")
 # Pages runs Jekyll by default, which would ignore anything starting with `_`.
 (OUT / ".nojekyll").write_text("", encoding="utf-8")
-shutil.copytree(ROOT / "web" / "icons", OUT / "icons")
+shutil.copytree(ICONS, OUT / "icons")
 
 total = sum(f.stat().st_size for f in OUT.rglob("*") if f.is_file())
-print(f"build {build_id}  ->  {OUT}  ({total/1024:.0f} KB)")
-for f in sorted(OUT.rglob("*")):
-    if f.is_file():
-        print(f"  {f.relative_to(OUT)}  {f.stat().st_size/1024:.1f} KB")
+try:
+    print(f"build {build_id}  ->  {OUT}  ({total/1024:.0f} KB)")
+    for f in sorted(OUT.rglob("*")):
+        if f.is_file():
+            print(f"  {f.relative_to(OUT)}  {f.stat().st_size/1024:.1f} KB")
+except BrokenPipeError:
+    pass  # Someone piped the output into `head`.

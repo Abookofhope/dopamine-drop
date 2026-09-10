@@ -6,8 +6,8 @@ every round, so novelty never runs out.
 **Play it:** https://abookofhope.github.io/dopamine-drop/
 
 Installs to the home screen from Chrome, runs full screen, works fully offline.
-Built from one source file (`web/app.html`) and deployed by a GitHub Action on
-every push to `main` — see `web/README.md`.
+Built from one source file (`site/app.html`) and deployed by a GitHub Action on
+every push to `main` — see `site/README.md`.
 
 The three names each do a different job:
 
