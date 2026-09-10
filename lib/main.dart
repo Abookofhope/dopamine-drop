@@ -55,7 +55,7 @@ Future<void> main() async {
   ));
 }
 
-class DopamineDropApp extends StatelessWidget {
+class DopamineDropApp extends StatefulWidget {
   const DopamineDropApp({
     super.key,
     required this.store,
@@ -72,6 +72,28 @@ class DopamineDropApp extends StatelessWidget {
   final Billing billing;
 
   @override
+  State<DopamineDropApp> createState() => _DopamineDropAppState();
+}
+
+class _DopamineDropAppState extends State<DopamineDropApp> {
+  late final AppLifecycleListener _lifecycle;
+
+  @override
+  void initState() {
+    super.initState();
+    // Android can kill a backgrounded app without warning. Every write is
+    // already durable on its own, so this is a safety net rather than the
+    // mechanism — but it is the moment worth being certain about.
+    _lifecycle = AppLifecycleListener(onPause: widget.store.flush);
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Dopamine Drop',
@@ -80,13 +102,13 @@ class DopamineDropApp extends StatelessWidget {
       // Rebuilt whenever a setting changes, so a switch on the settings screen
       // reaches the home screen and the next run without anyone pushing it.
       home: ListenableBuilder(
-        listenable: settings,
+        listenable: widget.settings,
         builder: (context, _) => HomeScreen(
-          store: store,
-          settings: settings,
-          feedback: feedback,
-          ads: ads,
-          billing: billing,
+          store: widget.store,
+          settings: widget.settings,
+          feedback: widget.feedback,
+          ads: widget.ads,
+          billing: widget.billing,
         ),
       ),
     );

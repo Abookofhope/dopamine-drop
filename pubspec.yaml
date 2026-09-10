@@ -1,7 +1,7 @@
 name: dopamine_drop
 description: "Dopamine Drop: Brain Snacks - a rotating-mode puzzle game built for short attention spans."
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.3.0+3
 
 environment:
   sdk: ^3.13.0

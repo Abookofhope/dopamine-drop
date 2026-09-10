@@ -179,6 +179,9 @@ class _PlayScreenState extends State<PlayScreen>
       _popText = '+${_run.score - scoreBefore}';
     });
     widget.feedback.solved(_run.streak);
+    // Banked here, not at the end of the run. A phone call, a low-memory kill
+    // or a swipe away mid-run should cost the run, never the progress in it.
+    unawaited(widget.store.addXp(Progression.xpForSolve(_run.multiplier)));
     _juice.burst(_lastTap, color: DD.cool);
     if (_run.spec.scored) _pop.forward(from: 0);
     _between = Timer(const Duration(milliseconds: 400), () {
@@ -269,8 +272,9 @@ class _PlayScreenState extends State<PlayScreen>
     }
     await widget.store.recordStreak(_run.bestStreak);
 
-    final levelBefore = Progression.levelForXp(widget.store.xp);
-    await widget.store.addXp(_run.xpEarned);
+    // XP was banked solve by solve, so the store is already current — adding
+    // `xpEarned` here again would pay it twice.
+    final levelBefore = _playerLevel;
     final levelAfter = Progression.levelForXp(widget.store.xp);
     _run.levelsGained = levelAfter - levelBefore;
 

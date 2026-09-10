@@ -734,17 +734,66 @@ function todayKey(){ const d = new Date(); return d.getFullYear()+'-'+String(d.g
 
 /* Bumped by hand with each published build. Nobody is here to read a version
    number, but a bug report is useless without one. */
-const VERSION = 'v0.2.0 (4)';
+const VERSION = 'v0.3.0 (3)';
 
 /* ═══ Persistence (best-effort — private windows can throw on both ends) ══ */
 const KEY = 'dd.v1';
+const QUARANTINE = 'dd.v1.unreadable';
+
+/* Bumped whenever the shape of the saved data changes; `migrate` gains a
+   matching step. Two rules keep a save alive across updates:
+     - unknown keys are never dropped, so moving back to an older build and
+       forward again does not lose what the newer one stored;
+     - a save from a NEWER build is read, not downgraded — stamping it down
+       would tell the next migration to redo steps already applied.          */
+const SCHEMA = 2;
 const defaults = {
   pbBlitz:0, pbStreak:0, runs:0, xp:0, marathon:{}, daily:{},
   sound:true, haptics:true, reduceMotion:false, colorAssist:false
 };
-let save = Object.assign({}, defaults);
-try { const raw = localStorage.getItem(KEY); if (raw) save = Object.assign({}, defaults, JSON.parse(raw)); } catch(e){}
+
+function migrate(data){
+  if (!data || typeof data !== 'object') return { schema: SCHEMA };
+  let from = typeof data.schema === 'number' ? data.schema : 1;
+  if (from < 2){
+    /* Schema 1 had a single `muted` flag. Schema 2 splits it, because silence
+       and stillness are different requests. */
+    if ('muted' in data){
+      if (data.sound === undefined) data.sound = !data.muted;
+      delete data.muted;
+    }
+    if (data.haptics === undefined) data.haptics = true;
+    from = 2;
+  }
+  if (from <= SCHEMA) data.schema = SCHEMA;
+  return data;
+}
+
+let save = Object.assign({}, defaults, { schema: SCHEMA });
+try {
+  const raw = localStorage.getItem(KEY);
+  if (raw){
+    let parsed = null;
+    try { parsed = JSON.parse(raw); } catch(e){ parsed = null; }
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)){
+      save = Object.assign({}, defaults, migrate(parsed));
+    } else {
+      /* The only copy of this player's progress. Setting it aside beats
+         overwriting it for a clean boot. */
+      try { localStorage.setItem(QUARANTINE, raw); } catch(e){}
+    }
+  }
+} catch(e){}
+
 function persist(){ try { localStorage.setItem(KEY, JSON.stringify(save)); } catch(e){} }
+
+/* A browser tab can be discarded without warning, and a phone can background
+   one at any moment. Every change already writes through, so these are a
+   safety net rather than the mechanism. */
+['visibilitychange','pagehide','freeze'].forEach(ev =>
+  document.addEventListener(ev, () => { if (document.visibilityState !== 'visible') persist(); }, true)
+);
+window.addEventListener('beforeunload', persist);
 
 /* ═══ Feedback: sound + haptics ═══════════════════════════════════════════ */
 let actx = null;
@@ -1731,7 +1780,12 @@ function resolve(ok, node){
     run.level = Math.floor(run.solved / 3);
     if (k.scored){ run.score += pts; floatPts(node, '+' + pts); }
     if (k.timed) run.time = Math.min(k.cap, run.time + mode.bonus*run.pressure);
-    run.xpEarned += Prog.xpForSolve(multiplier());
+    /* Banked per solve, not at the end. Closing the tab mid-run should cost
+       the run, never the progress in it. */
+    const gained = Prog.xpForSolve(multiplier());
+    run.xpEarned += gained;
+    save.xp += gained;
+    persist();
     burst(node, '#33E6C8');
     flash('flash-win');
     sfx.good(run.streak); buzz(18);
@@ -1828,8 +1882,9 @@ function endRun(){
   }
   if (r.bestStreak > save.pbStreak) save.pbStreak = r.bestStreak;
 
-  const lvlBefore = Prog.levelForXp(save.xp);
-  save.xp += r.xpEarned;
+  /* XP was banked solve by solve, so `save.xp` is already current — adding
+     `xpEarned` again here would pay it twice. */
+  const lvlBefore = Prog.levelForXp(save.xp - r.xpEarned);
   const lvlAfter = Prog.levelForXp(save.xp);
   persist();
   paintXpStrip(r.xpEarned, lvlBefore, lvlAfter);
@@ -2022,6 +2077,9 @@ document.addEventListener('visibilitychange', () => {
 
 /* ═══ Boot (survives a republish while someone is mid-run) ════════════════ */
 function boot(data){
+  /* Write once at boot so a fresh install has a save on disk immediately,
+     stamped with the schema it was created under. */
+  persist();
   $('verLine').textContent = VERSION;
   paintSettings();
   paintHome();

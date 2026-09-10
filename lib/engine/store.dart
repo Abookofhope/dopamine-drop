@@ -10,6 +10,16 @@ class Store {
 
   static const _key = 'dd.v1';
 
+  /// Set aside, not overwritten, when the saved blob will not parse. It is the
+  /// only copy of that player's progress; throwing it away to get a clean boot
+  /// makes a recoverable problem permanent.
+  static const _quarantineKey = 'dd.v1.unreadable';
+
+  /// Bumped whenever the shape of the saved data changes. [_migrate] must gain
+  /// a matching step, and `test/store_test.dart` must gain a case proving an
+  /// old save still opens with its progress intact.
+  static const schemaVersion = 2;
+
   final SharedPreferences _prefs;
   final Map<String, dynamic> _data;
 
@@ -20,12 +30,47 @@ class Store {
     if (raw != null) {
       try {
         final decoded = jsonDecode(raw);
-        if (decoded is Map<String, dynamic>) data = decoded;
+        if (decoded is Map<String, dynamic>) {
+          data = decoded;
+        } else {
+          await prefs.setString(_quarantineKey, raw);
+        }
       } on FormatException {
-        // Corrupt blob: start clean rather than crash on launch.
+        await prefs.setString(_quarantineKey, raw);
       }
     }
-    return Store._(prefs, data);
+    return Store._(prefs, _migrate(data));
+  }
+
+  /// Brings a save written by any earlier build up to [schemaVersion].
+  ///
+  /// Two rules hold this together across updates:
+  ///
+  /// * **Unknown keys are never dropped.** The whole map is rewritten on every
+  ///   save, so a key this build does not understand survives — which is what
+  ///   lets someone move back to an older build without losing what the newer
+  ///   one stored.
+  /// * **A newer schema is left alone.** If a save says 3 and this build knows
+  ///   2, it was written by a build that came after this one; downgrading it
+  ///   would destroy real data. Read what is recognised, leave the rest.
+  static Map<String, dynamic> _migrate(Map<String, dynamic> data) {
+    if (data.isEmpty) return {'schema': schemaVersion};
+
+    // A save with no marker predates versioning: that is schema 1.
+    var from = data['schema'] as int? ?? 1;
+
+    if (from < 2) {
+      // Schema 1 had one `muted` flag. Schema 2 splits it, because silence and
+      // stillness are different requests.
+      final muted = data.remove('muted') as bool? ?? false;
+      data['sound'] ??= !muted;
+      data['haptics'] ??= true;
+      from = 2;
+    }
+
+    if (from > schemaVersion) return data;
+    data['schema'] = schemaVersion;
+    return data;
   }
 
   int get bestBlitz => _data['bestBlitz'] as int? ?? 0;
@@ -36,11 +81,7 @@ class Store {
   /// one source of truth means a tuning change to the curve re-levels everyone
   /// correctly instead of stranding saved levels at the old rate.
   int get xp => _data['xp'] as int? ?? 0;
-  /// Legacy key. Kept only so an existing install's mute choice survives the
-  /// move to a named `sound` setting; nothing writes it any more.
-  bool get _legacyMuted => _data['muted'] as bool? ?? false;
-
-  bool get sound => _data['sound'] as bool? ?? !_legacyMuted;
+  bool get sound => _data['sound'] as bool? ?? true;
   bool get haptics => _data['haptics'] as bool? ?? true;
   bool get reduceMotion => _data['reduceMotion'] as bool? ?? false;
   bool get colorAssist => _data['colorAssist'] as bool? ?? false;
@@ -113,6 +154,15 @@ class Store {
           _data.remove(key);
         }
       });
+
+  /// Rewrites the blob now.
+  ///
+  /// Every mutating call already persists, so this exists for the one moment
+  /// worth being certain about: the app leaving the foreground.
+  Future<void> flush() => _write(() {});
+
+  /// Everything the store holds, for tests and for a future export.
+  Map<String, dynamic> debugSnapshot() => Map<String, dynamic>.of(_data);
 
   Future<void> _write(void Function() mutate) async {
     mutate();
