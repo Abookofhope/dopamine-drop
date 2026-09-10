@@ -22,8 +22,14 @@ The generated platform folders are not committed. Regenerate them first:
 ```bash
 flutter create .          # recreates android/, ios/, web/ around the existing pubspec
 flutter pub get
+dart run flutter_launcher_icons   # writes the launcher icons into those folders
 flutter run
 ```
+
+The icon step is separate because the platform folders are not committed, so
+there is nowhere to write the generated sizes until `flutter create .` has run.
+Source art and the script that draws it are in `assets/icon/`; re-run
+`python3 assets/icon/make_icon.py` after editing it, then regenerate.
 
 ```bash
 flutter analyze           # must be clean

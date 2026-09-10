@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><defs>
+    <linearGradient id="drop" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#FF7A54"/>
+      <stop offset="0.55" stop-color="#FF5B39"/>
+      <stop offset="1" stop-color="#C93A1E"/>
+    </linearGradient>
+    <radialGradient id="ground" cx="0.5" cy="0.28" r="0.85">
+      <stop offset="0" stop-color="#2A1846"/>
+      <stop offset="0.6" stop-color="#150E27"/>
+      <stop offset="1" stop-color="#0D0918"/>
+    </radialGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="38" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs><rect width="1024" height="1024" fill="url(#ground)"/><g filter="url(#glow)"><g transform="translate(512,560) scale(1.08) translate(-512,-560)"><path d="M512,262 C512,262 714,498 714,592 A202,202 0 1,1 310,592 C310,498 512,262 512,262 Z" fill="url(#drop)"/><rect x="432" y="512" width="70" height="70" rx="16" fill="#0D0918" opacity="0.82"/><rect x="522" y="512" width="70" height="70" rx="16" fill="#33E6C8" opacity="1"/><rect x="432" y="602" width="70" height="70" rx="16" fill="#0D0918" opacity="0.82"/><rect x="522" y="602" width="70" height="70" rx="16" fill="#0D0918" opacity="0.82"/></g></g></svg>
