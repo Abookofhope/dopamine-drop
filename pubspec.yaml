@@ -1,0 +1,44 @@
+name: dopamine_drop
+description: "Dopamine Drop: Brain Snacks - a rotating-mode puzzle game built for short attention spans."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.3.0
+  audioplayers: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/sfx/
+
+  # Bundled, not fetched. google_fonts pulls typefaces over the network at
+  # runtime and does not reliably fall back when that fails — a first launch
+  # with no signal rendered the entire game with no text at all.
+  fonts:
+    - family: Archivo
+      fonts:
+        - asset: assets/fonts/Archivo-ExtraBold.ttf
+          weight: 800
+    - family: InstrumentSans
+      fonts:
+        - asset: assets/fonts/InstrumentSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/InstrumentSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/InstrumentSans-Bold.ttf
+          weight: 700
+    - family: MartianMono
+      fonts:
+        - asset: assets/fonts/MartianMono-Bold.ttf
+          weight: 700

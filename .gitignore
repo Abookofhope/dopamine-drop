@@ -1,0 +1,20 @@
+.dart_tool/
+.packages
+build/
+*.iml
+.idea/
+.vscode/
+pubspec.lock
+
+# Regenerate with `flutter create .` — see README.
+android/
+ios/
+web/
+linux/
+macos/
+windows/
+
+# Never commit these.
+key.properties
+*.jks
+*.keystore
