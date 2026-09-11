@@ -452,6 +452,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    surface is a fixed square. As a row of its own it costs the board a few
    pixels of height and nothing else — and it survives a mode redrawing its
    own contents, which Slide Path does on every move. */
+/* Marathon has lives but no clock, so in most modes you could sit on a board
+   indefinitely and the run could not end. Every mode now has a round limit
+   there, drawn from its own par time, so slowness is a real way to lose. */
+.roundbar{flex:none;height:3px;border-radius:2px;background:#ffffff10;overflow:hidden;margin:6px 0 0}
+.roundbar i{display:block;height:100%;width:100%;border-radius:2px;background:var(--cool);
+  transform-origin:left;transition:background var(--t-fast)}
+.roundbar.warn i{background:var(--bad)}
 .budget{
   flex:none;align-self:flex-end;margin:0 2px 6px;pointer-events:none;
   font-family:var(--f-data);font-size:11px;font-weight:700;letter-spacing:.06em;
@@ -827,7 +834,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.9.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.9.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -866,6 +873,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="meter" id="hudMeter"><i id="hudMeterFill"></i></div>
         <div class="lives" id="hudLives" hidden></div>
       </div>
+      <div class="roundbar" id="roundBar" hidden><i id="roundFill"></i></div>
       <p class="prompt" id="prompt">Get ready</p>
       <div id="surface"><div id="count"><b>3</b></div></div>
     </section>
@@ -975,7 +983,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.9.0 (18)';
+const VERSION = 'v0.9.1 (19)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1253,7 +1261,7 @@ const STRINGS = {
     'p.sum':'Tap two that add to {n}', 'p.count':'How many {x}?',
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
-    'p.slide':'Tap the end of a bar to slide it that way', 'p.word':'Spell the {n}-letter word',
+    'p.tooSlow':'Too slow', 'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 'p.word':'Spell the {n}-letter word',
     'p.wheel':'Guess the phrase', 'p.gap1':'Fill the gap', 'p.gap2':'Fill both gaps, left to right',
     'p.beat':'Tap the dot that is out of time', 'p.sort':'Sorted {a} of {b}',
     'p.target':'Target',
@@ -1338,7 +1346,7 @@ const STRINGS = {
     'p.sum':'Touchez deux nombres faisant {n}', 'p.count':'Combien de {x} ?',
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
-    'p.slide':'Touchez le bout d’une barre pour la pousser', 'p.word':'Écrivez le mot de {n} lettres',
+    'p.tooSlow':'Trop lent', 'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 'p.word':'Écrivez le mot de {n} lettres',
     'p.wheel':'Devinez la phrase', 'p.gap1':'Complétez le trou', 'p.gap2':'Complétez les deux trous, de gauche à droite',
     'p.beat':'Touchez le point à contretemps', 'p.sort':'{a} sur {b} triés',
     'p.target':'Cible',
@@ -1423,7 +1431,7 @@ const STRINGS = {
     'p.sum':'Toca dos que sumen {n}', 'p.count':'¿Cuántos {x}?',
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
-    'p.slide':'Toca el extremo de una barra para empujarla', 'p.word':'Escribe la palabra de {n} letras',
+    'p.tooSlow':'Demasiado lento', 'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 'p.word':'Escribe la palabra de {n} letras',
     'p.wheel':'Adivina la frase', 'p.gap1':'Completa el hueco', 'p.gap2':'Completa los dos huecos, de izquierda a derecha',
     'p.beat':'Toca el punto fuera de ritmo', 'p.sort':'{a} de {b} clasificados',
     'p.target':'Objetivo',
@@ -1508,7 +1516,7 @@ const STRINGS = {
     'p.sum':'Tippe zwei, die {n} ergeben', 'p.count':'Wie viele {x}?',
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
-    'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 'p.word':'Schreibe das Wort mit {n} Buchstaben',
+    'p.tooSlow':'Zu langsam', 'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 'p.word':'Schreibe das Wort mit {n} Buchstaben',
     'p.wheel':'Errate den Satz', 'p.gap1':'Fülle die Lücke', 'p.gap2':'Fülle beide Lücken, von links nach rechts',
     'p.beat':'Tippe den Punkt aus dem Takt', 'p.sort':'{a} von {b} sortiert',
     'p.target':'Ziel',
@@ -1620,6 +1628,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.9.1', date:'2026-09-11', items:[
+    'Every mode can now be lost. Marathon has lives but no clock, so in most modes you could sit on a board forever and the run could never end — there is now a time limit on each round, drawn from how long that mode expects to take.',
+    'A slim bar above the board shows it, and turns red near the end.',
+    'When you run out of time it now says so, instead of just "missed".',
+    'Fidget Loop is still the exception. Nothing there can be lost, which is the point of it.'
+  ]},
   { v:'0.9.0', date:'2026-09-11', items:[
     'Fixed the whole app being slightly taller than the screen, so the page scrolled and the bottom bar could slide out of view. The shell is now pinned to the screen and only the content inside it scrolls.',
     'Fixed the Settings tab falling off the bottom of the screen. Adding a fifth tab had overflowed a bar built for four — on a small phone it was unreachable.',
@@ -2956,14 +2970,15 @@ const KINDS = {
   shuffle:  { label:'Shuffle',     timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
   mix:      { label:'Mixtape',     timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
   daily:    { label:'Daily Drop',  timed:true,  cap:90000, start:90000, penalty:4000, scored:true, rounds:12 },
-  marathon: { label:'Marathon',    timed:false, lives:3,   scored:true },
+  marathon: { label:'Marathon',    timed:false, lives:3,   scored:true, roundClock:true },
   zen:      { label:'Fidget Loop', timed:false, scored:false }
 };
 
 /* ═══ Shell state ═════════════════════════════════════════════════════════ */
 const el = {
   stage:$('stage'), play:$('play'), over:$('over'),
-  surface:$('surface'), prompt:$('prompt'), chrome:$('chrome'), tabbar:$('tabbar')
+  surface:$('surface'), prompt:$('prompt'), chrome:$('chrome'), tabbar:$('tabbar'),
+  roundBar:$('roundBar'), roundFill:$('roundFill')
 };
 const TABS = ['Play','Modes','Mix','Stats','Settings'];
 let run = null, roundLive = false, roundStart = 0;
@@ -2975,6 +2990,7 @@ function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
    not just the one. A board left behind is invisible but still a live subtree
    with listeners on it for as long as the app stays open. */
 function clearBoard(){
+  el.roundBar.hidden = true;
   el.surface.innerHTML = '';
   Array.from(el.surface.parentNode.querySelectorAll('.budget')).forEach(n => n.remove());
 }
@@ -3093,9 +3109,24 @@ function tick(ts){
   if (!run || screen !== 'play'){ raf = 0; return; }
   const dt = Math.min(ts - lastTs, 250);
   lastTs = ts;
-  if (KINDS[run.kind].timed && run.started){
+  const kind = KINDS[run.kind];
+  if (kind.timed && run.started){
     run.time -= dt;
     if (run.time <= 0){ run.time = 0; renderHud(); return endRun(); }
+  }
+  /* The round limit. Timed runs already punish slowness through the shared
+     clock, so this is Marathon's — where nothing else did. */
+  if (kind.roundClock && roundLive && run.roundLeft > 0){
+    run.roundLeft -= dt;
+    const frac = clamp(run.roundLeft / run.roundLimit, 0, 1);
+    el.roundFill.style.transform = 'scaleX(' + frac + ')';
+    el.roundBar.classList.toggle('warn', frac < 0.25);
+    if (run.roundLeft <= 0){
+      run.roundLeft = 0;
+      el.roundFill.style.transform = 'scaleX(0)';
+      run.timedOut = true;
+      resolve(false, null);
+    }
   }
   renderHud();
   raf = requestAnimationFrame(tick);
@@ -3129,6 +3160,19 @@ function nextRound(){
   run.curMode = mode;
   roundLive = true;
   roundStart = performance.now();
+  /* Generous on purpose: par is how long the mode expects to take, and this is
+     more than twice that, easing further as the player's level raises pressure.
+     It is a floor under dawdling, not a second difficulty dial. */
+  if (k.roundClock){
+    run.roundLimit = Math.max(4000, Math.round(mode.par * 2.6 * run.pressure));
+    run.roundLeft = run.roundLimit;
+    run.timedOut = false;
+    el.roundBar.hidden = false;
+    el.roundBar.classList.remove('warn');
+    el.roundFill.style.transform = 'scaleX(1)';
+  } else {
+    el.roundBar.hidden = true;
+  }
   mode.build({
     surface: el.surface,
     level: Prog.effectiveLevel(run.solved, run.playerLevel),
@@ -3148,7 +3192,8 @@ function nextRound(){
 function resolve(ok, node){
   if (!roundLive || !run) return;
   roundLive = false;
-  const k = KINDS[run.kind], mode = run.curMode;
+  const k = KINDS[run.kind], mode = run.curMode, r = run;
+  run.roundLeft = 0;
   Array.from(el.surface.querySelectorAll('button')).forEach(b => { b.disabled = true; });
 
   if (ok){
@@ -3187,7 +3232,8 @@ function resolve(ok, node){
       setTimeout(() => el.surface.classList.remove('shake'), 360);
     }
     sfx.bad(); buzz([26,40,26]);
-    el.prompt.textContent = k.timed ? '−' + (k.penalty/1000) + ' seconds' : 'Missed';
+    el.prompt.textContent = r.timedOut ? t('p.tooSlow')
+      : k.timed ? '−' + (k.penalty/1000) + ' seconds' : t('p.missed');
     el.prompt.className = 'prompt lost';
     renderHud();
     if (k.lives && run.lives <= 0) return later(520, endRun);
@@ -3204,6 +3250,7 @@ function startRun(kind, modeId){
     kind, mode: modeId || null, curMode: null, lastMode: null, bag: null,
     score:0, solved:0, missed:0, streak:0, bestStreak:0,
     time: k.start || 0, lives: k.lives || 0, roundIdx:0, started:false,
+    roundLimit:0, roundLeft:0, timedOut:false,
     xpAtStart: save.xp,
     playerLevel: lvl,
     pressure: Prog.pressure(lvl),
