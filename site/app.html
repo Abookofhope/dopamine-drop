@@ -806,7 +806,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.7.1</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.7.2</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -954,7 +954,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.7.1 (14)';
+const VERSION = 'v0.7.2 (15)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1492,13 +1492,13 @@ const WORD_BANKS = {
     6: ['BOUTON','CHEMIN','MIROIR','ORANGE','SOLEIL','VOYAGE','JARDIN','MAISON','BALLON','CANARD','DOUCHE','GARAGE','PANIER','SOURIS','BATEAU','CHEVAL','PLANTE','RAISIN','SALADE','TOMATE','VIOLET','MARCHE','MONTRE','NOMBRE','PIERRE','POULET','SAVOIR','LAPINS','NUAGES','OMBRES','ARGENT','BOUCHE','CARTON','COUPLE','ESPACE','GRAINE','LAMPES','MANCHE','NAPPES','RIDEAU','VALISE','VOISIN','DESSIN','MOUTON','ROULER','SORTIR','TOMBER','VENDRE','RENARD','PARLER']
   },
   es: {
-    4: ['CASA','MESA','LUNA','MANO','ROPA','SOPA','VIDA','TIPO','FLOR','GATO','AGUA','AIRE','ALTO','AZUL','BOCA','CAMA','CINE','DEDO','DIEZ','DOCE','FOCA','GRIS','HOJA','HORA','ISLA','LADO','LAGO','LIMA','MIEL','NUBE','OJOS','PATO','PELO','PERA','PESO','PINO','RANA','RATO','ROSA','SAPO','SOLO','TAZA','TELA','TREN','UVAS','VASO','VELA','VINO','ZONA','DIAS'],
+    4: ['CASA','MESA','LUNA','MANO','ROPA','SOPA','VIDA','TIPO','FLOR','GATO','AGUA','AIRE','ALTO','AZUL','BOCA','CAMA','CINE','DEDO','DIEZ','DOCE','FOCA','GRIS','HOJA','HORA','ISLA','LADO','LAGO','LIMA','MIEL','NUBE','OJOS','PATO','PELO','PERA','PESO','PINO','RANA','RATO','ROSA','NIDO','SOLO','TAZA','TELA','TREN','UVAS','VASO','VELA','VINO','ZONA','DIAS'],
     5: ['CAMPO','LIBRO','MUNDO','NOCHE','PLAYA','PUNTO','VERDE','NUBES','SALTO','CARTA','AGUJA','BARCO','CABRA','CALLE','CARRO','CIELO','CLASE','COCHE','FRUTA','FUEGO','GENTE','GRANO','HIELO','HUEVO','JUEGO','LECHE','MANOS','MESAS','MONTE','MUJER','NEGRO','NIEVE','PAPEL','PERRO','PLATO','POLLO','PUNTA','QUESO','RADIO','RUEDA','SILLA','TARDE','TIGRE','VERSO','VIAJE','BANCO','BOTAS','CESTA','DULCE','FLACO'],
     6: ['CAMINO','CIUDAD','FLORES','MINUTO','PUERTA','MANTEL','CUADRO','PLANTA','AMIGOS','BLANCO','BOSQUE','CABEZA','CAMISA','CARTAS','COCINA','CONEJO','ESPEJO','FRUTAS','GRANDE','LIBROS','MADERA','MONEDA','PELOTA','PERROS','PIEDRA','QUESOS','SILLAS','TIEMPO','VERANO','VIAJES','ZAPATO','ABRIGO','CAMPOS','CESTAS','DINERO','ESCOBA','GUANTE','HELADO','LLUVIA','MARTES','PALOMA','SEMANA','TIJERA','VIENTO','VERDES','NOCHES','PLATOS','PUENTE','SALTOS','TARDES']
   },
   de: {
     4: ['BAUM','HAUS','BUCH','HAND','BERG','WEIN','ZEIT','GELD','KIND','BLAU','GOLD','HERZ','JAHR','KOPF','LAND','MOND','RING','ROSE','SALZ','TIER','WELT','WIND','WOLF','ZAHL','BEIN','BROT','DACH','GAST','GRAS','HUND','NASE','OBST','PARK','SAND','SEIL','TEIL','ARZT','BANK','DORF','EULE','FELD','HAAR','KERN','MAUS','PILZ','REIS','TOPF','HOLZ','ZAUN','MUND'],
-    5: ['BLUME','TISCH','STERN','WOLKE','NACHT','LICHT','MILCH','REGEN','VOGEL','WAGEN','APFEL','BIRNE','BODEN','BRIEF','FISCH','GABEL','KARTE','KATZE','KETTE','KLEID','KRAFT','KREIS','LEBEN','LEDER','LINIE','MAUER','NADEL','NAGEL','OSTEN','PFERD','PLATZ','PREIS','RAUCH','SPIEL','STEIN','STUHL','TASSE','TIGER','TRAUM','WIESE','ANGEL','BESEN','DECKE','ENTEN','FEDER','HOSEN','INSEL','JACKE','NEBEL','OHREN'],
+    5: ['BLUME','TISCH','STERN','WOLKE','NACHT','LICHT','MILCH','REGEN','VOGEL','WAGEN','APFEL','BIRNE','BODEN','BRIEF','FISCH','GABEL','KARTE','KATZE','KETTE','KLEID','KRAFT','KREIS','LEBEN','LEDER','LINIE','MAUER','NADEL','NAGEL','OSTEN','PFERD','PLATZ','PREIS','RAUCH','SPIEL','STEIN','STUHL','TASSE','TIGER','TRAUM','WIESE','KERNE','BESEN','DECKE','ENTEN','FEDER','HOSEN','INSEL','JACKE','BERGE','OHREN'],
     6: ['GARTEN','HIMMEL','WINTER','ZIMMER','SCHIFF','BLUMEN','BRIEFE','DONNER','FEDERN','FELSEN','FREUND','HAMMER','KAMERA','KERZEN','LAMPEN','LEITER','MESSER','MORGEN','PAPIER','SCHUHE','SILBER','SOMMER','STRAND','SUPPEN','TELLER','WOLKEN','ZUCKER','KISTEN','ANGELN','BIENEN','EIMERN','MANTEL','NUDELN','PINSEL','QUELLE','TASCHE','ZEITEN','KNOTEN','GIPFEL','STEINE','STERNE','SPIELE','FISCHE','KARTEN','KATZEN','LINIEN','NADELN','PFERDE','TIGERN','VOGELN']
   }
 };
@@ -1578,6 +1578,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.7.2', date:'2026-09-11', items:[
+    'Three pairs of words in the new banks were built from exactly the same letters, so the same rack wanted a different answer depending on which one you got. Replaced, and the build now refuses to ship another pair like it.',
+    'Word Snap will no longer deal you a rack that is already half solved.',
+    'Word Snap adds letters that do not belong in the word as you level up — one, then two — so the last tile is never free and two words made of similar letters cannot feel like the same puzzle.'
+  ]},
   { v:'0.7.1', date:'2026-09-11', items:[
     'Mirror, Rewire and Slide Path could not be lost. Each now gives you a budget of moves, shown in the corner of the board, worked out from how many moves that particular board actually needs — so it is always enough, but not endless.',
     'Rewire now lights up the wire as you connect it instead of only at the end, so you can see how far the current has got.',
@@ -2560,10 +2565,31 @@ const MODES = {
     build(ctx){
       const len = ctx.level < 5 ? 4 : ctx.level < 12 ? 5 : 6;
       const w = ctx.deal(wordBank()[len], 'word:' + save.lang + ':' + len);
+
+      /* Rejecting only the fully-solved rack was too weak a test. A rack with
+         every letter but one already in place is not a puzzle either, and with
+         four tiles that is common. Insist that most letters have actually
+         moved. */
+      const settled = arr => arr.reduce((n, ch, i) => n + (ch === w[i] ? 1 : 0), 0);
+      const ceiling = Math.max(1, Math.floor(len/2) - (len > 4 ? 1 : 0));
       let tiles = shuffle(w.split(''), ctx.rnd);
-      /* A word already spelled out is a free point, not a puzzle — and with
-         four letters it happens more often than you would think. */
-      for (let i=0;i<20 && tiles.join('') === w; i++) tiles = shuffle(w.split(''), ctx.rnd);
+      for (let i=0; i<40 && settled(tiles) > ceiling; i++) tiles = shuffle(w.split(''), ctx.rnd);
+
+      /* Decoys. Without them the rack is exactly the answer's letters, so the
+         last tile is free and the whole thing is an ordering exercise. A letter
+         that does not belong at all means every tap is a real decision — and it
+         is what stops two words built from similar letters producing racks that
+         feel like the same puzzle twice. */
+      const decoys = ctx.level < 6 ? 0 : ctx.level < 14 ? 1 : 2;
+      const spare = [];
+      if (decoys){
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+          .filter(c => !w.includes(c));
+        for (let i=0;i<decoys && alphabet.length;i++){
+          spare.push(alphabet.splice(Math.floor(ctx.rnd()*alphabet.length), 1)[0]);
+        }
+      }
+      const rackLetters = shuffle(tiles.concat(spare), ctx.rnd);
 
       const col = mk('div','wordcol');
       const slots = mk('div','slots');
@@ -2575,7 +2601,7 @@ const MODES = {
 
       const rack = mk('div','rack');
       let at = 0;
-      tiles.forEach((ch, i) => {
+      rackLetters.forEach((ch, i) => {
         const b = mk('button','ltile'); b.type='button'; b.textContent = ch;
         b.setAttribute('aria-label', ch);
         onTap(b, () => {

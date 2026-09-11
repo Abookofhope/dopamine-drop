@@ -123,6 +123,14 @@ if m:
             dupes = {w for w in ws if ws.count(w) > 1}
             if dupes:
                 problems.append(f"{lang}/{length} repeats {sorted(dupes)}")
+            # Two words built from the same letters give Word Snap an identical
+            # rack that wants a different order depending on which was drawn.
+            by_letters = {}
+            for w in ws:
+                by_letters.setdefault("".join(sorted(w)), []).append(w)
+            for group in by_letters.values():
+                if len(group) > 1:
+                    problems.append(f"{lang}/{length} anagrams {sorted(group)}")
             if len(ws) < 20:
                 problems.append(f"{lang}/{length} only has {len(ws)} words")
     check("every word matches its bucket, alphabet and is unique",
