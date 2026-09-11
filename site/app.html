@@ -428,6 +428,17 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.bar.flat{background:#c4a07559;border-color:#c4a0753d}
 .cell.bar.stuck{background:var(--ink-3);color:var(--edge);border-color:var(--edge)}
 .cell.bar svg{width:60%;height:60%;display:block}
+/* Move budget, for the puzzles you solve by manipulation rather than by
+   answering. Absolute inside the surface so it never disturbs the board,
+   which is a centred grid. */
+.budget{
+  position:absolute;top:10px;right:12px;z-index:3;pointer-events:none;
+  font-family:var(--f-data);font-size:11px;font-weight:700;letter-spacing:.06em;
+  padding:4px 9px;border-radius:999px;color:var(--haze);
+  background:#00000038;border:1px solid var(--edge-soft);
+  transition:color var(--t-fast),border-color var(--t-fast),transform var(--t-fast);
+}
+.budget.low{color:var(--bad);border-color:var(--bad);transform:scale(1.06)}
 .wordcol{display:flex;flex-direction:column;align-items:center;gap:24px;width:100%}
 .slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
 .slot{width:36px;height:44px;border-radius:var(--r-sm);border:1px solid var(--edge-soft);background:#ffffff08;display:grid;place-items:center;font-family:var(--f-data);font-weight:700;font-size:18px;color:var(--cream)}
@@ -795,7 +806,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.7.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.7.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -872,6 +883,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>
       <span>Modes</span>
     </button>
+    <button class="tab" role="tab" data-tab="Mix" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h4l4 10h6"/><path d="M3 17h4l2-5"/><path d="M17 4l4 3-4 3"/><path d="M17 14l4 3-4 3"/></svg>
+      <span>Mix</span>
+    </button>
     <button class="tab" role="tab" data-tab="Stats" aria-selected="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg>
       <span>Stats</span>
@@ -939,7 +954,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.7.0 (13)';
+const VERSION = 'v0.7.1 (14)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1122,7 +1137,7 @@ const LANGS = [
 
 const STRINGS = {
   en: {
-    'tab.Play':'Play', 'tab.Modes':'Modes', 'tab.Stats':'Stats', 'tab.Settings':'Settings',
+    'tab.Play':'Play', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Settings',
     'hero.eyebrow':'Every mode, on shuffle', 'hero.title':'Shuffle',
     'hero.sub':'60 seconds. The puzzle changes every round.', 'hero.best':'BEST',
     'play.other':'Other ways to play', 'play.jump':'Jump straight in',
@@ -1203,11 +1218,11 @@ const STRINGS = {
     'c.RED':'RED','c.BLUE':'BLUE','c.GREEN':'GREEN','c.YELLOW':'YELLOW','c.PURPLE':'PURPLE','c.ORANGE':'ORANGE',
     's.circle':'circles','s.square':'squares','s.triangle':'triangles','s.diamond':'diamonds','s.cross':'crosses','s.chevron':'arrows',
     'sort.colour':'SORT BY COLOUR','sort.size':'SORT BY SIZE','sort.small':'SMALL','sort.big':'BIG',
-    'sort.fill':'SORT BY FILL','sort.hollow':'HOLLOW','sort.solid':'SOLID'
+    'budget.left':'{n} MOVES LEFT','sort.fill':'SORT BY FILL','sort.hollow':'HOLLOW','sort.solid':'SOLID'
   },
 
   fr: {
-    'tab.Play':'Jouer', 'tab.Modes':'Modes', 'tab.Stats':'Stats', 'tab.Settings':'Réglages',
+    'tab.Play':'Jouer', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Réglages',
     'hero.eyebrow':'Tous les modes, en aléatoire', 'hero.title':'Mélange',
     'hero.sub':'60 secondes. Le casse-tête change à chaque manche.', 'hero.best':'RECORD',
     'play.other':'Autres façons de jouer', 'play.jump':'Commencer tout de suite',
@@ -1288,11 +1303,11 @@ const STRINGS = {
     'c.RED':'ROUGE','c.BLUE':'BLEU','c.GREEN':'VERT','c.YELLOW':'JAUNE','c.PURPLE':'VIOLET','c.ORANGE':'ORANGE',
     's.circle':'cercles','s.square':'carrés','s.triangle':'triangles','s.diamond':'losanges','s.cross':'croix','s.chevron':'flèches',
     'sort.colour':'TRIER PAR COULEUR','sort.size':'TRIER PAR TAILLE','sort.small':'PETIT','sort.big':'GRAND',
-    'sort.fill':'TRIER PAR REMPLISSAGE','sort.hollow':'CREUX','sort.solid':'PLEIN'
+    'budget.left':'{n} COUPS RESTANTS','sort.fill':'TRIER PAR REMPLISSAGE','sort.hollow':'CREUX','sort.solid':'PLEIN'
   },
 
   es: {
-    'tab.Play':'Jugar', 'tab.Modes':'Modos', 'tab.Stats':'Datos', 'tab.Settings':'Ajustes',
+    'tab.Play':'Jugar', 'tab.Modes':'Modos', 'tab.Mix':'Mezcla', 'tab.Stats':'Datos', 'tab.Settings':'Ajustes',
     'hero.eyebrow':'Todos los modos, al azar', 'hero.title':'Mezcla',
     'hero.sub':'60 segundos. El reto cambia en cada ronda.', 'hero.best':'RÉCORD',
     'play.other':'Otras formas de jugar', 'play.jump':'Empieza ya',
@@ -1373,11 +1388,11 @@ const STRINGS = {
     'c.RED':'ROJO','c.BLUE':'AZUL','c.GREEN':'VERDE','c.YELLOW':'AMARILLO','c.PURPLE':'MORADO','c.ORANGE':'NARANJA',
     's.circle':'círculos','s.square':'cuadrados','s.triangle':'triángulos','s.diamond':'rombos','s.cross':'cruces','s.chevron':'flechas',
     'sort.colour':'CLASIFICA POR COLOR','sort.size':'CLASIFICA POR TAMAÑO','sort.small':'PEQUEÑO','sort.big':'GRANDE',
-    'sort.fill':'CLASIFICA POR RELLENO','sort.hollow':'HUECO','sort.solid':'LLENO'
+    'budget.left':'{n} MOVIMIENTOS','sort.fill':'CLASIFICA POR RELLENO','sort.hollow':'HUECO','sort.solid':'LLENO'
   },
 
   de: {
-    'tab.Play':'Spielen', 'tab.Modes':'Modi', 'tab.Stats':'Werte', 'tab.Settings':'Einstellungen',
+    'tab.Play':'Spielen', 'tab.Modes':'Modi', 'tab.Mix':'Mix', 'tab.Stats':'Werte', 'tab.Settings':'Einstellungen',
     'hero.eyebrow':'Alle Modi, gemischt', 'hero.title':'Mix',
     'hero.sub':'60 Sekunden. Das Rätsel wechselt jede Runde.', 'hero.best':'REKORD',
     'play.other':'Andere Spielarten', 'play.jump':'Direkt loslegen',
@@ -1458,7 +1473,7 @@ const STRINGS = {
     'c.RED':'ROT','c.BLUE':'BLAU','c.GREEN':'GRÜN','c.YELLOW':'GELB','c.PURPLE':'LILA','c.ORANGE':'ORANGE',
     's.circle':'Kreise','s.square':'Quadrate','s.triangle':'Dreiecke','s.diamond':'Rauten','s.cross':'Kreuze','s.chevron':'Pfeile',
     'sort.colour':'NACH FARBE','sort.size':'NACH GRÖSSE','sort.small':'KLEIN','sort.big':'GROSS',
-    'sort.fill':'NACH FÜLLUNG','sort.hollow':'HOHL','sort.solid':'VOLL'
+    'budget.left':'{n} ZUEGE UEBRIG','sort.fill':'NACH FÜLLUNG','sort.hollow':'HOHL','sort.solid':'VOLL'
   }
 };
 
@@ -1563,6 +1578,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.7.1', date:'2026-09-11', items:[
+    'Mirror, Rewire and Slide Path could not be lost. Each now gives you a budget of moves, shown in the corner of the board, worked out from how many moves that particular board actually needs — so it is always enough, but not endless.',
+    'Rewire now lights up the wire as you connect it instead of only at the end, so you can see how far the current has got.',
+    'Fixed the Mixtape rotation becoming uneditable: once you had picked two modes there was no way back to the screen to change them. Mix is now its own tab.',
+    'Fidget Loop stays what it is — no move budget, nothing to lose.'
+  ]},
   { v:'0.7.0', date:'2026-09-11', items:[
     'The word pool went from 10 words per length to 50, in all four languages — 600 words where there used to be 112.',
     'Words, phrases and Letter Gap puzzles are now dealt from a deck like the modes are: every one is used before any comes back, so you will not see the same word twice in an evening.',
@@ -1754,6 +1775,40 @@ function onTap(node, fn){
   };
   node.addEventListener('pointerdown', hit);
   node.addEventListener('click', hit);
+}
+
+/* Three modes are "fiddle with it until it is right": no tap is ever wrong,
+   so nothing can ever be lost. Under a clock that is a soft cost, but Marathon
+   has lives and no clock, and there they were literally unloseable — you could
+   sit on one board indefinitely and the run could not end. A budget of moves is
+   the honest fail condition for a puzzle solved by manipulation: it is visible,
+   it is generous, and running out is the same thing a player means when they
+   say they should have had it by now. The minimum is computed per board, never
+   guessed, so the budget is always beatable. */
+function moveBudget(ctx, minimum){
+  if (ctx.relaxed) return { spend(){}, attach(){} };  /* Fidget Loop has no losing */
+  const slack = clamp(8 - Math.floor(ctx.level/4), 3, 8);
+  let left = Math.max(1, minimum) + slack, dead = false;
+  const chip = mk('div','budget');
+  const paint = () => {
+    chip.textContent = t('budget.left', { n: Math.max(0, left) });
+    chip.classList.toggle('low', left <= 3);
+    /* Slide Path redraws its whole board on every move, which throws the chip
+       away with it. Re-attaching here means a mode never has to know the
+       budget exists beyond calling spend. */
+    if (chip.parentNode !== ctx.surface) ctx.surface.appendChild(chip);
+  };
+  paint();
+  return {
+    /* A mode that rebuilds its surface calls this after doing so. */
+    attach(){ if (chip.parentNode !== ctx.surface) ctx.surface.appendChild(chip); },
+    spend(at){
+      if (dead) return;
+      left--;
+      paint();
+      if (left <= 0){ dead = true; ctx.miss(at); }
+    }
+  };
 }
 
 /* ═══ Mode engine ═════════════════════════════════════════════════════════
@@ -2013,6 +2068,15 @@ const MODES = {
         arr[Math.floor(ctx.rnd()*arr.length)].turn += 1 + Math.floor(ctx.rnd()*3);
       }
 
+      /* Taps only ever rotate one way, so the cost of a pipe is how far round
+         it still has to go — and a straight pipe is its own half-turn, which
+         is why this asks when the mask comes back rather than assuming four. */
+      let owed = 0;
+      cells.forEach(c => {
+        for (let k=0;k<4;k++) if (rot(c.base, c.turn + k) === c.base){ owed += k; break; }
+      });
+      const budget = moveBudget(ctx, owed);
+
       const g = gridEl(n);
       for (let y=0;y<n;y++) for (let x=0;x<n;x++){
         const k = x + ',' + y, c = cells.get(k);
@@ -2033,7 +2097,9 @@ const MODES = {
           c.turn++;
           svg.style.transform = 'rotate(' + (c.turn*90) + 'deg)';
           sfx.tap(); buzz(6);
-          if (solved()){ paint(); ctx.win(b); }
+          if (solved()){ paint(); return ctx.win(b); }
+          paint();
+          budget.spend(b);
         });
         c.el = b;
         g.appendChild(b);
@@ -2173,6 +2239,7 @@ const MODES = {
         return y*w + (w-1-x);
       }));
       const placed = new Set();
+      const budget = moveBudget(ctx, wanted.size);
 
       const g = gridEl(w);
       g.style.aspectRatio = '1';
@@ -2190,7 +2257,8 @@ const MODES = {
           if (placed.has(idx)){ placed.delete(idx); b.classList.remove('on'); }
           else { placed.add(idx); b.classList.add('on'); }
           sfx.tap(); buzz(6);
-          if (placed.size === wanted.size && Array.from(wanted).every(i => placed.has(i))) ctx.win(b);
+          if (placed.size === wanted.size && Array.from(wanted).every(i => placed.has(i))) return ctx.win(b);
+          budget.spend(b);
         });
         g.appendChild(b);
       }
@@ -2422,6 +2490,7 @@ const MODES = {
       if (!bars) bars = best ? best.ps : [{ o:'v', r:carRow, c:2, len:2 }];
 
       let solved = false;
+      const budget = moveBudget(ctx, Math.max(1, shortest(bars)));
       const canMove = (bar, d) => {
         const i = bars.indexOf(bar);
         const moved = bars.slice();
@@ -2465,6 +2534,7 @@ const MODES = {
               sfx.tap(); buzz(6);
               if (!blocks(bars)){ solved = true; render(); return ctx.win(b); }
               render();
+              budget.spend(b);
             });
             g.appendChild(b);
             continue;
@@ -2477,6 +2547,7 @@ const MODES = {
           g.appendChild(c);
         }
         ctx.surface.appendChild(g);
+        budget.attach();
       }
       render();
       ctx.prompt(t('p.slide'));
@@ -2973,6 +3044,7 @@ function nextRound(){
     rnd: run.rnd,
     after: later,
     /* Content that should not repeat goes through here rather than pick(). */
+    relaxed: run.kind === 'zen',
     deal: (items, id) => run.kind === 'daily'
       ? items[Math.floor(run.rnd()*items.length)]
       : dealFrom(items, id),

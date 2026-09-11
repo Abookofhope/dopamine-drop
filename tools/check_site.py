@@ -79,6 +79,28 @@ check("page contains the play surface", 'id="surface"' in html)
 check("page contains the mode registry", "const MODES = {" in html and "MODE_IDS" in html)
 modes = re.findall(r"^  ([a-z]+): \{$", html, re.M)
 check("registry has a full roster", len(modes) >= 12, f"found {len(modes)}")
+# Every language table must carry every key. A missing one renders as the
+# raw key ("tab.Mix") in the interface, which nobody notices in a language
+# they do not read — so it is checked rather than eyeballed.
+si = html.find("const STRINGS")
+if si >= 0:
+    block = html[si:html.find("const WORD_BANKS", si)]
+    tables = {}
+    for lang in re.findall(r"\n  (\w+): \{", block):
+        m = re.search(r"\n  %s: \{(.*?)\n  \}" % lang, block, re.S)
+        if m:
+            tables[lang] = set(re.findall(r"'([\w.]+)'\s*:", m.group(1)))
+    check("string tables found", len(tables) >= 2, f"{sorted(tables)}")
+    if len(tables) >= 2:
+        base = tables.get("en") or next(iter(tables.values()))
+        gaps = []
+        for lang, keys in tables.items():
+            missing = base - keys
+            if missing:
+                gaps.append(f"{lang} missing {sorted(missing)[:3]}")
+        check("every language has every string", not gaps, "; ".join(gaps[:3]))
+        check("string tables are not empty", len(base) >= 100, f"{len(base)} keys")
+
 # Word banks are player-visible content in four languages, and the failure
 # mode is silent: a word of the wrong length just renders a puzzle with a
 # letter too few. This has already shipped twice — once as a truncated
