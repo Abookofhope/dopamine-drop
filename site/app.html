@@ -366,7 +366,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .assistprev .sq{width:32px;height:32px;border-radius:9px;flex:none}
 .assistprev .sq .shp{padding:5px;box-sizing:border-box}
 .assistprev span{font-size:11px;color:var(--haze)}
-.verline{flex:none;text-align:center;font-family:var(--f-data);font-size:9.5px;color:var(--haze);opacity:.55;padding:12px 0 4px}
+.verline{flex:none;text-align:right;font-family:var(--f-data);font-size:9.5px;color:var(--haze);opacity:.45;padding:14px 2px 4px;letter-spacing:.04em}
 .note{flex:none;font-size:11px;color:var(--haze);line-height:1.5;padding-top:10px}
 
 /* ── Shared board pieces ─────────────────────────────────────────────────── */
@@ -687,6 +687,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
         <div class="seclbl"><span data-i18n="play.jump">Jump straight in</span></div>
         <div class="modegrid" id="quickModes"></div>
+        <p class="verline" id="verLine"></p>
       </div>
     </section>
 
@@ -745,7 +746,6 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         </div>
         <div class="seclbl"><span data-i18n="stats.everyMode">Every mode</span></div>
         <div id="sRows"></div>
-        <p class="verline" id="verLine"></p>
       </div>
     </section>
 
@@ -782,7 +782,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.5.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.5.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -926,7 +926,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.5.0 (8)';
+const VERSION = 'v0.5.1 (9)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1140,6 +1140,11 @@ const STRINGS = {
     'set.about':'About', 'set.whatsNew':'What’s new', 'set.whatsNewSub':'Everything that has changed, newest first',
     'set.note':'Progress is saved on this device only. There is no account, and nothing here is uploaded.',
     'btn.export':'Export', 'btn.import':'Import', 'btn.reset':'Reset', 'btn.close':'Close',
+    'dlg.badBackup':'That does not look like a Dopamine Drop backup.',
+    'dlg.restore':'Restore level {lvl} and its scores?\n\nWhat is on this device will be replaced.',
+    'dlg.restored':'Restored. Welcome back to level {lvl}.',
+    'dlg.reset':'Reset your level, XP and every best score?\n\nSettings are kept. This cannot be undone.',
+    'dlg.exportFailed':'That did not save. Try again.',
     'btn.update':'Update', 'btn.goAgain':'Go again', 'btn.backToMenu':'Back to menu',
     'update.title':'<b>New version ready.</b> Tap to update.',
     'over.newBest':'New personal best', 'over.solved':'Solved', 'over.streak':'Best streak',
@@ -1219,6 +1224,11 @@ const STRINGS = {
     'set.about':'À propos', 'set.whatsNew':'Nouveautés', 'set.whatsNewSub':'Tout ce qui a changé, du plus récent',
     'set.note':'La progression est enregistrée sur cet appareil uniquement. Aucun compte, rien n’est envoyé.',
     'btn.export':'Exporter', 'btn.import':'Importer', 'btn.reset':'Réinitialiser', 'btn.close':'Fermer',
+    'dlg.badBackup':'Cela ne ressemble pas à une sauvegarde Dopamine Drop.',
+    'dlg.restore':'Restaurer le niveau {lvl} et ses scores ?\n\nCe qui se trouve sur cet appareil sera remplacé.',
+    'dlg.restored':'Restauré. Bon retour au niveau {lvl}.',
+    'dlg.reset':'Effacer votre niveau, votre XP et tous vos records ?\n\nLes réglages sont conservés. C’est irréversible.',
+    'dlg.exportFailed':'L’enregistrement a échoué. Réessayez.',
     'btn.update':'Mettre à jour', 'btn.goAgain':'Rejouer', 'btn.backToMenu':'Retour au menu',
     'update.title':'<b>Nouvelle version prête.</b> Touchez pour mettre à jour.',
     'over.newBest':'Nouveau record', 'over.solved':'Résolus', 'over.streak':'Meilleure série',
@@ -1298,6 +1308,11 @@ const STRINGS = {
     'set.about':'Acerca de', 'set.whatsNew':'Novedades', 'set.whatsNewSub':'Todo lo que ha cambiado, lo más reciente primero',
     'set.note':'El progreso se guarda solo en este dispositivo. No hay cuenta y nada se sube.',
     'btn.export':'Exportar', 'btn.import':'Importar', 'btn.reset':'Borrar', 'btn.close':'Cerrar',
+    'dlg.badBackup':'Esto no parece una copia de seguridad de Dopamine Drop.',
+    'dlg.restore':'¿Restaurar el nivel {lvl} y sus puntuaciones?\n\nSe reemplazará lo que hay en este dispositivo.',
+    'dlg.restored':'Restaurado. Bienvenido de nuevo al nivel {lvl}.',
+    'dlg.reset':'¿Borrar tu nivel, tu XP y todos tus récords?\n\nLos ajustes se conservan. No se puede deshacer.',
+    'dlg.exportFailed':'No se pudo guardar. Inténtalo de nuevo.',
     'btn.update':'Actualizar', 'btn.goAgain':'Otra vez', 'btn.backToMenu':'Volver al menú',
     'update.title':'<b>Nueva versión lista.</b> Toca para actualizar.',
     'over.newBest':'Nuevo récord', 'over.solved':'Resueltos', 'over.streak':'Mejor racha',
@@ -1377,6 +1392,11 @@ const STRINGS = {
     'set.about':'Über', 'set.whatsNew':'Neuerungen', 'set.whatsNewSub':'Alles, was sich geändert hat, neueste zuerst',
     'set.note':'Der Fortschritt liegt nur auf diesem Gerät. Kein Konto, nichts wird hochgeladen.',
     'btn.export':'Sichern', 'btn.import':'Laden', 'btn.reset':'Löschen', 'btn.close':'Schließen',
+    'dlg.badBackup':'Das sieht nicht nach einer Dopamine-Drop-Sicherung aus.',
+    'dlg.restore':'Level {lvl} und die zugehörigen Punkte wiederherstellen?\n\nWas auf diesem Gerät ist, wird ersetzt.',
+    'dlg.restored':'Wiederhergestellt. Willkommen zurück auf Level {lvl}.',
+    'dlg.reset':'Level, XP und alle Bestwerte löschen?\n\nEinstellungen bleiben erhalten. Das lässt sich nicht rückgängig machen.',
+    'dlg.exportFailed':'Das Sichern hat nicht geklappt. Bitte erneut versuchen.',
     'btn.update':'Aktualisieren', 'btn.goAgain':'Nochmal', 'btn.backToMenu':'Zum Menü',
     'update.title':'<b>Neue Version bereit.</b> Zum Aktualisieren tippen.',
     'over.newBest':'Neuer Rekord', 'over.solved':'Gelöst', 'over.streak':'Beste Serie',
@@ -1527,6 +1547,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.5.1', date:'2026-09-11', items:[
+    'The confirmation prompts for backup, restore and reset now speak your language too — they were the last English left.',
+    'Fixed the Export button doing nothing when the game is opened from a shared link rather than installed.',
+    'Restored the home-screen icon on the shared link, so the shortcut is sharp again instead of fuzzy.',
+    'Put the version number back on the home screen. The tab rebuild had quietly moved it onto Stats.'
+  ]},
   { v:'0.5.0', date:'2026-09-11', items:[
     'Four languages — English, French, Spanish and German — including the word puzzles, not just the buttons.',
     'A language button sits in the header, always visible, so nobody has to go hunting for it.',
@@ -2931,6 +2957,7 @@ function paintChrome(){
   $('langCode').textContent = lang.flag;
   const nameEl = $('langName'); if (nameEl) nameEl.textContent = lang.label;
   const logV = $('logBtnV'); if (logV) logV.textContent = 'v' + CHANGELOG[0].v;
+  $('verLine').textContent = VERSION;
 }
 
 function paintPlay(){
@@ -2994,7 +3021,6 @@ function paintStats(){
     frag.appendChild(row);
   });
   $('sRows').replaceChildren(frag);
-  $('verLine').textContent = VERSION;
 }
 
 function paintSettings(){
@@ -3186,11 +3212,32 @@ $('quitBtn').addEventListener('click', () => {
 
 /* Progress lives on this device and nowhere else — a deliberate choice, but
    it means a lost phone is a lost save unless there is a way out. */
+/* This one file is published to two hosts and only one of them can download.
+   On Pages an anchor is the whole story. Inside the artifact viewer the frame
+   is never granted downloads, so the anchor is silently inert — the click
+   appears to work and no file ever arrives, which is worse than an error. So
+   ask the host for a saver at boot and prefer it when there is one. The answer
+   arrives asynchronously and never on this script's first run; Export is only
+   ever pressed long after that. */
+let hostSave = null;
+if (window.claude && typeof window.claude.use === 'function'){
+  window.claude.use('downloads').then(d => { hostSave = d; }, () => {});
+}
+
 $('exportBtn').addEventListener('click', () => {
   const payload = JSON.stringify({ app:'dopamine-drop', version:VERSION, exportedAt:new Date().toISOString(), save }, null, 2);
+  const name = 'dopamine-drop-' + new Date().toISOString().slice(0,10) + '.json';
+  if (hostSave){
+    /* The viewer confirms the save and may decline. A decline is an answer,
+       not a failure, so it gets no error and never a retry. */
+    hostSave.save({ filename:name, data:payload }).catch(err => {
+      if (!err || err.code !== 'declined') window.alert(t('dlg.exportFailed'));
+    });
+    return;
+  }
   const url = URL.createObjectURL(new Blob([payload], { type:'application/json' }));
   const a = document.createElement('a');
-  a.href = url; a.download = 'dopamine-drop-' + new Date().toISOString().slice(0,10) + '.json';
+  a.href = url; a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
@@ -3207,21 +3254,21 @@ $('importFile').addEventListener('change', ev => {
       incoming = parsed && parsed.save && typeof parsed.save === 'object' ? parsed.save : parsed;
     } catch(e){ incoming = null; }
     if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming) || typeof incoming.xp !== 'number'){
-      window.alert('That does not look like a Dopamine Drop backup.');
+      window.alert(t('dlg.badBackup'));
       return;
     }
     const lvl = Prog.levelForXp(incoming.xp);
-    if (!window.confirm('Restore level ' + lvl + ' and its scores?\n\nWhat is on this device will be replaced.')) return;
+    if (!window.confirm(t('dlg.restore', { lvl }))) return;
     /* Run it through the same migration as a stored save, so a backup from an
        older build lands upgraded rather than raw. */
     save = Object.assign({}, defaults, migrate(incoming));
     persist(); paintAll();
-    window.alert('Restored. Welcome back to level ' + Prog.levelForXp(save.xp) + '.');
+    window.alert(t('dlg.restored', { lvl: Prog.levelForXp(save.xp) }));
   };
   reader.readAsText(file);
 });
 $('resetBtn').addEventListener('click', () => {
-  if (!window.confirm('Reset your level, XP and every best score?\n\nSettings are kept. This cannot be undone.')) return;
+  if (!window.confirm(t('dlg.reset'))) return;
   ['pbBlitz','pbStreak','runs','xp','solved'].forEach(k => { save[k] = defaults[k]; });
   save.marathon = {}; save.daily = {};
   persist(); paintAll();
