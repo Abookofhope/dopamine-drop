@@ -423,7 +423,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.car.capL{border-radius:var(--r-sm) 0 0 var(--r-sm)}
 .cell.car.capR{border-radius:0 var(--r-sm) var(--r-sm) 0}
 .cell.bar{background:#9c90c459;border-color:var(--edge);color:var(--cream)}
-.cell.bar.stuck{background:var(--ink-3);color:var(--edge)}
+/* Orientation has to read at a glance now that both exist: upright bars
+   keep the violet, flat ones take a warmer cast. */
+.cell.bar.flat{background:#c4a07559;border-color:#c4a0753d}
+.cell.bar.stuck{background:var(--ink-3);color:var(--edge);border-color:var(--edge)}
 .cell.bar svg{width:60%;height:60%;display:block}
 .wordcol{display:flex;flex-direction:column;align-items:center;gap:24px;width:100%}
 .slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
@@ -788,7 +791,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.6.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.6.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -932,7 +935,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.6.0 (10)';
+const VERSION = 'v0.6.1 (11)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1189,7 +1192,7 @@ const STRINGS = {
     'p.sum':'Tap two that add to {n}', 'p.count':'How many {x}?',
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
-    'p.slide':'Tap above or below a bar to slide it', 'p.word':'Spell the {n}-letter word',
+    'p.slide':'Tap the end of a bar to slide it that way', 'p.word':'Spell the {n}-letter word',
     'p.wheel':'Guess the phrase', 'p.gap1':'Fill the gap', 'p.gap2':'Fill both gaps, left to right',
     'p.beat':'Tap the dot that is out of time', 'p.sort':'Sorted {a} of {b}',
     'p.target':'Target',
@@ -1273,7 +1276,7 @@ const STRINGS = {
     'p.sum':'Touchez deux nombres faisant {n}', 'p.count':'Combien de {x} ?',
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
-    'p.slide':'Touchez au-dessus ou en dessous d’une barre', 'p.word':'Écrivez le mot de {n} lettres',
+    'p.slide':'Touchez le bout d’une barre pour la pousser', 'p.word':'Écrivez le mot de {n} lettres',
     'p.wheel':'Devinez la phrase', 'p.gap1':'Complétez le trou', 'p.gap2':'Complétez les deux trous, de gauche à droite',
     'p.beat':'Touchez le point à contretemps', 'p.sort':'{a} sur {b} triés',
     'p.target':'Cible',
@@ -1357,7 +1360,7 @@ const STRINGS = {
     'p.sum':'Toca dos que sumen {n}', 'p.count':'¿Cuántos {x}?',
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
-    'p.slide':'Toca encima o debajo de una barra', 'p.word':'Escribe la palabra de {n} letras',
+    'p.slide':'Toca el extremo de una barra para empujarla', 'p.word':'Escribe la palabra de {n} letras',
     'p.wheel':'Adivina la frase', 'p.gap1':'Completa el hueco', 'p.gap2':'Completa los dos huecos, de izquierda a derecha',
     'p.beat':'Toca el punto fuera de ritmo', 'p.sort':'{a} de {b} clasificados',
     'p.target':'Objetivo',
@@ -1441,7 +1444,7 @@ const STRINGS = {
     'p.sum':'Tippe zwei, die {n} ergeben', 'p.count':'Wie viele {x}?',
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
-    'p.slide':'Tippe über oder unter einen Balken', 'p.word':'Schreibe das Wort mit {n} Buchstaben',
+    'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 'p.word':'Schreibe das Wort mit {n} Buchstaben',
     'p.wheel':'Errate den Satz', 'p.gap1':'Fülle die Lücke', 'p.gap2':'Fülle beide Lücken, von links nach rechts',
     'p.beat':'Tippe den Punkt aus dem Takt', 'p.sort':'{a} von {b} sortiert',
     'p.target':'Ziel',
@@ -1553,6 +1556,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.6.1', date:'2026-09-11', items:[
+    'Slide Path now has bars that slide sideways as well as up and down. Tap the end you want a bar to move towards.',
+    'Every Slide Path board is now checked by the game before you see it, so one can never be impossible — and its difficulty is the length of the shortest solution rather than the number of bars.',
+    'Bars can no longer be generated flush against each other, which used to make two bars look like one.'
+  ]},
   { v:'0.6.0', date:'2026-09-11', items:[
     'Taps now register the instant your finger lands instead of when you lift it. Every answer in every mode is roughly a tenth of a second faster.',
     'The letter keys in Phrase Wheel and Letter Gap were far too small for a thumb. They are bigger now, with a forgiving edge around each one.'
@@ -2252,44 +2260,174 @@ const MODES = {
     name:'Slide Path', blurb:'Clear the corridor so the car can leave', par:9000, bonus:2800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="10" width="9" height="4" rx="1.5" fill="#FF5B39"/><rect x="15" y="4" width="4" height="9" rx="1.5" fill="#6C6191"/></svg>',
     build(ctx){
-      const n = ctx.level < 6 ? 4 : 5;
-      /* Row 2 always leaves a bar room to retreat upward whatever the grid
-         size, so a generated board is solvable by construction. */
-      const carRow = 2;
-      const count = clamp(1 + Math.floor(ctx.level/4), 1, n-2);
-      const cols = shuffle(Array.from({length:n-2},(_,i)=>i+2), ctx.rnd).slice(0,count);
-      const bars = cols.map(c => ({ col:c, top: ctx.rnd() < 0.5 ? carRow-1 : carRow }));
-      const covers = (b,row) => row === b.top || row === b.top+1;
-      let solved = false;
+      const n = ctx.level < 6 ? 4 : ctx.level < 20 ? 5 : 6;
+      const carRow = n <= 4 ? 2 : Math.floor(n/2);
+      const count = clamp(2 + Math.floor(ctx.level/3), 2, n - 1);
 
-      const canMove = (b,d) => {
-        const top = b.top + d;
-        if (top < 0 || top+1 >= n) return false;
-        return !bars.some(o => o !== b && o.col === b.col && (covers(o,top) || covers(o,top+1)));
+      /* Difficulty is the length of the shortest solution, not the number of
+         bars. Six bars you can shove aside in one move each is a chore; three
+         bars that have to come out in one specific order is a puzzle. */
+      const want = ctx.level < 4 ? [1,2] : ctx.level < 9 ? [2,4] : ctx.level < 16 ? [3,6] : [4,9];
+
+      const cellsOf = p => {
+        const out = [];
+        for (let k=0;k<p.len;k++) out.push(p.o === 'v' ? [p.r+k, p.c] : [p.r, p.c+k]);
+        return out;
+      };
+      const inBounds = p => p.r >= 0 && p.c >= 0
+        && (p.o === 'v' ? p.r + p.len <= n : p.c + p.len <= n);
+      /* The car is two cells of wall nothing may enter. */
+      const isCar = (r,c) => r === carRow && c <= 1;
+      const blocks = ps => ps.some(p => cellsOf(p).some(([r,c]) => r === carRow && c >= 2));
+
+      function legal(ps){
+        const seen = new Set();
+        for (const p of ps){
+          if (!inBounds(p)) return false;
+          for (const [r,c] of cellsOf(p)){
+            if (isCar(r,c)) return false;
+            const k = r+','+c;
+            if (seen.has(k)) return false;
+            seen.add(k);
+          }
+        }
+        return true;
+      }
+
+      /* Breadth-first over board states. Four pieces on a 5x5 is a few hundred
+         states, so this is instant — and it is the only honest way to promise
+         a generated board can actually be solved. It also hands back the
+         shortest solution, which is the difficulty dial. */
+      function shortest(start){
+        if (blocks(start) === false) return 0;
+        const key = ps => ps.map(p => p.r+'.'+p.c).join('|');
+        const seen = new Set([key(start)]);
+        let frontier = [start];
+        for (let depth=1; depth<=14; depth++){
+          const next = [];
+          for (const ps of frontier){
+            for (let i=0;i<ps.length;i++){
+              for (const d of [-1,1]){
+                const p = ps[i];
+                const moved = ps.slice();
+                moved[i] = { o:p.o, len:p.len,
+                             r: p.o === 'v' ? p.r + d : p.r,
+                             c: p.o === 'h' ? p.c + d : p.c };
+                if (!legal(moved)) continue;
+                const k = key(moved);
+                if (seen.has(k)) continue;
+                seen.add(k);
+                if (!blocks(moved)) return depth;
+                next.push(moved);
+              }
+            }
+          }
+          if (!next.length) break;
+          frontier = next;
+        }
+        return -1;
+      }
+
+      function layout(){
+        const ps = [];
+        for (let i=0;i<count;i++){
+          for (let tries=0; tries<40; tries++){
+            /* Every bar is length 2. The first one always crosses the
+               corridor, or there is no puzzle to solve. */
+            const vertical = i === 0 ? true : ctx.rnd() < 0.5;
+            let p;
+            if (vertical){
+              const c = 2 + Math.floor(ctx.rnd()*(n-2));
+              const r = i === 0 ? (ctx.rnd() < 0.5 ? carRow-1 : carRow)
+                                : Math.floor(ctx.rnd()*(n-1));
+              p = { o:'v', r, c, len:2 };
+            } else {
+              /* Horizontal bars stay out of the car's row: one sitting there
+                 could only ever shuffle along it, never leave, so the board
+                 would be dead on arrival. Out of the row they are the real
+                 obstacle — they are what a vertical bar has to retreat into. */
+              const rows = [];
+              for (let r=0;r<n;r++) if (r !== carRow) rows.push(r);
+              const r = pick(rows, ctx.rnd);
+              const c = Math.floor(ctx.rnd()*(n-1));
+              p = { o:'h', r, c, len:2 };
+            }
+            /* Two bars flush end to end in the same line read as one long bar,
+               and their touching cells show a down arrow next to an up arrow,
+               which is nonsense to look at. Keep a gap. */
+            const flush = ps.some(q => q.o === p.o
+              && (q.o === 'v' ? q.c === p.c : q.r === p.r)
+              && (q.o === 'v'
+                  ? (q.r + q.len === p.r || p.r + p.len === q.r)
+                  : (q.c + q.len === p.c || p.c + p.len === q.c)));
+            const trial = ps.concat([p]);
+            if (!flush && legal(trial)){ ps.push(p); break; }
+          }
+        }
+        return ps;
+      }
+
+      let bars = null, best = null;
+      for (let attempt=0; attempt<80; attempt++){
+        const ps = layout();
+        if (!ps.length || !legal(ps)) continue;
+        const d = shortest(ps);
+        if (d < 1) continue;
+        if (d >= want[0] && d <= want[1]){ bars = ps; break; }
+        if (!best || Math.abs(d - want[0]) < Math.abs(best.d - want[0])) best = { ps, d };
+      }
+      if (!bars) bars = best ? best.ps : [{ o:'v', r:carRow, c:2, len:2 }];
+
+      let solved = false;
+      const canMove = (bar, d) => {
+        const i = bars.indexOf(bar);
+        const moved = bars.slice();
+        moved[i] = { o:bar.o, len:bar.len,
+                     r: bar.o === 'v' ? bar.r + d : bar.r,
+                     c: bar.o === 'h' ? bar.c + d : bar.c };
+        return legal(moved);
+      };
+
+      const ARROW = {
+        '-1v':'M7 14l5-5 5 5', '1v':'M7 10l5 5 5-5',
+        '-1h':'M14 7l-5 5 5 5',  '1h':'M10 7l5 5-5 5'
       };
 
       function render(){
         ctx.surface.innerHTML = '';
         const g = gridEl(n);
         for (let y=0;y<n;y++) for (let x=0;x<n;x++){
-          const bar = bars.find(b => b.col === x && covers(b,y));
+          let bar = null, idx = -1;
+          for (const p of bars){
+            const k = cellsOf(p).findIndex(([r,c]) => r === y && c === x);
+            if (k >= 0){ bar = p; idx = k; break; }
+          }
           if (bar){
-            const d = y === bar.top ? -1 : 1;
-            const blocked = !canMove(bar,d);
-            const b = mk('button','cell bar' + (blocked ? ' stuck' : '')); b.type='button';
-            b.setAttribute('aria-label','Bar in column ' + (x+1) + ', tap to slide ' + (d<0?'up':'down'));
-            b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="' + (d<0 ? 'M7 14l5-5 5 5' : 'M7 10l5 5 5-5') + '"/></svg>';
+            /* Tap the end you want it to go towards: the top cell of an upright
+               bar sends it up, the left cell of a flat one sends it left. No
+               mode switch, no drag, and it reads without being told. */
+            const d = idx === 0 ? -1 : idx === bar.len - 1 ? 1 : 0;
+            const blocked = d === 0 || !canMove(bar, d);
+            const b = mk('button','cell bar ' + (bar.o === 'h' ? 'flat' : 'upright') + (blocked ? ' stuck' : ''));
+            b.type = 'button';
+            b.setAttribute('aria-label', (bar.o === 'h' ? 'Flat' : 'Upright') + ' bar, tap to slide '
+              + (d === -1 ? (bar.o === 'v' ? 'up' : 'left') : d === 1 ? (bar.o === 'v' ? 'down' : 'right') : 'nowhere'));
+            if (d !== 0){
+              b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" '
+                + 'stroke-linecap="round" aria-hidden="true"><path d="' + ARROW[d + bar.o] + '"/></svg>';
+            }
             onTap(b, () => {
-              if (solved || !canMove(bar,d)) return;
-              bar.top += d; sfx.tap(); buzz(6);
-              if (!bars.some(o => covers(o,carRow))){ solved = true; render(); return ctx.win(b); }
+              if (solved || d === 0 || !canMove(bar, d)) return;
+              if (bar.o === 'v') bar.r += d; else bar.c += d;
+              sfx.tap(); buzz(6);
+              if (!blocks(bars)){ solved = true; render(); return ctx.win(b); }
               render();
             });
             g.appendChild(b);
             continue;
           }
           if (y === carRow && x <= 1){
-            const c = mk('div','cell car' + (x===0 ? ' capL' : ' capR'));
+            const c = mk('div','cell car' + (x === 0 ? ' capL' : ' capR'));
             g.appendChild(c); continue;
           }
           const c = mk('div','cell' + (y === carRow ? ' corridor' + (solved ? ' clear' : '') : ' empty'));
@@ -2301,7 +2439,6 @@ const MODES = {
       ctx.prompt(t('p.slide'));
     }
   },
-
   /* ── 12. Word Snap — the verbal axis, and the only localisation blocker ─ */
   word: {
     name:'Word Snap', blurb:'Unscramble the word, letter by letter', par:6500, bonus:2000,
