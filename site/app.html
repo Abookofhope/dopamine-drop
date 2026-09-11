@@ -834,7 +834,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.9.1</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.9.2</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -983,7 +983,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.9.1 (19)';
+const VERSION = 'v0.9.2 (20)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1628,6 +1628,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.9.2', date:'2026-09-11', items:[
+    'Odd One Out is fair now. The odd tile used to be a fixed number of degrees around the colour wheel from the rest — but the same number of degrees is nearly four times more visible at some colours than others, so the puzzle was sometimes obvious and sometimes genuinely impossible, with no way to tell which you were getting.',
+    'It now measures the difference the eye actually sees, so the hardest board is the same difficulty whatever colour it rolls — and the hardest is set well above what a phone screen can actually show you.'
+  ]},
   { v:'0.9.1', date:'2026-09-11', items:[
     'Every mode can now be lost. Marathon has lives but no clock, so in most modes you could sit on a board forever and the run could never end — there is now a time limit on each round, drawn from how long that mode expects to take.',
     'A slim bar above the board shows it, and turns red near the end.',
@@ -1806,6 +1810,48 @@ function shapeSvg(shape, stroke){
 }
 const assistOn = () => save.colorAssist;
 
+/* Odd One Out used to offset the odd tile by a fixed number of HSL hue
+   degrees. Hue degrees are not a perceptual unit: the same seven degrees is
+   nearly four times more visible at cyan than at yellow-green, where it falls
+   below the threshold of noticing on a phone at all. So the mode was easy or
+   impossible depending on which hue it happened to roll, and the player had no
+   way to tell which they were getting.
+
+   Measure the difference the eye actually uses instead. OKLab is cheap and
+   roughly uniform, so a target distance in it means the same thing everywhere
+   on the wheel — and the floor can then be set at a number that is genuinely
+   visible rather than merely small. */
+function hslRgb(h, s, l){
+  s /= 100; l /= 100;
+  const k = n => (n + h/30) % 12, a = s*Math.min(l, 1-l);
+  const f = n => l - a*Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n), 1)));
+  return [f(0), f(8), f(4)];
+}
+function oklab(h, s, l){
+  let [r, g, b] = hslRgb(h, s, l);
+  const lin = c => c <= 0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4);
+  r = lin(r); g = lin(g); b = lin(b);
+  const L = Math.cbrt(0.4122214708*r + 0.5363325363*g + 0.0514459929*b);
+  const M = Math.cbrt(0.2119034982*r + 0.6806995451*g + 0.1073969566*b);
+  const S = Math.cbrt(0.0883024619*r + 0.2817188376*g + 0.6299787005*b);
+  return [0.2104542553*L + 0.7936177850*M - 0.0040720468*S,
+          1.9779984951*L - 2.4285922050*M + 0.4505937099*S,
+          0.0259040371*L + 0.7827717662*M - 0.8086757660*S];
+}
+const okDist = (a, b) => Math.hypot(a[0]-b[0], a[1]-b[1], a[2]-b[2]);
+
+/* Smallest hue rotation from `hue` that is at least `want` apart perceptually.
+   Walks outward rather than solving, because the distance is not monotonic
+   everywhere and a walk cannot land on the wrong side of a wiggle. */
+function hueForDistance(hue, want, sat, light, dir){
+  const base = oklab(hue, sat, light);
+  for (let step = 2; step <= 180; step += 2){
+    const h = (hue + dir*step + 360) % 360;
+    if (okDist(base, oklab(h, sat, light)) >= want) return h;
+  }
+  return (hue + dir*180 + 360) % 360;
+}
+
 /* The same deck idea as the mode picker, one level down. Picking a word at
    random out of fifty still shows you the same word twice in an evening —
    the birthday problem is brutal at this scale — and a repeat inside one
@@ -1904,21 +1950,19 @@ const MODES = {
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="13" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="3" y="13" width="8" height="8" rx="2" fill="#6C6191"/><rect x="13" y="13" width="8" height="8" rx="2" fill="#FF5B39"/></svg>',
     build(ctx){
       const n = clamp(2 + Math.floor(ctx.level/2), 2, 6);
-      /* The floor stays where it is. A 6x6 board is the harder version of this
-         puzzle; a hue difference nobody can see is just a coin flip, and it is
-         the players who rely on the lightness channel who lose first. */
-      const delta = Math.max(7, 52 - ctx.level*3.0);
-      /* Floored, not ramped to nothing: past this point difficulty comes from
-         the grid growing, never from making the tile invisible to someone who
-         cannot use hue at all. */
+      /* A perceptual target, not a hue offset — and floored well above the
+         threshold of noticing, because past that point difficulty should come
+         from the grid growing, never from the tile being invisible. */
+      const want = Math.max(0.040, 0.21 - ctx.level*0.011);
       const light = assistOn() ? clamp(20 - ctx.level*1.2, 8.5, 20) : 0;
       const hue = Math.floor(ctx.rnd()*360);
+      const oddHue = hueForDistance(hue, want, 68, 58, ctx.rnd() < 0.5 ? 1 : -1);
       const odd = Math.floor(ctx.rnd()*n*n);
       const g = gridEl(n);
       for (let i=0;i<n*n;i++){
         const b = mk('button','cell tile');
         b.type = 'button';
-        b.style.background = 'hsl(' + (i===odd ? (hue+delta)%360 : hue)
+        b.style.background = 'hsl(' + (i===odd ? oddHue : hue)
           + ' 68% ' + (i===odd ? 58+light : 58) + '%)';
         b.setAttribute('aria-label','Tile '+(i+1));
         onTap(b, () => i===odd ? ctx.win(b) : ctx.miss(b));
