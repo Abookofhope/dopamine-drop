@@ -195,6 +195,14 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Tumble ───────────────────────────────────────────────────────────── */
+.cell.sock{background:var(--ink-3);border:1px solid var(--edge);border-radius:var(--r-sm);
+  transition:transform var(--t-fast),box-shadow var(--t-fast),opacity var(--t-fast)}
+.cell.sock.full{border-color:transparent;box-shadow:inset 0 -3px 0 #00000030}
+.cell.sock.sel{transform:scale(.88);box-shadow:0 0 0 2px var(--cream)}
+.cell.sock.tangled{opacity:.35;pointer-events:none;transform:rotate(-6deg)}
+.cell.sock .shp{padding:22%;box-sizing:border-box}
+
 /* ── Peril: the duel ─────────────────────────────────────────────────── */
 .duel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;width:100%;height:100%;
   transition:transform var(--t-fast)}
@@ -954,7 +962,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.1</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.2</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1103,7 +1111,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.11.1 (23)';
+const VERSION = 'v0.11.2 (24)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1382,6 +1390,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble|Pair them off faster than the drum refills',
     'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Peril|Read the tell, pick the counter, win the duel',
     'p.arc':'{n} left to reach', 'p.umbraLook':'Remember this shape', 'p.umbraPick':'Which one was it?', 'p.stroke':'{n} nodes to go', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Arc|Chain every node before the charge dies',  'm.umbra':'Umbra|Remember the shape, pick it from its near-misses',  'm.stroke':'Single Stroke|One line through every node, no lifting',  'm.slack':'Slack|Drag the nodes until no rope crosses',  'm.tide':'Tide Breath|Hold to swell, release to ebb — stay in the band',  'm.plink':'Drop Odds|Pull one peg, then drop into the lit bin',  'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 'p.word':'Spell the {n}-letter word',
     'p.wheel':'Guess the phrase', 'p.gap1':'Fill the gap', 'p.gap2':'Fill both gaps, left to right',
@@ -1469,6 +1478,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Tambour|Appariez plus vite que le remplissage',
     'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Duel|Lisez son geste, choisissez la parade',
     'p.arc':'{n} à relier', 'p.umbraLook':'Retenez cette forme', 'p.umbraPick':'Laquelle était-ce ?', 'p.stroke':'{n} nœuds restants', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Arc|Reliez tous les nœuds avant la panne',  'm.umbra':'Umbra|Retenez la forme, puis reconnaissez-la',  'm.stroke':'Trait Unique|Une seule ligne par tous les nœuds',  'm.slack':'Démêlage|Déplacez les nœuds jusqu’à zéro croisement',  'm.tide':'Souffle|Tenez pour gonfler, relâchez pour dégonfler',  'm.plink':'Chute|Retirez un clou, puis visez le bac éclairé',  'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 'p.word':'Écrivez le mot de {n} lettres',
     'p.wheel':'Devinez la phrase', 'p.gap1':'Complétez le trou', 'p.gap2':'Complétez les deux trous, de gauche à droite',
@@ -1556,6 +1566,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Tambor|Empareja más rápido de lo que se llena',
     'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Duelo|Lee su gesto y elige la respuesta',
     'p.arc':'Faltan {n}', 'p.umbraLook':'Recuerda esta forma', 'p.umbraPick':'¿Cuál era?', 'p.stroke':'Faltan {n} nodos', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Arco|Conecta todos los nodos antes de quedarte sin carga',  'm.umbra':'Umbra|Recuerda la forma y reconócela',  'm.stroke':'Trazo Único|Una línea por todos los nodos, sin levantar',  'm.slack':'Desenredo|Mueve los nodos hasta que nada se cruce',  'm.tide':'Respiro|Mantén para crecer, suelta para menguar',  'm.plink':'Caída|Quita un clavo y lanza a la casilla encendida',  'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 'p.word':'Escribe la palabra de {n} letras',
     'p.wheel':'Adivina la frase', 'p.gap1':'Completa el hueco', 'p.gap2':'Completa los dos huecos, de izquierda a derecha',
@@ -1643,6 +1654,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Trommel|Paare schneller, als es sich füllt',
     'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Duell|Lies die Geste, wähle die Antwort',
     'p.arc':'Noch {n}', 'p.umbraLook':'Merke dir diese Form', 'p.umbraPick':'Welche war es?', 'p.stroke':'Noch {n} Knoten', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Bogen|Verbinde alle Knoten, bevor der Strom ausgeht',  'm.umbra':'Umbra|Merke dir die Form und erkenne sie wieder',  'm.stroke':'Ein Strich|Eine Linie durch alle Knoten, ohne abzusetzen',  'm.slack':'Entwirren|Zieh die Knoten, bis nichts mehr kreuzt',  'm.tide':'Atemzug|Halten zum Wachsen, loslassen zum Schrumpfen',  'm.plink':'Fallen|Zieh einen Stift, dann ziel auf das helle Fach',  'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 'p.word':'Schreibe das Wort mit {n} Buchstaben',
     'p.wheel':'Errate den Satz', 'p.gap1':'Fülle die Lücke', 'p.gap2':'Fülle beide Lücken, von links nach rechts',
@@ -1756,6 +1768,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.11.2', date:'2026-09-11', items:[
+    'New mode — Tumble. Pair off the colours, but the drum keeps refilling while you work. Clear it faster than it fills.',
+    'It is the only board in the game that grows while you are on it, so the right move is the pair you can already see, not the tidy one you are hunting for.',
+    'A wrong pair tangles both for a moment rather than costing a life — the cost is the time you lose to the fill.'
+  ]},
   { v:'0.11.1', date:'2026-09-11', items:[
     'New mode — Peril. A duel in a few seconds: the enemy shows you what it is about to do, and exactly one of Strike, Parry or Wait beats it.',
     'Waiting is a real answer against a guard, which nothing else in the game asks of you. Interrupting a charge hurts it twice — and missing one hurts you twice.',
@@ -3723,6 +3740,106 @@ const MODES = {
       ctx.surface.appendChild(wrap);
       paint();
       nextTell();
+    }
+  },
+
+  /* ── Tumble — clear it faster than it fills ──────────────────────────────
+     From "match socks before they multiply". Every other mode hands you a
+     fixed board; this one grows while you work, so the pressure is a rate
+     rather than a clock and the right play is to take the pair you can see
+     now rather than the tidy one you are hunting for. A wrong pair tangles
+     both for a moment instead of ending the round — the punishment is lost
+     tempo against the fill, which is the only currency here. */
+  tumble: {
+    name:'Tumble', blurb:'Pair them off faster than the drum refills', cat:'focus', par:9000, bonus:2600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="7" height="7" rx="2" fill="#FF5B39"/><rect x="14" y="4" width="7" height="7" rx="2" fill="#FF5B39"/><rect x="3" y="14" width="7" height="7" rx="2" fill="#6C6191"/><rect x="14" y="14" width="7" height="7" rx="2" fill="#33E6C8"/></svg>',
+    build(ctx){
+      const g = ctx.level < 8 ? 4 : 5;
+      const cells = g*g;
+      const kinds = clamp(3 + Math.floor(ctx.level/5), 3, INKS.length);
+      const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, kinds);
+      const startPairs = clamp(3 + Math.floor(ctx.level/4), 3, Math.floor(cells/2) - 1);
+      const fillEvery = clamp(4200 - ctx.level*130, 1500, 4200);
+
+      const slots = new Array(cells).fill(null);
+      const grid = gridEl(g);
+      const els = [];
+      for (let i=0;i<cells;i++){
+        const b = mk('button','cell sock'); b.type='button';
+        b.setAttribute('aria-label','Empty slot');
+        els.push(b); grid.appendChild(b);
+      }
+      ctx.surface.appendChild(grid);
+
+      const free = () => slots.map((v,i) => v === null ? i : -1).filter(i => i >= 0);
+      const paint = i => {
+        const v = slots[i], e = els[i];
+        e.classList.toggle('full', !!v);
+        e.classList.remove('sel','tangled');
+        if (v){
+          e.style.background = v.ink.hex;
+          e.innerHTML = assistOn() ? shapeSvg(v.ink.shape, 'var(--ink)') : '';
+          e.setAttribute('aria-label', inkName(v.ink));
+        } else {
+          e.style.background = '';
+          e.innerHTML = '';
+          e.setAttribute('aria-label','Empty slot');
+        }
+      };
+      /* Always a PAIR, never a single. An odd item left on the board would make
+         the round unwinnable through no fault of the player. */
+      const addPair = () => {
+        const open = free();
+        if (open.length < 2) return false;
+        const ink = pal[Math.floor(ctx.rnd()*pal.length)];
+        shuffle(open, ctx.rnd).slice(0,2).forEach(i => { slots[i] = { ink }; paint(i); });
+        return true;
+      };
+      for (let i=0;i<startPairs;i++) addPair();
+
+      let sel = -1, done = false, tangles = 0;
+      const left = () => slots.filter(Boolean).length;
+      const say = () => ctx.prompt(t('p.tumble', { n: left() }));
+
+      const fill = () => {
+        if (done) return;
+        if (free().length < 2){
+          done = true;
+          return ctx.miss(els[0]);          /* the drum won */
+        }
+        addPair();
+        say();
+        ctx.after(fillEvery, fill);
+      };
+      ctx.after(fillEvery, fill);
+
+      els.forEach((e,i) => onTap(e, () => {
+        if (done || !slots[i] || e.classList.contains('tangled')) return;
+        if (sel === i){ sel = -1; e.classList.remove('sel'); return; }
+        if (sel < 0){ sel = i; e.classList.add('sel'); sfx.tap(); return; }
+        const a = slots[sel], bItem = slots[i];
+        if (a.ink === bItem.ink){
+          const was = sel;
+          slots[was] = null; slots[i] = null;
+          paint(was); paint(i);
+          sel = -1;
+          sfx.good(1); buzz(10);
+          if (left() === 0){ done = true; return ctx.win(e); }
+          say();
+        } else {
+          /* Tangled: both are unusable briefly. The cost is tempo against the
+             fill, not a life — a growing board punishes a stall on its own. */
+          const was = sel; sel = -1;
+          els[was].classList.remove('sel');
+          [was, i].forEach(k => {
+            els[k].classList.add('tangled');
+            ctx.after(760, () => els[k].classList.remove('tangled'));
+          });
+          tangles++;
+          sfx.bad(); buzz([16,24]);
+        }
+      }));
+      say();
     }
   },
 };
