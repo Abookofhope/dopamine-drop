@@ -451,13 +451,19 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .wlives{display:flex;gap:5px}
 .wlife{width:16px;height:4px;border-radius:99px;background:var(--flare)}
 .wlife.gone{background:var(--ink-3)}
-.keys{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:340px}
+.keys{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;max-width:358px}
+/* 28x32 was the single worst target in the game: well under the 44px a thumb
+   actually needs, in the mode where one wrong letter costs a life. Bigger, and
+   ::after quietly extends the hit box past the visible key by less than the
+   gap, so nothing steals its neighbour's tap. */
 .key{
-  width:28px;height:32px;border-radius:7px;background:var(--ink-3);
+  position:relative;
+  width:38px;height:42px;border-radius:9px;background:var(--ink-3);
   border:1px solid var(--edge);color:var(--cream);
-  font-family:var(--f-data);font-size:12px;font-weight:700;
+  font-family:var(--f-data);font-size:14px;font-weight:700;
   transition:transform var(--t-fast),opacity var(--t-fast),background var(--t-fast);
 }
+.key::after{content:'';position:absolute;inset:-2px}
 .key:active{transform:scale(.9)}
 .key.used{opacity:.22;pointer-events:none}
 .key.miss{background:#ff3d6e33;border-color:var(--bad)}
@@ -782,7 +788,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.5.1</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.6.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -926,7 +932,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.5.1 (9)';
+const VERSION = 'v0.6.0 (10)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1547,6 +1553,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.6.0', date:'2026-09-11', items:[
+    'Taps now register the instant your finger lands instead of when you lift it. Every answer in every mode is roughly a tenth of a second faster.',
+    'The letter keys in Phrase Wheel and Letter Gap were far too small for a thumb. They are bigger now, with a forgiving edge around each one.'
+  ]},
   { v:'0.5.1', date:'2026-09-11', items:[
     'The confirmation prompts for backup, restore and reset now speak your language too — they were the last English left.',
     'Fixed the Export button doing nothing when the game is opened from a shared link rather than installed.',
@@ -1672,11 +1682,33 @@ function shapeSvg(shape, stroke){
 }
 const assistOn = () => save.colorAssist;
 
-function gridEl(n){
-  const g = mk('div','grid');
-  g.style.gridTemplateColumns = 'repeat('+n+',1fr)';
-  return g;
+/* Answers fire on the finger LANDING, not on it leaving. `click` on touch
+   waits for pointerup and then for the browser to rule out a scroll and a
+   double-tap: 100-300ms added to every answer, in a game whose entire score
+   is reaction time. pointerdown removes all of it and makes the board feel
+   like a button rather than a web page.
+
+   click stays bound because a keyboard never sends a pointer event, and the
+   timestamp latch drops the synthetic click that follows a real tap — a
+   permanent latch would break the modes you tap the same element twice in
+   (Rewire rotates a pipe on every tap). preventDefault also stops the tap
+   turning into a page drag when someone is hammering the board. */
+function onTap(node, fn){
+  let fired = 0;
+  const hit = ev => {
+    if (ev.type === 'pointerdown'){
+      if (ev.button) return;
+      ev.preventDefault();
+      fired = ev.timeStamp || performance.now();
+    } else if (fired && ((ev.timeStamp || performance.now()) - fired) < 700){
+      return;
+    }
+    fn(ev);
+  };
+  node.addEventListener('pointerdown', hit);
+  node.addEventListener('click', hit);
 }
+
 /* ═══ Mode engine ═════════════════════════════════════════════════════════
    Every puzzle implements the same contract:
      build(ctx) → renders into ctx.surface, then calls ctx.win() or ctx.miss()
@@ -1712,7 +1744,7 @@ const MODES = {
         b.style.background = 'hsl(' + (i===odd ? (hue+delta)%360 : hue)
           + ' 68% ' + (i===odd ? 58+light : 58) + '%)';
         b.setAttribute('aria-label','Tile '+(i+1));
-        b.addEventListener('click', () => i===odd ? ctx.win(b) : ctx.miss(b));
+        onTap(b, () => i===odd ? ctx.win(b) : ctx.miss(b));
         g.appendChild(b);
       }
       ctx.surface.appendChild(g);
@@ -1755,7 +1787,7 @@ const MODES = {
         b.style.transform = 'translate(-50%,-50%)';
         b.style.fontSize = 'clamp(13px,' + (r*0.42) + 'vw,26px)';
         b.setAttribute('aria-label','Number '+num);
-        b.addEventListener('click', () => {
+        onTap(b, () => {
           if (num !== next) return ctx.miss(b);
           b.classList.add('done');
           b.style.transform = 'translate(-50%,-50%) scale(.82)';
@@ -1801,7 +1833,7 @@ const MODES = {
         b.style.background = c.hex;
         if (assistOn()) b.innerHTML = shapeSvg(c.shape, 'var(--ink)');
         b.setAttribute('aria-label', inkName(c));
-        b.addEventListener('click', () => c === ink ? ctx.win(b) : ctx.miss(b));
+        onTap(b, () => c === ink ? ctx.win(b) : ctx.miss(b));
         row.appendChild(b);
       });
       wrap.appendChild(row);
@@ -1829,7 +1861,7 @@ const MODES = {
         const b = mk('button','cell pad');
         b.type = 'button'; b.disabled = true;
         b.setAttribute('aria-label','Pad '+(i+1));
-        b.addEventListener('click', () => hit(i, b));
+        onTap(b, () => hit(i, b));
         pads.push(b); g.appendChild(b);
       }
       ctx.surface.appendChild(g);
@@ -1950,7 +1982,7 @@ const MODES = {
         b.innerHTML = '<svg viewBox="0 0 100 100" aria-hidden="true"><path class="wire" d="'+segs.join(' ')+'"/>'+cap+'</svg>';
         const svg = b.querySelector('svg');
         svg.style.transform = 'rotate(' + (c.turn*90) + 'deg)';
-        b.addEventListener('click', () => {
+        onTap(b, () => {
           c.turn++;
           svg.style.transform = 'rotate(' + (c.turn*90) + 'deg)';
           sfx.tap(); buzz(6);
@@ -2005,7 +2037,7 @@ const MODES = {
         const btn = mk('button','cell num');
         btn.type = 'button'; btn.textContent = String(v);
         btn.setAttribute('aria-label', String(v));
-        btn.addEventListener('click', () => {
+        onTap(btn, () => {
           if (pick === btn){ pick = null; btn.classList.remove('sel'); sfx.tap(); return; }
           if (!pick){ pick = btn; btn.classList.add('sel'); sfx.tap(); buzz(8); return; }
           const total = Number(pick.textContent) + v;
@@ -2064,7 +2096,7 @@ const MODES = {
       const row = mk('div','answers');
       shuffle(Array.from(near), ctx.rnd).forEach(v => {
         const b = mk('button','abtn'); b.type='button'; b.textContent = String(v);
-        b.addEventListener('click', () => v === answer ? ctx.win(b) : ctx.miss(b));
+        onTap(b, () => v === answer ? ctx.win(b) : ctx.miss(b));
         row.appendChild(b);
       });
 
@@ -2103,7 +2135,7 @@ const MODES = {
         }
         const b = mk('button','cell mcell'); b.type='button';
         b.setAttribute('aria-label','Column ' + (x+1) + ', row ' + (y+1));
-        b.addEventListener('click', () => {
+        onTap(b, () => {
           if (placed.has(idx)){ placed.delete(idx); b.classList.remove('on'); }
           else { placed.add(idx); b.classList.add('on'); }
           sfx.tap(); buzz(6);
@@ -2146,7 +2178,7 @@ const MODES = {
         e.style.left = x+'%'; e.style.top = y+'%';
         e.style.width = (2*R)+'%'; e.style.height = (2*R)+'%';
         const target = { x, y, el:e, born: performance.now() };
-        e.addEventListener('click', () => {
+        onTap(e, () => {
           if (done) return;
           const i = live.indexOf(target); if (i < 0) return;
           live.splice(i,1); e.remove(); caught++;
@@ -2195,7 +2227,7 @@ const MODES = {
         const b = mk('button','cell pad'); b.type='button'; b.disabled = true;
         b.setAttribute('aria-label','Cell ' + (i+1));
         if (pattern.has(i)) b.classList.add('lit');
-        b.addEventListener('click', () => {
+        onTap(b, () => {
           if (showing || found.has(i)) return;
           if (!pattern.has(i)) return ctx.miss(b);
           found.add(i); b.classList.add('ok'); sfx.tap(); buzz(8);
@@ -2247,7 +2279,7 @@ const MODES = {
             const b = mk('button','cell bar' + (blocked ? ' stuck' : '')); b.type='button';
             b.setAttribute('aria-label','Bar in column ' + (x+1) + ', tap to slide ' + (d<0?'up':'down'));
             b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="' + (d<0 ? 'M7 14l5-5 5 5' : 'M7 10l5 5 5-5') + '"/></svg>';
-            b.addEventListener('click', () => {
+            onTap(b, () => {
               if (solved || !canMove(bar,d)) return;
               bar.top += d; sfx.tap(); buzz(6);
               if (!bars.some(o => covers(o,carRow))){ solved = true; render(); return ctx.win(b); }
@@ -2295,7 +2327,7 @@ const MODES = {
       tiles.forEach((ch, i) => {
         const b = mk('button','ltile'); b.type='button'; b.textContent = ch;
         b.setAttribute('aria-label', ch);
-        b.addEventListener('click', () => {
+        onTap(b, () => {
           if (b.classList.contains('used')) return;
           if (ch !== w[at]) return ctx.miss(b);
           b.classList.add('used');
@@ -2365,7 +2397,7 @@ const MODES = {
         const b = mk('button','key'); b.type='button'; b.textContent = ch;
         b.setAttribute('aria-label','Guess ' + ch);
         if (found.has(ch)) b.classList.add('used');
-        b.addEventListener('click', () => {
+        onTap(b, () => {
           if (b.classList.contains('used')) return;
           b.classList.add('used');
           if (letters.has(ch)){
@@ -2420,7 +2452,7 @@ const MODES = {
       shuffle(Array.from(pool), ctx.rnd).forEach(ch => {
         const b = mk('button','ltile'); b.type='button'; b.textContent = ch;
         b.setAttribute('aria-label', ch);
-        b.addEventListener('click', () => {
+        onTap(b, () => {
           if (b.classList.contains('used')) return;
           if (ch !== answer[at]) return ctx.miss(b);
           b.classList.add('used');
@@ -2455,7 +2487,7 @@ const MODES = {
         const b = mk('button','beatdot'); b.type='button';
         b.setAttribute('aria-label','Dot ' + (i+1));
         b.style.animationDuration = (i===odd ? period + offset : period) + 'ms';
-        b.addEventListener('click', () => i===odd ? ctx.win(b) : ctx.miss(b));
+        onTap(b, () => i===odd ? ctx.win(b) : ctx.miss(b));
         row.appendChild(b);
       }
       ctx.surface.appendChild(row);
@@ -2515,8 +2547,8 @@ const MODES = {
         ctx.prompt(t('p.sort', { a: done, b: rounds }));
         next();
       }
-      left.addEventListener('click', () => answer(false));
-      right.addEventListener('click', () => answer(true));
+      onTap(left, () => answer(false));
+      onTap(right, () => answer(true));
 
       next();
       ctx.surface.appendChild(wrap);
