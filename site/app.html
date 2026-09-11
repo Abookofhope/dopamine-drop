@@ -195,6 +195,65 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Arc / Slack: a square board with absolutely placed nodes ─────────── */
+.arcbox{position:relative;width:100%;aspect-ratio:1;touch-action:none}
+.arcwire,.slackwire{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.arcwire line{stroke:var(--warm);stroke-width:1.5;stroke-linecap:round;filter:drop-shadow(0 0 3px var(--warm))}
+.slackwire line{stroke:#9c90c4aa;stroke-width:1.4;stroke-linecap:round;transition:stroke var(--t-med)}
+.slackwire.clean line{stroke:var(--cool)}
+.arcreach{position:absolute;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;
+  border:1px dashed #ffc53d55;background:#ffc53d0d;transition:width var(--t-med),height var(--t-med),left var(--t-med),top var(--t-med)}
+.arcdot{position:absolute;width:13%;height:13%;transform:translate(-50%,-50%);border-radius:50%;
+  background:var(--ink-3);border:2px solid var(--edge);transition:transform var(--t-fast),background var(--t-fast),border-color var(--t-fast)}
+.arcdot.near{border-color:var(--warm)}
+.arcdot.lit{background:var(--warm);border-color:var(--warm);box-shadow:0 0 12px #ffc53d88}
+.arcdot:active{transform:translate(-50%,-50%) scale(.88)}
+.slacknode{position:absolute;width:12%;height:12%;transform:translate(-50%,-50%);border-radius:50%;
+  background:var(--cool);border:2px solid var(--ink);cursor:grab;transition:transform var(--t-fast)}
+.slacknode.held{transform:translate(-50%,-50%) scale(1.25)}
+
+/* ── Umbra: a shape, then its near-misses ─────────────────────────────── */
+.umbrawrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;width:100%;height:100%}
+.umbrashow{width:52%;aspect-ratio:1;transition:opacity var(--t-med),transform var(--t-med)}
+.umbrashow.gone{opacity:0;transform:scale(.88)}
+.umbrashow svg,.ushape svg{width:100%;height:100%;display:block}
+.umbrashow path,.ushape path{fill:var(--haze)}
+.umbrapick{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;width:100%}
+.ushape{width:27%;aspect-ratio:1;border-radius:var(--r-md);background:var(--ink-2);
+  border:1px solid var(--edge);padding:8px;transition:transform var(--t-fast),border-color var(--t-fast)}
+.ushape:active{transform:scale(.93)}
+.ushape path{fill:var(--cream)}
+
+/* ── Single Stroke ────────────────────────────────────────────────────── */
+.cell.node{background:var(--ink-3);border:1px solid var(--edge);border-radius:50%;
+  transition:background var(--t-fast),transform var(--t-fast)}
+.cell.node.on{background:#33e6c855;border-color:var(--cool)}
+.cell.node.head{background:var(--cool);box-shadow:0 0 14px #33e6c877}
+
+/* ── Tide Breath ──────────────────────────────────────────────────────── */
+.tidebox{position:relative;width:100%;aspect-ratio:1;display:grid;place-items:center;touch-action:none;
+  border-radius:50%;transition:background var(--t-med)}
+.tidebox.ok{background:#7be38a14}
+.tideband{position:absolute;border-radius:50%;border:2px dashed #7be38a66;pointer-events:none}
+.tidebub{position:absolute;border-radius:50%;background:#7be38a33;border:2px solid #7be38a;pointer-events:none;
+  transition:background var(--t-fast)}
+.tidebox.ok .tidebub{background:#7be38a66}
+.tidehint{position:relative;font-family:var(--f-data);font-size:22px;color:var(--haze);pointer-events:none}
+
+/* ── Drop Odds ────────────────────────────────────────────────────────── */
+.plinkbox{position:relative;width:100%;aspect-ratio:1;touch-action:none}
+.plinklane{position:absolute;left:0;right:0;top:0;height:16%;border-radius:var(--r-sm);
+  background:#ffffff08;border:1px dashed var(--edge)}
+.peg{position:absolute;width:7%;height:7%;transform:translate(-50%,-50%);border-radius:50%;
+  background:var(--ink-3);border:1px solid var(--edge);transition:opacity var(--t-fast),transform var(--t-fast)}
+.peg.pulled{opacity:.15;transform:translate(-50%,-50%) scale(.6);pointer-events:none}
+.bins2{position:absolute;left:6%;right:6%;bottom:2%;height:14%;display:flex;gap:3px}
+.bin2{flex:1;border-radius:var(--r-sm) var(--r-sm) 6px 6px;background:var(--ink-3);border:1px solid var(--edge)}
+.bin2.goal{background:#33e6c833;border-color:var(--cool)}
+.bin2.hit{background:var(--flare)}
+.plinkball{position:absolute;width:8%;height:8%;transform:translate(-50%,-50%);border-radius:50%;
+  background:var(--flare);box-shadow:0 0 10px #ff5b3988;pointer-events:none}
+
 /* Family filter: a single scrolling row, because a wrapped block of chips
    pushes the modes themselves off the screen on a phone. */
 .catstrip{
@@ -871,7 +930,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.10.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1020,7 +1079,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.10.0 (21)';
+const VERSION = 'v0.11.0 (22)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1298,7 +1357,8 @@ const STRINGS = {
     'p.sum':'Tap two that add to {n}', 'p.count':'How many {x}?',
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
-    'p.tooSlow':'Too slow', 'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 'p.word':'Spell the {n}-letter word',
+    'p.tooSlow':'Too slow',
+    'p.arc':'{n} left to reach', 'p.umbraLook':'Remember this shape', 'p.umbraPick':'Which one was it?', 'p.stroke':'{n} nodes to go', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Arc|Chain every node before the charge dies',  'm.umbra':'Umbra|Remember the shape, pick it from its near-misses',  'm.stroke':'Single Stroke|One line through every node, no lifting',  'm.slack':'Slack|Drag the nodes until no rope crosses',  'm.tide':'Tide Breath|Hold to swell, release to ebb — stay in the band',  'm.plink':'Drop Odds|Pull one peg, then drop into the lit bin',  'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 'p.word':'Spell the {n}-letter word',
     'p.wheel':'Guess the phrase', 'p.gap1':'Fill the gap', 'p.gap2':'Fill both gaps, left to right',
     'p.beat':'Tap the dot that is out of time', 'p.sort':'Sorted {a} of {b}',
     'p.target':'Target',
@@ -1383,7 +1443,8 @@ const STRINGS = {
     'p.sum':'Touchez deux nombres faisant {n}', 'p.count':'Combien de {x} ?',
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
-    'p.tooSlow':'Trop lent', 'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 'p.word':'Écrivez le mot de {n} lettres',
+    'p.tooSlow':'Trop lent',
+    'p.arc':'{n} à relier', 'p.umbraLook':'Retenez cette forme', 'p.umbraPick':'Laquelle était-ce ?', 'p.stroke':'{n} nœuds restants', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Arc|Reliez tous les nœuds avant la panne',  'm.umbra':'Umbra|Retenez la forme, puis reconnaissez-la',  'm.stroke':'Trait Unique|Une seule ligne par tous les nœuds',  'm.slack':'Démêlage|Déplacez les nœuds jusqu’à zéro croisement',  'm.tide':'Souffle|Tenez pour gonfler, relâchez pour dégonfler',  'm.plink':'Chute|Retirez un clou, puis visez le bac éclairé',  'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 'p.word':'Écrivez le mot de {n} lettres',
     'p.wheel':'Devinez la phrase', 'p.gap1':'Complétez le trou', 'p.gap2':'Complétez les deux trous, de gauche à droite',
     'p.beat':'Touchez le point à contretemps', 'p.sort':'{a} sur {b} triés',
     'p.target':'Cible',
@@ -1468,7 +1529,8 @@ const STRINGS = {
     'p.sum':'Toca dos que sumen {n}', 'p.count':'¿Cuántos {x}?',
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
-    'p.tooSlow':'Demasiado lento', 'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 'p.word':'Escribe la palabra de {n} letras',
+    'p.tooSlow':'Demasiado lento',
+    'p.arc':'Faltan {n}', 'p.umbraLook':'Recuerda esta forma', 'p.umbraPick':'¿Cuál era?', 'p.stroke':'Faltan {n} nodos', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Arco|Conecta todos los nodos antes de quedarte sin carga',  'm.umbra':'Umbra|Recuerda la forma y reconócela',  'm.stroke':'Trazo Único|Una línea por todos los nodos, sin levantar',  'm.slack':'Desenredo|Mueve los nodos hasta que nada se cruce',  'm.tide':'Respiro|Mantén para crecer, suelta para menguar',  'm.plink':'Caída|Quita un clavo y lanza a la casilla encendida',  'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 'p.word':'Escribe la palabra de {n} letras',
     'p.wheel':'Adivina la frase', 'p.gap1':'Completa el hueco', 'p.gap2':'Completa los dos huecos, de izquierda a derecha',
     'p.beat':'Toca el punto fuera de ritmo', 'p.sort':'{a} de {b} clasificados',
     'p.target':'Objetivo',
@@ -1553,7 +1615,8 @@ const STRINGS = {
     'p.sum':'Tippe zwei, die {n} ergeben', 'p.count':'Wie viele {x}?',
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
-    'p.tooSlow':'Zu langsam', 'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 'p.word':'Schreibe das Wort mit {n} Buchstaben',
+    'p.tooSlow':'Zu langsam',
+    'p.arc':'Noch {n}', 'p.umbraLook':'Merke dir diese Form', 'p.umbraPick':'Welche war es?', 'p.stroke':'Noch {n} Knoten', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Bogen|Verbinde alle Knoten, bevor der Strom ausgeht',  'm.umbra':'Umbra|Merke dir die Form und erkenne sie wieder',  'm.stroke':'Ein Strich|Eine Linie durch alle Knoten, ohne abzusetzen',  'm.slack':'Entwirren|Zieh die Knoten, bis nichts mehr kreuzt',  'm.tide':'Atemzug|Halten zum Wachsen, loslassen zum Schrumpfen',  'm.plink':'Fallen|Zieh einen Stift, dann ziel auf das helle Fach',  'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 'p.word':'Schreibe das Wort mit {n} Buchstaben',
     'p.wheel':'Errate den Satz', 'p.gap1':'Fülle die Lücke', 'p.gap2':'Fülle beide Lücken, von links nach rechts',
     'p.beat':'Tippe den Punkt aus dem Takt', 'p.sort':'{a} von {b} sortiert',
     'p.target':'Ziel',
@@ -1665,6 +1728,15 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.11.0', date:'2026-09-11', items:[
+    'Six new modes, and two new families to put them in.',
+    'Arc — chain every node before the charge runs down. The reach shrinks with every jump, so the order you take them in is the whole puzzle.',
+    'Umbra — remember a shape, then pick it out from near-misses of itself.',
+    'Single Stroke — one unbroken line through every node. Step back to undo.',
+    'Slack — drag the tangle flat. It counts the crossings left as you go.',
+    'Tide Breath — hold to swell, release to ebb, and stay inside a band that drifts. The only mode where being fast is the mistake.',
+    'Drop Odds — pull one peg out of the board, then aim your drop. You cannot control the bounce, only load it.'
+  ]},
   { v:'0.10.0', date:'2026-09-11', items:[
     'The modes screen is organised into families now — Focus, Reflex, Memory, Logic, Numbers, Words, Rhythm — each with its own colour, so you can find the kind of thing you feel like instead of scanning a wall.',
     'Tap a family along the top to see only those.',
@@ -1970,6 +2042,40 @@ function moveBudget(ctx, minimum){
       if (left <= 0){ dead = true; ctx.miss(at); }
     }
   };
+}
+
+/* Dragging. No mode needed it until now, and a dozen of the ones coming do —
+   tracing, untangling, aiming, pouring. Pointer capture means a drag that
+   leaves the element still reports, which is the whole difficulty of doing this
+   by hand, and it cancels cleanly if the round ends mid-gesture. */
+function onDrag(node, handlers){
+  let id = null;
+  const pt = ev => {
+    const r = node.getBoundingClientRect();
+    return { x: (ev.clientX - r.left) / r.width * 100,
+             y: (ev.clientY - r.top) / r.height * 100, ev };
+  };
+  node.addEventListener('pointerdown', ev => {
+    if (ev.button) return;
+    ev.preventDefault();
+    id = ev.pointerId;
+    try { node.setPointerCapture(id); } catch(e){}
+    handlers.start && handlers.start(pt(ev));
+  });
+  node.addEventListener('pointermove', ev => {
+    if (id === null || ev.pointerId !== id) return;
+    ev.preventDefault();
+    handlers.move && handlers.move(pt(ev));
+  });
+  const stop = ev => {
+    if (id === null || (ev && ev.pointerId !== id)) return;
+    try { node.releasePointerCapture(id); } catch(e){}
+    id = null;
+    handlers.end && handlers.end(ev ? pt(ev) : null);
+  };
+  node.addEventListener('pointerup', stop);
+  node.addEventListener('pointercancel', stop);
+  return { cancel: () => { id = null; } };
 }
 
 /* ═══ Mode engine ═════════════════════════════════════════════════════════
@@ -3043,7 +3149,449 @@ const MODES = {
       ctx.surface.appendChild(wrap);
       ctx.prompt(t('p.sort', { a: 0, b: rounds }));
     }
-  }
+  },
+
+  /* ── Arc — chain reaction under a draining charge ────────────────────────
+     From "connect dots with electricity". The advance is that range shrinks
+     with every jump, so the order you take the dots in is the whole puzzle:
+     a greedy nearest-first run strands the far ones. */
+  arc: {
+    name:'Arc', blurb:'Chain every node before the charge dies', cat:'reflex', par:6000, bonus:2000,
+    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#FFC53D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+    build(ctx){
+      const n = clamp(4 + Math.floor(ctx.level/3), 4, 11);
+      const pts = [];
+      for (let i=0;i<n;i++){
+        for (let a=0;a<200;a++){
+          const x = 12 + ctx.rnd()*76, y = 12 + ctx.rnd()*76;
+          if (pts.every(q => Math.hypot(q.x-x, q.y-y) > 15)) { pts.push({x,y}); break; }
+        }
+      }
+      /* "Wide enough to probably work" is what Slide Path used to assume, and it
+         was wrong there too. Prove it: depth-first over orderings with the same
+         shrinking reach the player will face, and regenerate the board until one
+         completes. The budget keeps the search honest on the worst layouts. */
+      const START = 52;
+      const decay = 0.94 - Math.min(0.06, ctx.level*0.0025);
+      function completable(list){
+        const seen = new Array(list.length).fill(false);
+        let budget = 40000;
+        const go = (at, depth, reach) => {
+          if (depth === list.length) return true;
+          if (budget-- <= 0) return false;
+          for (let i=0;i<list.length;i++){
+            if (seen[i]) continue;
+            if (Math.hypot(list[i].x-list[at].x, list[i].y-list[at].y) > reach) continue;
+            seen[i] = true;
+            if (go(i, depth+1, reach*decay)) return true;
+            seen[i] = false;
+          }
+          return false;
+        };
+        seen[0] = true;
+        return go(0, 1, START);
+      }
+      const spread = () => {
+        const out = [];
+        for (let i=0;i<n;i++){
+          for (let a=0;a<200;a++){
+            const x = 12 + ctx.rnd()*76, y = 12 + ctx.rnd()*76;
+            if (out.every(q => Math.hypot(q.x-x, q.y-y) > 15)) { out.push({x,y}); break; }
+          }
+        }
+        return out;
+      };
+      for (let tries=0; tries<60 && !completable(pts); tries++){
+        pts.length = 0;
+        spread().forEach(q => pts.push(q));
+      }
+      let reach = START, live = 0;
+      const box = mk('div','arcbox');
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('viewBox','0 0 100 100');
+      svg.setAttribute('class','arcwire');
+      box.appendChild(svg);
+      const halo = mk('div','arcreach'); box.appendChild(halo);
+      const dots = pts.map((p,i) => {
+        const b = mk('button','arcdot'); b.type='button';
+        b.style.left = p.x+'%'; b.style.top = p.y+'%';
+        b.setAttribute('aria-label','Node '+(i+1));
+        box.appendChild(b); return b;
+      });
+      const paintReach = () => {
+        const p = pts[live];
+        halo.style.left = p.x+'%'; halo.style.top = p.y+'%';
+        halo.style.width = halo.style.height = (reach*2)+'%';
+        dots.forEach((d,i) => {
+          if (i <= live) return;
+          d.classList.toggle('near', Math.hypot(pts[i].x-p.x, pts[i].y-p.y) <= reach);
+        });
+      };
+      dots[0].classList.add('lit');
+      const order = [0];
+      paintReach();
+      dots.forEach((d,i) => onTap(d, () => {
+        if (i === live || order.includes(i)) return;
+        const from = pts[live], to = pts[i];
+        if (Math.hypot(to.x-from.x, to.y-from.y) > reach) return ctx.miss(d);
+        const ln = document.createElementNS('http://www.w3.org/2000/svg','line');
+        ln.setAttribute('x1',from.x); ln.setAttribute('y1',from.y);
+        ln.setAttribute('x2',to.x);   ln.setAttribute('y2',to.y);
+        svg.appendChild(ln);
+        d.classList.add('lit'); order.push(i); live = i;
+        reach *= decay;
+        sfx.tap(); buzz(8);
+        if (order.length >= n) return ctx.win(d);
+        paintReach();
+        ctx.prompt(t('p.arc', { n: n - order.length }));
+      }));
+      ctx.surface.appendChild(box);
+      ctx.prompt(t('p.arc', { n: n - 1 }));
+    }
+  },
+
+  /* ── Umbra — a shape you saw, among shapes you nearly saw ────────────────
+     From "match silhouettes before they fade". The advance is that the decoys
+     are generated by perturbing the answer rather than picked at random, so
+     they are always near-misses and the mode is recognition, not elimination. */
+  umbra: {
+    name:'Umbra', blurb:'Remember the shape, pick it from its near-misses', cat:'memory', par:5200, bonus:2000,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 5-2.5 8h-9L5 8z" fill="#9C7BFF"/></svg>',
+    build(ctx){
+      const spikes = clamp(5 + Math.floor(ctx.level/4), 5, 9);
+      const jitter = Math.max(0.06, 0.30 - ctx.level*0.013);
+      const blob = (seed) => {
+        const r = [];
+        for (let i=0;i<spikes;i++) r.push(0.62 + seed(i)*0.34);
+        const pts = r.map((rad,i) => {
+          const a = (i/spikes)*Math.PI*2 - Math.PI/2;
+          return [50 + Math.cos(a)*rad*44, 50 + Math.sin(a)*rad*44];
+        });
+        return 'M' + pts.map(p => p[0].toFixed(1)+','+p[1].toFixed(1)).join('L') + 'Z';
+      };
+      const base = []; for (let i=0;i<spikes;i++) base.push(ctx.rnd());
+      const answer = blob(i => base[i]);
+      const shapeSvgOf = d => '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="'+d+'"/></svg>';
+
+      const wrap = mk('div','umbrawrap');
+      const show = mk('div','umbrashow');
+      show.innerHTML = shapeSvgOf(answer);
+      wrap.appendChild(show);
+      ctx.surface.appendChild(wrap);
+      ctx.prompt(t('p.umbraLook'));
+
+      const hold = clamp(1500 - ctx.level*45, 620, 1500);
+      ctx.after(hold, () => {
+        show.classList.add('gone');
+        ctx.after(320, () => {
+          wrap.innerHTML = '';
+          const count = clamp(3 + Math.floor(ctx.level/5), 3, 6);
+          const cands = [answer];
+          while (cands.length < count){
+            const tweak = base.map(v => clamp(v + (ctx.rnd()-0.5)*2*jitter, 0, 1));
+            cands.push(blob(i => tweak[i]));
+          }
+          const row = mk('div','umbrapick');
+          shuffle(cands, ctx.rnd).forEach(d => {
+            const b = mk('button','ushape'); b.type='button';
+            b.innerHTML = shapeSvgOf(d);
+            b.setAttribute('aria-label','Shape');
+            onTap(b, () => d === answer ? ctx.win(b) : ctx.miss(b));
+            row.appendChild(b);
+          });
+          wrap.appendChild(row);
+          ctx.prompt(t('p.umbraPick'));
+        });
+      });
+    }
+  },
+
+  /* ── Single Stroke — one unbroken line through every node ────────────────
+     From "draw one continuous line to close shapes". The advance is that the
+     graph is generated from a real Hamiltonian path, so a solution always
+     exists and the difficulty is finding it, never discovering there was none. */
+  stroke: {
+    name:'Single Stroke', blurb:'One line through every node, no lifting', cat:'logic', par:9000, bonus:2600,
+    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18c4-10 12-10 16 0"/><circle cx="4" cy="18" r="2" fill="#33E6C8"/><circle cx="20" cy="18" r="2" fill="#33E6C8"/></svg>',
+    build(ctx){
+      const g = ctx.level < 6 ? 3 : ctx.level < 16 ? 4 : 5;
+      const cells = g*g;
+      /* A random walk that visits every cell IS the answer, so the puzzle is
+         built backwards from a guaranteed solution. */
+      let path = null;
+      for (let attempt=0; attempt<300 && !path; attempt++){
+        const seen = new Set(), walk = [];
+        let cur = Math.floor(ctx.rnd()*cells);
+        seen.add(cur); walk.push(cur);
+        for (let step=0; step<cells*8 && walk.length<cells; step++){
+          const x = cur%g, y = Math.floor(cur/g);
+          const opts = [[1,0],[-1,0],[0,1],[0,-1]]
+            .map(([dx,dy]) => [x+dx, y+dy])
+            .filter(([nx,ny]) => nx>=0 && ny>=0 && nx<g && ny<g && !seen.has(ny*g+nx))
+            .map(([nx,ny]) => ny*g+nx);
+          if (!opts.length) break;
+          cur = opts[Math.floor(ctx.rnd()*opts.length)];
+          seen.add(cur); walk.push(cur);
+        }
+        if (walk.length === cells) path = walk;
+      }
+      if (!path) path = Array.from({length:cells},(_,i)=>i);
+
+      const start = path[0];
+      const trail = [start];
+      const grid = gridEl(g);
+      const cellEls = [];
+      for (let i=0;i<cells;i++){
+        const b = mk('button','cell node'); b.type='button';
+        b.setAttribute('aria-label','Node '+(i+1));
+        cellEls.push(b); grid.appendChild(b);
+      }
+      cellEls[start].classList.add('on','head');
+      const adj = (a,b2) => {
+        const ax=a%g, ay=Math.floor(a/g), bx=b2%g, by=Math.floor(b2/g);
+        return Math.abs(ax-bx) + Math.abs(ay-by) === 1;
+      };
+      const repaint = () => {
+        cellEls.forEach((e,i) => {
+          e.classList.toggle('on', trail.includes(i));
+          e.classList.toggle('head', i === trail[trail.length-1]);
+        });
+        ctx.prompt(t('p.stroke', { n: cells - trail.length }));
+      };
+      cellEls.forEach((b,i) => onTap(b, () => {
+        const head = trail[trail.length-1];
+        /* Stepping back onto the previous node undoes — a one-stroke puzzle
+           with no undo is a restart button with extra steps. */
+        if (trail.length > 1 && i === trail[trail.length-2]){ trail.pop(); repaint(); sfx.tap(); return; }
+        if (trail.includes(i) || !adj(head, i)) return ctx.miss(b);
+        trail.push(i); sfx.tap(); buzz(6);
+        if (trail.length === cells) { repaint(); return ctx.win(b); }
+        repaint();
+      }));
+      ctx.surface.appendChild(grid);
+      repaint();
+    }
+  },
+
+  /* ── Slack — pull the tangle flat ────────────────────────────────────────
+     From "drag ropes until they are untangled". Built from a known-planar
+     layout and then scrambled, so it can always be undone; the advance is that
+     the count of remaining crossings is shown live, which turns flailing into
+     a gradient you can actually descend. */
+  slack: {
+    name:'Slack', blurb:'Drag the nodes until no rope crosses', cat:'logic', par:11000, bonus:3000,
+    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 6c6 4 10 8 16 12M20 6C14 10 10 14 4 18"/></svg>',
+    build(ctx){
+      const n = clamp(5 + Math.floor(ctx.level/4), 5, 9);
+      /* Nodes evenly on a circle and edges only between near neighbours is a
+         layout with no crossings by construction. Scrambling the positions
+         keeps the edges, so the solution is always the circle. */
+      const edges = [];
+      for (let i=0;i<n;i++){
+        edges.push([i, (i+1)%n]);
+        if (n > 5 && i % 2 === 0) edges.push([i, (i+2)%n]);
+      }
+      /* Nodes must never sit on top of each other. Two overlapping knobs make a
+         drag ambiguous — the nearest wins, which is deterministic but not
+         something the player can see or predict. */
+      const MINGAP = 17;
+      const scatter = () => {
+        const out = [];
+        for (let i=0;i<n;i++){
+          let best = null, bestD = -1;
+          for (let a=0;a<160;a++){
+            const q = { x: 14 + ctx.rnd()*72, y: 14 + ctx.rnd()*72 };
+            const d = out.length ? Math.min(...out.map(o => Math.hypot(o.x-q.x, o.y-q.y))) : 99;
+            if (d >= MINGAP) { best = q; break; }
+            if (d > bestD) { bestD = d; best = q; }
+          }
+          out.push(best);
+        }
+        return out;
+      };
+      const pos = scatter();
+      const box = mk('div','arcbox');
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('viewBox','0 0 100 100'); svg.setAttribute('class','slackwire');
+      box.appendChild(svg);
+      const lines = edges.map(() => {
+        const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+        svg.appendChild(l); return l;
+      });
+      const cross = (a,b2,c,d) => {
+        const s = (p,q,r) => Math.sign((q.x-p.x)*(r.y-p.y) - (q.y-p.y)*(r.x-p.x));
+        return s(a,b2,c) !== s(a,b2,d) && s(c,d,a) !== s(c,d,b2);
+      };
+      const crossings = () => {
+        let k = 0;
+        for (let i=0;i<edges.length;i++) for (let j=i+1;j<edges.length;j++){
+          const [a,b2] = edges[i], [c,d] = edges[j];
+          if (a===c||a===d||b2===c||b2===d) continue;
+          if (cross(pos[a],pos[b2],pos[c],pos[d])) k++;
+        }
+        return k;
+      };
+      const knobs = pos.map((p,i) => {
+        const e = mk('div','slacknode');
+        e.setAttribute('role','button');
+        e.setAttribute('aria-label','Node '+(i+1));
+        box.appendChild(e); return e;
+      });
+      let done = false;
+      const repaint = () => {
+        edges.forEach(([a,b2],i) => {
+          lines[i].setAttribute('x1',pos[a].x); lines[i].setAttribute('y1',pos[a].y);
+          lines[i].setAttribute('x2',pos[b2].x); lines[i].setAttribute('y2',pos[b2].y);
+        });
+        knobs.forEach((k,i) => { k.style.left = pos[i].x+'%'; k.style.top = pos[i].y+'%'; });
+        const c = crossings();
+        svg.classList.toggle('clean', c === 0);
+        ctx.prompt(t('p.slack', { n: c }));
+        if (c === 0 && !done){ done = true; ctx.win(knobs[0]); }
+      };
+      let held = -1;
+      onDrag(box, {
+        start: q => {
+          held = -1; let best = 9e9;
+          pos.forEach((p,i) => { const d = Math.hypot(p.x-q.x, p.y-q.y); if (d < 11 && d < best){ best = d; held = i; } });
+          if (held >= 0) knobs[held].classList.add('held');
+        },
+        move: q => {
+          if (held < 0 || done) return;
+          const nx = clamp(q.x, 6, 94), ny = clamp(q.y, 6, 94);
+          const clash = pos.some((o,i) => i !== held && Math.hypot(o.x-nx, o.y-ny) < MINGAP*0.7);
+          if (!clash){ pos[held].x = nx; pos[held].y = ny; repaint(); }
+        },
+        end: () => { if (held >= 0) knobs[held].classList.remove('held'); held = -1; }
+      });
+      ctx.surface.appendChild(box);
+      repaint();
+      if (done) return;
+      /* A layout that starts solved is not a puzzle. */
+      let guard = 0;
+      while (crossings() === 0 && guard++ < 40){
+        scatter().forEach((q,i) => { pos[i] = q; });
+      }
+      repaint();
+    }
+  },
+
+  /* ── Tide Breath — the one that asks you to slow down ────────────────────
+     From "breathe with an expanding bubble". The advance is that the band it
+     asks you to sit in drifts, so it is tracking rather than counting — and it
+     is the only mode whose difficulty is being too fast. */
+  tide: {
+    name:'Tide Breath', blurb:'Hold to swell, release to ebb — stay in the band', cat:'calm', par:12000, bonus:3000,
+    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#7BE38A" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9" opacity=".45"/></svg>',
+    build(ctx){
+      const need = clamp(2 + Math.floor(ctx.level/6), 2, 5);
+      const speed = 0.045 + Math.min(0.03, ctx.level*0.0015);
+      let size = 0.35, target = 0.6, phase = ctx.rnd()*Math.PI*2, held = false;
+      let inBand = 0, done = 0, raf2 = 0;
+
+      const box = mk('div','tidebox');
+      const band = mk('div','tideband'); box.appendChild(band);
+      const bub = mk('div','tidebub'); box.appendChild(bub);
+      const hint = mk('div','tidehint'); box.appendChild(hint);
+      ctx.surface.appendChild(box);
+
+      const frame = () => {
+        phase += speed * 0.06;
+        target = 0.52 + Math.sin(phase)*0.26;
+        size = clamp(size + (held ? 0.007 : -0.006), 0.18, 0.95);
+        const tol = 0.085;
+        const ok = Math.abs(size - target) < tol;
+        bub.style.width = bub.style.height = (size*100)+'%';
+        band.style.width = band.style.height = (target*100)+'%';
+        box.classList.toggle('ok', ok);
+        hint.textContent = held ? '↑' : '↓';
+        if (ok){
+          inBand += 16;
+          if (inBand > 1500){ inBand = 0; done++; sfx.good(done); buzz(12);
+            if (done >= need){ cancelAnimationFrame(raf2); return ctx.win(bub); }
+            ctx.prompt(t('p.tide', { n: need - done })); }
+        } else if (inBand > 0) inBand = Math.max(0, inBand - 26);
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
+      ctx.after(600000, () => cancelAnimationFrame(raf2));
+      onDrag(box, { start: () => { held = true; }, end: () => { held = false; } });
+      ctx.prompt(t('p.tide', { n: need }));
+    }
+  },
+
+  /* ── Drop Odds — aim, then let go of it ──────────────────────────────────
+     From plinko. The advance is that you choose the release point AND one peg
+     to remove first, which turns a pure chance toy into a short read of the
+     board — the bounce is still random, but you get to load the dice. */
+  plink: {
+    name:'Drop Odds', blurb:'Pull one peg, then drop into the lit bin', cat:'physics', par:8000, bonus:2400,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2.4" fill="#FF9A3D"/><circle cx="7" cy="11" r="1.6" fill="#6C6191"/><circle cx="17" cy="11" r="1.6" fill="#6C6191"/><circle cx="12" cy="16" r="1.6" fill="#6C6191"/><rect x="3" y="19" width="18" height="3" rx="1.4" fill="#33E6C8"/></svg>',
+    build(ctx){
+      const rows = clamp(3 + Math.floor(ctx.level/5), 3, 6);
+      const bins = rows + 1;
+      const goal = Math.floor(ctx.rnd()*bins);
+      const box = mk('div','plinkbox');
+      const pegs = [];
+      for (let r=0;r<rows;r++){
+        for (let c=0;c<=r;c++){
+          const e = mk('button','peg'); e.type='button';
+          const x = 50 + (c - r/2) * (72/rows);
+          const y = 16 + (r+1) * (58/(rows+1));
+          e.style.left = x+'%'; e.style.top = y+'%';
+          e.setAttribute('aria-label','Peg');
+          pegs.push({ el:e, x, y, gone:false });
+          box.appendChild(e);
+        }
+      }
+      const binRow = mk('div','bins2');
+      const binEls = [];
+      for (let i=0;i<bins;i++){
+        const b = mk('button','bin2' + (i===goal ? ' goal' : '')); b.type='button';
+        b.setAttribute('aria-label', i===goal ? 'Target bin' : 'Bin '+(i+1));
+        binRow.appendChild(b); binEls.push(b);
+      }
+      box.appendChild(binRow);
+      const ball = mk('div','plinkball'); ball.hidden = true; box.appendChild(ball);
+      ctx.surface.appendChild(box);
+
+      let phase = 'peg';
+      pegs.forEach(p => onTap(p.el, () => {
+        if (phase !== 'peg') return;
+        p.gone = true; p.el.classList.add('pulled');
+        phase = 'drop'; sfx.tap(); buzz(8);
+        ctx.prompt(t('p.plinkDrop'));
+      }));
+
+      const drop = (fromX) => {
+        phase = 'falling';
+        let x = fromX, y = 8, vx = 0, r = 0;
+        ball.hidden = false;
+        const step = () => {
+          y += 1.5; vx *= 0.82; x += vx;
+          while (r < rows && y >= 16 + (r+1)*(58/(rows+1))){
+            const row = pegs.filter(p => Math.abs(p.y - (16 + (r+1)*(58/(rows+1)))) < 0.5);
+            const hit = row.find(p => !p.gone && Math.abs(p.x - x) < 36/rows);
+            if (hit) vx += (ctx.rnd() < 0.5 ? -1 : 1) * (34/rows) * 0.55;
+            r++;
+          }
+          x = clamp(x, 6, 94);
+          ball.style.left = x+'%'; ball.style.top = y+'%';
+          if (y >= 80){
+            const landed = clamp(Math.floor((x - 8) / (84/bins)), 0, bins-1);
+            binEls[landed].classList.add('hit');
+            return landed === goal ? ctx.win(binEls[landed]) : ctx.miss(binEls[landed]);
+          }
+          ctx.after(16, step);
+        };
+        step();
+      };
+      const lane = mk('div','plinklane');
+      onDrag(lane, { end: q => { if (phase === 'drop' && q) drop(clamp(q.x, 8, 92)); } });
+      box.appendChild(lane);
+      ctx.prompt(t('p.plinkPeg'));
+    }
+  },
 };
 
 /* ═══ Phrase bank ═════════════════════════════════════════════════════════
