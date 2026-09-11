@@ -195,6 +195,26 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Mint ─────────────────────────────────────────────────────────────── */
+/* The header takes height off the top, so a grid sized from the WIDTH is
+   taller than what is left and the bottom row falls out of the surface. Size it
+   from the remaining height instead and let it stay square. */
+.mintwrap{display:flex;flex-direction:column;gap:12px;width:100%;height:100%;
+  align-items:center;justify-content:center;overflow:hidden}
+.mintwrap .grid{flex:0 1 auto;min-height:0;aspect-ratio:1;height:100%;width:auto;max-width:100%}
+.minthead{flex:none;display:flex;align-items:center;gap:10px;justify-content:center}
+.minthead small{font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--haze)}
+.coin{display:grid;place-items:center;border-radius:50%;font-family:var(--f-data);font-weight:700;color:var(--ink)}
+.coin.next{width:40px;height:40px;font-size:17px}
+.coin.has{background:hsl(calc(46 - var(--cv) * 16) 88% calc(62% - var(--cv) * 2%))}
+.cell.mintcell{background:var(--ink-3);border:1px solid var(--edge);border-radius:var(--r-sm);
+  display:grid;place-items:center;font-family:var(--f-data);font-weight:700;font-size:clamp(15px,5vw,26px);
+  color:var(--ink);transition:background var(--t-fast),transform var(--t-fast)}
+.cell.mintcell:not(.has){color:transparent}
+.cell.mintcell.has{border-color:transparent;box-shadow:inset 0 -3px 0 #00000030}
+.cell.mintcell.pop{animation:facetPop .32s ease}
+.cell.mintcell:active{transform:scale(.94)}
+
 /* ── Pivot ────────────────────────────────────────────────────────────── */
 .cell.facet{background:var(--ink-3);border:1px solid var(--edge);border-radius:var(--r-sm);overflow:hidden;
   transition:transform var(--t-med) cubic-bezier(.3,1.2,.4,1),border-color var(--t-fast)}
@@ -1012,7 +1032,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.6</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.7</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1161,7 +1181,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.11.6 (28)';
+const VERSION = 'v0.11.7 (29)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1440,6 +1460,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.mint':'Build one worth {n}', 'mint.next':'Next', 'm.mint':'Mint|Drop coins, merge matches, reach the big one',
     'p.pivot':'{n} still crooked', 'm.pivot':'Pivot|Each tap turns two — straighten the whole pattern',
     'p.needle':'Find it', 'needle.big':'the LARGE {c}', 'needle.small':'the SMALL {c}', 'needle.lgs':'large', 'needle.sms':'small', 'm.needle':'Needle|Find the one that is both — nothing here stands out',
     'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Bruise|Finish the hurt ones before they slip away',
@@ -1532,6 +1553,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.mint':'Atteignez {n}', 'mint.next':'Suivant', 'm.mint':'Monnaie|Posez, fusionnez, atteignez la grosse pièce',
     'p.pivot':'{n} encore de travers', 'm.pivot':'Pivot|Chaque touche en tourne deux — redressez tout',
     'p.needle':'Trouvez-le', 'needle.big':'le GRAND {c}', 'needle.small':'le PETIT {c}', 'needle.lgs':'grand', 'needle.sms':'petit', 'm.needle':'Aiguille|Trouvez celui qui est les deux à la fois',
     'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Bleu|Achevez les blessés avant qu’ils filent',
@@ -1624,6 +1646,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.mint':'Llega a {n}', 'mint.next':'Siguiente', 'm.mint':'Moneda|Coloca, fusiona y llega a la grande',
     'p.pivot':'{n} aún torcidas', 'm.pivot':'Pivote|Cada toque gira dos — endereza el dibujo',
     'p.needle':'Encuéntralo', 'needle.big':'el {c} GRANDE', 'needle.small':'el {c} PEQUEÑO', 'needle.lgs':'grande', 'needle.sms':'pequeño', 'm.needle':'Aguja|Encuentra el que cumple las dos cosas',
     'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Moratón|Remata a los heridos antes de que huyan',
@@ -1716,6 +1739,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.mint':'Baue eine {n}', 'mint.next':'Nächste', 'm.mint':'Münze|Legen, verschmelzen, die grosse erreichen',
     'p.pivot':'Noch {n} schief', 'm.pivot':'Drehpunkt|Ein Tipp dreht zwei — richte alles aus',
     'p.needle':'Finde ihn', 'needle.big':'der GROSSE {c}', 'needle.small':'der KLEINE {c}', 'needle.lgs':'gross', 'needle.sms':'klein', 'm.needle':'Nadel|Finde den, auf den beides zutrifft',
     'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Blauer Fleck|Erledige die Angeschlagenen, bevor sie weg sind',
@@ -1834,6 +1858,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.11.7', date:'2026-09-11', items:[
+    'New mode — Mint. Drop coins onto the board; touching coins of the same value merge into a bigger one, and those merges chain.',
+    'It is the only board in the game you are building up instead of clearing, so space is the thing you are really spending. A merge hands you a cell back, which makes the greedy placement and the sensible one different moves.'
+  ]},
   { v:'0.11.6', date:'2026-09-11', items:[
     'New mode — Pivot. Turn the tiles until the pattern is straight again.',
     'Each tap turns the tile you touched and the one beside it, so there is no such thing as fixing one tile on its own — every correction disturbs something else, and the puzzle is the order you do it in.'
@@ -4233,6 +4261,88 @@ const MODES = {
         paint();
       }));
       ctx.surface.appendChild(grid);
+      paint();
+    }
+  },
+
+  /* ── Mint — the only board you are building up rather than clearing ──────
+     From "drop coins; same coins merge into bigger coins". Every other mode is
+     subtractive — find it, clear it, survive it. This one accumulates, and the
+     tension is that space is the resource: a merge gives you a cell back, so
+     the greedy placement and the sustainable one are different moves. Merges
+     cascade, so one well-placed coin can walk a corner of the board upward. */
+  mint: {
+    name:'Mint', blurb:'Drop coins, merge matches, reach the big one', cat:'numbers', par:11000, bonus:3000,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="5" fill="#FFC53D"/><circle cx="16" cy="15" r="6.5" fill="#FF9A3D"/></svg>',
+    build(ctx){
+      const g = ctx.level < 6 ? 3 : 4;
+      const n = g*g;
+      const goal = clamp(4 + Math.floor(ctx.level/5), 4, 8);
+      const topDrop = clamp(1 + Math.floor(ctx.level/8), 1, 3);
+      const cells = new Array(n).fill(0);
+      let next = 1, done = false;
+
+      const wrap = mk('div','mintwrap');
+      const head = mk('div','minthead');
+      head.innerHTML = '<small></small><span class="coin next"></span>';
+      head.querySelector('small').textContent = t('mint.next');
+      wrap.appendChild(head);
+      const grid = gridEl(g);
+      const els = [];
+      for (let i=0;i<n;i++){
+        const b = mk('button','cell mintcell'); b.type='button';
+        els.push(b); grid.appendChild(b);
+      }
+      wrap.appendChild(grid);
+      ctx.surface.appendChild(wrap);
+
+      const face = (host, v) => {
+        host.textContent = v ? String(v) : '';
+        host.classList.toggle('has', !!v);
+        if (v) host.style.setProperty('--cv', v);
+        else host.style.removeProperty('--cv');
+      };
+      const drawNext = () => face(head.querySelector('.coin'), next);
+      const nb = i => { const x=i%g, y=(i/g)|0; return [[1,0],[-1,0],[0,1],[0,-1]]
+        .map(([dx,dy])=>[x+dx,y+dy]).filter(([a,c])=>a>=0&&c>=0&&a<g&&c<g).map(([a,c])=>c*g+a); };
+
+      const paint = () => {
+        els.forEach((e,i) => {
+          face(e, cells[i]);
+          e.setAttribute('aria-label', cells[i] ? ('Coin ' + cells[i]) : 'Empty');
+        });
+        ctx.prompt(t('p.mint', { n: goal }));
+      };
+
+      /* Merging keeps going while the newly-grown coin has a match beside it,
+         which is what lets one placement walk a whole corner upward. */
+      const settle = at => {
+        let here = at, grew = false;
+        for (let guard=0; guard<40; guard++){
+          const same = nb(here).filter(j => cells[j] === cells[here]);
+          if (!same.length) break;
+          same.forEach(j => { cells[j] = 0; });
+          cells[here]++;
+          grew = true;
+          els[here].classList.remove('pop'); void els[here].offsetWidth; els[here].classList.add('pop');
+        }
+        return grew;
+      };
+      const stuck = () => cells.every(v => v !== 0)
+        && cells.every((v,i) => nb(i).every(j => cells[j] !== v));
+
+      els.forEach((b,i) => onTap(b, () => {
+        if (done || cells[i]) return;
+        cells[i] = next;
+        const grew = settle(i);
+        sfx[grew ? 'good' : 'tap'](cells[i]); buzz(grew ? 12 : 6);
+        if (cells[i] >= goal){ done = true; paint(); return ctx.win(b); }
+        next = 1 + Math.floor(ctx.rnd()*topDrop);
+        drawNext();
+        paint();
+        if (stuck()){ done = true; return ctx.miss(b); }
+      }));
+      drawNext();
       paint();
     }
   },
