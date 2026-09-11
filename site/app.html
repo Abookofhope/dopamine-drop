@@ -109,12 +109,18 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Screens + tab bar ───────────────────────────────────────────────────── */
 #stage{flex:1;display:flex;min-height:0}
+/* min-width:0 as well as min-height:0. #stage is a flex ROW, and a flex item
+   defaults to min-width:auto — it refuses to shrink below its content's
+   min-content width. One horizontally scrolling strip inside was therefore
+   enough to make the whole screen 886px wide inside a 400px phone. The same
+   shape of bug as the shell's missing definite height: a flex child that was
+   never allowed to shrink. */
 .screen{
-  flex:1;min-height:0;display:flex;flex-direction:column;
+  flex:1;min-height:0;min-width:0;display:flex;flex-direction:column;
   padding:0 var(--gut) 10px;
 }
 .scroll{
-  flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  flex:1;min-height:0;min-width:0;overflow-y:auto;overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
   padding-bottom:8px;
   /* Keeps a repaint inside one row from invalidating the whole page. */
@@ -189,6 +195,37 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* Family filter: a single scrolling row, because a wrapped block of chips
+   pushes the modes themselves off the screen on a phone. */
+.catstrip{
+  display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;
+  scrollbar-width:none;scroll-snap-type:x proximity;min-width:0;max-width:100%;
+  padding:2px 0 10px;margin:0 calc(var(--gut) * -1);padding-inline:var(--gut);
+}
+.catstrip::-webkit-scrollbar{display:none}
+.catchip{
+  flex:none;scroll-snap-align:start;display:flex;align-items:center;gap:6px;
+  padding:7px 13px;border-radius:999px;white-space:nowrap;
+  border:1px solid var(--edge);background:#ffffff06;color:var(--haze);
+  font-size:11.5px;font-weight:650;letter-spacing:.045em;text-transform:uppercase;
+  transition:color var(--t-fast),border-color var(--t-fast),background var(--t-fast),transform var(--t-fast);
+}
+.catchip i{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.75}
+.catchip u{text-decoration:none;opacity:.5;font-size:10.5px}
+.catchip:active{transform:scale(.95)}
+.catchip.on{color:var(--ink);background:var(--chip,#FF5B39);border-color:transparent}
+.catchip.on u{opacity:.6}
+.catsec{margin:0 0 16px}
+.catsec .head{
+  display:flex;align-items:center;gap:8px;margin:2px 0 8px;
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--haze);
+}
+.catsec .head b{width:9px;height:9px;border-radius:3px;flex:none}
+.catsec .head u{text-decoration:none;margin-left:auto;opacity:.55;font-weight:600}
+/* A card wears its family colour on the glyph, so the roster reads as grouped
+   even when it is scrolled past the headings. */
+.mcard .glyph{border-radius:8px}
+.mcard[data-cat]{border-left:2px solid var(--cink,transparent)}
 .mcard{
   position:relative;border:1px solid var(--edge-soft);border-radius:var(--r-lg);
   background:#ffffff05;padding:12px;text-align:left;
@@ -746,9 +783,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
     <!-- ── MODES ───────────────────────────────────────────────────── -->
     <section class="screen" id="tabModes" hidden>
       <div class="scroll">
-        <div class="seclbl">All <span id="modeCount"></span> modes &middot; nothing locked</div>
-        <div class="modegrid" id="modeGrid"></div>
-        <p class="note">
+        <div class="catstrip" id="catStrip" data-i18n-aria="modes.filter"></div>
+        <div id="modeSections"></div>
+        <p class="note" data-i18n="modes.note">
           Every mode is available from the first launch. Levels measure how far
           you have taken each one, they do not decide which ones you are allowed
           to see.
@@ -834,7 +871,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.9.2</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.10.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -983,7 +1020,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.9.2 (20)';
+const VERSION = 'v0.10.0 (21)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1187,7 +1224,7 @@ const LANGS = [
 
 const STRINGS = {
   en: {
-    'nav.sections':'Sections', 'nav.stats':'Your statistics', 'tab.Play':'Play', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Settings',
+    'nav.sections':'Sections', 'nav.stats':'Your statistics', 'cat.all':'All', 'cat.focus':'Focus', 'cat.reflex':'Reflex', 'cat.memory':'Memory', 'cat.logic':'Logic', 'cat.numbers':'Numbers', 'cat.words':'Words', 'cat.rhythm':'Rhythm', 'cat.calm':'Calm', 'cat.physics':'Physics', 'cat.make':'Make', 'modes.filter':'Filter modes by kind', 'tab.Play':'Play', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Settings',
     'hero.eyebrow':'Every mode, on shuffle', 'hero.title':'Shuffle',
     'hero.sub':'60 seconds. The puzzle changes every round.', 'hero.best':'BEST',
     'play.other':'Other ways to play', 'play.jump':'Jump straight in',
@@ -1272,7 +1309,7 @@ const STRINGS = {
   },
 
   fr: {
-    'nav.sections':'Sections', 'nav.stats':'Vos statistiques', 'tab.Play':'Jouer', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Réglages',
+    'nav.sections':'Sections', 'nav.stats':'Vos statistiques', 'cat.all':'Tout', 'cat.focus':'Attention', 'cat.reflex':'Réflexes', 'cat.memory':'Mémoire', 'cat.logic':'Logique', 'cat.numbers':'Nombres', 'cat.words':'Mots', 'cat.rhythm':'Rythme', 'cat.calm':'Calme', 'cat.physics':'Physique', 'cat.make':'Créer', 'modes.filter':'Filtrer les modes', 'tab.Play':'Jouer', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Réglages',
     'hero.eyebrow':'Tous les modes, en aléatoire', 'hero.title':'Mélange',
     'hero.sub':'60 secondes. Le casse-tête change à chaque manche.', 'hero.best':'RECORD',
     'play.other':'Autres façons de jouer', 'play.jump':'Commencer tout de suite',
@@ -1357,7 +1394,7 @@ const STRINGS = {
   },
 
   es: {
-    'nav.sections':'Secciones', 'nav.stats':'Tus estadísticas', 'tab.Play':'Jugar', 'tab.Modes':'Modos', 'tab.Mix':'Mezcla', 'tab.Stats':'Datos', 'tab.Settings':'Ajustes',
+    'nav.sections':'Secciones', 'nav.stats':'Tus estadísticas', 'cat.all':'Todo', 'cat.focus':'Atención', 'cat.reflex':'Reflejos', 'cat.memory':'Memoria', 'cat.logic':'Lógica', 'cat.numbers':'Números', 'cat.words':'Palabras', 'cat.rhythm':'Ritmo', 'cat.calm':'Calma', 'cat.physics':'Física', 'cat.make':'Crear', 'modes.filter':'Filtrar modos', 'tab.Play':'Jugar', 'tab.Modes':'Modos', 'tab.Mix':'Mezcla', 'tab.Stats':'Datos', 'tab.Settings':'Ajustes',
     'hero.eyebrow':'Todos los modos, al azar', 'hero.title':'Mezcla',
     'hero.sub':'60 segundos. El reto cambia en cada ronda.', 'hero.best':'RÉCORD',
     'play.other':'Otras formas de jugar', 'play.jump':'Empieza ya',
@@ -1442,7 +1479,7 @@ const STRINGS = {
   },
 
   de: {
-    'nav.sections':'Bereiche', 'nav.stats':'Deine Werte', 'tab.Play':'Spielen', 'tab.Modes':'Modi', 'tab.Mix':'Mix', 'tab.Stats':'Werte', 'tab.Settings':'Optionen',
+    'nav.sections':'Bereiche', 'nav.stats':'Deine Werte', 'cat.all':'Alle', 'cat.focus':'Fokus', 'cat.reflex':'Reflexe', 'cat.memory':'Gedächtnis', 'cat.logic':'Logik', 'cat.numbers':'Zahlen', 'cat.words':'Wörter', 'cat.rhythm':'Rhythmus', 'cat.calm':'Ruhe', 'cat.physics':'Physik', 'cat.make':'Bauen', 'modes.filter':'Modi filtern', 'tab.Play':'Spielen', 'tab.Modes':'Modi', 'tab.Mix':'Mix', 'tab.Stats':'Werte', 'tab.Settings':'Optionen',
     'hero.eyebrow':'Alle Modi, gemischt', 'hero.title':'Mix',
     'hero.sub':'60 Sekunden. Das Rätsel wechselt jede Runde.', 'hero.best':'REKORD',
     'play.other':'Andere Spielarten', 'play.jump':'Direkt loslegen',
@@ -1628,6 +1665,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.10.0', date:'2026-09-11', items:[
+    'The modes screen is organised into families now — Focus, Reflex, Memory, Logic, Numbers, Words, Rhythm — each with its own colour, so you can find the kind of thing you feel like instead of scanning a wall.',
+    'Tap a family along the top to see only those.',
+    'Every card wears its family colour, so the grouping still reads once you have scrolled past the headings.',
+    'Fixed the modes screen being far wider than the phone, which it had become as soon as there was a row to scroll along the top.'
+  ]},
   { v:'0.9.2', date:'2026-09-11', items:[
     'Odd One Out is fair now. The odd tile used to be a fixed number of degrees around the colour wheel from the rest — but the same number of degrees is nearly four times more visible at some colours than others, so the puzzle was sometimes obvious and sometimes genuinely impossible, with no way to tell which you were getting.',
     'It now measures the difference the eye actually sees, so the hardest board is the same difficulty whatever colour it rolls — and the hardest is set well above what a phone screen can actually show you.'
@@ -1946,7 +1989,7 @@ const MODES = {
 
   /* ── 1. Odd One Out — visual discrimination, ramps by hue delta ──────── */
   odd: {
-    name:'Odd One Out', blurb:'Spot the tile that doesn’t match', par:2600, bonus:1200,
+    name:'Odd One Out', blurb:'Spot the tile that doesn’t match', cat:'focus', par:2600, bonus:1200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="13" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="3" y="13" width="8" height="8" rx="2" fill="#6C6191"/><rect x="13" y="13" width="8" height="8" rx="2" fill="#FF5B39"/></svg>',
     build(ctx){
       const n = clamp(2 + Math.floor(ctx.level/2), 2, 6);
@@ -1975,7 +2018,7 @@ const MODES = {
 
   /* ── 2. Snap Order — visual search under sequence pressure ───────────── */
   order: {
-    name:'Snap Order', blurb:'Tap the numbers in order, fast', par:3800, bonus:1500,
+    name:'Snap Order', blurb:'Tap the numbers in order, fast', cat:'focus', par:3800, bonus:1500,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="18" r="3.2" fill="#FF5B39"/><circle cx="12" cy="11" r="3.2" fill="#6C6191"/><circle cx="19" cy="5" r="3.2" fill="#6C6191"/><path d="M7 16.2 10.2 13M14 9.2 17 6.6" stroke="#6C6191" stroke-width="1.6" stroke-linecap="round"/></svg>',
     build(ctx){
       const n = clamp(3 + Math.floor(ctx.level/2), 3, 12);
@@ -2024,7 +2067,7 @@ const MODES = {
 
   /* ── 3. Color Trap — the Stroop task: read the ink, not the word ─────── */
   stroop: {
-    name:'Color Trap', blurb:'Match the ink colour, ignore the word', par:2400, bonus:1200,
+    name:'Color Trap', blurb:'Match the ink colour, ignore the word', cat:'focus', par:2400, bonus:1200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="10" r="6" fill="#FF5B39" opacity=".85"/><circle cx="15" cy="14" r="6" fill="#33E6C8" opacity=".8"/></svg>',
     build(ctx){
       const k = clamp(3 + Math.floor(ctx.level/3), 3, 6);
@@ -2065,7 +2108,7 @@ const MODES = {
 
   /* ── 4. Echo — working memory, the one mode that rewards sitting still ── */
   echo: {
-    name:'Echo', blurb:'Watch the flashes, repeat them back', par:6000, bonus:2400,
+    name:'Echo', blurb:'Watch the flashes, repeat them back', cat:'memory', par:6000, bonus:2400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" fill="#FFC53D"/><rect x="13" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="3" y="13" width="8" height="8" rx="2" fill="#6C6191"/><rect x="13" y="13" width="8" height="8" rx="2" fill="#FFC53D" opacity=".45"/></svg>',
     build(ctx){
       const n = ctx.level < 4 ? 2 : ctx.level < 18 ? 3 : 4;
@@ -2114,7 +2157,7 @@ const MODES = {
 
   /* ── 5. Rewire — a real puzzle; no wrong taps, only time spent ───────── */
   rewire: {
-    name:'Rewire', blurb:'Rotate the pipes until current flows', par:8000, bonus:2600,
+    name:'Rewire', blurb:'Rotate the pipes until current flows', cat:'logic', par:8000, bonus:2600,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 12h6a2 2 0 0 0 2-2V4"/><path d="M12 20v-6a2 2 0 0 1 2-2h6" stroke="#6C6191"/></svg>',
     build(ctx){
       const n = ctx.level < 5 ? 3 : ctx.level < 20 ? 4 : 5;
@@ -2246,7 +2289,7 @@ const MODES = {
 
   /* ── 6. Sum Snap — light arithmetic, no wrong-answer spiral ──────────── */
   sum: {
-    name:'Sum Snap', blurb:'Find two numbers that hit the target', par:5000, bonus:1800,
+    name:'Sum Snap', blurb:'Find two numbers that hit the target', cat:'numbers', par:5000, bonus:1800,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#FFC53D" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
     build(ctx){
       const n = ctx.level < 4 ? 3 : ctx.level < 18 ? 4 : 5;
@@ -2287,7 +2330,7 @@ const MODES = {
 
   /* ── 7. Count Fast — enumeration, an axis nothing else touches ───────── */
   count: {
-    name:'Count Fast', blurb:'Count the target before the clock does', par:4200, bonus:1600,
+    name:'Count Fast', blurb:'Count the target before the clock does', cat:'numbers', par:4200, bonus:1600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="8" r="3" fill="#FF5B39"/><circle cx="16" cy="7" r="3" fill="#6C6191"/><circle cx="9" cy="16" r="3" fill="#6C6191"/><circle cx="17" cy="16" r="3" fill="#FF5B39"/></svg>',
     build(ctx){
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0,3);
@@ -2368,7 +2411,7 @@ const MODES = {
 
   /* ── 8. Mirror — spatial reflection. Taps toggle, so it costs time ───── */
   mirror: {
-    name:'Mirror', blurb:'Reflect the pattern across the line', par:7500, bonus:2400,
+    name:'Mirror', blurb:'Reflect the pattern across the line', cat:'logic', par:7500, bonus:2400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="7" height="14" rx="2" fill="#FF5B39"/><rect x="14" y="5" width="7" height="14" rx="2" fill="#33E6C8" opacity=".5"/></svg>',
     build(ctx){
       const half = ctx.level < 5 ? 2 : ctx.level < 20 ? 3 : 4;
@@ -2411,7 +2454,7 @@ const MODES = {
 
   /* ── 9. Rising Tap — the only mode where doing nothing is a mistake ──── */
   rising: {
-    name:'Rising Tap', blurb:'Catch the targets before they vanish', par:5200, bonus:1800,
+    name:'Rising Tap', blurb:'Catch the targets before they vanish', cat:'reflex', par:5200, bonus:1800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="5" fill="#FF5B39"/><circle cx="16" cy="16" r="3" fill="#FF5B39" opacity=".5"/></svg>',
     build(ctx){
       const need = clamp(3 + Math.floor(ctx.level/3), 3, 10);
@@ -2473,7 +2516,7 @@ const MODES = {
 
   /* ── 10. Blink — spatial memory, where Echo is sequential ────────────── */
   blink: {
-    name:'Blink', blurb:'Rebuild the pattern you just saw', par:5000, bonus:2000,
+    name:'Blink', blurb:'Rebuild the pattern you just saw', cat:'memory', par:5000, bonus:2000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" fill="#FFC53D"/><rect x="13" y="13" width="8" height="8" rx="2" fill="#FFC53D"/><rect x="13" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="3" y="13" width="8" height="8" rx="2" fill="#6C6191"/></svg>',
     build(ctx){
       const n = ctx.level < 5 ? 3 : ctx.level < 20 ? 4 : 5;
@@ -2510,7 +2553,7 @@ const MODES = {
 
   /* ── 11. Slide Path — planning about order and space ─────────────────── */
   slide: {
-    name:'Slide Path', blurb:'Clear the corridor so the car can leave', par:9000, bonus:2800,
+    name:'Slide Path', blurb:'Clear the corridor so the car can leave', cat:'logic', par:9000, bonus:2800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="10" width="9" height="4" rx="1.5" fill="#FF5B39"/><rect x="15" y="4" width="4" height="9" rx="1.5" fill="#6C6191"/></svg>',
     build(ctx){
       const n = ctx.level < 6 ? 4 : ctx.level < 20 ? 5 : 6;
@@ -2696,7 +2739,7 @@ const MODES = {
   },
   /* ── 12. Word Snap — the verbal axis, and the only localisation blocker ─ */
   word: {
-    name:'Word Snap', blurb:'Unscramble the word, letter by letter', par:6500, bonus:2000,
+    name:'Word Snap', blurb:'Unscramble the word, letter by letter', cat:'words', par:6500, bonus:2000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="7" height="8" rx="1.5" fill="#FF5B39"/><rect x="14" y="8" width="7" height="8" rx="1.5" fill="#6C6191"/></svg>',
     build(ctx){
       const len = ctx.level < 5 ? 4 : ctx.level < 12 ? 5 : 6;
@@ -2763,7 +2806,7 @@ const MODES = {
      thing. The category is always shown: this is a puzzle about pattern, not
      about trivia, and a phrase nobody recognises is not harder, just worse. */
   wheel: {
-    name:'Phrase Wheel', blurb:'Guess letters to reveal the phrase', par:14000, bonus:3600,
+    name:'Phrase Wheel', blurb:'Guess letters to reveal the phrase', cat:'words', par:14000, bonus:3600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="5" height="6" rx="1.5" fill="#FF5B39"/><rect x="9.5" y="9" width="5" height="6" rx="1.5" fill="#6C6191"/><rect x="17" y="9" width="5" height="6" rx="1.5" fill="#FFC53D"/></svg>',
     build(ctx){
       const entry = ctx.deal(phraseBank(), 'phrase:' + save.lang);
@@ -2837,7 +2880,7 @@ const MODES = {
      Phrase Wheel is a two-minute sit. This is the same idea at the pace of
      the rest of the game. */
   gap: {
-    name:'Letter Gap', blurb:'Fill in the missing letters', par:5000, bonus:1800,
+    name:'Letter Gap', blurb:'Fill in the missing letters', cat:'words', par:5000, bonus:1800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="6" height="8" rx="1.5" fill="#6C6191"/><rect x="10" y="8" width="4" height="8" rx="1.5" fill="none" stroke="#FF5B39" stroke-width="2" stroke-dasharray="2 2"/><rect x="15" y="8" width="6" height="8" rx="1.5" fill="#6C6191"/></svg>',
     build(ctx){
       const len = ctx.level < 5 ? 4 : ctx.level < 12 ? 5 : 6;
@@ -2887,7 +2930,7 @@ const MODES = {
 
   /* ── 15. Off Beat — timing, which nothing else in the roster tests ────── */
   beat: {
-    name:'Off Beat', blurb:'Find the dot that is out of time', par:6000, bonus:2000,
+    name:'Off Beat', blurb:'Find the dot that is out of time', cat:'rhythm', par:6000, bonus:2000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2.6" fill="#6C6191"/><circle cx="12" cy="12" r="2.6" fill="#6C6191"/><circle cx="19" cy="12" r="4" fill="#FF5B39"/></svg>',
     build(ctx){
       const n = clamp(3 + Math.floor(ctx.level/4), 3, 8);
@@ -2913,7 +2956,7 @@ const MODES = {
 
   /* ── 16. Sort Drop — the rule flips mid-round, which nothing else does ── */
   sort: {
-    name:'Sort Drop', blurb:'Sort by the rule — it changes', par:7000, bonus:2200,
+    name:'Sort Drop', blurb:'Sort by the rule — it changes', cat:'focus', par:7000, bonus:2200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8" stroke="#6C6191" stroke-width="2.4" stroke-linecap="round"/><rect x="2" y="14" width="8" height="7" rx="2" fill="#FF5B39"/><rect x="14" y="14" width="8" height="7" rx="2" fill="#33E6C8"/></svg>',
     build(ctx){
       const rounds = clamp(3 + Math.floor(ctx.level/4), 3, 10);
@@ -3007,6 +3050,27 @@ const MODES = {
    Short, concrete, and free of anything era- or region-specific.          */
 /* Short, common, unambiguous. A puzzle that hinges on vocabulary stops being a
    reaction game and starts being a quiz. */
+/* Families. A flat grid was fine for sixteen modes and stops being fine well
+   before sixty — you cannot find the one you want, and a roster that long reads
+   as a wall rather than a menu. Each family carries its own accent so a card
+   tells you what kind of thing it is before you have read its name. */
+const CATS = [
+  { id:'focus',   ink:'#FF5B39' },
+  { id:'reflex',  ink:'#FF3D6E' },
+  { id:'memory',  ink:'#9C7BFF' },
+  { id:'logic',   ink:'#33E6C8' },
+  { id:'numbers', ink:'#FFC53D' },
+  { id:'words',   ink:'#4BC0FF' },
+  { id:'rhythm',  ink:'#FF8AD8' },
+  { id:'calm',    ink:'#7BE38A' },
+  { id:'physics', ink:'#FF9A3D' },
+  { id:'make',    ink:'#C08BFF' }
+];
+const CAT_INK = Object.fromEntries(CATS.map(c => [c.id, c.ink]));
+const catOf = id => (MODES[id] && MODES[id].cat) || 'focus';
+const catsPresent = () => CATS.map(c => c.id).filter(c => MODE_IDS.some(id => catOf(id) === c));
+const idsInCat = c => MODE_IDS.filter(id => catOf(id) === c);
+
 const MODE_IDS = Object.keys(MODES);
 
 /* ═══ Run definitions ═════════════════════════════════════════════════════ */
@@ -3488,12 +3552,49 @@ function paintPlay(){
     c.onclick = () => startRun('marathon', picks[i]));
 }
 
+let catFilter = 'all';
+
 function paintModes(){
-  $('modeCount').textContent = '';
-  $('modeCount').closest('.seclbl').firstElementChild.textContent = t('modes.header', { n: MODE_IDS.length });
-  fillGrid($('modeGrid'), MODE_IDS, { mode:'all', onTap:null });
-  Array.from($('modeGrid').children).forEach((c,i) =>
-    c.onclick = () => startRun('marathon', MODE_IDS[i]));
+  const strip = $('catStrip');
+  const cats = catsPresent();
+  strip.replaceChildren();
+  [['all', MODE_IDS.length]].concat(cats.map(c => [c, idsInCat(c).length]))
+    .forEach(([id, n]) => {
+      const b = mk('button','catchip' + (catFilter === id ? ' on' : ''));
+      b.type = 'button';
+      const ink = id === 'all' ? 'var(--cream)' : CAT_INK[id];
+      b.style.setProperty('--chip', ink);
+      if (catFilter !== id) b.style.color = id === 'all' ? '' : ink;
+      b.innerHTML = (id === 'all' ? '' : '<i></i>') + '<span></span><u></u>';
+      b.querySelector('span').textContent = id === 'all' ? t('cat.all') : t('cat.' + id);
+      b.querySelector('u').textContent = n;
+      onTap(b, () => { catFilter = id; paintModes(); });
+      strip.appendChild(b);
+    });
+
+  const host = $('modeSections');
+  host.replaceChildren();
+  const show = catFilter === 'all' ? cats : [catFilter];
+  show.forEach(c => {
+    const ids = idsInCat(c);
+    if (!ids.length) return;
+    const sec = mk('div','catsec');
+    const head = mk('div','head');
+    head.innerHTML = '<b></b><span></span><u></u>';
+    head.querySelector('b').style.background = CAT_INK[c];
+    head.querySelector('span').textContent = t('cat.' + c);
+    head.querySelector('u').textContent = ids.length;
+    sec.appendChild(head);
+    const grid = mk('div','modegrid');
+    fillGrid(grid, ids, { mode:'all', onTap:null });
+    Array.from(grid.children).forEach((card,i) => {
+      card.dataset.cat = c;
+      card.style.setProperty('--cink', CAT_INK[c]);
+      card.onclick = () => startRun('marathon', ids[i]);
+    });
+    sec.appendChild(grid);
+    host.appendChild(sec);
+  });
 }
 
 function paintMix(){
