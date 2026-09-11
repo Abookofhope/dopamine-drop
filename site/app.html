@@ -812,7 +812,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.8.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.8.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -960,7 +960,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.8.0 (16)';
+const VERSION = 'v0.8.1 (17)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1032,7 +1032,20 @@ try {
   }
 } catch(e){}
 
-function persist(){ try { localStorage.setItem(KEY, JSON.stringify(save)); } catch(e){} }
+/* Only today's Daily score is ever read back — every other day's is dead
+   weight that would otherwise sit in the save forever. Keep a fortnight so a
+   clock that is a little out, or a trip across a date line, cannot lose the
+   entry the app is about to look for. */
+function pruneDaily(){
+  const keys = Object.keys(save.daily || {});
+  if (keys.length <= 14) return;
+  keys.sort();
+  keys.slice(0, keys.length - 14).forEach(k => { delete save.daily[k]; });
+}
+function persist(){
+  pruneDaily();
+  try { localStorage.setItem(KEY, JSON.stringify(save)); } catch(e){}
+}
 
 ['visibilitychange','pagehide','freeze'].forEach(ev =>
   document.addEventListener(ev, () => { if (document.visibilityState !== 'visible') persist(); }, true)
@@ -1592,6 +1605,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.8.1', date:'2026-09-11', items:[
+    'Quitting a run before you had scored anything left the whole board sitting in memory until you closed the app. Every way of ending a round now clears it properly.',
+    'Daily Drop scores were kept forever even though only today\u2019s is ever used. The save now keeps a fortnight and drops the rest.',
+    'Checked the whole app over: saves from every older version still load, a damaged save recovers instead of breaking, the game still works with no signal at all, all four languages fit on a small phone, and an hour of hard play leaks nothing.'
+  ]},
   { v:'0.8.0', date:'2026-09-11', items:[
     'Your level now actually makes the game harder. It used to be worth almost nothing — levels 1 to 11 played identically, everything past 96 played identically, and nearly all the difficulty came from solves inside the current run, which reset every time you started one.',
     'Because of that, most modes had a harder half nobody had ever seen. Every mode now keeps climbing well past where it used to stop: bigger grids, longer sequences, more dots to count, less time to react.',
@@ -2962,6 +2980,14 @@ let run = null, roundLive = false, roundStart = 0;
 let timers = [], raf = 0, lastTs = 0, screen = 'Play';
 
 function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+
+/* Emptying the play surface has to happen on every path that stops a round,
+   not just the one. A board left behind is invisible but still a live subtree
+   with listeners on it for as long as the app stays open. */
+function clearBoard(){
+  el.surface.innerHTML = '';
+  Array.from(el.surface.parentNode.querySelectorAll('.budget')).forEach(n => n.remove());
+}
 function later(ms, fn){ const t = setTimeout(fn, ms); timers.push(t); return t; }
 
 function show(name){
@@ -3103,8 +3129,7 @@ function nextRound(){
   const k = KINDS[run.kind];
   if (k.rounds && run.roundIdx >= k.rounds) return endRun();
   clearTimers();
-  el.surface.innerHTML = '';
-  Array.from(el.surface.parentNode.querySelectorAll('.budget')).forEach(n => n.remove());
+  clearBoard();
   run.roundIdx++;
   const mode = MODES[pickMode()];
   run.curMode = mode;
@@ -3199,8 +3224,7 @@ function startRun(kind, modeId){
 
   show('play');
   renderHud();
-  el.surface.innerHTML = '';
-  Array.from(el.surface.parentNode.querySelectorAll('.budget')).forEach(n => n.remove());
+  clearBoard();
   el.prompt.textContent = 'Get ready';
   el.prompt.className = 'prompt';
 
@@ -3231,6 +3255,10 @@ function endRun(){
   roundLive = false;
   const k = KINDS[run.kind], r = run;
   run = null;
+  /* The last board stayed in the DOM behind the results screen — invisible,
+     but still a live subtree with listeners on it for as long as the app was
+     open. Nothing else clears it, because nextRound never runs again. */
+  clearBoard();
   sfx.over(); buzz([30,60,30,60,60]);
 
   let best = false;
@@ -3594,7 +3622,7 @@ $('quitBtn').addEventListener('click', () => {
   clearTimers();
   if (raf){ cancelAnimationFrame(raf); raf = 0; }
   if (run && (run.solved || run.missed)) return endRun();
-  run = null; goTab('Play');
+  run = null; clearBoard(); goTab('Play');
 });
 
 [['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist']]
