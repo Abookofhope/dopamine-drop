@@ -195,6 +195,15 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Pivot ────────────────────────────────────────────────────────────── */
+.cell.facet{background:var(--ink-3);border:1px solid var(--edge);border-radius:var(--r-sm);overflow:hidden;
+  transition:transform var(--t-med) cubic-bezier(.3,1.2,.4,1),border-color var(--t-fast)}
+.cell.facet svg{width:100%;height:100%;display:block}
+.cell.facet path{fill:hsl(var(--fhue) 62% 60%)}
+.cell.facet.set{border-color:hsl(var(--fhue) 62% 60% / .55)}
+.cell.facet.spin{animation:facetPop .34s ease}
+@keyframes facetPop{0%{filter:brightness(1)}40%{filter:brightness(1.6)}100%{filter:brightness(1)}}
+
 /* ── Needle ───────────────────────────────────────────────────────────── */
 .needlewrap{display:flex;flex-direction:column;gap:10px;width:100%;height:100%;justify-content:center}
 .needleref{flex:none;display:flex;align-items:center;gap:10px;justify-content:center;
@@ -1003,7 +1012,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.5</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.6</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1152,7 +1161,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.11.5 (27)';
+const VERSION = 'v0.11.6 (28)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1431,6 +1440,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.pivot':'{n} still crooked', 'm.pivot':'Pivot|Each tap turns two — straighten the whole pattern',
     'p.needle':'Find it', 'needle.big':'the LARGE {c}', 'needle.small':'the SMALL {c}', 'needle.lgs':'large', 'needle.sms':'small', 'm.needle':'Needle|Find the one that is both — nothing here stands out',
     'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Bruise|Finish the hurt ones before they slip away',
     'p.skim':'{n} skips to go', 'm.skim':'Skim|Tap as it crosses — the window narrows each time',
@@ -1522,6 +1532,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.pivot':'{n} encore de travers', 'm.pivot':'Pivot|Chaque touche en tourne deux — redressez tout',
     'p.needle':'Trouvez-le', 'needle.big':'le GRAND {c}', 'needle.small':'le PETIT {c}', 'needle.lgs':'grand', 'needle.sms':'petit', 'm.needle':'Aiguille|Trouvez celui qui est les deux à la fois',
     'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Bleu|Achevez les blessés avant qu’ils filent',
     'p.skim':'Encore {n} ricochets', 'm.skim':'Ricochet|Touchez au passage — la fenêtre rétrécit',
@@ -1613,6 +1624,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.pivot':'{n} aún torcidas', 'm.pivot':'Pivote|Cada toque gira dos — endereza el dibujo',
     'p.needle':'Encuéntralo', 'needle.big':'el {c} GRANDE', 'needle.small':'el {c} PEQUEÑO', 'needle.lgs':'grande', 'needle.sms':'pequeño', 'm.needle':'Aguja|Encuentra el que cumple las dos cosas',
     'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Moratón|Remata a los heridos antes de que huyan',
     'p.skim':'Faltan {n} rebotes', 'm.skim':'Rebote|Toca al cruzar — la ventana se estrecha',
@@ -1704,6 +1716,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.pivot':'Noch {n} schief', 'm.pivot':'Drehpunkt|Ein Tipp dreht zwei — richte alles aus',
     'p.needle':'Finde ihn', 'needle.big':'der GROSSE {c}', 'needle.small':'der KLEINE {c}', 'needle.lgs':'gross', 'needle.sms':'klein', 'm.needle':'Nadel|Finde den, auf den beides zutrifft',
     'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Blauer Fleck|Erledige die Angeschlagenen, bevor sie weg sind',
     'p.skim':'Noch {n} Sprünge', 'm.skim':'Sprung|Tippe beim Kreuzen — das Fenster wird enger',
@@ -1821,6 +1834,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.11.6', date:'2026-09-11', items:[
+    'New mode — Pivot. Turn the tiles until the pattern is straight again.',
+    'Each tap turns the tile you touched and the one beside it, so there is no such thing as fixing one tile on its own — every correction disturbs something else, and the puzzle is the order you do it in.'
+  ]},
   { v:'0.11.5', date:'2026-09-11', items:[
     'New mode — Needle. Find the one that is both the right colour and the right size.',
     'Every other item matches on exactly one of the two, so nothing jumps out at you and you have to actually look. That makes it a different job from Odd One Out, where the odd tile announces itself.'
@@ -4153,6 +4170,70 @@ const MODES = {
       wrap.appendChild(field);
       ctx.surface.appendChild(wrap);
       ctx.prompt(t('p.needle'));
+    }
+  },
+
+  /* ── Pivot — rotation, but coupled ───────────────────────────────────────
+     From "3-piece rotating jigsaw". Rewire already rotates tiles, so rotating
+     them one at a time again would be the same mode with different art. Here a
+     tap turns the tile AND its neighbour, which means there is no such thing as
+     fixing one tile: every correction disturbs something, and the puzzle is the
+     order rather than the inventory.
+
+     Solvable by construction — the board is a finished picture scrambled by
+     legal taps, so undoing it is always possible and never needs searching for. */
+  pivot: {
+    name:'Pivot', blurb:'Each tap turns two — straighten the whole pattern', cat:'logic', par:9500, bonus:2800,
+    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 8-8v3"/><path d="M20 12a8 8 0 0 1-8 8v-3" stroke="#FF5B39"/></svg>',
+    build(ctx){
+      const g = ctx.level < 5 ? 2 : ctx.level < 14 ? 3 : 4;
+      const n = g*g;
+      const turns = new Array(n).fill(0);
+      /* Tapping i also turns its right neighbour, wrapping inside the row, so
+         every row is a closed loop you have to walk around. */
+      const partner = i => { const r = Math.floor(i/g), c = i%g; return r*g + ((c+1)%g); };
+      const tap = i => { turns[i] = (turns[i]+1)%4; const j = partner(i); turns[j] = (turns[j]+1)%4; };
+
+      const scrambles = clamp(2 + Math.floor(ctx.level/2), 2, n*3);
+      for (let k=0;k<scrambles;k++) tap(Math.floor(ctx.rnd()*n));
+      /* A board that starts finished is not a puzzle. */
+      let guard = 0;
+      while (turns.every(v => v === 0) && guard++ < 20) tap(Math.floor(ctx.rnd()*n));
+
+      const hue = Math.floor(ctx.rnd()*360);
+      const grid = gridEl(g);
+      const els = [];
+      let done = false;
+      for (let i=0;i<n;i++){
+        const b = mk('button','cell facet'); b.type='button';
+        /* A quarter-arc reads its own orientation at a glance, and the whole
+           grid at rest makes one continuous pattern. */
+        b.innerHTML = '<svg viewBox="0 0 100 100" aria-hidden="true">'
+          + '<path d="M0 100 A100 100 0 0 1 100 0 L100 34 A66 66 0 0 0 34 100 Z"/></svg>';
+        b.style.setProperty('--fhue', hue);
+        els.push(b); grid.appendChild(b);
+      }
+      const paint = () => {
+        els.forEach((e,i) => {
+          e.style.transform = 'rotate(' + (turns[i]*90) + 'deg)';
+          e.classList.toggle('set', turns[i] === 0);
+          e.setAttribute('aria-label', 'Tile ' + (i+1) + ', ' + (turns[i]===0 ? 'straight' : (4-turns[i]) + ' turns from straight'));
+        });
+        const left = turns.filter(v => v !== 0).length;
+        ctx.prompt(t('p.pivot', { n: left }));
+        if (left === 0 && !done){ done = true; ctx.win(els[0]); }
+      };
+      els.forEach((b,i) => onTap(b, () => {
+        if (done) return;
+        tap(i);
+        sfx.tap(); buzz(6);
+        [i, partner(i)].forEach(k => {
+          els[k].classList.remove('spin'); void els[k].offsetWidth; els[k].classList.add('spin');
+        });
+        paint();
+      }));
+      ctx.surface.appendChild(grid);
+      paint();
     }
   },
 };
