@@ -195,6 +195,14 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Bruise ───────────────────────────────────────────────────────────── */
+.cell.hole{background:var(--ink-3);border:1px solid var(--edge);border-radius:50%;position:relative;overflow:hidden}
+.cell.hole::after{content:"";position:absolute;inset:14%;border-radius:50%;background:var(--blob,transparent);
+  transform:scale(0);transition:transform var(--t-med) cubic-bezier(.2,1.3,.4,1),background var(--t-fast)}
+.cell.hole.up::after{transform:scale(1)}
+.cell.hole:active::after{transform:scale(.84)}
+.cell.hole .hp{position:relative;z-index:1;font-family:var(--f-data);font-size:15px;font-weight:700;color:var(--ink)}
+
 /* ── Skim ─────────────────────────────────────────────────────────────── */
 .skimtrack{position:relative;width:100%;aspect-ratio:1;border-radius:var(--r-lg);overflow:hidden;
   background:radial-gradient(120% 90% at 50% 110%, #1b1440 0%, #0d0918 70%);
@@ -979,7 +987,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.3</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.4</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1128,7 +1136,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.11.3 (25)';
+const VERSION = 'v0.11.4 (26)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1407,6 +1415,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Bruise|Finish the hurt ones before they slip away',
     'p.skim':'{n} skips to go', 'm.skim':'Skim|Tap as it crosses — the window narrows each time',
     'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble|Pair them off faster than the drum refills',
     'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Peril|Read the tell, pick the counter, win the duel',
@@ -1496,6 +1505,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Bleu|Achevez les blessés avant qu’ils filent',
     'p.skim':'Encore {n} ricochets', 'm.skim':'Ricochet|Touchez au passage — la fenêtre rétrécit',
     'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Tambour|Appariez plus vite que le remplissage',
     'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Duel|Lisez son geste, choisissez la parade',
@@ -1585,6 +1595,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Moratón|Remata a los heridos antes de que huyan',
     'p.skim':'Faltan {n} rebotes', 'm.skim':'Rebote|Toca al cruzar — la ventana se estrecha',
     'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Tambor|Empareja más rápido de lo que se llena',
     'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Duelo|Lee su gesto y elige la respuesta',
@@ -1674,6 +1685,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Blauer Fleck|Erledige die Angeschlagenen, bevor sie weg sind',
     'p.skim':'Noch {n} Sprünge', 'm.skim':'Sprung|Tippe beim Kreuzen — das Fenster wird enger',
     'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Trommel|Paare schneller, als es sich füllt',
     'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Duell|Lies die Geste, wähle die Antwort',
@@ -1789,6 +1801,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.11.4', date:'2026-09-11', items:[
+    'New mode — Bruise. Blobs take more than one hit, and their colour is their health. Green is nearly gone, red is fresh.',
+    'They all leave on their own schedule, so the real question is which to finish and which to give up on — a fresh blob and a nearly-dead one are worth exactly the same.',
+    'Let too many slip away and the round is over.'
+  ]},
   { v:'0.11.3', date:'2026-09-11', items:[
     'New mode — Skim. A light sweeps across a starfield. Tap while it is inside the window, and the window narrows for the next one.',
     'The sweep turns around at the edges instead of wrapping, so a window near an edge is approached slowly and one in the middle is approached fast — where it sits matters as much as how wide it is.'
@@ -3941,6 +3958,87 @@ const MODES = {
         ctx.prompt(t('p.skim', { n: need - hits }));
       });
       ctx.prompt(t('p.skim', { n: need }));
+    }
+  },
+
+  /* ── Bruise — triage, not reflex ─────────────────────────────────────────
+     From "whack-a-mole, but blobs absorb hits and change colour". Rising Tap
+     already covers "hit it before it goes", so the whole point here is that
+     blobs take more than one hit and every one of them is leaving on its own
+     schedule. The decision is which to finish and which to abandon: a fresh
+     three-hit blob is worth the same as a bruised one-hit blob, so the greedy
+     play and the correct play come apart. Colour is the health bar. */
+  bruise: {
+    name:'Bruise', blurb:'Finish the hurt ones before they slip away', cat:'reflex', par:7000, bonus:2400,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="10" r="5" fill="#FF3D6E"/><circle cx="16" cy="15" r="4" fill="#9C7BFF"/></svg>',
+    build(ctx){
+      const g = ctx.level < 7 ? 3 : 4;
+      const need   = clamp(4 + Math.floor(ctx.level/3), 4, 12);
+      const allowed= clamp(4 - Math.floor(ctx.level/10), 2, 4);
+      const maxHp  = clamp(1 + Math.floor(ctx.level/5), 1, 3);
+      const life   = clamp(2600 - ctx.level*70, 1000, 2600);
+      const gap    = clamp(900 - ctx.level*26, 330, 900);
+      const HPINK  = ['#7BE38A', '#FFC53D', '#FF3D6E'];   /* nearly gone → fresh */
+
+      let popped = 0, escaped = 0, done = false;
+      const grid = gridEl(g);
+      const holes = [];
+      for (let i=0;i<g*g;i++){
+        const b = mk('button','cell hole'); b.type='button';
+        b.setAttribute('aria-label','Empty');
+        holes.push({ el:b, blob:null }); grid.appendChild(b);
+      }
+      ctx.surface.appendChild(grid);
+      const say = () => ctx.prompt(t('p.bruise', { n: need - popped, e: allowed - escaped }));
+
+      const dress = h => {
+        const b = h.blob;
+        h.el.classList.toggle('up', !!b);
+        if (b){
+          h.el.style.setProperty('--blob', HPINK[Math.min(b.hp,3)-1]);
+          h.el.setAttribute('aria-label', b.hp + ' hits left');
+          if (assistOn()) h.el.innerHTML = '<b class="hp">'+b.hp+'</b>';
+          else h.el.innerHTML = '';
+        } else {
+          h.el.style.removeProperty('--blob');
+          h.el.innerHTML = '';
+          h.el.setAttribute('aria-label','Empty');
+        }
+      };
+      const leave = h => {
+        if (!h.blob || done) return;
+        h.blob = null; dress(h);
+        escaped++;
+        sfx.bad(); buzz(14);
+        say();
+        if (escaped >= allowed){ done = true; ctx.miss(h.el); }
+      };
+      const spawn = () => {
+        if (done) return;
+        const open = holes.filter(h => !h.blob);
+        if (open.length){
+          const h = open[Math.floor(ctx.rnd()*open.length)];
+          h.blob = { hp: 1 + Math.floor(ctx.rnd()*maxHp) };
+          dress(h);
+          h.blob.timer = ctx.after(life, () => leave(h));
+        }
+        ctx.after(gap, spawn);
+      };
+      holes.forEach(h => onTap(h.el, () => {
+        if (done || !h.blob) return;
+        h.blob.hp--;
+        sfx.tap(); buzz(6);
+        if (h.blob.hp <= 0){
+          clearTimeout(h.blob.timer);
+          h.blob = null; dress(h);
+          popped++;
+          sfx.good(popped);
+          if (popped >= need){ done = true; return ctx.win(h.el); }
+        } else dress(h);
+        say();
+      }));
+      spawn();
+      say();
     }
   },
 };
