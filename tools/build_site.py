@@ -148,13 +148,15 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {{
-  event.waitUntil(
-    caches.open(CACHE)
-      .then((cache) => cache.addAll(ASSETS))
-      // Take over immediately; waiting for every tab to close would leave a
-      // phone on the old build for days.
-      .then(() => self.skipWaiting())
-  );
+  // Deliberately no skipWaiting here. Taking over the moment a build lands
+  // would reload the page under the player's fingers, potentially mid-run.
+  // The page notices the waiting worker, shows a banner, and only the tap
+  // below hands control over.
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));
+}});
+
+self.addEventListener('message', (event) => {{
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 }});
 
 self.addEventListener('activate', (event) => {{

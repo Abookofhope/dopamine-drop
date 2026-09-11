@@ -71,7 +71,14 @@ if manifest.is_file():
         check("manifest parses", False, str(e))
 
 # The page must contain the game, not just a shell that loads one.
-check("page contains the game", 'id="playBtn"' in html and "MODE_IDS" in html)
+# Anchored on things that do not churn with UI work: the play surface, the
+# mode registry, and the fact that the registry is non-trivial. A check tied
+# to one button's id fails every time a screen is redesigned, which teaches
+# people to ignore it.
+check("page contains the play surface", 'id="surface"' in html)
+check("page contains the mode registry", "const MODES = {" in html and "MODE_IDS" in html)
+modes = re.findall(r"^  ([a-z]+): \{$", html, re.M)
+check("registry has a full roster", len(modes) >= 12, f"found {len(modes)}")
 check("page links the manifest", 'rel="manifest"' in html)
 check("page registers the worker", "serviceWorker" in html)
 

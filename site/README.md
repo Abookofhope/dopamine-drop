@@ -36,6 +36,14 @@ python3 -m http.server 8000 --directory _site
 Service workers need a secure context, which `localhost` counts as — so the
 offline behaviour can be tested without deploying.
 
+## Updating
+
+The worker installs a new build but does **not** take over on its own — an
+update that reloaded the page under someone's fingers mid-run would be worse
+than a stale build. The page notices the waiting worker and shows a banner
+pinned to the top; tapping it hands control over and reloads. Dismissing only
+hides the banner; the update still applies on the next launch.
+
 ## On the phone
 
 Chrome offers **Install app** (or Add to Home Screen). It installs to the home
