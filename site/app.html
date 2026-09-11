@@ -195,6 +195,30 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Peril: the duel ─────────────────────────────────────────────────── */
+.duel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;width:100%;height:100%;
+  transition:transform var(--t-fast)}
+.duel.hurt{animation:shake .3s cubic-bezier(.36,.07,.19,.97)}
+.duelfoe{display:flex;flex-direction:column;align-items:center;gap:12px}
+.duelfoe .tell{width:74px;height:74px;display:grid;place-items:center;border-radius:var(--r-lg);
+  color:var(--bad);background:#ff3d6e14;border:1px solid #ff3d6e44}
+.duelfoe .tell svg{width:60%;height:60%}
+.duelfoe.strike .tell{animation:tellIn .34s cubic-bezier(.2,1.3,.4,1)}
+@keyframes tellIn{0%{transform:scale(.7) rotate(-8deg);opacity:0}100%{transform:none;opacity:1}}
+.pips{display:flex;gap:5px}
+.duelyou{display:flex;gap:5px}
+.pip{width:16px;height:8px;border-radius:4px;background:var(--bad);transition:background var(--t-fast),opacity var(--t-fast)}
+.pip.you{background:var(--cool)}
+.pip.out{background:var(--edge);opacity:.5}
+.duelmoves{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.duelbtn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 14px 10px;min-width:78px;
+  border-radius:var(--r-md);background:var(--ink-2);border:1px solid var(--edge);color:var(--cream);
+  transition:transform var(--t-fast),background var(--t-fast),border-color var(--t-fast)}
+.duelbtn svg{width:26px;height:26px}
+.duelbtn b{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--haze)}
+.duelbtn:active{transform:scale(.94)}
+.duelbtn.hit{background:#33e6c833;border-color:var(--cool)}
+
 /* ── Arc / Slack: a square board with absolutely placed nodes ─────────── */
 .arcbox{position:relative;width:100%;aspect-ratio:1;touch-action:none}
 .arcwire,.slackwire{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
@@ -930,7 +954,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1079,7 +1103,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.11.0 (22)';
+const VERSION = 'v0.11.1 (23)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1358,6 +1382,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Peril|Read the tell, pick the counter, win the duel',
     'p.arc':'{n} left to reach', 'p.umbraLook':'Remember this shape', 'p.umbraPick':'Which one was it?', 'p.stroke':'{n} nodes to go', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Arc|Chain every node before the charge dies',  'm.umbra':'Umbra|Remember the shape, pick it from its near-misses',  'm.stroke':'Single Stroke|One line through every node, no lifting',  'm.slack':'Slack|Drag the nodes until no rope crosses',  'm.tide':'Tide Breath|Hold to swell, release to ebb — stay in the band',  'm.plink':'Drop Odds|Pull one peg, then drop into the lit bin',  'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 'p.word':'Spell the {n}-letter word',
     'p.wheel':'Guess the phrase', 'p.gap1':'Fill the gap', 'p.gap2':'Fill both gaps, left to right',
     'p.beat':'Tap the dot that is out of time', 'p.sort':'Sorted {a} of {b}',
@@ -1444,6 +1469,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Duel|Lisez son geste, choisissez la parade',
     'p.arc':'{n} à relier', 'p.umbraLook':'Retenez cette forme', 'p.umbraPick':'Laquelle était-ce ?', 'p.stroke':'{n} nœuds restants', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Arc|Reliez tous les nœuds avant la panne',  'm.umbra':'Umbra|Retenez la forme, puis reconnaissez-la',  'm.stroke':'Trait Unique|Une seule ligne par tous les nœuds',  'm.slack':'Démêlage|Déplacez les nœuds jusqu’à zéro croisement',  'm.tide':'Souffle|Tenez pour gonfler, relâchez pour dégonfler',  'm.plink':'Chute|Retirez un clou, puis visez le bac éclairé',  'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 'p.word':'Écrivez le mot de {n} lettres',
     'p.wheel':'Devinez la phrase', 'p.gap1':'Complétez le trou', 'p.gap2':'Complétez les deux trous, de gauche à droite',
     'p.beat':'Touchez le point à contretemps', 'p.sort':'{a} sur {b} triés',
@@ -1530,6 +1556,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Duelo|Lee su gesto y elige la respuesta',
     'p.arc':'Faltan {n}', 'p.umbraLook':'Recuerda esta forma', 'p.umbraPick':'¿Cuál era?', 'p.stroke':'Faltan {n} nodos', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Arco|Conecta todos los nodos antes de quedarte sin carga',  'm.umbra':'Umbra|Recuerda la forma y reconócela',  'm.stroke':'Trazo Único|Una línea por todos los nodos, sin levantar',  'm.slack':'Desenredo|Mueve los nodos hasta que nada se cruce',  'm.tide':'Respiro|Mantén para crecer, suelta para menguar',  'm.plink':'Caída|Quita un clavo y lanza a la casilla encendida',  'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 'p.word':'Escribe la palabra de {n} letras',
     'p.wheel':'Adivina la frase', 'p.gap1':'Completa el hueco', 'p.gap2':'Completa los dos huecos, de izquierda a derecha',
     'p.beat':'Toca el punto fuera de ritmo', 'p.sort':'{a} de {b} clasificados',
@@ -1616,6 +1643,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Duell|Lies die Geste, wähle die Antwort',
     'p.arc':'Noch {n}', 'p.umbraLook':'Merke dir diese Form', 'p.umbraPick':'Welche war es?', 'p.stroke':'Noch {n} Knoten', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Bogen|Verbinde alle Knoten, bevor der Strom ausgeht',  'm.umbra':'Umbra|Merke dir die Form und erkenne sie wieder',  'm.stroke':'Ein Strich|Eine Linie durch alle Knoten, ohne abzusetzen',  'm.slack':'Entwirren|Zieh die Knoten, bis nichts mehr kreuzt',  'm.tide':'Atemzug|Halten zum Wachsen, loslassen zum Schrumpfen',  'm.plink':'Fallen|Zieh einen Stift, dann ziel auf das helle Fach',  'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 'p.word':'Schreibe das Wort mit {n} Buchstaben',
     'p.wheel':'Errate den Satz', 'p.gap1':'Fülle die Lücke', 'p.gap2':'Fülle beide Lücken, von links nach rechts',
     'p.beat':'Tippe den Punkt aus dem Takt', 'p.sort':'{a} von {b} sortiert',
@@ -1728,6 +1756,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.11.1', date:'2026-09-11', items:[
+    'New mode — Peril. A duel in a few seconds: the enemy shows you what it is about to do, and exactly one of Strike, Parry or Wait beats it.',
+    'Waiting is a real answer against a guard, which nothing else in the game asks of you. Interrupting a charge hurts it twice — and missing one hurts you twice.',
+    'Hesitating counts as answering wrong, so the clock is part of the fight.'
+  ]},
   { v:'0.11.0', date:'2026-09-11', items:[
     'Six new modes, and two new families to put them in.',
     'Arc — chain every node before the charge runs down. The reach shrinks with every jump, so the order you take them in is the whole puzzle.',
@@ -3590,6 +3623,106 @@ const MODES = {
       onDrag(lane, { end: q => { if (phase === 'drop' && q) drop(clamp(q.x, 8, 92)); } });
       box.appendChild(lane);
       ctx.prompt(t('p.plinkPeg'));
+    }
+  },
+
+  /* ── Peril — a duel you read, not a dice roll ────────────────────────────
+     From "20-second RPG battles with one-tap choices". A choice with a random
+     outcome is a coin flip wearing armour, so the enemy telegraphs its intent
+     and exactly one answer beats it. The advance is Wait: doing nothing is the
+     correct play against a guard, and no other mode in the game rewards that.
+     Charge is the greedy trap — interrupting it hurts twice, missing it hurts
+     you twice. */
+  peril: {
+    name:'Peril', blurb:'Read the tell, pick the counter, win the duel', cat:'logic', par:9000, bonus:2800,
+    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19 19 5M14 5h5v5"/><path d="M5 5l4 4" stroke="#FF5B39"/></svg>',
+    build(ctx){
+      const TELLS = {
+        swing:  { beats:'parry',  ico:'M5 19 19 5M14 5h5v5' },
+        guard:  { beats:'wait',   ico:'M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z' },
+        charge: { beats:'strike', ico:'M13 2 4 14h7l-1 8 9-12h-7z' }
+      };
+      const MOVES = ['strike','parry','wait'];
+      const foeMax = clamp(3 + Math.floor(ctx.level/4), 3, 7);
+      const beat   = clamp(2600 - ctx.level*70, 1100, 2600);
+      let foe = foeMax, you = 3, tell = null, locked = false, timer = 0;
+
+      const wrap = mk('div','duel');
+      const foeBar = mk('div','duelfoe');
+      foeBar.innerHTML = '<span class="pips"></span><span class="tell"><svg viewBox="0 0 24 24" fill="none" '
+        + 'stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d=""/></svg></span>';
+      wrap.appendChild(foeBar);
+      const youBar = mk('div','duelyou'); wrap.appendChild(youBar);
+      const row = mk('div','duelmoves'); wrap.appendChild(row);
+
+      const pips = (host, n, max, cls) => {
+        host.replaceChildren();
+        for (let i=0;i<max;i++){ const s = mk('i', i < n ? cls : cls+' out'); host.appendChild(s); }
+      };
+      const paint = () => {
+        pips(foeBar.querySelector('.pips'), foe, foeMax, 'pip foe');
+        pips(youBar, you, 3, 'pip you');
+      };
+
+      const MOVEICO = {
+        strike:'M5 19 19 5M14 5h5v5',
+        parry: 'M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z',
+        wait:  'M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0'
+      };
+      const btns = MOVES.map(mv => {
+        const b = mk('button','duelbtn'); b.type = 'button';
+        b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" '
+          + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+MOVEICO[mv]+'"/></svg><b></b>';
+        b.querySelector('b').textContent = t('duel.'+mv);
+        b.setAttribute('aria-label', t('duel.'+mv));
+        onTap(b, () => answer(mv, b));
+        row.appendChild(b);
+        return b;
+      });
+
+      function nextTell(){
+        locked = false;
+        const keys = Object.keys(TELLS);
+        let k = keys[Math.floor(ctx.rnd()*keys.length)];
+        /* The same tell three times running reads as a bug rather than a
+           pattern, so it never happens. */
+        if (k === tell && keys.length > 1) k = keys[(keys.indexOf(k)+1) % keys.length];
+        tell = k;
+        foeBar.querySelector('.tell path').setAttribute('d', TELLS[k].ico);
+        foeBar.classList.remove('strike');
+        void foeBar.offsetWidth;
+        foeBar.classList.add('strike');
+        ctx.prompt(t('p.peril', { n: foe }));
+        clearTimeout(timer);
+        /* Hesitating is itself an answer, and the wrong one. */
+        timer = setTimeout(() => { if (!locked) answer(null, btns[0]); }, beat);
+      }
+
+      function answer(mv, node){
+        if (locked) return;
+        locked = true;
+        clearTimeout(timer);
+        const right = mv && TELLS[tell].beats === mv;
+        if (right){
+          foe -= (tell === 'charge' ? 2 : 1);
+          sfx.good(1); buzz(14);
+          node.classList.add('hit');
+          setTimeout(() => node.classList.remove('hit'), 260);
+        } else {
+          you -= (tell === 'charge' ? 2 : 1);
+          sfx.bad(); buzz([20,30,20]);
+          wrap.classList.add('hurt');
+          setTimeout(() => wrap.classList.remove('hurt'), 300);
+        }
+        paint();
+        if (foe <= 0) return ctx.win(node);
+        if (you <= 0) return ctx.miss(node);
+        ctx.after(420, nextTell);
+      }
+
+      ctx.surface.appendChild(wrap);
+      paint();
+      nextTell();
     }
   },
 };
