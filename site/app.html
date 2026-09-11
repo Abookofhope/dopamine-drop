@@ -195,6 +195,22 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Needle ───────────────────────────────────────────────────────────── */
+.needlewrap{display:flex;flex-direction:column;gap:10px;width:100%;height:100%;justify-content:center}
+.needleref{flex:none;display:flex;align-items:center;gap:10px;justify-content:center;
+  padding:8px 12px;border-radius:var(--r-md);background:#ffffff07;border:1px solid var(--edge-soft)}
+.needleref small{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--haze)}
+.refchip{border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden}
+.refchip .shp{padding:16%;box-sizing:border-box;width:100%;height:100%}
+/* Square, because the items are sized as a percentage of BOTH axes — on a
+   rectangle that draws ellipses, and makes "same size" untrue. */
+.needlefield{position:relative;width:100%;aspect-ratio:1;max-height:100%;margin:0 auto;
+  border-radius:var(--r-md);background:#ffffff04;border:1px solid var(--edge-soft);overflow:hidden}
+.needleitem{position:absolute;transform:translate(-50%,-50%);border-radius:50%;overflow:hidden;
+  transition:transform var(--t-fast)}
+.needleitem .shp{padding:16%;box-sizing:border-box;width:100%;height:100%}
+.needleitem:active{transform:translate(-50%,-50%) scale(.86)}
+
 /* ── Bruise ───────────────────────────────────────────────────────────── */
 .cell.hole{background:var(--ink-3);border:1px solid var(--edge);border-radius:50%;position:relative;overflow:hidden}
 .cell.hole::after{content:"";position:absolute;inset:14%;border-radius:50%;background:var(--blob,transparent);
@@ -987,7 +1003,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.4</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.5</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1136,7 +1152,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.11.4 (26)';
+const VERSION = 'v0.11.5 (27)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1415,6 +1431,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.needle':'Find it', 'needle.big':'the LARGE {c}', 'needle.small':'the SMALL {c}', 'needle.lgs':'large', 'needle.sms':'small', 'm.needle':'Needle|Find the one that is both — nothing here stands out',
     'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Bruise|Finish the hurt ones before they slip away',
     'p.skim':'{n} skips to go', 'm.skim':'Skim|Tap as it crosses — the window narrows each time',
     'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble|Pair them off faster than the drum refills',
@@ -1505,6 +1522,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.needle':'Trouvez-le', 'needle.big':'le GRAND {c}', 'needle.small':'le PETIT {c}', 'needle.lgs':'grand', 'needle.sms':'petit', 'm.needle':'Aiguille|Trouvez celui qui est les deux à la fois',
     'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Bleu|Achevez les blessés avant qu’ils filent',
     'p.skim':'Encore {n} ricochets', 'm.skim':'Ricochet|Touchez au passage — la fenêtre rétrécit',
     'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Tambour|Appariez plus vite que le remplissage',
@@ -1595,6 +1613,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.needle':'Encuéntralo', 'needle.big':'el {c} GRANDE', 'needle.small':'el {c} PEQUEÑO', 'needle.lgs':'grande', 'needle.sms':'pequeño', 'm.needle':'Aguja|Encuentra el que cumple las dos cosas',
     'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Moratón|Remata a los heridos antes de que huyan',
     'p.skim':'Faltan {n} rebotes', 'm.skim':'Rebote|Toca al cruzar — la ventana se estrecha',
     'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Tambor|Empareja más rápido de lo que se llena',
@@ -1685,6 +1704,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.needle':'Finde ihn', 'needle.big':'der GROSSE {c}', 'needle.small':'der KLEINE {c}', 'needle.lgs':'gross', 'needle.sms':'klein', 'm.needle':'Nadel|Finde den, auf den beides zutrifft',
     'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Blauer Fleck|Erledige die Angeschlagenen, bevor sie weg sind',
     'p.skim':'Noch {n} Sprünge', 'm.skim':'Sprung|Tippe beim Kreuzen — das Fenster wird enger',
     'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Trommel|Paare schneller, als es sich füllt',
@@ -1801,6 +1821,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.11.5', date:'2026-09-11', items:[
+    'New mode — Needle. Find the one that is both the right colour and the right size.',
+    'Every other item matches on exactly one of the two, so nothing jumps out at you and you have to actually look. That makes it a different job from Odd One Out, where the odd tile announces itself.'
+  ]},
   { v:'0.11.4', date:'2026-09-11', items:[
     'New mode — Bruise. Blobs take more than one hit, and their colour is their health. Green is nearly gone, red is fresh.',
     'They all leave on their own schedule, so the real question is which to finish and which to give up on — a fresh blob and a nearly-dead one are worth exactly the same.',
@@ -4039,6 +4063,96 @@ const MODES = {
       }));
       spawn();
       say();
+    }
+  },
+
+  /* ── Needle — search that cannot pop out ─────────────────────────────────
+     From "find one hidden object in a busy scene". Odd One Out is a feature
+     search: the odd tile differs on one axis, so it announces itself and the
+     board size barely matters. This is a conjunction search — the target is a
+     colour AND a size together, and every distractor shares exactly one of the
+     two. Nothing pops out, so the only way through is to actually look at the
+     items one by one, which is a different job entirely and scales with the
+     count in a way feature search does not.
+
+     Colour assist adds the shape channel on top, which is redundant coding
+     rather than a third axis: the conjunction stays colour-and-size either way. */
+  needle: {
+    name:'Needle', blurb:'Find the one that is both — nothing here stands out', cat:'focus', par:5600, bonus:2200,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="7" r="3" fill="#6C6191"/><circle cx="17" cy="8" r="4.5" fill="#6C6191"/><circle cx="8" cy="17" r="4.5" fill="#FF5B39"/><circle cx="17" cy="17" r="3" fill="#FF5B39"/></svg>',
+    build(ctx){
+      const total = Math.round(clamp(9 + ctx.level*1.9, 9, 34));
+      const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, 2);
+      const SIZES = [7.5, 12.5];
+      const wantInk = pal[Math.floor(ctx.rnd()*2)];
+      const wantSize = Math.floor(ctx.rnd()*2);
+      const otherInk = pal.find(p => p !== wantInk);
+
+      const wrap = mk('div','needlewrap');
+      const ref = mk('div','needleref');
+      const chip = mk('span','refchip');
+      chip.style.background = wantInk.hex;
+      chip.style.width = chip.style.height = (SIZES[wantSize]*2.4) + 'px';
+      if (assistOn()) chip.innerHTML = shapeSvg(wantInk.shape, 'var(--ink)');
+      ref.appendChild(chip);
+      const lbl = mk('small');
+      lbl.textContent = t(wantSize ? 'needle.big' : 'needle.small', { c: inkName(wantInk) });
+      ref.appendChild(lbl);
+      wrap.appendChild(ref);
+
+      const field = mk('div','needlefield');
+      /* Every distractor matches the target on exactly one axis, never both and
+         never neither: a distractor sharing nothing would be a second thing
+         that pops out and hand the search back to the easy strategy. */
+      const items = [{ ink: wantInk, size: wantSize, answer: true }];
+      for (let i=1;i<total;i++){
+        items.push(ctx.rnd() < 0.5
+          ? { ink: wantInk,  size: 1 - wantSize }
+          : { ink: otherInk, size: wantSize });
+      }
+      shuffle(items, ctx.rnd);
+
+      /* The answer goes down FIRST and is never dropped. The first cut placed
+         items in shuffled order and silently skipped any that would not fit —
+         which, on a crowded board, threw away the answer itself and produced a
+         round with no correct tap anywhere on it. A distractor that will not
+         fit costs the puzzle nothing; the answer is the puzzle.
+
+         Everything also shrinks together until the whole set fits, rather than
+         the board being asked to hold more than it can. */
+      const answerFirst = items.slice().sort((a,b) => (b.answer?1:0) - (a.answer?1:0));
+      let placed = [], drawn = [];
+      for (let scale = 1; scale >= 0.45; scale *= 0.88){
+        placed = []; drawn = [];
+        let ok = true;
+        for (const it of answerFirst){
+          const r = SIZES[it.size] * scale;
+          let spot = null;
+          for (let a=0;a<260 && !spot;a++){
+            const x = r + ctx.rnd()*(100-2*r), y = r + ctx.rnd()*(100-2*r);
+            if (placed.every(p => Math.hypot(p.x-x, p.y-y) > (p.r + r) + 1.5)) spot = { x, y, r };
+          }
+          if (!spot){ if (it.answer){ ok = false; break; } else continue; }
+          placed.push(spot); drawn.push({ it, spot });
+        }
+        /* Keep shrinking while a big share of the field is still being dropped:
+           a "busy scene" with six items in it is not the mode. */
+        if (ok && drawn.length >= Math.min(items.length, 12)) break;
+      }
+      shuffle(drawn, ctx.rnd).forEach(({ it, spot }) => {
+        const r = spot.r;
+        const b = mk('button','needleitem'); b.type='button';
+        b.style.left = spot.x+'%'; b.style.top = spot.y+'%';
+        b.style.width = b.style.height = (r*2)+'%';
+        b.style.background = it.ink.hex;
+        if (assistOn()) b.innerHTML = shapeSvg(it.ink.shape, 'var(--ink)');
+        b.setAttribute('aria-label', inkName(it.ink) + ', ' + t(it.size ? 'needle.lgs' : 'needle.sms'));
+        onTap(b, () => it.answer ? ctx.win(b) : ctx.miss(b));
+        field.appendChild(b);
+      });
+      wrap.appendChild(field);
+      ctx.surface.appendChild(wrap);
+      ctx.prompt(t('p.needle'));
     }
   },
 };
