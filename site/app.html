@@ -791,7 +791,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.6.1</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.6.2</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -935,7 +935,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.6.1 (11)';
+const VERSION = 'v0.6.2 (12)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1556,6 +1556,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.6.2', date:'2026-09-11', items:[
+    'Fixed a giveaway in Count Fast: the right answer was always the second highest of the four options, every single round. You never actually had to count. It now lands anywhere in the row.',
+    'Modes are dealt from a shuffled deck instead of picked at random, so a one-minute run shows you sixteen different puzzles rather than the same four over and over.',
+    'A mode can never follow itself now, including across a reshuffle.'
+  ]},
   { v:'0.6.1', date:'2026-09-11', items:[
     'Slide Path now has bars that slide sideways as well as up and down. Tap the end you want a bar to move towards.',
     'Every Slide Path board is now checked by the game before you see it, so one can never be impossible — and its difficulty is the length of the shortest solution rather than the number of bars.',
@@ -2096,11 +2101,15 @@ const MODES = {
         box.appendChild(e);
       });
 
+      /* The old generator walked outward alternating low, high, low and
+         stopped at four, which put the answer third of four sorted EVERY
+         time — the second highest, always, for every possible answer. You
+         never had to count a single dot. Decide instead how many options sit
+         below the answer, so its rank moves around the row. */
+      const below = Math.min(answer - 1, Math.floor(ctx.rnd()*4));
       const near = new Set([answer]);
-      for (let d=1; near.size<4; d++){
-        if (answer-d >= 1) near.add(answer-d);
-        if (near.size<4) near.add(answer+d);
-      }
+      for (let d=1, got=0; got<below && d<answer; d++){ near.add(answer-d); got++; }
+      for (let d=1; near.size<4; d++) near.add(answer+d);
       const row = mk('div','answers');
       shuffle(Array.from(near), ctx.rnd).forEach(v => {
         const b = mk('button','abtn'); b.type='button'; b.textContent = String(v);
@@ -2867,12 +2876,18 @@ function tick(ts){
 }
 
 /* ═══ Rounds ══════════════════════════════════════════════════════════════ */
+/* Picking at random meant a sixteen-mode roster still handed you the same
+   three modes twice each in a one-minute run — random clumps, and it reads as
+   the game having far less in it than it does. A bag deals every mode once
+   before any of them comes back. */
 function pickMode(){
   if (run.mode) return run.mode;
-  const pool = run.pool;
-  let id, guard = 0;
-  do { id = pool[Math.floor(run.rnd()*pool.length)]; }
-  while (id === run.lastMode && pool.length > 1 && guard++ < 20);
+  if (!run.bag || !run.bag.length){
+    run.bag = shuffle(run.pool.slice(), run.rnd);
+    /* A fresh bag must not open with the mode the old one closed on. */
+    if (run.bag.length > 1 && run.bag[0] === run.lastMode) run.bag.push(run.bag.shift());
+  }
+  const id = run.bag.shift();
   run.lastMode = id;
   return id;
 }
@@ -2955,7 +2970,7 @@ function startRun(kind, modeId){
   const k = KINDS[kind];
   const lvl = playerLevel();
   run = {
-    kind, mode: modeId || null, curMode: null, lastMode: null,
+    kind, mode: modeId || null, curMode: null, lastMode: null, bag: null,
     score:0, solved:0, missed:0, streak:0, bestStreak:0,
     time: k.start || 0, lives: k.lives || 0, roundIdx:0, started:false,
     xpAtStart: save.xp,
