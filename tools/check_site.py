@@ -79,6 +79,34 @@ check("page contains the play surface", 'id="surface"' in html)
 check("page contains the mode registry", "const MODES = {" in html and "MODE_IDS" in html)
 modes = re.findall(r"^  ([a-z]+): \{$", html, re.M)
 check("registry has a full roster", len(modes) >= 12, f"found {len(modes)}")
+# Word banks are player-visible content in four languages, and the failure
+# mode is silent: a word of the wrong length just renders a puzzle with a
+# letter too few. This has already shipped twice — once as a truncated
+# non-word, once as a stray character from the wrong alphabet — so the
+# lengths, the alphabet and the duplicates are checked here rather than
+# trusted to review.
+m = re.search(r"const WORD_BANKS = \{(.*?)\n\};", html, re.S)
+check("word banks present", bool(m))
+if m:
+    problems, total = [], 0
+    for lang, body in re.findall(r"(\w+):\s*\{(.*?)\}", m.group(1), re.S):
+        for length, words in re.findall(r"(\d+):\s*\[(.*?)\]", body, re.S):
+            ws = re.findall(r"'([^']*)'", words)
+            total += len(ws)
+            for w in ws:
+                if len(w) != int(length):
+                    problems.append(f"{lang}/{length}:{w} is {len(w)}")
+                if not re.fullmatch(r"[A-Z]+", w):
+                    problems.append(f"{lang}/{length}:{w} not A-Z")
+            dupes = {w for w in ws if ws.count(w) > 1}
+            if dupes:
+                problems.append(f"{lang}/{length} repeats {sorted(dupes)}")
+            if len(ws) < 20:
+                problems.append(f"{lang}/{length} only has {len(ws)} words")
+    check("every word matches its bucket, alphabet and is unique",
+          not problems, "; ".join(problems[:4]))
+    check("word banks are large enough to not repeat", total >= 400, f"{total} words")
+
 check("page links the manifest", 'rel="manifest"' in html)
 check("page registers the worker", "serviceWorker" in html)
 

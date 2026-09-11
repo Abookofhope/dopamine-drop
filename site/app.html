@@ -488,7 +488,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .sortrule.flip{animation:ruleflip 280ms cubic-bezier(.2,.9,.3,1)}
 @keyframes ruleflip{0%{transform:scale(.7);background:var(--zap);color:var(--ink)}100%{transform:scale(1)}}
 .sortstage{flex:1;min-height:90px;display:grid;place-items:center}
-.sortitem{border-radius:50%;overflow:hidden;transition:width var(--t-med),height var(--t-med)}
+.sortitem{border-radius:50%;overflow:hidden;box-sizing:border-box;border:0 solid transparent;
+  transition:width var(--t-med),height var(--t-med),background var(--t-fast),border-width var(--t-fast)}
+/* Fill is a sorting axis now, so hollow has to read as hollow at a glance
+   rather than as a smaller dot: the ring is thick and keeps the outer size. */
+.sortitem.hollow{background:transparent}
 .sortitem .shp{padding:16%;box-sizing:border-box}
 .bins{display:flex;gap:10px;width:100%;max-width:340px}
 .bin{
@@ -791,7 +795,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.6.2</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.7.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -935,7 +939,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.6.2 (12)';
+const VERSION = 'v0.7.0 (13)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1198,7 +1202,8 @@ const STRINGS = {
     'p.target':'Target',
     'c.RED':'RED','c.BLUE':'BLUE','c.GREEN':'GREEN','c.YELLOW':'YELLOW','c.PURPLE':'PURPLE','c.ORANGE':'ORANGE',
     's.circle':'circles','s.square':'squares','s.triangle':'triangles','s.diamond':'diamonds','s.cross':'crosses','s.chevron':'arrows',
-    'sort.colour':'SORT BY COLOUR','sort.size':'SORT BY SIZE','sort.small':'SMALL','sort.big':'BIG'
+    'sort.colour':'SORT BY COLOUR','sort.size':'SORT BY SIZE','sort.small':'SMALL','sort.big':'BIG',
+    'sort.fill':'SORT BY FILL','sort.hollow':'HOLLOW','sort.solid':'SOLID'
   },
 
   fr: {
@@ -1282,7 +1287,8 @@ const STRINGS = {
     'p.target':'Cible',
     'c.RED':'ROUGE','c.BLUE':'BLEU','c.GREEN':'VERT','c.YELLOW':'JAUNE','c.PURPLE':'VIOLET','c.ORANGE':'ORANGE',
     's.circle':'cercles','s.square':'carrés','s.triangle':'triangles','s.diamond':'losanges','s.cross':'croix','s.chevron':'flèches',
-    'sort.colour':'TRIER PAR COULEUR','sort.size':'TRIER PAR TAILLE','sort.small':'PETIT','sort.big':'GRAND'
+    'sort.colour':'TRIER PAR COULEUR','sort.size':'TRIER PAR TAILLE','sort.small':'PETIT','sort.big':'GRAND',
+    'sort.fill':'TRIER PAR REMPLISSAGE','sort.hollow':'CREUX','sort.solid':'PLEIN'
   },
 
   es: {
@@ -1366,7 +1372,8 @@ const STRINGS = {
     'p.target':'Objetivo',
     'c.RED':'ROJO','c.BLUE':'AZUL','c.GREEN':'VERDE','c.YELLOW':'AMARILLO','c.PURPLE':'MORADO','c.ORANGE':'NARANJA',
     's.circle':'círculos','s.square':'cuadrados','s.triangle':'triángulos','s.diamond':'rombos','s.cross':'cruces','s.chevron':'flechas',
-    'sort.colour':'CLASIFICA POR COLOR','sort.size':'CLASIFICA POR TAMAÑO','sort.small':'PEQUEÑO','sort.big':'GRANDE'
+    'sort.colour':'CLASIFICA POR COLOR','sort.size':'CLASIFICA POR TAMAÑO','sort.small':'PEQUEÑO','sort.big':'GRANDE',
+    'sort.fill':'CLASIFICA POR RELLENO','sort.hollow':'HUECO','sort.solid':'LLENO'
   },
 
   de: {
@@ -1450,7 +1457,8 @@ const STRINGS = {
     'p.target':'Ziel',
     'c.RED':'ROT','c.BLUE':'BLAU','c.GREEN':'GRÜN','c.YELLOW':'GELB','c.PURPLE':'LILA','c.ORANGE':'ORANGE',
     's.circle':'Kreise','s.square':'Quadrate','s.triangle':'Dreiecke','s.diamond':'Rauten','s.cross':'Kreuze','s.chevron':'Pfeile',
-    'sort.colour':'NACH FARBE','sort.size':'NACH GRÖSSE','sort.small':'KLEIN','sort.big':'GROSS'
+    'sort.colour':'NACH FARBE','sort.size':'NACH GRÖSSE','sort.small':'KLEIN','sort.big':'GROSS',
+    'sort.fill':'NACH FÜLLUNG','sort.hollow':'HOHL','sort.solid':'VOLL'
   }
 };
 
@@ -1459,27 +1467,26 @@ const STRINGS = {
    26-key board is a worse puzzle rather than a harder one. */
 const WORD_BANKS = {
   en: {
-    4: ['CALM','DRIP','GLOW','LOOP','MIND','RUSH','SNAP','TIDE','WAVE','ZONE'],
-    5: ['BLINK','CHASE','DRIFT','FLASH','PULSE','QUICK','SHIFT','SPARK','TRACE','BURST'],
-    6: ['BOUNCE','CIRCLE','FIDGET','MIRROR','PUZZLE','REWIRE','SIGNAL','STREAK']
+    4: ['CALM','DRIP','GLOW','LOOP','MIND','RUSH','SNAP','TIDE','WAVE','ZONE','BEAM','CHIP','DASH','ECHO','FLIP','GRID','HINT','JUMP','KNOT','LENS','MAZE','NEON','PATH','QUIZ','RISK','SPIN','TRAP','VIBE','WIRE','YARN','BOLT','CARD','DUSK','FERN','GATE','HERD','KITE','LIME','MOSS','NEST','PEAK','RAIN','SAIL','TENT','VOTE','WOLF','HAZE','IRIS','JOLT','MELT'],
+    5: ['BLINK','CHASE','DRIFT','FLASH','PULSE','QUICK','SHIFT','SPARK','TRACE','BURST','AMBER','BLAZE','CRANE','DELTA','EMBER','FROST','GLIDE','HOVER','INDEX','KNACK','LUNAR','MERGE','NUDGE','ORBIT','PRISM','QUEST','RIDGE','STORM','TWIST','VIVID','WHISK','YIELD','ZEBRA','CLOUD','PLUME','SWIFT','THORN','VAULT','BRAVE','CHARM','DODGE','FLARE','GRACE','HATCH','IVORY','JOLLY','LATCH','MARSH','NOBLE','OTTER'],
+    6: ['BOUNCE','CIRCLE','FIDGET','MIRROR','PUZZLE','REWIRE','SIGNAL','STREAK','ANCHOR','BRIDGE','CANYON','DAZZLE','FLIGHT','GARDEN','HARBOR','INSECT','JUNGLE','KETTLE','LIQUID','MARBLE','NEEDLE','ORANGE','PEBBLE','QUIVER','RIPPLE','SILVER','TUNNEL','VELVET','WINDOW','ZEPHYR','BASKET','COPPER','DRAGON','FALCON','MEADOW','NECTAR','ORCHID','PLANET','ROCKET','SHADOW','TEMPLE','VOYAGE','WALNUT','BEACON','CACTUS','FROZEN','HOLLOW','TIMBER','YELLOW','BREEZE']
   },
   fr: {
-    4: ['LUNE','PORT','CHAT','MAIN','NEUF','ROSE','VENT','PAIN','TOUR','NUIT'],
-    5: ['ARBRE','CHIEN','FLEUR','MONDE','NUAGE','PLAGE','ROUTE','TABLE','VERRE','LIVRE'],
-    6: ['BOUTON','CHEMIN','MIROIR','ORANGE','SOLEIL','VOYAGE','JARDIN','MAISON']
+    4: ['LUNE','PORT','CHAT','MAIN','NEUF','ROSE','VENT','PAIN','TOUR','NUIT','BRAS','CIEL','DENT','GARE','JOUR','LAIT','NOIR','OURS','ROND','SOIR','AILE','BANC','CAVE','DOUX','FORT','GRIS','HAUT','LOUP','MIEL','MOTS','PONT','PEAU','RIRE','SAUT','TOIT','VOIX','ZONE','BOIS','COUR','DAME','FEUX','JEUX','LOIN','MURS','NAGE','PEUR','RUES','SOIE','VERT','VIDE'],
+    5: ['ARBRE','CHIEN','FLEUR','MONDE','NUAGE','PLAGE','ROUTE','TABLE','VERRE','LIVRE','BLANC','CARTE','DANSE','GRAND','HERBE','JAUNE','LARGE','NEIGE','PETIT','PORTE','RADIO','SABLE','TIGRE','VILLE','VOILE','POMME','POCHE','ROCHE','SALLE','SUCRE','TASSE','BOULE','CADRE','CHOSE','CORPS','DOIGT','FORCE','GLACE','HUILE','LAINE','LIGNE','NAGER','OMBRE','PLUME','QUEUE','ROUGE','SOUPE','CRAIE','FRUIT','TRAIN'],
+    6: ['BOUTON','CHEMIN','MIROIR','ORANGE','SOLEIL','VOYAGE','JARDIN','MAISON','BALLON','CANARD','DOUCHE','GARAGE','PANIER','SOURIS','BATEAU','CHEVAL','PLANTE','RAISIN','SALADE','TOMATE','VIOLET','MARCHE','MONTRE','NOMBRE','PIERRE','POULET','SAVOIR','LAPINS','NUAGES','OMBRES','ARGENT','BOUCHE','CARTON','COUPLE','ESPACE','GRAINE','LAMPES','MANCHE','NAPPES','RIDEAU','VALISE','VOISIN','DESSIN','MOUTON','ROULER','SORTIR','TOMBER','VENDRE','RENARD','PARLER']
   },
   es: {
-    4: ['CASA','MESA','LUNA','MANO','ROPA','SOPA','VIDA','TIPO','FLOR','GATO'],
-    5: ['CAMPO','LIBRO','MUNDO','NOCHE','PLAYA','PUNTO','VERDE','NUBES','SALTO','CARTA'],
-    6: ['CAMINO','CIUDAD','FLORES','MINUTO','PUERTA','MANTEL','CUADRO','PLANTA']
+    4: ['CASA','MESA','LUNA','MANO','ROPA','SOPA','VIDA','TIPO','FLOR','GATO','AGUA','AIRE','ALTO','AZUL','BOCA','CAMA','CINE','DEDO','DIEZ','DOCE','FOCA','GRIS','HOJA','HORA','ISLA','LADO','LAGO','LIMA','MIEL','NUBE','OJOS','PATO','PELO','PERA','PESO','PINO','RANA','RATO','ROSA','SAPO','SOLO','TAZA','TELA','TREN','UVAS','VASO','VELA','VINO','ZONA','DIAS'],
+    5: ['CAMPO','LIBRO','MUNDO','NOCHE','PLAYA','PUNTO','VERDE','NUBES','SALTO','CARTA','AGUJA','BARCO','CABRA','CALLE','CARRO','CIELO','CLASE','COCHE','FRUTA','FUEGO','GENTE','GRANO','HIELO','HUEVO','JUEGO','LECHE','MANOS','MESAS','MONTE','MUJER','NEGRO','NIEVE','PAPEL','PERRO','PLATO','POLLO','PUNTA','QUESO','RADIO','RUEDA','SILLA','TARDE','TIGRE','VERSO','VIAJE','BANCO','BOTAS','CESTA','DULCE','FLACO'],
+    6: ['CAMINO','CIUDAD','FLORES','MINUTO','PUERTA','MANTEL','CUADRO','PLANTA','AMIGOS','BLANCO','BOSQUE','CABEZA','CAMISA','CARTAS','COCINA','CONEJO','ESPEJO','FRUTAS','GRANDE','LIBROS','MADERA','MONEDA','PELOTA','PERROS','PIEDRA','QUESOS','SILLAS','TIEMPO','VERANO','VIAJES','ZAPATO','ABRIGO','CAMPOS','CESTAS','DINERO','ESCOBA','GUANTE','HELADO','LLUVIA','MARTES','PALOMA','SEMANA','TIJERA','VIENTO','VERDES','NOCHES','PLATOS','PUENTE','SALTOS','TARDES']
   },
   de: {
-    4: ['HAUS','BAUM','HAND','TIER','ZEIT','WORT','BERG','WIND','MOND','BILD'],
-    5: ['BLUME','KARTE','LICHT','PUNKT','REGEN','STERN','TISCH','WOLKE','SPIEL','NACHT'],
-    6: ['GARTEN','SOMMER','STRAND','WINTER','ZIMMER','WOLKEN','BLUMEN','STUNDE']
+    4: ['BAUM','HAUS','BUCH','HAND','BERG','WEIN','ZEIT','GELD','KIND','BLAU','GOLD','HERZ','JAHR','KOPF','LAND','MOND','RING','ROSE','SALZ','TIER','WELT','WIND','WOLF','ZAHL','BEIN','BROT','DACH','GAST','GRAS','HUND','NASE','OBST','PARK','SAND','SEIL','TEIL','ARZT','BANK','DORF','EULE','FELD','HAAR','KERN','MAUS','PILZ','REIS','TOPF','HOLZ','ZAUN','MUND'],
+    5: ['BLUME','TISCH','STERN','WOLKE','NACHT','LICHT','MILCH','REGEN','VOGEL','WAGEN','APFEL','BIRNE','BODEN','BRIEF','FISCH','GABEL','KARTE','KATZE','KETTE','KLEID','KRAFT','KREIS','LEBEN','LEDER','LINIE','MAUER','NADEL','NAGEL','OSTEN','PFERD','PLATZ','PREIS','RAUCH','SPIEL','STEIN','STUHL','TASSE','TIGER','TRAUM','WIESE','ANGEL','BESEN','DECKE','ENTEN','FEDER','HOSEN','INSEL','JACKE','NEBEL','OHREN'],
+    6: ['GARTEN','HIMMEL','WINTER','ZIMMER','SCHIFF','BLUMEN','BRIEFE','DONNER','FEDERN','FELSEN','FREUND','HAMMER','KAMERA','KERZEN','LAMPEN','LEITER','MESSER','MORGEN','PAPIER','SCHUHE','SILBER','SOMMER','STRAND','SUPPEN','TELLER','WOLKEN','ZUCKER','KISTEN','ANGELN','BIENEN','EIMERN','MANTEL','NUDELN','PINSEL','QUELLE','TASCHE','ZEITEN','KNOTEN','GIPFEL','STEINE','STERNE','SPIELE','FISCHE','KARTEN','KATZEN','LINIEN','NADELN','PFERDE','TIGERN','VOGELN']
   }
 };
-
 const PHRASE_BANKS = {
   en: [
     { category:'SAYING', text:'BETTER LATE THAN NEVER' },
@@ -1556,6 +1563,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.7.0', date:'2026-09-11', items:[
+    'The word pool went from 10 words per length to 50, in all four languages — 600 words where there used to be 112.',
+    'Words, phrases and Letter Gap puzzles are now dealt from a deck like the modes are: every one is used before any comes back, so you will not see the same word twice in an evening.',
+    'Sort Drop has a third rule. As well as colour and size it now sorts by fill — hollow or solid — which doubles the number of different things it can show you.',
+    'Sort Drop also deals its items from a deck, so the same dot can no longer turn up three times in a row.'
+  ]},
   { v:'0.6.2', date:'2026-09-11', items:[
     'Fixed a giveaway in Count Fast: the right answer was always the second highest of the four options, every single round. You never actually had to count. It now lands anywhere in the row.',
     'Modes are dealt from a shuffled deck instead of picked at random, so a one-minute run shows you sixteen different puzzles rather than the same four over and over.',
@@ -1694,6 +1707,27 @@ function shapeSvg(shape, stroke){
     + SHAPE_PATH[shape] + '</g></svg>';
 }
 const assistOn = () => save.colorAssist;
+
+/* The same deck idea as the mode picker, one level down. Picking a word at
+   random out of fifty still shows you the same word twice in an evening —
+   the birthday problem is brutal at this scale — and a repeat inside one
+   session is exactly what makes a pool feel tiny. Bags are per session and
+   per pool, so every word, phrase and item is spent before any comes back.
+   The Daily Drop deliberately does not use them: it has to be the same
+   puzzle for everyone who plays it, which means seeded picks only. */
+const contentBags = new Map(), contentLast = new Map();
+function dealFrom(items, id){
+  if (!items || items.length < 2) return items ? items[0] : undefined;
+  let bag = contentBags.get(id);
+  if (!bag || !bag.length){
+    bag = shuffle(items.slice(), Math.random);
+    if (bag.length > 1 && bag[0] === contentLast.get(id)) bag.push(bag.shift());
+    contentBags.set(id, bag);
+  }
+  const out = bag.shift();
+  contentLast.set(id, out);
+  return out;
+}
 
 /* Answers fire on the finger LANDING, not on it leaving. `click` on touch
    waits for pointerup and then for the browser to rule out a scroll and a
@@ -2454,7 +2488,7 @@ const MODES = {
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="7" height="8" rx="1.5" fill="#FF5B39"/><rect x="14" y="8" width="7" height="8" rx="1.5" fill="#6C6191"/></svg>',
     build(ctx){
       const len = ctx.level < 5 ? 4 : ctx.level < 12 ? 5 : 6;
-      const w = pick(wordBank()[len], ctx.rnd);
+      const w = ctx.deal(wordBank()[len], 'word:' + save.lang + ':' + len);
       let tiles = shuffle(w.split(''), ctx.rnd);
       /* A word already spelled out is a free point, not a puzzle — and with
          four letters it happens more often than you would think. */
@@ -2499,7 +2533,7 @@ const MODES = {
     name:'Phrase Wheel', blurb:'Guess letters to reveal the phrase', par:14000, bonus:3600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="5" height="6" rx="1.5" fill="#FF5B39"/><rect x="9.5" y="9" width="5" height="6" rx="1.5" fill="#6C6191"/><rect x="17" y="9" width="5" height="6" rx="1.5" fill="#FFC53D"/></svg>',
     build(ctx){
-      const entry = pick(phraseBank(), ctx.rnd);
+      const entry = ctx.deal(phraseBank(), 'phrase:' + save.lang);
       const phrase = entry.text.toUpperCase();
       const letters = new Set(phrase.split('').filter(c => /[A-Z]/.test(c)));
       const found = new Set();
@@ -2571,7 +2605,7 @@ const MODES = {
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="6" height="8" rx="1.5" fill="#6C6191"/><rect x="10" y="8" width="4" height="8" rx="1.5" fill="none" stroke="#FF5B39" stroke-width="2" stroke-dasharray="2 2"/><rect x="15" y="8" width="6" height="8" rx="1.5" fill="#6C6191"/></svg>',
     build(ctx){
       const len = ctx.level < 5 ? 4 : ctx.level < 12 ? 5 : 6;
-      const word = pick(wordBank()[len], ctx.rnd);
+      const word = ctx.deal(wordBank()[len], 'gap:' + save.lang + ':' + len);
       /* More holes as the level climbs, but never the first letter: a word
          with no visible start is a guess, not a puzzle. */
       const holes = clamp(1 + Math.floor(ctx.level/6), 1, Math.min(2, len-2));
@@ -2659,34 +2693,64 @@ const MODES = {
       const left = mk('button','bin'); left.type='button'; bins.appendChild(left);
       const right = mk('button','bin'); right.type='button'; bins.appendChild(right);
 
+      /* Two colours and two sizes is four possible items and two possible
+         rules, so a seven-item round showed the same dot under the same
+         instruction several times over. Fill is a third axis that is
+         independent of both — and, unlike shape, it stays independent when
+         colour assist is on, where shape is already spoken for encoding hue. */
+      const RULES = ['colour','size','fill'];
+      let itemBag = [];
+      function dealItem(){
+        if (!itemBag.length){
+          itemBag = shuffle([0,1,2,3,4,5,6,7], ctx.rnd).map(n => ({
+            ink: pal[n & 1], big: !!(n & 2), solid: !!(n & 4)
+          }));
+          /* never the identical item twice across the seam of two bags */
+          if (item && itemBag.length > 1){
+            const same = i => i.ink === item.ink && i.big === item.big && i.solid === item.solid;
+            if (same(itemBag[0])) itemBag.push(itemBag.shift());
+          }
+        }
+        return itemBag.shift();
+      }
+
       function next(){
         /* The flip is the mode. Sorting by one rule is trivial; noticing that
            the rule changed, mid-flow, is the whole exercise. */
-        if (done > 0 && ctx.rnd() < 0.45) rule = rule === 'colour' ? 'size' : 'colour';
-        const ink = pal[Math.floor(ctx.rnd()*2)];
-        const big = ctx.rnd() < 0.5;
-        item = { ink, big };
+        if (done > 0 && ctx.rnd() < 0.45){
+          const others = RULES.filter(r => r !== rule);
+          rule = others[Math.floor(ctx.rnd()*others.length)];
+        }
+        item = dealItem();
 
-        label.textContent = t(rule === 'colour' ? 'sort.colour' : 'sort.size');
+        label.textContent = t('sort.' + (rule === 'colour' ? 'colour' : rule === 'size' ? 'size' : 'fill'));
         label.classList.add('flip');
         setTimeout(() => label.classList.remove('flip'), 280);
 
         stage.innerHTML = '';
-        const dot = mk('div','sortitem');
-        dot.style.background = ink.hex;
-        dot.style.width = dot.style.height = (big ? 76 : 44) + 'px';
-        if (assistOn()) dot.innerHTML = shapeSvg(ink.shape, 'var(--ink)');
+        const dot = mk('div','sortitem' + (item.solid ? '' : ' hollow'));
+        const px = item.big ? 76 : 44;
+        dot.style.width = dot.style.height = px + 'px';
+        if (item.solid){
+          dot.style.background = item.ink.hex;
+          dot.style.borderColor = 'transparent';
+        } else {
+          dot.style.background = 'transparent';
+          dot.style.borderColor = item.ink.hex;
+          dot.style.borderWidth = (item.big ? 10 : 7) + 'px';
+        }
+        if (assistOn()) dot.innerHTML = shapeSvg(item.ink.shape, item.solid ? 'var(--ink)' : item.ink.hex);
         stage.appendChild(dot);
 
-        left.textContent  = rule === 'colour' ? inkName(pal[0]) : t('sort.small');
-        right.textContent = rule === 'colour' ? inkName(pal[1]) : t('sort.big');
+        left.textContent  = rule === 'colour' ? inkName(pal[0]) : rule === 'size' ? t('sort.small') : t('sort.hollow');
+        right.textContent = rule === 'colour' ? inkName(pal[1]) : rule === 'size' ? t('sort.big')   : t('sort.solid');
         left.style.borderColor  = rule === 'colour' ? pal[0].hex : 'var(--edge)';
         right.style.borderColor = rule === 'colour' ? pal[1].hex : 'var(--edge)';
       }
 
       function answer(isRight){
         if (!item) return;
-        const correct = rule === 'colour' ? (item.ink === pal[1]) : item.big;
+        const correct = rule === 'colour' ? (item.ink === pal[1]) : rule === 'size' ? item.big : item.solid;
         if (isRight !== correct) return ctx.miss(isRight ? right : left);
         done++; sfx.tap(); buzz(8);
         if (done >= rounds) return ctx.win(isRight ? right : left);
@@ -2908,6 +2972,10 @@ function nextRound(){
     level: Prog.effectiveLevel(run.solved, run.playerLevel),
     rnd: run.rnd,
     after: later,
+    /* Content that should not repeat goes through here rather than pick(). */
+    deal: (items, id) => run.kind === 'daily'
+      ? items[Math.floor(run.rnd()*items.length)]
+      : dealFrom(items, id),
     prompt: txt => { el.prompt.textContent = txt; el.prompt.className = 'prompt'; },
     win: node => resolve(true, node),
     miss: node => resolve(false, node)
