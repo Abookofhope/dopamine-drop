@@ -195,6 +195,23 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Skim ─────────────────────────────────────────────────────────────── */
+.skimtrack{position:relative;width:100%;aspect-ratio:1;border-radius:var(--r-lg);overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 110%, #1b1440 0%, #0d0918 70%);
+  border:1px solid var(--edge-soft);transition:box-shadow var(--t-fast)}
+.skimtrack.hot{box-shadow:inset 0 0 0 1px #4bc0ff66}
+.skimstars{position:absolute;inset:0;pointer-events:none}
+.skimstars i{position:absolute;width:2px;height:2px;border-radius:50%;background:var(--cream)}
+.skimzone{position:absolute;top:38%;height:24%;border-radius:var(--r-sm);pointer-events:none;
+  background:#4bc0ff1f;border:1px solid #4bc0ff66;transition:left var(--t-med),width var(--t-med)}
+.skimtrack.hot .skimzone{background:#4bc0ff40}
+.skimmark{position:absolute;top:34%;height:32%;width:4px;border-radius:3px;transform:translateX(-50%);
+  background:var(--cream);box-shadow:0 0 12px #ffffffaa;pointer-events:none}
+.skimpips{position:absolute;left:0;right:0;bottom:12%;display:flex;gap:6px;justify-content:center;pointer-events:none}
+.skimpips i{width:16px;height:4px;border-radius:2px;background:var(--edge)}
+.skimpips i.on{background:#4BC0FF}
+.skimhit{position:absolute;inset:0;background:transparent}
+
 /* ── Tumble ───────────────────────────────────────────────────────────── */
 .cell.sock{background:var(--ink-3);border:1px solid var(--edge);border-radius:var(--r-sm);
   transition:transform var(--t-fast),box-shadow var(--t-fast),opacity var(--t-fast)}
@@ -962,7 +979,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.2</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.3</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1111,7 +1128,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.11.2 (24)';
+const VERSION = 'v0.11.3 (25)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1390,6 +1407,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.skim':'{n} skips to go', 'm.skim':'Skim|Tap as it crosses — the window narrows each time',
     'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble|Pair them off faster than the drum refills',
     'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Peril|Read the tell, pick the counter, win the duel',
     'p.arc':'{n} left to reach', 'p.umbraLook':'Remember this shape', 'p.umbraPick':'Which one was it?', 'p.stroke':'{n} nodes to go', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Arc|Chain every node before the charge dies',  'm.umbra':'Umbra|Remember the shape, pick it from its near-misses',  'm.stroke':'Single Stroke|One line through every node, no lifting',  'm.slack':'Slack|Drag the nodes until no rope crosses',  'm.tide':'Tide Breath|Hold to swell, release to ebb — stay in the band',  'm.plink':'Drop Odds|Pull one peg, then drop into the lit bin',  'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 'p.word':'Spell the {n}-letter word',
@@ -1478,6 +1496,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.skim':'Encore {n} ricochets', 'm.skim':'Ricochet|Touchez au passage — la fenêtre rétrécit',
     'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Tambour|Appariez plus vite que le remplissage',
     'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Duel|Lisez son geste, choisissez la parade',
     'p.arc':'{n} à relier', 'p.umbraLook':'Retenez cette forme', 'p.umbraPick':'Laquelle était-ce ?', 'p.stroke':'{n} nœuds restants', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Arc|Reliez tous les nœuds avant la panne',  'm.umbra':'Umbra|Retenez la forme, puis reconnaissez-la',  'm.stroke':'Trait Unique|Une seule ligne par tous les nœuds',  'm.slack':'Démêlage|Déplacez les nœuds jusqu’à zéro croisement',  'm.tide':'Souffle|Tenez pour gonfler, relâchez pour dégonfler',  'm.plink':'Chute|Retirez un clou, puis visez le bac éclairé',  'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 'p.word':'Écrivez le mot de {n} lettres',
@@ -1566,6 +1585,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.skim':'Faltan {n} rebotes', 'm.skim':'Rebote|Toca al cruzar — la ventana se estrecha',
     'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Tambor|Empareja más rápido de lo que se llena',
     'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Duelo|Lee su gesto y elige la respuesta',
     'p.arc':'Faltan {n}', 'p.umbraLook':'Recuerda esta forma', 'p.umbraPick':'¿Cuál era?', 'p.stroke':'Faltan {n} nodos', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Arco|Conecta todos los nodos antes de quedarte sin carga',  'm.umbra':'Umbra|Recuerda la forma y reconócela',  'm.stroke':'Trazo Único|Una línea por todos los nodos, sin levantar',  'm.slack':'Desenredo|Mueve los nodos hasta que nada se cruce',  'm.tide':'Respiro|Mantén para crecer, suelta para menguar',  'm.plink':'Caída|Quita un clavo y lanza a la casilla encendida',  'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 'p.word':'Escribe la palabra de {n} letras',
@@ -1654,6 +1674,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.skim':'Noch {n} Sprünge', 'm.skim':'Sprung|Tippe beim Kreuzen — das Fenster wird enger',
     'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Trommel|Paare schneller, als es sich füllt',
     'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Duell|Lies die Geste, wähle die Antwort',
     'p.arc':'Noch {n}', 'p.umbraLook':'Merke dir diese Form', 'p.umbraPick':'Welche war es?', 'p.stroke':'Noch {n} Knoten', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Bogen|Verbinde alle Knoten, bevor der Strom ausgeht',  'm.umbra':'Umbra|Merke dir die Form und erkenne sie wieder',  'm.stroke':'Ein Strich|Eine Linie durch alle Knoten, ohne abzusetzen',  'm.slack':'Entwirren|Zieh die Knoten, bis nichts mehr kreuzt',  'm.tide':'Atemzug|Halten zum Wachsen, loslassen zum Schrumpfen',  'm.plink':'Fallen|Zieh einen Stift, dann ziel auf das helle Fach',  'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 'p.word':'Schreibe das Wort mit {n} Buchstaben',
@@ -1768,6 +1789,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.11.3', date:'2026-09-11', items:[
+    'New mode — Skim. A light sweeps across a starfield. Tap while it is inside the window, and the window narrows for the next one.',
+    'The sweep turns around at the edges instead of wrapping, so a window near an edge is approached slowly and one in the middle is approached fast — where it sits matters as much as how wide it is.'
+  ]},
   { v:'0.11.2', date:'2026-09-11', items:[
     'New mode — Tumble. Pair off the colours, but the drum keeps refilling while you work. Clear it faster than it fills.',
     'It is the only board in the game that grows while you are on it, so the right move is the pair you can already see, not the tidy one you are hunting for.',
@@ -3840,6 +3865,82 @@ const MODES = {
         }
       }));
       say();
+    }
+  },
+
+  /* ── Skim — a chain of windows, each one narrower ────────────────────────
+     From "skip a stone across a galaxy". Off Beat already asks you to compare
+     two rhythms; this asks the opposite — one moving thing, one window, and the
+     window closes a little with every skip you land. The advance is that the
+     sweep reverses at the edges rather than wrapping, so the approach to a
+     window near the edge is slow and the approach to one in the middle is fast:
+     where the window sits changes how hard it is, not just how wide it is. */
+  skim: {
+    name:'Skim', blurb:'Tap as it crosses — the window narrows each time', cat:'reflex', par:6000, bonus:2200,
+    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#4BC0FF" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M3 16c4-6 8 2 12-4M17 6l4 2-4 2"/></svg>',
+    build(ctx){
+      const need = clamp(3 + Math.floor(ctx.level/4), 3, 7);
+      let width = clamp(26 - ctx.level*0.7, 9, 26);
+      let speed = 0.55 + Math.min(0.7, ctx.level*0.03);
+      let pos = 8, dir = 1, hits = 0, zone = 50, live = true, raf2 = 0;
+
+      const track = mk('div','skimtrack');
+      const stars = mk('div','skimstars'); track.appendChild(stars);
+      for (let i=0;i<18;i++){
+        const st = mk('i');
+        st.style.left = (ctx.rnd()*100)+'%';
+        st.style.top = (ctx.rnd()*100)+'%';
+        st.style.opacity = (0.25 + ctx.rnd()*0.6).toFixed(2);
+        stars.appendChild(st);
+      }
+      const band = mk('div','skimzone'); track.appendChild(band);
+      const mark = mk('div','skimmark'); track.appendChild(mark);
+      const pips = mk('div','skimpips'); track.appendChild(pips);
+      const hit = mk('button','skimhit'); hit.type='button';
+      hit.setAttribute('aria-label','Skim now');
+      track.appendChild(hit);
+      ctx.surface.appendChild(track);
+
+      const drawPips = () => {
+        pips.replaceChildren();
+        for (let i=0;i<need;i++){ const p = mk('i', i < hits ? 'on' : ''); pips.appendChild(p); }
+      };
+      const place = () => {
+        /* Never flush against an edge: a window you can only reach at the exact
+           turnaround is a coin flip, not a read. */
+        const half = width/2;
+        zone = (half + 6) + ctx.rnd() * (100 - 2*(half + 6));
+        band.style.left = (zone - half) + '%';
+        band.style.width = width + '%';
+      };
+      place(); drawPips();
+
+      const frame = () => {
+        if (!live) return;
+        pos += dir * speed;
+        if (pos >= 96){ pos = 96; dir = -1; }
+        if (pos <= 4){ pos = 4; dir = 1; }
+        mark.style.left = pos + '%';
+        const inside = Math.abs(pos - zone) <= width/2;
+        track.classList.toggle('hot', inside);
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
+      const stop = () => { live = false; cancelAnimationFrame(raf2); };
+
+      onTap(hit, () => {
+        if (!live) return;
+        if (Math.abs(pos - zone) > width/2){ stop(); return ctx.miss(hit); }
+        hits++;
+        drawPips();
+        sfx.good(hits); buzz(12);
+        if (hits >= need){ stop(); return ctx.win(hit); }
+        width = Math.max(7, width * 0.84);
+        speed *= 1.12;
+        place();
+        ctx.prompt(t('p.skim', { n: need - hits }));
+      });
+      ctx.prompt(t('p.skim', { n: need }));
     }
   },
 };
