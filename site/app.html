@@ -38,7 +38,7 @@ html{-webkit-text-size-adjust:100%}
 body{
   margin:0;background:var(--ink);color:var(--cream);
   font-family:var(--f-body);font-size:16px;line-height:1.45;
-  min-height:100dvh;display:flex;justify-content:center;
+  min-height:100dvh;max-height:100dvh;overflow:hidden;display:flex;justify-content:center;
   -webkit-tap-highlight-color:transparent;
   overscroll-behavior:none;
 }
@@ -46,8 +46,15 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 :focus-visible{outline:2.5px solid var(--zap);outline-offset:2px;border-radius:6px}
 @media (prefers-reduced-motion:reduce){*{animation-duration:1ms!important;transition-duration:1ms!important}}
 
+/* A DEFINITE height, not a minimum. With only min-height the column has no
+   definite size to distribute, so flex:1 on the stage could not cap it — the
+   stage sized to its content, the page grew past the viewport, and the whole
+   app scrolled with the bottom bar sliding off the screen with it. Internal
+   scrolling is .scroll's job and always was; the shell should never move.
+   100vh first as the fallback for anything without dvh. */
 .cab{
-  width:100%;max-width:460px;min-height:100dvh;
+  width:100%;max-width:460px;
+  height:100vh;height:100dvh;max-height:100dvh;overflow:hidden;
   display:flex;flex-direction:column;position:relative;
   padding-bottom:env(safe-area-inset-bottom);
 }
@@ -113,12 +120,17 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   /* Keeps a repaint inside one row from invalidating the whole page. */
   contain:layout paint;
 }
+/* One column per tab, worked out from the children rather than written down.
+   A hardcoded repeat(4,1fr) is a number that has to be kept in sync by hand,
+   and when a fifth tab was added it was not: Settings wrapped to a second row
+   and fell off the bottom of the screen. */
 .tabbar{
-  flex:none;display:grid;grid-template-columns:repeat(4,1fr);
+  flex:none;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);
   height:var(--tabh);border-top:1px solid var(--edge-soft);
   background:var(--ink);
 }
 .tab{
+  min-width:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
   color:var(--haze);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;
   transition:color var(--t-fast);
@@ -366,7 +378,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .assistprev .sq{width:32px;height:32px;border-radius:9px;flex:none}
 .assistprev .sq .shp{padding:5px;box-sizing:border-box}
 .assistprev span{font-size:11px;color:var(--haze)}
-.verline{flex:none;text-align:right;font-family:var(--f-data);font-size:9.5px;color:var(--haze);opacity:.45;padding:14px 2px 4px;letter-spacing:.04em}
+/* The build number, legible. At 9.5px and 45% opacity it failed contrast
+   outright — and it is the one thing a player reads back when something is
+   wrong, so it is the last thing that should be hard to read. */
+.verline{flex:none;text-align:right;font-family:var(--f-data);font-size:10.5px;color:var(--haze);opacity:.85;padding:14px 2px 4px;letter-spacing:.04em}
 .note{flex:none;font-size:11px;color:var(--haze);line-height:1.5;padding-top:10px}
 
 /* ── Shared board pieces ─────────────────────────────────────────────────── */
@@ -662,8 +677,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
     <button type="button" class="later" id="updateLater" aria-label="Dismiss">&times;</button>
   </div>
 
-  <div class="chrome" id="chrome">
-    <h2 class="wordmark">Dopamine<span>&nbsp;Drop</span></h2>
+  <header class="chrome" id="chrome">
+    <h1 class="wordmark">Dopamine<span>&nbsp;Drop</span></h1>
     <span class="sp"></span>
     <button class="langchip" id="langBtn" type="button" data-i18n-aria="set.lang">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
@@ -676,9 +691,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <small>XP</small>
       </span>
     </div>
-  </div>
+  </header>
 
-  <div id="stage">
+  <main id="stage">
 
     <!-- ── PLAY ────────────────────────────────────────────────────── -->
     <section class="screen" id="tabPlay">
@@ -752,7 +767,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
     <!-- ── STATS ───────────────────────────────────────────────────── -->
     <section class="screen" id="tabStats" hidden>
-      <div class="scroll">
+      <div class="scroll" tabindex="0" role="region" data-i18n-aria="nav.stats">
         <div class="seclbl"><span data-i18n="stats.progress">Progress</span></div>
         <div class="xpwrap">
           <div class="top">
@@ -812,7 +827,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.8.1</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.9.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -878,26 +893,26 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
       <button class="ghost" id="homeBtn" type="button" data-i18n="btn.backToMenu">Back to menu</button>
     </section>
 
-  </div>
+  </main>
 
-  <nav class="tabbar" id="tabbar" role="tablist">
-    <button class="tab" role="tab" data-tab="Play" aria-selected="true">
+  <nav class="tabbar" id="tabbar" data-i18n-aria="nav.sections">
+    <button class="tab" data-tab="Play" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M7 4l12 8-12 8z"/></svg>
       <span>Play</span>
     </button>
-    <button class="tab" role="tab" data-tab="Modes" aria-selected="false">
+    <button class="tab" data-tab="Modes" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>
       <span>Modes</span>
     </button>
-    <button class="tab" role="tab" data-tab="Mix" aria-selected="false">
+    <button class="tab" data-tab="Mix" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h4l4 10h6"/><path d="M3 17h4l2-5"/><path d="M17 4l4 3-4 3"/><path d="M17 14l4 3-4 3"/></svg>
       <span>Mix</span>
     </button>
-    <button class="tab" role="tab" data-tab="Stats" aria-selected="false">
+    <button class="tab" data-tab="Stats" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg>
       <span>Stats</span>
     </button>
-    <button class="tab" role="tab" data-tab="Settings" aria-selected="false">
+    <button class="tab" data-tab="Settings" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M19 7h1M4 12h1M10 12h10M4 17h12M21 17h-1"/><circle cx="16" cy="7" r="2.2"/><circle cx="7.5" cy="12" r="2.2"/><circle cx="18" cy="17" r="2.2"/></svg>
       <span>Settings</span>
     </button>
@@ -960,7 +975,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.8.1 (17)';
+const VERSION = 'v0.9.0 (18)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1164,7 +1179,7 @@ const LANGS = [
 
 const STRINGS = {
   en: {
-    'tab.Play':'Play', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Settings',
+    'nav.sections':'Sections', 'nav.stats':'Your statistics', 'tab.Play':'Play', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Settings',
     'hero.eyebrow':'Every mode, on shuffle', 'hero.title':'Shuffle',
     'hero.sub':'60 seconds. The puzzle changes every round.', 'hero.best':'BEST',
     'play.other':'Other ways to play', 'play.jump':'Jump straight in',
@@ -1249,7 +1264,7 @@ const STRINGS = {
   },
 
   fr: {
-    'tab.Play':'Jouer', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Réglages',
+    'nav.sections':'Sections', 'nav.stats':'Vos statistiques', 'tab.Play':'Jouer', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Réglages',
     'hero.eyebrow':'Tous les modes, en aléatoire', 'hero.title':'Mélange',
     'hero.sub':'60 secondes. Le casse-tête change à chaque manche.', 'hero.best':'RECORD',
     'play.other':'Autres façons de jouer', 'play.jump':'Commencer tout de suite',
@@ -1334,7 +1349,7 @@ const STRINGS = {
   },
 
   es: {
-    'tab.Play':'Jugar', 'tab.Modes':'Modos', 'tab.Mix':'Mezcla', 'tab.Stats':'Datos', 'tab.Settings':'Ajustes',
+    'nav.sections':'Secciones', 'nav.stats':'Tus estadísticas', 'tab.Play':'Jugar', 'tab.Modes':'Modos', 'tab.Mix':'Mezcla', 'tab.Stats':'Datos', 'tab.Settings':'Ajustes',
     'hero.eyebrow':'Todos los modos, al azar', 'hero.title':'Mezcla',
     'hero.sub':'60 segundos. El reto cambia en cada ronda.', 'hero.best':'RÉCORD',
     'play.other':'Otras formas de jugar', 'play.jump':'Empieza ya',
@@ -1419,7 +1434,7 @@ const STRINGS = {
   },
 
   de: {
-    'tab.Play':'Spielen', 'tab.Modes':'Modi', 'tab.Mix':'Mix', 'tab.Stats':'Werte', 'tab.Settings':'Einstellungen',
+    'nav.sections':'Bereiche', 'nav.stats':'Deine Werte', 'tab.Play':'Spielen', 'tab.Modes':'Modi', 'tab.Mix':'Mix', 'tab.Stats':'Werte', 'tab.Settings':'Optionen',
     'hero.eyebrow':'Alle Modi, gemischt', 'hero.title':'Mix',
     'hero.sub':'60 Sekunden. Das Rätsel wechselt jede Runde.', 'hero.best':'REKORD',
     'play.other':'Andere Spielarten', 'play.jump':'Direkt loslegen',
@@ -1605,6 +1620,13 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.9.0', date:'2026-09-11', items:[
+    'Fixed the whole app being slightly taller than the screen, so the page scrolled and the bottom bar could slide out of view. The shell is now pinned to the screen and only the content inside it scrolls.',
+    'Fixed the Settings tab falling off the bottom of the screen. Adding a fifth tab had overflowed a bar built for four — on a small phone it was unreachable.',
+    'The app now installs at half the size: the icons were three times bigger than they needed to be.',
+    'The version number in the corner was too faint to read. It is the one thing you read back when something goes wrong.',
+    'Better for screen readers: proper page structure throughout, and the stats screen can now be scrolled from a keyboard.'
+  ]},
   { v:'0.8.1', date:'2026-09-11', items:[
     'Quitting a run before you had scored anything left the whole board sitting in memory until you closed the app. Every way of ending a round now clears it properly.',
     'Daily Drop scores were kept forever even though only today\u2019s is ever used. The save now keeps a fortnight and drops the rest.',
@@ -1754,10 +1776,6 @@ const INKS = [
   { name:'PURPLE', hex:'#A75BFF', shape:'cross' },
   { name:'ORANGE', hex:'#FF8A2B', shape:'chevron' }
 ];
-const SHAPE_WORD = {
-  circle:'circles', square:'squares', triangle:'triangles',
-  diamond:'diamonds', cross:'crosses', chevron:'arrows'
-};
 const SHAPE_PATH = {
   circle:   '<circle cx="50" cy="50" r="21"/>',
   square:   '<rect x="30" y="30" width="40" height="40" rx="2"/>',
@@ -2929,36 +2947,8 @@ const MODES = {
 
 /* ═══ Phrase bank ═════════════════════════════════════════════════════════
    Short, concrete, and free of anything era- or region-specific.          */
-const PHRASES = [
-  { category:'SAYING', text:'BETTER LATE THAN NEVER' },
-  { category:'SAYING', text:'ONE STEP AT A TIME' },
-  { category:'SAYING', text:'EASIER SAID THAN DONE' },
-  { category:'SAYING', text:'BACK TO SQUARE ONE' },
-  { category:'SAYING', text:'PIECE OF CAKE' },
-  { category:'SAYING', text:'BREAK THE ICE' },
-  { category:'SAYING', text:'UNDER THE WEATHER' },
-  { category:'SAYING', text:'THE EARLY BIRD' },
-  { category:'THING',  text:'CUP OF COFFEE' },
-  { category:'THING',  text:'RAINY AFTERNOON' },
-  { category:'THING',  text:'OPEN WINDOW' },
-  { category:'THING',  text:'MORNING TRAFFIC' },
-  { category:'PLACE',  text:'THE FRONT PORCH' },
-  { category:'PLACE',  text:'CORNER SHOP' },
-  { category:'ACTION', text:'TAKE A DEEP BREATH' },
-  { category:'ACTION', text:'GOING FOR A WALK' },
-  { category:'ACTION', text:'READING IN BED' },
-  { category:'PHRASE', text:'SEE YOU TOMORROW' },
-  { category:'PHRASE', text:'ALMOST THERE' },
-  { category:'PHRASE', text:'NICE AND EASY' }
-];
-
 /* Short, common, unambiguous. A puzzle that hinges on vocabulary stops being a
    reaction game and starts being a quiz. */
-const WORDS = {
-  4: ['CALM','DRIP','GLOW','LOOP','MIND','RUSH','SNAP','TIDE','WAVE','ZONE'],
-  5: ['BLINK','CHASE','DRIFT','FLASH','PULSE','QUICK','SHIFT','SPARK','TRACE','BURST'],
-  6: ['BOUNCE','CIRCLE','FIDGET','MIRROR','PUZZLE','REWIRE','SIGNAL','STREAK']
-};
 const MODE_IDS = Object.keys(MODES);
 
 /* ═══ Run definitions ═════════════════════════════════════════════════════ */
@@ -3001,8 +2991,12 @@ function show(name){
   const inGame = name === 'play' || name === 'over';
   el.tabbar.hidden = inGame;
   el.chrome.hidden = inGame;
-  Array.from(el.tabbar.children).forEach(b =>
-    b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+  Array.from(el.tabbar.children).forEach(b => {
+    const on = b.dataset.tab === name;
+    /* aria-current, not aria-selected: selected belongs to a real tablist, and
+       this is a navigation bar. */
+    if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
 }
 
 /* ═══ Effects ═════════════════════════════════════════════════════════════ */
