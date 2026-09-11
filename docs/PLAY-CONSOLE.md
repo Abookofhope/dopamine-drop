@@ -106,6 +106,7 @@ one.
 ## Build and release
 
 ```bash
+# (requires a native build of the game — see docs/MONETIZATION.md)
 flutter build appbundle --release
 ```
 

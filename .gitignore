@@ -1,26 +1,6 @@
-.dart_tool/
-.packages
-build/
-*.iml
-.idea/
-.vscode/
-pubspec.lock
-
-# Regenerate with `flutter create .` — see README.
-android/
-ios/
-web/
-linux/
-macos/
-windows/
-
 # Built by tools/build_site.py and by the Pages workflow. Committing it would
 # mean two sources of truth for what is deployed.
 _site/
-
-# Golden-test diff output. Written on a failure, useful locally, meaningless in
-# a commit — and it silently accumulates screenshots of whatever was broken.
-test/failures/
 
 # Never commit these.
 key.properties

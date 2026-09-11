@@ -324,41 +324,39 @@ games, fidget, time killer, short games, offline puzzle, reaction, satisfying*.
 
 ---
 
-## 8. Stack — decided
+## 8. Stack — decided, then changed
 
-**Flutter**, targeting Android first and iOS from the same codebase.
+**Originally Flutter**, targeting Android first. That is not what shipped.
 
-`flame` is deliberately **not** a dependency yet, despite being the obvious pick
-for a Flutter game. Every mode built so far is a grid of tap targets, some text
-and a `CustomPaint`. Flutter's own widget layer does that better than a game
-engine does, and it brings layout, accessibility and hit-testing for free.
-Adding Flame now would be complexity without payoff.
+The brief changed partway through: the game had to be playable on a phone
+*now*, installable from Chrome, working offline, deployed in about a minute.
+That is a web app, so the game was rebuilt as a single HTML file — `site/app.html` —
+with a service worker whose cache name is a hash of the page, so an update
+invalidates itself. No framework, no build step beyond a script that wraps the
+file into a document and emits the manifest and worker.
 
-Flame earns its place the moment a mode needs a real game loop — falling
-objects, physics, hundreds of particles. Two of the planned twelve (*Rising
-Tap*, *Sort Drop*) are in that category. Because those sit behind the same
-`PuzzleMode` contract as everything else, adding Flame later is additive: no
-shell change, no migration. The contract is what carries across, not the
-rendering.
+The Flutter implementation reached twelve modes and 151 tests before it was
+abandoned, and has since been deleted rather than left to rot four versions
+behind the real game. The one idea that survived the move intact is the mode
+contract: `build(ctx)` renders a puzzle and calls `ctx.win()` or `ctx.miss()`,
+and the shell owns everything else. That is what made porting sixteen modes
+between two entirely different stacks tractable at all.
 
-Rejected, and why:
-
-| Option | Why not |
-|---|---|
-| **Capacitor** (wrap the web prototype) | Fastest to store, and genuinely tempting. Rejected because the ad plugins are less polished and the performance ceiling bites exactly where the game lives — the tap-feedback loop |
-| **Godot 4** | Better animation tooling, but ads need third-party plugins and the Android export is clunkier for a game that is mostly UI |
-| **React Native** | Weakest of the four for a game loop |
+**If it ever goes native for the Play Store**, the same contract should be the
+first thing rebuilt, and `docs/MONETIZATION.md` has the ad and purchase rules
+waiting. A game engine is still not needed — every mode is a grid of tap
+targets, some text and a little drawing.
 
 ## 9. Roadmap
 
 | Phase | Work | Gate |
 |---|---|---|
 | **0 — done** | Name, concept, mode engine, six playable modes | Prototype is live |
-| **1 — done** | Flutter port: shell, twelve modes, four run types, levels and unlock ladder, audio, particles, 123 tests | Builds and runs; verified on the real app, not just in tests |
+| **1 — done, then superseded** | Flutter port: shell, twelve modes, four run types, levels and unlock ladder, audio, particles, 151 tests | Built and ran. Replaced by the web app when the brief changed; since deleted |
 | **2 — done** | Ads, IAP and pacing rules behind interfaces; Play Console release path documented | `docs/MONETIZATION.md`, `docs/PLAY-CONSOLE.md` |
-| **3 — next** | Own repo. Real AdMob unit ids and `in_app_purchase`. Settings screen. Colour-blind-safe variants. | Installs and runs on a physical Android phone |
-| **4** | **Closed test — 12 testers, 14 days.** Start recruiting during phase 3, not after. | Production access unlocked |
-| **5** | Soft launch, ASO iteration, cut the worst-performing modes on quit rate | D1 retention > 25% |
+| **3 — done, differently** | Own repo, live at GitHub Pages. Sixteen modes, no unlock gating, mastery stars, Mixtape, four languages, settings, colour assist. | Installs to the home screen from Chrome and runs offline |
+| **4 — next** | Decide whether the Play Store is still the goal. It needs a native build, which the web app is not. Until then the web app is the product. | A decision, not a build |
+| **5** | If native: closed test (12 testers, 14 days), then soft launch, ASO, cut the worst modes on quit rate | D1 retention > 25% |
 
 ## 10. Known gaps
 
@@ -366,10 +364,11 @@ Rejected, and why:
   non-colour channel to all three hue-dependent modes: a floored lightness
   difference in Odd One Out, and shapes on the swatches and dots in Color Trap
   and Count Fast. Verified against a simulated deuteranope view, not just
-  asserted — see `test/golden_assist_test.dart`.
-- **AdMob and IAP are interfaces only.** `createAds()` returns `NoAds` until real
-  unit ids exist, and `AdMobAds` throws rather than shipping Google's test ids,
-  which would serve real impressions against a policy violation.
+  asserted. Difficulty never comes from making something imperceptible — Odd
+  One Out's grid grows, its hue difference has a floor.
+- **There is no monetization at all.** The shipping web app serves no ads and
+  sells nothing. The placement and pacing rules are decided and written down in
+  `docs/MONETIZATION.md`; none of it is implemented.
 - No localization, no cloud save or leaderboard.
 - **Settings are per-device.** Sound, vibration, reduce motion and colour assist
   all persist locally; there is no account to sync them to, which is deliberate.

@@ -1,10 +1,14 @@
-# Monetization — wiring it up
+# Monetization — the rules, and what wiring it up would take
 
-Nothing in this repo talks to an ad network or a store. `lib/money/` defines the
-two interfaces the game codes against, and `createAds()` in `lib/money/ads.dart`
-is the single line that decides whether a build serves ads. Until real ad unit
-ids exist it returns `NoAds`, so the game is complete and shippable today with
-no network attached.
+Nothing in this repo talks to an ad network or a store, and the live web app
+has no monetization at all. This file is the **design decisions**, kept so they
+are not re-argued from scratch, plus what implementing them would actually
+involve.
+
+An earlier Flutter build of the game had these encoded as two interfaces (`Ads`
+and `Billing`) with a `NoAds` default, so a build was complete and shippable
+with no network attached. That build is gone — see the note at the end — but
+the shape was right and is worth repeating in whatever ships.
 
 ## What goes where
 
@@ -15,25 +19,23 @@ no network attached.
 | **Banner** | Home screen only | Never during a run — it competes with the board for the one thing the game asks for. |
 | **Remove Ads** IAP | Quiet row under the mode list | One product, one-time, no subscription. Rewarded stays available after purchase. |
 
-The pacing numbers live in `AdPacing` and are pinned by tests in
-`test/money_test.dart`. They are conservative on purpose: the failure mode of a
-badly placed interstitial is a one-star review and an uninstall, not lost
-revenue. Loosen them deliberately, with the tests updated, or not at all.
+Those pacing numbers are conservative on purpose. The failure mode of a badly
+placed interstitial is a one-star review and an uninstall, not lost revenue.
+Loosen them deliberately, or not at all — and pin them in a test so loosening
+has to be a decision rather than a drift.
 
 Two behaviours worth not breaking:
 
-- **A dismissed or failed rewarded ad grants nothing.** `showRewarded()` returns
+- **A dismissed or failed rewarded ad grants nothing.** The "show" call returns
   false and the caller must not pay out on good faith.
-- **Quitting is never interrupted.** `_quit()` calls `_finishNow()` directly and
-  skips the continue offer. A player choosing to stop is not a conversion
-  opportunity.
+- **Quitting is never interrupted.** A player choosing to stop is not a
+  conversion opportunity — the quit path skips the continue offer entirely.
 
-## Adding AdMob
+## If the game goes native, for ads
 
-1. `flutter pub add google_mobile_ads`
-2. Create the app and three ad units in your AdMob account (banner,
-   interstitial, rewarded). Note the application id and the three unit ids.
-3. Put the application id in `android/app/src/main/AndroidManifest.xml`:
+1. Create the app and three ad units in AdMob (banner, interstitial,
+   rewarded). Note the application id and the three unit ids.
+2. The application id goes in the Android manifest:
 
    ```xml
    <meta-data
@@ -41,32 +43,26 @@ Two behaviours worth not breaking:
        android:value="ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy"/>
    ```
 
-   The app crashes on launch if this is missing — that is AdMob's own check, not
+   The app crashes on launch if this is missing. That is AdMob's own check, not
    a bug in the game.
-4. Implement `AdMobAds` against the `Ads` interface. It is deliberately left
-   throwing rather than stubbed with Google's test unit ids: a test id that
-   reaches production serves real impressions against a policy violation.
-5. Flip `configured: true` in `lib/main.dart`.
+3. Implement the real ad provider behind the interface, and leave it **throwing
+   rather than stubbed with Google's test unit ids**: a test id that reaches
+   production serves real impressions against a policy violation.
+4. Keep the ids out of source control — this repo is public. Read them from
+   build-time defines and **fail closed** (no ads) when they are absent.
 
-Keep the ids out of source control if the repo is ever made public — read them
-from `--dart-define` and fail closed (`configured: false`) when absent.
+## If the game goes native, for the purchase
 
-## Adding the purchase
-
-1. `flutter pub add in_app_purchase`
-2. In Play Console → Monetize → In-app products, create a **one-time** product
-   with id `dd_remove_ads` (the constant in `lib/money/billing.dart`).
-3. Implement `Billing` against `in_app_purchase`. Three things that are easy to
-   get wrong and will fail review or lose money:
+1. In Play Console → Monetize → In-app products, create a **one-time** product,
+   e.g. `dd_remove_ads`.
+2. Three things that are easy to get wrong and will fail review or lose money:
    - **Acknowledge every purchase within three days** or Play refunds it
      automatically.
-   - **Handle `restore()`** — Play expects a visible restore path. The UI row
-     already exists.
-   - **Deliver on `purchaseStream`, not on the `buy()` return.** A purchase can
-     complete after the app was killed.
-4. `Store.setAdsRemoved()` mirrors the entitlement locally so a paying player
-   never sees a banner flash on launch. The store stays the source of truth and
-   re-syncs on init.
+   - **Handle restore** — Play expects a visible restore path.
+   - **Deliver on the purchase stream, not on the buy() return.** A purchase
+     can complete after the app was killed.
+3. Mirror the entitlement locally so a paying player never sees a banner flash
+   on launch, with the store staying the source of truth and re-syncing on init.
 
 ## What this is worth
 
@@ -74,3 +70,11 @@ Blended ARPDAU for a casual puzzle game with no user-acquisition spend runs
 roughly **$0.01–0.05**. ~1,000 daily actives is somewhere around
 **$300–900/month**, and the hard part is emphatically the 1,000 DAU. Instrument
 D1 retention before you instrument revenue — see `DESIGN.md` §6.
+
+---
+
+**On the code this used to reference.** An earlier Flutter implementation of
+the game lived in `lib/`, with these interfaces in `lib/money/`. It was frozen
+several versions behind the shipping web app and has been removed; the
+decisions above outlived it, the code did not. Nothing here describes anything
+that currently exists in the repo.

@@ -130,13 +130,26 @@ One Out's grid grows, its hue difference has a floor.
 
 ---
 
-## The Flutter tree is a prototype, not the product
+## There was a Flutter version. There isn't any more.
 
-`lib/`, `test/`, `tool/`, `assets/` and `pubspec.yaml` are an earlier Flutter
-implementation. **It is not what ships and it is several versions behind** —
-no mastery, no Mixtape, no tabs, twelve modes instead of sixteen, no
-translations, no changelog, no move budgets, and the old difficulty curve.
+The game was first built as a native Flutter app — `lib/`, `test/`, `tool/`,
+`assets/`, `pubspec.yaml`. When the brief became "one file, GitHub Pages,
+installs from Chrome", it was rebuilt as the single HTML file above, and the
+Flutter tree stopped being touched. By the time it was removed it was four
+versions behind: twelve modes instead of sixteen, still carrying the unlock
+ladder that had been deleted from the real game, no translations, no move
+budgets, none of the current difficulty curve.
 
-It is kept only as history. Do not fix bugs there, do not add modes there, and
-do not trust its README-era claims about the design. If you are reading this to
-work on the game, `site/app.html` is the whole job.
+It has been deleted, because a second implementation that nobody updates is
+not a backup — it is a trap for whoever reads the repo next and fixes a bug in
+the copy that does not ship. It remains in git history if it is ever wanted.
+
+Two things were kept out of it:
+
+- **`site/icon-src/`** — the editable icon artwork (`icon.svg`,
+  `icon_foreground.svg`) and `make_icon.py`, which renders them. `site/icons/`
+  holds only the flat PNGs the app ships; this is what you edit if you ever
+  need a different size for a store listing.
+- **`docs/MONETIZATION.md`** — the ad placement and pacing rules. The
+  decisions outlived the code; the file now states them without pointing at
+  files that no longer exist.
