@@ -195,6 +195,19 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Glimmer ──────────────────────────────────────────────────────────── */
+.glimbox{position:relative;width:100%;aspect-ratio:1;touch-action:none;overflow:hidden;
+  border-radius:var(--r-lg);background:#07050f;border:1px solid var(--edge-soft)}
+.glimbug{position:absolute;width:6%;height:6%;transform:translate(-50%,-50%);border-radius:50%;
+  background:var(--warm);box-shadow:0 0 10px 3px #ffc53daa;z-index:2;pointer-events:none}
+.glimbug::after{content:"";position:absolute;left:50%;top:50%;width:var(--reach,52%);height:var(--reach,52%);
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, #ffc53d26 0%, #ffc53d0d 45%, transparent 72%);
+  transition:width var(--t-med),height var(--t-med)}
+.glimlamp{position:absolute;width:7%;height:7%;transform:translate(-50%,-50%);border-radius:50%;
+  background:#7BE38A;opacity:0;transition:opacity 160ms linear,box-shadow var(--t-med),background var(--t-med)}
+.glimlamp.lit{background:#BFF7C8;box-shadow:0 0 14px 5px #7be38a77}
+
 /* ── Tidy ─────────────────────────────────────────────────────────────── */
 .tidybox{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;flex-direction:column}
 .tidyfloor{position:absolute;inset:0;pointer-events:none}
@@ -1063,7 +1076,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.9</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1212,7 +1225,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.11.9 (31)';
+const VERSION = 'v0.12.0 (32)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1491,6 +1504,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.glimmer':'{n} lamps still dark', 'm.glimmer':'Glimmer|Carry the light until every lamp is lit',
     'p.tidy':'{n} left on the floor', 'm.tidy':'Tidy|Drag the mess into the right bins',
     'p.hauntLook':'{n} of them — watch closely', 'p.hauntPick':'{n} still to find', 'm.haunt':'Haunt|Watch the swaps — where did the ghosts end up?',
     'p.mint':'Build one worth {n}', 'mint.next':'Next', 'm.mint':'Mint|Drop coins, merge matches, reach the big one',
@@ -1586,6 +1600,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.glimmer':'{n} lampes éteintes', 'm.glimmer':'Lueur|Portez la lumière jusqu’à la dernière lampe',
     'p.tidy':'{n} encore au sol', 'm.tidy':'Rangement|Glissez le désordre dans les bons bacs',
     'p.hauntLook':'{n} fantômes — regardez bien', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Hantise|Suivez les échanges — où sont-ils passés ?',
     'p.mint':'Atteignez {n}', 'mint.next':'Suivant', 'm.mint':'Monnaie|Posez, fusionnez, atteignez la grosse pièce',
@@ -1681,6 +1696,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.glimmer':'{n} lámparas apagadas', 'm.glimmer':'Destello|Lleva la luz hasta encenderlas todas',
     'p.tidy':'Quedan {n} en el suelo', 'm.tidy':'Orden|Arrastra el desorden a su cubo',
     'p.hauntLook':'{n} fantasmas — fíjate bien', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Embrujo|Sigue los cambios — ¿dónde acabaron?',
     'p.mint':'Llega a {n}', 'mint.next':'Siguiente', 'm.mint':'Moneda|Coloca, fusiona y llega a la grande',
@@ -1776,6 +1792,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.glimmer':'Noch {n} Lampen dunkel', 'm.glimmer':'Schimmer|Trag das Licht zu jeder Lampe',
     'p.tidy':'Noch {n} am Boden', 'm.tidy':'Aufräumen|Zieh das Chaos in die richtigen Kisten',
     'p.hauntLook':'{n} Geister — gut hinsehen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Spuk|Verfolge die Tausche — wo sind sie gelandet?',
     'p.mint':'Baue eine {n}', 'mint.next':'Nächste', 'm.mint':'Münze|Legen, verschmelzen, die grosse erreichen',
@@ -1897,6 +1914,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.12.0', date:'2026-09-12', items:[
+    'New mode — Glimmer. A dark board and a firefly you carry with your finger. Lamps only appear as you get near them.',
+    'Every lamp you light stays lit and widens your own glow, so the board opens up as you go. It is the only mode that gets easier while you play it, and that is the point of it.'
+  ]},
   { v:'0.11.9', date:'2026-09-12', items:[
     'New mode — Tidy. The whole mess is on the floor at once; drag each thing into the bin that matches it.',
     'Dropping something short just puts it back, because a drag that missed by a few pixels is not a mistake. Only putting something in the wrong bin costs you.'
@@ -4581,6 +4602,79 @@ const MODES = {
         const by = (br.top - hr.top) / hr.height * 100, bh = br.height / hr.height * 100;
         return it.x > bx - 2 && it.x < bx + bw + 2 && it.y > by - 2 && it.y < by + bh + 2;
       }
+    }
+  },
+
+  /* ── Glimmer — exploration, with the lights off ──────────────────────────
+     From "guide a firefly to lamps in the dark". Nothing else in the game hides
+     the board from you: every other mode shows the whole problem and asks you to
+     solve it. Here the problem is revealed by moving through it, so the play is
+     a search pattern rather than a decision — and each lamp you light stays lit
+     and widens your own glow a little, so the board opens up as you go instead
+     of tightening. That arc is the mode: it gets easier, and it is meant to. */
+  glimmer: {
+    name:'Glimmer', blurb:'Carry the light until every lamp is lit', cat:'calm', par:13000, bonus:3200,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="#FFC53D"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="#FFC53D" stroke-width="1.4" opacity=".45"/><circle cx="19" cy="6" r="1.6" fill="#7BE38A"/><circle cx="5" cy="18" r="1.6" fill="#7BE38A"/></svg>',
+    build(ctx){
+      const lamps = clamp(3 + Math.floor(ctx.level/4), 3, 9);
+      let reach = 26;
+      const box = mk('div','glimbox');
+      const bug = mk('div','glimbug');
+      bug.setAttribute('role','button');
+      bug.setAttribute('aria-label','Firefly');
+      ctx.surface.appendChild(box);
+
+      const pts = [];
+      for (let i=0;i<lamps;i++){
+        for (let a=0;a<240;a++){
+          const x = 12 + ctx.rnd()*76, y = 12 + ctx.rnd()*76;
+          /* Never on top of the start, or a lamp would be collected before the
+             player has moved at all. */
+          if (Math.hypot(x-50, y-50) > 22 && pts.every(p => Math.hypot(p.x-x, p.y-y) > 17)){
+            pts.push({ x, y }); break;
+          }
+        }
+      }
+      const els = pts.map((p,i) => {
+        const e = mk('div','glimlamp');
+        e.style.left = p.x+'%'; e.style.top = p.y+'%';
+        e.setAttribute('role','img');
+        e.setAttribute('aria-label','Unlit lamp '+(i+1));
+        box.appendChild(e);
+        return e;
+      });
+      box.appendChild(bug);
+
+      let bx = 50, by = 50, lit = 0, done = false;
+      const say = () => ctx.prompt(t('p.glimmer', { n: lamps - lit }));
+
+      const paint = () => {
+        bug.style.left = bx+'%'; bug.style.top = by+'%';
+        bug.style.setProperty('--reach', reach*2 + '%');
+        pts.forEach((p,i) => {
+          if (p.lit) return;
+          const d = Math.hypot(p.x-bx, p.y-by);
+          /* Fade in with proximity rather than popping into existence — the
+             hint that something is near is most of the pleasure. */
+          els[i].style.opacity = clamp(1 - (d - reach*0.35) / (reach*0.9), 0, 1).toFixed(2);
+          if (d < 9){
+            p.lit = true; lit++;
+            els[i].classList.add('lit');
+            els[i].style.opacity = 1;
+            els[i].setAttribute('aria-label','Lit lamp '+(i+1));
+            reach = Math.min(46, reach + 3.5);
+            sfx.good(lit); buzz(12);
+            if (lit >= lamps){ done = true; return ctx.win(bug); }
+            say();
+          }
+        });
+      };
+      paint(); say();
+
+      onDrag(box, {
+        start: q => { if (!done){ bx = clamp(q.x,4,96); by = clamp(q.y,4,96); paint(); } },
+        move:  q => { if (!done){ bx = clamp(q.x,4,96); by = clamp(q.y,4,96); paint(); } }
+      });
     }
   },
 };
