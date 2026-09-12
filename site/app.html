@@ -195,6 +195,25 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Facedown ─────────────────────────────────────────────────────────── */
+.fdwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;height:100%;overflow:hidden}
+.fdhead{flex:none;font-family:var(--f-data);font-size:12px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--haze);padding:5px 11px;border-radius:999px;
+  background:#ffffff08;border:1px solid var(--edge-soft);transition:color var(--t-fast),border-color var(--t-fast)}
+.fdhead.low{color:var(--bad);border-color:var(--bad)}
+.fdgrid{flex:0 1 auto;min-height:0;display:grid;gap:7px;aspect-ratio:1;height:100%;width:auto;max-width:100%}
+.fdcard{position:relative;border-radius:var(--r-sm);overflow:hidden;transition:transform var(--t-fast),opacity var(--t-med)}
+.fdcard .back,.fdcard .face{position:absolute;inset:0;border-radius:inherit;
+  transition:opacity var(--t-med),transform var(--t-med)}
+.fdcard .back{background:var(--ink-3);border:1px solid var(--edge);
+  background-image:radial-gradient(circle at 50% 50%, #ffffff0e 0 22%, transparent 23%)}
+.fdcard .face{opacity:0;transform:rotateY(90deg);display:grid;place-items:center}
+.fdcard .face .shp{padding:22%;box-sizing:border-box;width:100%;height:100%}
+.fdcard.up .back{opacity:0;transform:rotateY(-90deg)}
+.fdcard.up .face{opacity:1;transform:none}
+.fdcard.gone{opacity:.18;pointer-events:none}
+.fdcard:active{transform:scale(.94)}
+
 /* ── Glimmer ──────────────────────────────────────────────────────────── */
 .glimbox{position:relative;width:100%;aspect-ratio:1;touch-action:none;overflow:hidden;
   border-radius:var(--r-lg);background:#07050f;border:1px solid var(--edge-soft)}
@@ -1076,7 +1095,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1225,7 +1244,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.12.0 (32)';
+const VERSION = 'v0.12.1 (33)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1504,6 +1523,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.facedown':'{n} pairs left', 'fd.flips':'{n} flips left', 'm.facedown':'Facedown|Match the pairs — you only get so many flips',
     'p.glimmer':'{n} lamps still dark', 'm.glimmer':'Glimmer|Carry the light until every lamp is lit',
     'p.tidy':'{n} left on the floor', 'm.tidy':'Tidy|Drag the mess into the right bins',
     'p.hauntLook':'{n} of them — watch closely', 'p.hauntPick':'{n} still to find', 'm.haunt':'Haunt|Watch the swaps — where did the ghosts end up?',
@@ -1600,6 +1620,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.facedown':'{n} paires restantes', 'fd.flips':'{n} retournements', 'm.facedown':'Face Cachée|Trouvez les paires — les retournements sont comptés',
     'p.glimmer':'{n} lampes éteintes', 'm.glimmer':'Lueur|Portez la lumière jusqu’à la dernière lampe',
     'p.tidy':'{n} encore au sol', 'm.tidy':'Rangement|Glissez le désordre dans les bons bacs',
     'p.hauntLook':'{n} fantômes — regardez bien', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Hantise|Suivez les échanges — où sont-ils passés ?',
@@ -1696,6 +1717,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.facedown':'Faltan {n} parejas', 'fd.flips':'{n} volteos', 'm.facedown':'Boca Abajo|Empareja — los volteos están contados',
     'p.glimmer':'{n} lámparas apagadas', 'm.glimmer':'Destello|Lleva la luz hasta encenderlas todas',
     'p.tidy':'Quedan {n} en el suelo', 'm.tidy':'Orden|Arrastra el desorden a su cubo',
     'p.hauntLook':'{n} fantasmas — fíjate bien', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Embrujo|Sigue los cambios — ¿dónde acabaron?',
@@ -1792,6 +1814,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.facedown':'Noch {n} Paare', 'fd.flips':'{n} Umdrehungen', 'm.facedown':'Verdeckt|Finde die Paare — die Umdrehungen sind gezählt',
     'p.glimmer':'Noch {n} Lampen dunkel', 'm.glimmer':'Schimmer|Trag das Licht zu jeder Lampe',
     'p.tidy':'Noch {n} am Boden', 'm.tidy':'Aufräumen|Zieh das Chaos in die richtigen Kisten',
     'p.hauntLook':'{n} Geister — gut hinsehen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Spuk|Verfolge die Tausche — wo sind sie gelandet?',
@@ -1914,6 +1937,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.12.1', date:'2026-09-12', items:[
+    'New mode — Facedown. Match the pairs, but you only get so many flips.',
+    'Plain memory pairs has no real way to lose — turn everything over twice and you win. Budgeting the flips makes every turn a question: spend one on a card you are only fairly sure about, or go and confirm it first.'
+  ]},
   { v:'0.12.0', date:'2026-09-12', items:[
     'New mode — Glimmer. A dark board and a firefly you carry with your finger. Lamps only appear as you get near them.',
     'Every lamp you light stays lit and widens your own glow, so the board opens up as you go. It is the only mode that gets easier while you play it, and that is the point of it.'
@@ -4675,6 +4702,90 @@ const MODES = {
         start: q => { if (!done){ bx = clamp(q.x,4,96); by = clamp(q.y,4,96); paint(); } },
         move:  q => { if (!done){ bx = clamp(q.x,4,96); by = clamp(q.y,4,96); paint(); } }
       });
+    }
+  },
+
+  /* ── Facedown — pairs, but flips are the currency ────────────────────────
+     From "flip and flick cards to match pairs". Plain memory pairs has no fail
+     state worth the name: flip everything twice and you win, so it rewards
+     patience over play. Here the flips are budgeted. That turns every turn into
+     a real question — do I spend one on a card I am only fairly sure about, or
+     go and confirm it first — and it is the only mode where knowing you do not
+     know is worth something. */
+  facedown: {
+    name:'Facedown', blurb:'Match the pairs — you only get so many flips', cat:'memory', par:12000, bonus:3000,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="7.5" height="16" rx="2" fill="#6C6191"/><rect x="13.5" y="4" width="7.5" height="16" rx="2" fill="#9C7BFF"/></svg>',
+    build(ctx){
+      const pairs = clamp(2 + Math.floor(ctx.level/3), 2, 8);
+      const cells = pairs*2;
+      const cols  = cells <= 6 ? 3 : cells <= 12 ? 4 : 5;
+      /* Enough to win with a little slack, shrinking as the level climbs.
+         Perfect play needs 2 flips per pair plus the ones spent learning. */
+      const budget = Math.round(cells + pairs * clamp(2.6 - ctx.level*0.035, 1.15, 2.6));
+      const pal = shuffle(INKS.slice(), ctx.rnd);
+
+      const faces = [];
+      for (let i=0;i<pairs;i++){ const ink = pal[i % pal.length]; faces.push({ink,i}); faces.push({ink,i}); }
+      shuffle(faces, ctx.rnd);
+
+      let flipsLeft = budget, open = [], matched = 0, busy = false, done = false;
+      const wrap = mk('div','fdwrap');
+      const head = mk('div','fdhead'); wrap.appendChild(head);
+      const grid = mk('div','fdgrid');
+      grid.style.gridTemplateColumns = 'repeat('+cols+',1fr)';
+      wrap.appendChild(grid);
+      ctx.surface.appendChild(wrap);
+
+      const say = () => {
+        head.textContent = t('fd.flips', { n: Math.max(0, flipsLeft) });
+        head.classList.toggle('low', flipsLeft <= 3);
+        ctx.prompt(t('p.facedown', { n: pairs - matched }));
+      };
+      const els = faces.map((f, i) => {
+        const b = mk('button','fdcard'); b.type='button';
+        b.innerHTML = '<span class="back"></span><span class="face"></span>';
+        b.querySelector('.face').style.background = f.ink.hex;
+        if (assistOn()) b.querySelector('.face').innerHTML = shapeSvg(f.ink.shape, 'var(--ink)');
+        b.setAttribute('aria-label','Face down card '+(i+1));
+        grid.appendChild(b);
+        return b;
+      });
+
+      els.forEach((b,i) => onTap(b, () => {
+        if (done || busy || b.classList.contains('up') || b.classList.contains('gone')) return;
+        if (flipsLeft <= 0) return;
+        flipsLeft--;
+        b.classList.add('up');
+        b.setAttribute('aria-label', inkName(faces[i].ink) + ' card');
+        open.push(i);
+        sfx.tap(); buzz(6);
+        if (open.length < 2){ say(); return; }
+        busy = true;
+        const [a, c] = open;
+        if (faces[a].i === faces[c].i){
+          matched++;
+          ctx.after(240, () => {
+            [a,c].forEach(k => { els[k].classList.add('gone'); els[k].setAttribute('aria-label','Matched'); });
+            open = []; busy = false;
+            sfx.good(matched); buzz(12);
+            if (matched >= pairs){ done = true; return ctx.win(b); }
+            say();
+            if (flipsLeft <= 0){ done = true; ctx.miss(b); }
+          });
+        } else {
+          ctx.after(620, () => {
+            [a,c].forEach(k => {
+              els[k].classList.remove('up');
+              els[k].setAttribute('aria-label','Face down card '+(k+1));
+            });
+            open = []; busy = false;
+            say();
+            if (flipsLeft <= 0){ done = true; ctx.miss(b); }
+          });
+        }
+        say();
+      }));
+      say();
     }
   },
 };
