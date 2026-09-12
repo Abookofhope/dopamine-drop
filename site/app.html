@@ -195,6 +195,19 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Haunt ────────────────────────────────────────────────────────────── */
+.cell.crypt{background:var(--ink-3);border:1px solid var(--edge);border-radius:var(--r-sm);
+  display:grid;place-items:center;overflow:hidden;transition:background var(--t-fast),transform var(--t-fast)}
+.cell.crypt .gh{width:66%;height:66%;opacity:0;transform:translateY(14%) scale(.8);
+  transition:opacity var(--t-med),transform var(--t-med)}
+.cell.crypt .gh svg{width:100%;height:100%;display:block;fill:#9C7BFF}
+.cell.crypt .gh .eye{fill:var(--ink)}
+.cell.crypt.open .gh{opacity:1;transform:none}
+.cell.crypt.found{background:#9c7bff2e;border-color:#9C7BFF}
+.cell.crypt.wrong{background:#ff3d6e33;border-color:var(--bad)}
+.cell.crypt.swap{animation:cryptSwap .34s ease}
+@keyframes cryptSwap{0%{transform:none}45%{transform:scale(.86) rotate(-4deg);background:#9c7bff22}100%{transform:none}}
+
 /* ── Mint ─────────────────────────────────────────────────────────────── */
 /* The header takes height off the top, so a grid sized from the WIDTH is
    taller than what is left and the bottom row falls out of the surface. Size it
@@ -1032,7 +1045,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.7</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.8</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1181,7 +1194,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.11.7 (29)';
+const VERSION = 'v0.11.8 (30)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1460,6 +1473,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.hauntLook':'{n} of them — watch closely', 'p.hauntPick':'{n} still to find', 'm.haunt':'Haunt|Watch the swaps — where did the ghosts end up?',
     'p.mint':'Build one worth {n}', 'mint.next':'Next', 'm.mint':'Mint|Drop coins, merge matches, reach the big one',
     'p.pivot':'{n} still crooked', 'm.pivot':'Pivot|Each tap turns two — straighten the whole pattern',
     'p.needle':'Find it', 'needle.big':'the LARGE {c}', 'needle.small':'the SMALL {c}', 'needle.lgs':'large', 'needle.sms':'small', 'm.needle':'Needle|Find the one that is both — nothing here stands out',
@@ -1553,6 +1567,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.hauntLook':'{n} fantômes — regardez bien', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Hantise|Suivez les échanges — où sont-ils passés ?',
     'p.mint':'Atteignez {n}', 'mint.next':'Suivant', 'm.mint':'Monnaie|Posez, fusionnez, atteignez la grosse pièce',
     'p.pivot':'{n} encore de travers', 'm.pivot':'Pivot|Chaque touche en tourne deux — redressez tout',
     'p.needle':'Trouvez-le', 'needle.big':'le GRAND {c}', 'needle.small':'le PETIT {c}', 'needle.lgs':'grand', 'needle.sms':'petit', 'm.needle':'Aiguille|Trouvez celui qui est les deux à la fois',
@@ -1646,6 +1661,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.hauntLook':'{n} fantasmas — fíjate bien', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Embrujo|Sigue los cambios — ¿dónde acabaron?',
     'p.mint':'Llega a {n}', 'mint.next':'Siguiente', 'm.mint':'Moneda|Coloca, fusiona y llega a la grande',
     'p.pivot':'{n} aún torcidas', 'm.pivot':'Pivote|Cada toque gira dos — endereza el dibujo',
     'p.needle':'Encuéntralo', 'needle.big':'el {c} GRANDE', 'needle.small':'el {c} PEQUEÑO', 'needle.lgs':'grande', 'needle.sms':'pequeño', 'm.needle':'Aguja|Encuentra el que cumple las dos cosas',
@@ -1739,6 +1755,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.hauntLook':'{n} Geister — gut hinsehen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Spuk|Verfolge die Tausche — wo sind sie gelandet?',
     'p.mint':'Baue eine {n}', 'mint.next':'Nächste', 'm.mint':'Münze|Legen, verschmelzen, die grosse erreichen',
     'p.pivot':'Noch {n} schief', 'm.pivot':'Drehpunkt|Ein Tipp dreht zwei — richte alles aus',
     'p.needle':'Finde ihn', 'needle.big':'der GROSSE {c}', 'needle.small':'der KLEINE {c}', 'needle.lgs':'gross', 'needle.sms':'klein', 'm.needle':'Nadel|Finde den, auf den beides zutrifft',
@@ -1858,6 +1875,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.11.8', date:'2026-09-12', items:[
+    'New mode — Haunt. You are shown where the ghosts are, then they are covered and shuffled around in front of you.',
+    'Nothing is ever hidden from you, which makes it a tracking problem rather than a memory one — losing here is losing the thread, not forgetting.'
+  ]},
   { v:'0.11.7', date:'2026-09-11', items:[
     'New mode — Mint. Drop coins onto the board; touching coins of the same value merge into a bigger one, and those merges chain.',
     'It is the only board in the game you are building up instead of clearing, so space is the thing you are really spending. A merge hands you a cell back, which makes the greedy placement and the sensible one different moves.'
@@ -4344,6 +4365,86 @@ const MODES = {
       }));
       drawNext();
       paint();
+    }
+  },
+
+  /* ── Haunt — a shell game, not a memory test ─────────────────────────────
+     From "memory tiles with friendly ghosts". Blink asks you to rebuild a
+     pattern you saw and Echo to repeat a sequence; both are recall. This is
+     tracking: you are SHOWN where the ghosts are, then they are covered and
+     visibly swapped around in front of you. Nothing is hidden from you at any
+     point, and it is still hard, which is a different feeling entirely —
+     failing here is losing the thread rather than forgetting. */
+  haunt: {
+    name:'Haunt', blurb:'Watch the swaps — where did the ghosts end up?', cat:'memory', par:8000, bonus:2600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a7 7 0 0 0-7 7v10l2.5-2 2.5 2 2-2 2 2 2.5-2 2.5 2V10a7 7 0 0 0-7-7z" fill="#9C7BFF"/><circle cx="9.5" cy="10" r="1.2" fill="#0D0918"/><circle cx="14.5" cy="10" r="1.2" fill="#0D0918"/></svg>',
+    build(ctx){
+      const g = ctx.level < 7 ? 3 : 4;
+      const n = g*g;
+      const ghosts = clamp(1 + Math.floor(ctx.level/5), 1, Math.max(1, Math.floor(n/4)));
+      const swaps  = clamp(2 + Math.floor(ctx.level/2), 2, 9);
+      const pace   = clamp(560 - ctx.level*14, 190, 560);
+
+      let where = shuffle(Array.from({length:n},(_,i)=>i), ctx.rnd).slice(0, ghosts);
+      const picked = new Set();
+      let phase = 'show';
+
+      const grid = gridEl(g);
+      const els = [];
+      for (let i=0;i<n;i++){
+        const b = mk('button','cell crypt'); b.type='button';
+        b.innerHTML = '<span class="gh"><svg viewBox="0 0 24 24" aria-hidden="true">'
+          + '<path d="M12 3a7 7 0 0 0-7 7v10l2.5-2 2.5 2 2-2 2 2 2.5-2 2.5 2V10a7 7 0 0 0-7-7z"/>'
+          + '<circle cx="9.5" cy="10" r="1.2" class="eye"/><circle cx="14.5" cy="10" r="1.2" class="eye"/></svg></span>';
+        b.setAttribute('aria-label','Tile '+(i+1));
+        els.push(b); grid.appendChild(b);
+      }
+      ctx.surface.appendChild(grid);
+      const reveal = on => els.forEach((e,i) => e.classList.toggle('open', on && where.includes(i)));
+
+      reveal(true);
+      ctx.prompt(t('p.hauntLook', { n: ghosts }));
+
+      ctx.after(clamp(1300 - ctx.level*25, 650, 1300), () => {
+        reveal(false);
+        let k = 0;
+        const step = () => {
+          if (k++ >= swaps){
+            phase = 'pick';
+            ctx.prompt(t('p.hauntPick', { n: ghosts }));
+            return;
+          }
+          /* Swap two tiles and say so on both, so the movement is legible on a
+             small screen rather than a flicker you have to have been staring at. */
+          const a = Math.floor(ctx.rnd()*n);
+          let b2 = Math.floor(ctx.rnd()*n);
+          while (b2 === a) b2 = Math.floor(ctx.rnd()*n);
+          where = where.map(w => w === a ? b2 : w === b2 ? a : w);
+          /* Clear the marker after the animation. Left on, it accumulates across
+             the sequence until most of the board is wearing it, and the swap
+             stops being the one thing moving. */
+          [a,b2].forEach(i => {
+            els[i].classList.remove('swap'); void els[i].offsetWidth; els[i].classList.add('swap');
+            ctx.after(360, () => els[i].classList.remove('swap'));
+          });
+          sfx.tap();
+          ctx.after(pace, step);
+        };
+        ctx.after(260, step);
+      });
+
+      els.forEach((b,i) => onTap(b, () => {
+        if (phase !== 'pick' || picked.has(i)) return;
+        picked.add(i);
+        if (!where.includes(i)){
+          b.classList.add('wrong');
+          return ctx.miss(b);
+        }
+        b.classList.add('open','found');
+        sfx.good(picked.size); buzz(10);
+        if (where.every(w => picked.has(w))) return ctx.win(b);
+        ctx.prompt(t('p.hauntPick', { n: ghosts - picked.size }));
+      }));
     }
   },
 };
