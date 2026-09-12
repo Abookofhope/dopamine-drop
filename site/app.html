@@ -195,6 +195,24 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Tidy ─────────────────────────────────────────────────────────────── */
+.tidybox{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;flex-direction:column}
+.tidyfloor{position:absolute;inset:0;pointer-events:none}
+.tidyitem{position:absolute;width:16%;height:16%;transform:translate(-50%,-50%);border-radius:32%;
+  overflow:hidden;box-shadow:inset 0 -3px 0 #00000030;
+  transition:left var(--t-fast),top var(--t-fast),opacity var(--t-med),transform var(--t-fast)}
+.tidyitem .shp{padding:20%;box-sizing:border-box;width:100%;height:100%}
+.tidyitem.held{transform:translate(-50%,-50%) scale(1.18);box-shadow:0 6px 18px #00000066;z-index:3}
+.tidyitem.binned{opacity:0;transform:translate(-50%,-50%) scale(.35)}
+.tidyitem.wrong{box-shadow:0 0 0 3px var(--bad)}
+.tidybins{position:absolute;left:4%;right:4%;bottom:4%;height:22%;display:flex;gap:8px}
+.tidybin{flex:1;border-radius:var(--r-md);background:color-mix(in srgb, var(--bink) 16%, transparent);
+  border:2px dashed color-mix(in srgb, var(--bink) 55%, transparent);display:grid;place-items:center;
+  transition:background var(--t-fast),border-color var(--t-fast),transform var(--t-fast)}
+.tidybin .shp{width:38%;height:38%}
+.tidybin.over{background:color-mix(in srgb, var(--bink) 34%, transparent);border-style:solid}
+.tidybin.thud{animation:facetPop .3s ease}
+
 /* ── Haunt ────────────────────────────────────────────────────────────── */
 .cell.crypt{background:var(--ink-3);border:1px solid var(--edge);border-radius:var(--r-sm);
   display:grid;place-items:center;overflow:hidden;transition:background var(--t-fast),transform var(--t-fast)}
@@ -1045,7 +1063,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.8</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.11.9</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1194,7 +1212,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.11.8 (30)';
+const VERSION = 'v0.11.9 (31)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1473,6 +1491,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.tidy':'{n} left on the floor', 'm.tidy':'Tidy|Drag the mess into the right bins',
     'p.hauntLook':'{n} of them — watch closely', 'p.hauntPick':'{n} still to find', 'm.haunt':'Haunt|Watch the swaps — where did the ghosts end up?',
     'p.mint':'Build one worth {n}', 'mint.next':'Next', 'm.mint':'Mint|Drop coins, merge matches, reach the big one',
     'p.pivot':'{n} still crooked', 'm.pivot':'Pivot|Each tap turns two — straighten the whole pattern',
@@ -1567,6 +1586,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.tidy':'{n} encore au sol', 'm.tidy':'Rangement|Glissez le désordre dans les bons bacs',
     'p.hauntLook':'{n} fantômes — regardez bien', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Hantise|Suivez les échanges — où sont-ils passés ?',
     'p.mint':'Atteignez {n}', 'mint.next':'Suivant', 'm.mint':'Monnaie|Posez, fusionnez, atteignez la grosse pièce',
     'p.pivot':'{n} encore de travers', 'm.pivot':'Pivot|Chaque touche en tourne deux — redressez tout',
@@ -1661,6 +1681,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.tidy':'Quedan {n} en el suelo', 'm.tidy':'Orden|Arrastra el desorden a su cubo',
     'p.hauntLook':'{n} fantasmas — fíjate bien', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Embrujo|Sigue los cambios — ¿dónde acabaron?',
     'p.mint':'Llega a {n}', 'mint.next':'Siguiente', 'm.mint':'Moneda|Coloca, fusiona y llega a la grande',
     'p.pivot':'{n} aún torcidas', 'm.pivot':'Pivote|Cada toque gira dos — endereza el dibujo',
@@ -1755,6 +1776,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.tidy':'Noch {n} am Boden', 'm.tidy':'Aufräumen|Zieh das Chaos in die richtigen Kisten',
     'p.hauntLook':'{n} Geister — gut hinsehen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Spuk|Verfolge die Tausche — wo sind sie gelandet?',
     'p.mint':'Baue eine {n}', 'mint.next':'Nächste', 'm.mint':'Münze|Legen, verschmelzen, die grosse erreichen',
     'p.pivot':'Noch {n} schief', 'm.pivot':'Drehpunkt|Ein Tipp dreht zwei — richte alles aus',
@@ -1875,6 +1897,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.11.9', date:'2026-09-12', items:[
+    'New mode — Tidy. The whole mess is on the floor at once; drag each thing into the bin that matches it.',
+    'Dropping something short just puts it back, because a drag that missed by a few pixels is not a mistake. Only putting something in the wrong bin costs you.'
+  ]},
   { v:'0.11.8', date:'2026-09-12', items:[
     'New mode — Haunt. You are shown where the ghosts are, then they are covered and shuffled around in front of you.',
     'Nothing is ever hidden from you, which makes it a tracking problem rather than a memory one — losing here is losing the thread, not forgetting.'
@@ -4445,6 +4471,116 @@ const MODES = {
         if (where.every(w => picked.has(w))) return ctx.win(b);
         ctx.prompt(t('p.hauntPick', { n: ghosts - picked.size }));
       }));
+    }
+  },
+
+  /* ── Tidy — clear the floor, by hand ─────────────────────────────────────
+     From "organize a messy room in 30 seconds". Sort Drop already handles one
+     item at a time under a rule that flips; this is the opposite shape — the
+     whole mess is in front of you at once and you clear it by dragging, so the
+     cost of a decision includes how far your thumb has to travel. Dropping
+     short is free and returns the item; only putting something in the wrong
+     place is a mistake, because a drag that missed by ten pixels is not one. */
+  tidy: {
+    name:'Tidy', blurb:'Drag the mess into the right bins', cat:'focus', par:11000, bonus:3000,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2.6" fill="#FF5B39"/><circle cx="15" cy="7" r="2.6" fill="#33E6C8"/><circle cx="9" cy="11" r="2.6" fill="#33E6C8"/><rect x="2" y="16" width="8" height="6" rx="2" fill="#FF5B39" opacity=".5"/><rect x="14" y="16" width="8" height="6" rx="2" fill="#33E6C8" opacity=".5"/></svg>',
+    build(ctx){
+      const kinds = clamp(2 + Math.floor(ctx.level/8), 2, 4);
+      const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, kinds);
+      const count = clamp(4 + Math.floor(ctx.level/2), 4, 12);
+      const R = 8;
+
+      const box = mk('div','tidybox');
+      const floor = mk('div','tidyfloor'); box.appendChild(floor);
+      const binRow = mk('div','tidybins'); box.appendChild(binRow);
+      const bins = pal.map(ink => {
+        const e = mk('div','tidybin');
+        e.style.setProperty('--bink', ink.hex);
+        e.setAttribute('role','img');
+        e.setAttribute('aria-label', inkName(ink) + ' bin');
+        if (assistOn()) e.innerHTML = shapeSvg(ink.shape, ink.hex);
+        binRow.appendChild(e);
+        return { el:e, ink };
+      });
+      ctx.surface.appendChild(box);
+
+      /* Items live in the top part only, so nothing starts already sitting on a
+         bin and no drag is zero-distance. */
+      const items = [];
+      for (let i=0;i<count;i++){
+        const ink = pal[Math.floor(ctx.rnd()*pal.length)];
+        let x=0, y=0, ok=false;
+        for (let a=0;a<220 && !ok;a++){
+          x = R + ctx.rnd()*(100-2*R);
+          y = R + ctx.rnd()*(66-2*R);
+          ok = items.every(p => Math.hypot(p.x-x, p.y-y) > R*2.1);
+        }
+        const e = mk('div','tidyitem');
+        e.style.left = x+'%'; e.style.top = y+'%';
+        e.style.background = ink.hex;
+        e.setAttribute('role','button');
+        e.setAttribute('aria-label', inkName(ink) + ' item');
+        if (assistOn()) e.innerHTML = shapeSvg(ink.shape, 'var(--ink)');
+        floor.appendChild(e);
+        items.push({ el:e, ink, x, y, home:{x,y} });
+      }
+
+      let left = count, held = null, done = false;
+      const say = () => ctx.prompt(t('p.tidy', { n: left }));
+      say();
+
+      onDrag(box, {
+        start: q => {
+          held = null;
+          let best = 9e9;
+          items.forEach(it => {
+            if (it.gone) return;
+            const d = Math.hypot(it.x-q.x, it.y-q.y);
+            if (d < R*1.6 && d < best){ best = d; held = it; }
+          });
+          if (held) held.el.classList.add('held');
+        },
+        move: q => {
+          if (!held || done) return;
+          held.x = clamp(q.x, 3, 97); held.y = clamp(q.y, 3, 97);
+          held.el.style.left = held.x+'%'; held.el.style.top = held.y+'%';
+          const over = bins.find(bn => hits(bn, held));
+          bins.forEach(bn => bn.el.classList.toggle('over', bn === over));
+        },
+        end: () => {
+          if (!held || done) return;
+          const it = held; held = null;
+          it.el.classList.remove('held');
+          bins.forEach(bn => bn.el.classList.remove('over'));
+          const bn = bins.find(x => hits(x, it));
+          if (!bn){
+            /* Dropped on the floor: put it back, cost nothing. */
+            it.x = it.home.x; it.y = it.home.y;
+            it.el.style.left = it.x+'%'; it.el.style.top = it.y+'%';
+            return;
+          }
+          if (bn.ink !== it.ink){
+            it.el.classList.add('wrong');
+            done = true;
+            return ctx.miss(it.el);
+          }
+          it.gone = true;
+          it.el.classList.add('binned');
+          bn.el.classList.remove('thud'); void bn.el.offsetWidth; bn.el.classList.add('thud');
+          sfx.good(count-left+1); buzz(10);
+          left--;
+          if (left <= 0){ done = true; return ctx.win(bn.el); }
+          say();
+        }
+      });
+
+      function hits(bn, it){
+        const br = bn.el.getBoundingClientRect();
+        const hr = box.getBoundingClientRect();
+        const bx = (br.left - hr.left) / hr.width * 100, bw = br.width / hr.width * 100;
+        const by = (br.top - hr.top) / hr.height * 100, bh = br.height / hr.height * 100;
+        return it.x > bx - 2 && it.x < bx + bw + 2 && it.y > by - 2 && it.y < by + bh + 2;
+      }
     }
   },
 };
