@@ -195,6 +195,20 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Shift ────────────────────────────────────────────────────────────── */
+.cell.maze{background:var(--ink-2);border-radius:3px;position:relative;
+  box-shadow: inset 0 calc(var(--wt,1) * 3px) 0 0 var(--edge),
+              inset 0 calc(var(--wb,1) * -3px) 0 0 var(--edge),
+              inset calc(var(--wl,1) * 3px) 0 0 0 var(--edge),
+              inset calc(var(--wr,1) * -3px) 0 0 0 var(--edge);
+  transition:box-shadow var(--t-med),background var(--t-fast)}
+.cell.maze.step{background:#33e6c814}
+.cell.maze.exit{background:#33e6c82e}
+.cell.maze.exit::after{content:"";position:absolute;inset:30%;border-radius:50%;background:var(--cool)}
+.cell.maze.me::after{content:"";position:absolute;inset:26%;border-radius:50%;background:var(--flare);
+  box-shadow:0 0 10px #ff5b3999}
+.cell.maze.moved{animation:facetPop .3s ease}
+
 /* ── Facedown ─────────────────────────────────────────────────────────── */
 .fdwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;height:100%;overflow:hidden}
 .fdhead{flex:none;font-family:var(--f-data);font-size:12px;font-weight:700;letter-spacing:.08em;
@@ -1095,7 +1109,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.1</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.2</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1244,7 +1258,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.12.1 (33)';
+const VERSION = 'v0.12.2 (34)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1523,6 +1537,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.shift':'Find the way out', 'm.shift':'Shift|Reach the way out before the walls move again',
     'p.facedown':'{n} pairs left', 'fd.flips':'{n} flips left', 'm.facedown':'Facedown|Match the pairs — you only get so many flips',
     'p.glimmer':'{n} lamps still dark', 'm.glimmer':'Glimmer|Carry the light until every lamp is lit',
     'p.tidy':'{n} left on the floor', 'm.tidy':'Tidy|Drag the mess into the right bins',
@@ -1620,6 +1635,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.shift':'Trouvez la sortie', 'm.shift':'Décalage|Atteignez la sortie avant que les murs bougent',
     'p.facedown':'{n} paires restantes', 'fd.flips':'{n} retournements', 'm.facedown':'Face Cachée|Trouvez les paires — les retournements sont comptés',
     'p.glimmer':'{n} lampes éteintes', 'm.glimmer':'Lueur|Portez la lumière jusqu’à la dernière lampe',
     'p.tidy':'{n} encore au sol', 'm.tidy':'Rangement|Glissez le désordre dans les bons bacs',
@@ -1717,6 +1733,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.shift':'Encuentra la salida', 'm.shift':'Desplazo|Llega a la salida antes de que los muros cambien',
     'p.facedown':'Faltan {n} parejas', 'fd.flips':'{n} volteos', 'm.facedown':'Boca Abajo|Empareja — los volteos están contados',
     'p.glimmer':'{n} lámparas apagadas', 'm.glimmer':'Destello|Lleva la luz hasta encenderlas todas',
     'p.tidy':'Quedan {n} en el suelo', 'm.tidy':'Orden|Arrastra el desorden a su cubo',
@@ -1814,6 +1831,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.shift':'Finde den Ausgang', 'm.shift':'Verschub|Erreiche den Ausgang, bevor die Wände wandern',
     'p.facedown':'Noch {n} Paare', 'fd.flips':'{n} Umdrehungen', 'm.facedown':'Verdeckt|Finde die Paare — die Umdrehungen sind gezählt',
     'p.glimmer':'Noch {n} Lampen dunkel', 'm.glimmer':'Schimmer|Trag das Licht zu jeder Lampe',
     'p.tidy':'Noch {n} am Boden', 'm.tidy':'Aufräumen|Zieh das Chaos in die richtigen Kisten',
@@ -1937,6 +1955,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.12.2', date:'2026-09-12', items:[
+    'New mode — Shift. A maze where the walls keep moving. Get to the way out before your route closes.',
+    'A wall is only allowed to appear if the exit is still reachable from where you are actually standing, so the maze can take a route away from you but can never seal you in. Committing early is a real risk; being trapped is not.'
+  ]},
   { v:'0.12.1', date:'2026-09-12', items:[
     'New mode — Facedown. Match the pairs, but you only get so many flips.',
     'Plain memory pairs has no real way to lose — turn everything over twice and you win. Budgeting the flips makes every turn a question: spend one on a card you are only fairly sure about, or go and confirm it first.'
@@ -4786,6 +4808,115 @@ const MODES = {
         say();
       }));
       say();
+    }
+  },
+
+  /* ── Shift — a maze that will not hold still ─────────────────────────────
+     From "15-second maze where doors shift". A maze that only shifts is cruel
+     and a maze that never shifts is a corridor, so every change is checked
+     before it is applied: a wall may only appear if the exit is still reachable
+     from where the player is STANDING, not merely from the start. That makes
+     the pressure honest — the route can be taken away from you, but you can
+     never be sealed in. The advance over a plain maze is that committing early
+     is a real risk, because the corridor you are halfway down may close. */
+  shift: {
+    name:'Shift', blurb:'Reach the way out before the walls move again', cat:'logic', par:12000, bonus:3200,
+    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M3 6h8v6H3zM13 12h8v6h-8z"/><path d="M11 9h4" stroke="#FF5B39"/></svg>',
+    build(ctx){
+      const g = ctx.level < 8 ? 4 : 5;
+      const n = g*g;
+      const every = clamp(3200 - ctx.level*90, 1200, 3200);
+      const at = (x,y) => y*g + x;
+      const xy = i => [i%g, (i/g)|0];
+
+      /* Walls live on edges between neighbours. Start from a perfect maze — a
+         spanning tree — so exactly one route exists and every cell is on it. */
+      const open = new Set();
+      const key = (a,b2) => a < b2 ? a+':'+b2 : b2+':'+a;
+      const nbs = i => { const [x,y] = xy(i); return [[1,0],[-1,0],[0,1],[0,-1]]
+        .map(([dx,dy]) => [x+dx, y+dy]).filter(([a,b2]) => a>=0&&b2>=0&&a<g&&b2<g).map(([a,b2]) => at(a,b2)); };
+      (function carve(){
+        const seen = new Set([0]), stack = [0];
+        while (stack.length){
+          const cur = stack[stack.length-1];
+          const opts = shuffle(nbs(cur).filter(j => !seen.has(j)), ctx.rnd);
+          if (!opts.length){ stack.pop(); continue; }
+          const nx = opts[0];
+          open.add(key(cur, nx)); seen.add(nx); stack.push(nx);
+        }
+      })();
+      /* A few extra doors so it is navigable rather than a single thread. */
+      for (let k=0;k<Math.floor(n/3);k++){
+        const a = Math.floor(ctx.rnd()*n), b2 = pick(nbs(a), ctx.rnd);
+        open.add(key(a, b2));
+      }
+
+      let here = 0, done = false;
+      const goal = n - 1;
+      const reachable = (from) => {
+        const seen = new Set([from]), st = [from];
+        while (st.length){
+          const c = st.pop();
+          if (c === goal) return true;
+          for (const j of nbs(c)) if (!seen.has(j) && open.has(key(c,j))){ seen.add(j); st.push(j); }
+        }
+        return false;
+      };
+
+      const grid = gridEl(g);
+      const els = [];
+      for (let i=0;i<n;i++){
+        const b = mk('button','cell maze'); b.type='button';
+        els.push(b); grid.appendChild(b);
+      }
+      ctx.surface.appendChild(grid);
+
+      const paint = () => {
+        els.forEach((e,i) => {
+          const [x,y] = xy(i);
+          e.classList.toggle('me', i === here);
+          e.classList.toggle('exit', i === goal);
+          e.classList.toggle('step', i !== here && nbs(here).includes(i) && open.has(key(here,i)));
+          e.style.setProperty('--wt', open.has(key(i, at(x, y-1))) && y>0 ? '0' : '1');
+          e.style.setProperty('--wl', open.has(key(i, at(x-1, y))) && x>0 ? '0' : '1');
+          e.style.setProperty('--wr', open.has(key(i, at(x+1, y))) && x<g-1 ? '0' : '1');
+          e.style.setProperty('--wb', open.has(key(i, at(x, y+1))) && y<g-1 ? '0' : '1');
+          e.setAttribute('aria-label', i === goal ? 'Way out' : i === here ? 'You are here' : 'Cell '+(i+1));
+        });
+        ctx.prompt(t('p.shift'));
+      };
+
+      const churn = () => {
+        if (done) return;
+        /* Try a few candidate changes and keep the first that leaves the exit
+           reachable from where the player actually is. */
+        for (let tries=0; tries<24; tries++){
+          const a = Math.floor(ctx.rnd()*n);
+          const b2 = pick(nbs(a), ctx.rnd);
+          const k = key(a,b2), had = open.has(k);
+          if (had) open.delete(k); else open.add(k);
+          if (reachable(here)){
+            els[a].classList.remove('moved'); void els[a].offsetWidth; els[a].classList.add('moved');
+            els[b2].classList.remove('moved'); void els[b2].offsetWidth; els[b2].classList.add('moved');
+            sfx.tap();
+            break;
+          }
+          if (had) open.add(k); else open.delete(k);   /* put it back */
+        }
+        paint();
+        ctx.after(every, churn);
+      };
+      ctx.after(every, churn);
+
+      els.forEach((b,i) => onTap(b, () => {
+        if (done) return;
+        if (!nbs(here).includes(i) || !open.has(key(here,i))) return ctx.miss(b);
+        here = i;
+        sfx.tap(); buzz(6);
+        if (here === goal){ done = true; paint(); return ctx.win(b); }
+        paint();
+      }));
+      paint();
     }
   },
 };
