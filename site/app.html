@@ -195,6 +195,28 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Siphon ───────────────────────────────────────────────────────────── */
+.siphonwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
+  flex-direction:column;justify-content:space-between;padding:6% 4%;box-sizing:border-box}
+.sprow{display:flex;gap:10px;justify-content:center;align-items:flex-end}
+.vial,.jar{flex:1;max-width:76px;border-radius:8px 8px 14px 14px;display:grid;place-items:center;
+  overflow:hidden;transition:transform var(--t-fast),opacity var(--t-med),box-shadow var(--t-fast)}
+.vial{height:62px;background:linear-gradient(180deg, var(--vk), color-mix(in srgb, var(--vk) 55%, #000));
+  box-shadow:inset 0 -4px 0 #00000033}
+.vial.pouring{transform:rotate(-14deg) translateY(-4px)}
+.vial.empty{opacity:.18;transform:none}
+.jar{height:70px;background:#ffffff08;border:2px dashed color-mix(in srgb, var(--vk) 60%, transparent)}
+.jar.aim{border-style:solid;background:color-mix(in srgb, var(--vk) 22%, transparent)}
+.jar.full{border-style:solid;border-color:transparent;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--vk) 65%, transparent), var(--vk))}
+.jar.reject{border-color:var(--bad);background:#ff3d6e2e}
+.vial .shpwrap,.jar .shpwrap{width:46%;height:46%;display:block}
+.vial .shp,.jar .shp{width:100%;height:100%}
+.sipstream{position:absolute;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);
+  background:var(--vk,#fff);opacity:0;pointer-events:none;transition:opacity var(--t-fast);
+  box-shadow:0 0 12px var(--vk,#fff)}
+.sipstream.on{opacity:.9}
+
 /* ── Descent ──────────────────────────────────────────────────────────── */
 .descentsky{position:relative;width:100%;aspect-ratio:1;overflow:hidden;touch-action:none;
   border-radius:var(--r-lg);border:1px solid var(--edge-soft);
@@ -1154,7 +1176,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.5</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.6</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1303,7 +1325,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.12.5 (37)';
+const VERSION = 'v0.12.6 (38)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1582,6 +1604,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.siphon':'{n} jars still empty', 'sip.source':'source', 'sip.wants':'Jar wanting {c}', 'sip.done':'jar, filled', 'sip.empty':'source, emptied', 'm.siphon':'Siphon|Pour each colour into the jar that wants it',
     'p.descent':'{n} gaps below', 'm.descent':'Descent|Steer the falling star through every gap',
     'p.ripple':'{n} gates to drift through', 'm.ripple':'Ripple|Tap the water — the waves carry the leaf',
     'p.slice':'{n} more to cut', 'slice.good':'Ripe', 'slice.rotten':'Rotten — do not cut', 'm.slice':'Slice|One stroke cuts all it crosses — miss the rotten',
@@ -1683,6 +1706,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.siphon':'{n} bocaux vides', 'sip.source':'source', 'sip.wants':'Bocal attendant {c}', 'sip.done':'bocal, rempli', 'sip.empty':'source, vidée', 'm.siphon':'Transvase|Versez chaque couleur dans le bon bocal',
     'p.descent':'{n} passages plus bas', 'm.descent':'Descente|Guidez l’étoile à travers chaque ouverture',
     'p.ripple':'{n} anneaux à franchir', 'm.ripple':'Ondes|Touchez l’eau — les vagues portent la feuille',
     'p.slice':'Encore {n} à trancher', 'slice.good':'Mûr', 'slice.rotten':'Pourri — à éviter', 'm.slice':'Tranche|Un geste coupe tout sur son passage — évitez le pourri',
@@ -1784,6 +1808,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.siphon':'{n} frascos vacíos', 'sip.source':'fuente', 'sip.wants':'Frasco que pide {c}', 'sip.done':'frasco, lleno', 'sip.empty':'fuente, vacía', 'm.siphon':'Trasvase|Vierte cada color en su frasco',
     'p.descent':'{n} huecos más abajo', 'm.descent':'Caída|Guía la estrella por cada hueco',
     'p.ripple':'Faltan {n} aros', 'm.ripple':'Onda|Toca el agua — las olas llevan la hoja',
     'p.slice':'Corta {n} más', 'slice.good':'Maduro', 'slice.rotten':'Podrido — no cortar', 'm.slice':'Corte|Un trazo corta todo lo que cruza — evita lo podrido',
@@ -1885,6 +1910,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.siphon':'Noch {n} Gläser leer', 'sip.source':'Quelle', 'sip.wants':'Glas will {c}', 'sip.done':'Glas, gefüllt', 'sip.empty':'Quelle, geleert', 'm.siphon':'Umfüllen|Giess jede Farbe in ihr Glas',
     'p.descent':'Noch {n} Lücken', 'm.descent':'Sturz|Lenke den Stern durch jede Lücke',
     'p.ripple':'Noch {n} Ringe', 'm.ripple':'Welle|Tippe aufs Wasser — die Wellen tragen das Blatt',
     'p.slice':'Noch {n} schneiden', 'slice.good':'Reif', 'slice.rotten':'Faul — nicht schneiden', 'm.slice':'Schnitt|Ein Zug trifft alles auf dem Weg — meide das Faule',
@@ -2012,6 +2038,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.12.6', date:'2026-09-15', items:[
+    'New mode — Siphon. Drag the colour out of each bottle and pour it into the jar asking for it.',
+    'You are moving what is inside a thing rather than the thing itself, and a pour is all or nothing — so the work is matching them up before you start, not correcting as you go.'
+  ]},
   { v:'0.12.5', date:'2026-09-15', items:[
     'New mode — Descent. A star falls and you steer it through the gaps. The gaps drift, so the line you need is never quite the line you can see.',
     'The star has weight — it chases your finger rather than snapping to it, so a late correction cannot rescue a bad one. It is the only mode that never stops moving, where doing nothing is already a decision.'
@@ -5255,6 +5285,100 @@ const MODES = {
       onDrag(sky, {
         start: q => { want = clamp(q.x, 3, 97); },
         move:  q => { want = clamp(q.x, 3, 97); }
+      });
+    }
+  },
+
+  /* ── Siphon — moving a property, not a thing ─────────────────────────────
+     From "drag colour from one object to another to fill palettes". Tidy drags
+     objects around; this drags something OFF an object and leaves the object
+     behind, which is a different idea entirely — the board never moves, only
+     what is in it. The advance is that a pour is all-or-nothing and a vessel
+     only accepts what it is asking for, so the puzzle is matching sources to
+     targets before you start rather than correcting as you go. */
+  siphon: {
+    name:'Siphon', blurb:'Pour each colour into the jar that wants it', cat:'focus', par:10000, bonus:2800,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h5v6l-3 10H6z" fill="#FF5B39"/><path d="M13 8h5v11h-5z" fill="#33E6C8" opacity=".55"/></svg>',
+    build(ctx){
+      const n = clamp(2 + Math.floor(ctx.level/4), 2, 5);
+      const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, n);
+      const order = shuffle(pal.slice(), ctx.rnd);
+
+      const wrap = mk('div','siphonwrap');
+      const top = mk('div','sprow'); wrap.appendChild(top);
+      const bottom = mk('div','sprow jars'); wrap.appendChild(bottom);
+      ctx.surface.appendChild(wrap);
+
+      const sources = pal.map(ink => {
+        const e = mk('div','vial');
+        e.style.setProperty('--vk', ink.hex);
+        e.setAttribute('role','button');
+        e.setAttribute('aria-label', inkName(ink) + ' ' + t('sip.source'));
+        if (assistOn()) e.innerHTML = '<span class="shpwrap">' + shapeSvg(ink.shape, 'var(--ink)') + '</span>';
+        top.appendChild(e);
+        return { e, ink, spent:false };
+      });
+      const jars = order.map(ink => {
+        const e = mk('div','jar');
+        e.style.setProperty('--vk', ink.hex);
+        e.setAttribute('role','button');
+        e.setAttribute('aria-label', t('sip.wants', { c: inkName(ink) }));
+        if (assistOn()) e.innerHTML = '<span class="shpwrap">' + shapeSvg(ink.shape, ink.hex) + '</span>';
+        bottom.appendChild(e);
+        return { e, ink, filled:false };
+      });
+
+      let filled = 0, done = false, from = null;
+      const say = () => ctx.prompt(t('p.siphon', { n: n - filled }));
+      say();
+
+      const hitOf = (list, q) => list.find(o => {
+        const r = o.e.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+        const x = (r.left - w.left)/w.width*100, y = (r.top - w.top)/w.height*100;
+        const ww = r.width/w.width*100, hh = r.height/w.height*100;
+        return q.x > x-1 && q.x < x+ww+1 && q.y > y-1 && q.y < y+hh+1;
+      });
+
+      const stream = mk('div','sipstream'); wrap.appendChild(stream);
+      onDrag(wrap, {
+        start: q => {
+          from = null;
+          const s = hitOf(sources, q);
+          if (s && !s.spent){ from = s; s.e.classList.add('pouring'); }
+        },
+        move: q => {
+          if (!from || done) return;
+          const j = hitOf(jars, q);
+          jars.forEach(o => o.e.classList.toggle('aim', o === j && !o.filled));
+          stream.style.setProperty('--vk', from.ink.hex);
+          stream.classList.add('on');
+          stream.style.left = q.x + '%';
+          stream.style.top = q.y + '%';
+        },
+        end: q => {
+          stream.classList.remove('on');
+          jars.forEach(o => o.e.classList.remove('aim'));
+          if (!from || done){ from = null; return; }
+          const src = from; from = null;
+          src.e.classList.remove('pouring');
+          const j = q ? hitOf(jars, q) : null;
+          /* Letting go over nothing costs nothing — an imprecise drag is not a
+             wrong answer, the same rule Tidy settled on. */
+          if (!j || j.filled) return;
+          if (j.ink !== src.ink){
+            j.e.classList.add('reject');
+            done = true;
+            return ctx.miss(j.e);
+          }
+          j.filled = true; src.spent = true;
+          j.e.classList.add('full');
+          j.e.setAttribute('aria-label', inkName(j.ink) + ' ' + t('sip.done'));
+          src.e.classList.add('empty');
+          src.e.setAttribute('aria-label', inkName(src.ink) + ' ' + t('sip.empty'));
+          filled++; sfx.good(filled); buzz(12);
+          if (filled >= n){ done = true; return ctx.win(j.e); }
+          say();
+        }
       });
     }
   },
