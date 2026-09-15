@@ -267,6 +267,25 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:background var(--t-fast),box-shadow var(--t-fast)}
 .gpail.got{background:#33e6c855;box-shadow:0 0 14px #33e6c877}
 
+/* ── Forge ────────────────────────────────────────────────────────────── */
+.forgewrap{display:flex;flex-direction:column;gap:12px;width:100%;height:100%;
+  align-items:center;justify-content:center;min-height:0}
+.fgrid{display:grid;gap:3px;flex:none}
+.fcell{display:block;border-radius:5px;background:transparent;box-sizing:border-box;
+  transition:background var(--t-fast),box-shadow var(--t-fast)}
+.fcell.mould{background:#ffffff0a;box-shadow:inset 0 0 0 2px var(--edge-soft)}
+.fcell.set{background:linear-gradient(180deg,#d4b4ff,#9b6cf0);box-shadow:inset 0 -3px 0 #00000026}
+.fcell.no{background:#ff3d6e55;box-shadow:inset 0 0 0 2px var(--bad)}
+.fgrid.made .fcell.set{background:linear-gradient(180deg,#e6d2ff,#c08bff);box-shadow:0 0 10px #c08bff66}
+.ftray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;
+  flex:none;min-height:52px;width:100%}
+.fpiece{display:grid;gap:2px;padding:8px;border-radius:8px;border:2px solid var(--edge-soft);
+  background:var(--ink-2);cursor:pointer;min-width:44px;min-height:44px;
+  place-content:center;transition:border-color var(--t-fast),transform var(--t-fast)}
+.fpiece.fsel{border-color:#C08BFF;transform:translateY(-3px)}
+.fbit{display:block;width:14px;height:14px;border-radius:3px;background:transparent}
+.fbit.on{background:linear-gradient(180deg,#d4b4ff,#9b6cf0)}
+
 /* ── Siphon ───────────────────────────────────────────────────────────── */
 .siphonwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
   flex-direction:column;justify-content:space-between;padding:6% 4%;box-sizing:border-box}
@@ -1248,7 +1267,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.3</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.4</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1397,7 +1416,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.13.3 (43)';
+const VERSION = 'v0.13.4 (44)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1676,6 +1695,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.forge':'{n} squares of the mould still open', 'forge.hole':'Mould, column {x} row {y}', 'forge.solid':'Solid, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Forge|Fit every part into the mould — nothing left over',
     'p.gather':'{n} more to catch — let the dark ones fall', 'gather.pail':'Your pail', 'gather.keep':'A ripe one, worth catching', 'gather.dud':'A dud, let it fall', 'm.gather':'Gather|Catch the ripe ones, let the rest fall',
     'p.chalk':'Draw a ramp — lift your finger to drop the ball', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball', 'chalk.basket':'The basket', 'm.chalk':'Chalk|Draw the ramp, then watch — no second chances',
     'p.drift':'Two are on a collision course — tap them both', 'drift.dot':'Drifting dot {n}', 'm.drift':'Drift|Two of these will meet — find them before they do',
@@ -1783,6 +1803,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.forge':'Encore {n} cases du moule', 'forge.hole':'Moule, colonne {x} ligne {y}', 'forge.solid':'Plein, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Forge|Placez chaque pièce dans le moule — rien en trop',
     'p.gather':'Encore {n} à attraper — laissez tomber les sombres', 'gather.pail':'Votre seau', 'gather.keep':'Un mûr, à attraper', 'gather.dud':'Un gâté, laissez-le tomber', 'm.gather':'Récolte|Attrapez les mûrs, laissez tomber le reste',
     'p.chalk':'Tracez une rampe — relâchez pour lâcher la bille', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La bille', 'chalk.basket':'Le panier', 'm.chalk':'Craie|Tracez la rampe, puis regardez — sans reprise',
     'p.drift':'Deux vont se percuter — touchez-les tous les deux', 'drift.dot':'Point dérivant {n}', 'm.drift':'Dérive|Deux vont se rencontrer — trouvez-les avant',
@@ -1890,6 +1911,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.forge':'Quedan {n} casillas del molde', 'forge.hole':'Molde, columna {x} fila {y}', 'forge.solid':'Macizo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Fragua|Encaja cada pieza en el molde — sin sobras',
     'p.gather':'{n} más que atrapar — deja caer los oscuros', 'gather.pail':'Tu cubo', 'gather.keep':'Uno maduro, para atrapar', 'gather.dud':'Uno malo, déjalo caer', 'm.gather':'Cosecha|Atrapa los maduros, deja caer el resto',
     'p.chalk':'Dibuja una rampa — suelta para lanzar la bola', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'La bola', 'chalk.basket':'La cesta', 'm.chalk':'Tiza|Dibuja la rampa y mira — sin segundas oportunidades',
     'p.drift':'Dos van a chocar — toca los dos', 'drift.dot':'Punto a la deriva {n}', 'm.drift':'Deriva|Dos van a encontrarse — encuéntralos antes',
@@ -1997,6 +2019,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.forge':'Noch {n} Felder der Form offen', 'forge.hole':'Form, Spalte {x} Zeile {y}', 'forge.solid':'Massiv, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Schmiede|Füge jedes Teil in die Form — nichts bleibt übrig',
     'p.gather':'Noch {n} zu fangen — die dunklen fallen lassen', 'gather.pail':'Dein Eimer', 'gather.keep':'Ein reifer, den fängst du', 'gather.dud':'Ein fauler, lass ihn fallen', 'm.gather':'Ernte|Fang die reifen, lass den Rest fallen',
     'p.chalk':'Zeichne eine Rampe — loslassen lässt die Kugel fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Die Kugel', 'chalk.basket':'Der Korb', 'm.chalk':'Kreide|Zeichne die Rampe und schau zu — ohne zweiten Versuch',
     'p.drift':'Zwei laufen aufeinander zu — tippe beide an', 'drift.dot':'Treibender Punkt {n}', 'm.drift':'Drift|Zwei treffen sich — finde sie vorher',
@@ -2130,6 +2153,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.13.4', date:'2026-09-15', items:[
+    'New mode — Forge, and the first thing in the Make family. You are given a mould and the exact parts that fill it. Tap a part, tap where its first square goes.',
+    'Nothing to rotate and nothing wasted: the mould is made by laying the parts down, so a fit always exists and the tray holds exactly what it takes.',
+  ] },
   { v:'0.13.3', date:'2026-09-15', items:[
     'New mode — Gather. Rain falls, some worth keeping and some not. Move the pail under the ripe ones and let the duds go past.',
     'Dropping one you wanted ends the round just as surely as catching one you did not, so there is no hiding in a corner.',
@@ -6089,6 +6116,195 @@ const MODES = {
         raf2 = requestAnimationFrame(frame);
       };
       raf2 = requestAnimationFrame(frame);
+    }
+  },
+
+  /* ── Forge — the only mode where you build, not solve ─────────────────────
+     From "fidget forge", and the first thing in the Make family. Everything
+     else hands you a finished situation to read, steer or undo. Here you are
+     given a hole and the exact parts that fill it, and the answer only exists
+     once you have built it. There is no rotating: the parts come out already
+     turned the way they were when the shape was made, so the work is seeing
+     where each one belongs rather than fiddling with it.
+     The shape is not drawn and then checked for solvability — it is made BY
+     laying the parts down, and what they cover becomes the hole. So a fit
+     always exists, and the parts in the tray are exactly the parts it takes. */
+  forge: {
+    name:'Forge', blurb:'Fit every part into the mould — nothing left over', cat:'make', par:16000, bonus:4200,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.4" fill="#C08BFF"/><rect x="13" y="3" width="8" height="4" rx="1.4" fill="#C08BFF" opacity=".5"/><rect x="3" y="13" width="4" height="8" rx="1.4" fill="#C08BFF" opacity=".5"/><rect x="9" y="13" width="12" height="8" rx="1.4" fill="none" stroke="#C08BFF" stroke-width="1.6" stroke-dasharray="2.4 2"/></svg>',
+    build(ctx){
+      /* The board stays five wide at every level. Six wide leaves squares under
+         40px once the tray needs a second row, and a tap target you have to aim
+         at is a worse kind of hard than a puzzle you have to think about.
+         Difficulty is the number of parts instead. */
+      const g     = 5;
+      const want  = 3 + Math.min(3, Math.floor(ctx.level/6));
+      /* Rotations are generated rather than written out, so a shape can never
+         be listed with one of its turns missing. */
+      const norm = cs => { const mx = Math.min(...cs.map(c=>c[0])), my = Math.min(...cs.map(c=>c[1]));
+        return cs.map(c=>[c[0]-mx, c[1]-my]).sort((a,b)=> a[1]-b[1] || a[0]-b[0]); };
+      const key  = cs => cs.map(c=>c.join(',')).join(' ');
+      const turn = cs => norm(cs.map(c => [-c[1], c[0]]));
+      const BASE = [
+        [[0,0],[1,0]],                       /* domino  */
+        [[0,0],[1,0],[2,0]],                 /* bar 3   */
+        [[0,0],[1,0],[0,1]],                 /* corner  */
+        [[0,0],[1,0],[0,1],[1,1]],           /* square  */
+        [[0,0],[1,0],[2,0],[1,1]],           /* tee     */
+        [[0,0],[1,0],[2,0],[2,1]],           /* ell     */
+        [[1,0],[2,0],[0,1],[1,1]]            /* zed     */
+      ];
+      const SHAPES = [];
+      for (const b of BASE){
+        let c = norm(b);
+        for (let r = 0; r < 4; r++){
+          if (!SHAPES.some(s => key(s) === key(c))) SHAPES.push(c);
+          c = turn(c);
+        }
+      }
+
+      /* Build the mould by laying parts down. Every part is placed touching
+         what is already there, so the hole is one connected piece. */
+      let parts = null;
+      for (let attempt = 0; attempt < 220 && !parts; attempt++){
+        const taken = new Set(), list = [];
+        const kk = (x,y) => y*g + x;
+        for (let n = 0; n < want; n++){
+          const options = [];
+          for (const sh of shuffle(SHAPES.slice(), ctx.rnd)){
+            for (let y = 0; y < g; y++) for (let x = 0; x < g; x++){
+              const cells = sh.map(c => [x+c[0], y+c[1]]);
+              if (cells.some(c => c[0] >= g || c[1] >= g || taken.has(kk(c[0],c[1])))) continue;
+              if (taken.size){
+                const touches = cells.some(c => [[1,0],[-1,0],[0,1],[0,-1]]
+                  .some(d => taken.has(kk(c[0]+d[0], c[1]+d[1]))));
+                if (!touches) continue;
+              }
+              options.push({ sh, cells });
+            }
+            if (options.length > 40) break;
+          }
+          if (!options.length) break;
+          const pick = options[Math.floor(ctx.rnd()*options.length)];
+          pick.cells.forEach(c => taken.add(kk(c[0],c[1])));
+          list.push(pick.sh);
+        }
+        if (list.length === want) parts = { list, cells: taken };
+      }
+      if (!parts){   /* a mould of two dominoes always exists on any grid */
+        const taken = new Set([0, 1, g, g+1]);
+        parts = { list: [SHAPES[0], SHAPES[0]], cells: taken };
+      }
+      const target = parts.cells;
+
+      const wrap = mk('div','forgewrap');
+      const grid = mk('div','fgrid');
+      grid.style.gridTemplateColumns = 'repeat(' + g + ',1fr)';
+      const cellEls = [];
+      for (let i = 0; i < g*g; i++){
+        const c = mk('i','fcell');
+        if (target.has(i)) c.classList.add('mould');
+        c.setAttribute('role','button');
+        c.setAttribute('aria-label', t(target.has(i) ? 'forge.hole' : 'forge.solid',
+          { x: (i % g) + 1, y: Math.floor(i / g) + 1 }));
+        grid.appendChild(c); cellEls.push(c);
+      }
+      wrap.appendChild(grid);
+      const tray = mk('div','ftray');
+      wrap.appendChild(tray);
+      ctx.surface.appendChild(wrap);
+
+      const budget = moveBudget(ctx, parts.list.length);
+      const filled = new Map();      /* cell index -> placement */
+      const placed = [];
+      let sel = null, done = false;
+
+      const say = () => ctx.prompt(t('p.forge', { n: target.size - filled.size }));
+
+      const trayEls = [];
+      const drawTray = () => {
+        tray.innerHTML = ''; trayEls.length = 0;
+        parts.list.forEach((sh, i) => {
+          if (placed.some(p => p.part === i)) return;
+          const w = Math.max(...sh.map(c=>c[0])) + 1, h = Math.max(...sh.map(c=>c[1])) + 1;
+          const e = mk('button','fpiece');
+          e.type = 'button';
+          e.style.gridTemplateColumns = 'repeat(' + w + ',1fr)';
+          for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){
+            const b2 = mk('i', sh.some(c => c[0]===x && c[1]===y) ? 'fbit on' : 'fbit');
+            e.appendChild(b2);
+          }
+          e.setAttribute('aria-label', t('forge.part', { n: sh.length }));
+          if (sel === i) e.classList.add('fsel');
+          onTap(e, () => { if (done) return;
+            sel = (sel === i) ? null : i; drawTray(); });
+          tray.appendChild(e); trayEls.push(e);
+        });
+      };
+      drawTray();
+      say();
+      /* The board is square and the tray sits under it, so sizing the board
+         from the surface's WIDTH pushes the tray off the bottom of the play
+         area. Size it from what is actually left once the tray has laid out —
+         at seven parts the tray wraps to two rows, and a fixed allowance for
+         it is wrong by exactly one row. */
+      const fitBoard = () => {
+        const room = ctx.surface.clientHeight - tray.offsetHeight - 14;
+        const side = Math.max(120, Math.min(ctx.surface.clientWidth, room));
+        grid.style.width = side + 'px';
+        grid.style.height = side + 'px';
+      };
+      fitBoard();
+      /* Once more after the first paint: on the frame the mode is built the
+         surface has not been laid out yet, so its height reads short and the
+         board comes out smaller than the room it actually has. The tray wraps
+         on its own width, not on the board, so one extra pass settles it. */
+      requestAnimationFrame(fitBoard);
+
+      const paint = () => {
+        cellEls.forEach((c, i) => c.classList.toggle('set', filled.has(i)));
+      };
+
+      cellEls.forEach((cell, idx) => {
+        onTap(cell, () => {
+          if (done) return;
+          /* Tapping something already built takes that part back. */
+          if (filled.has(idx)){
+            const p = filled.get(idx);
+            p.cells.forEach(i => filled.delete(i));
+            placed.splice(placed.indexOf(p), 1);
+            sel = p.part; drawTray(); paint(); say();
+            return;
+          }
+          if (sel === null) return;
+          const sh = parts.list[sel];
+          /* The part lands with its own first square — top row, leftmost — on
+             the square you tapped. Anchoring on the bounding box instead means
+             a part whose top-left corner is empty drops somewhere you did not
+             point at, and there is no way to learn where. */
+          const a0 = sh[0];
+          const ax = (idx % g) - a0[0], ay = Math.floor(idx / g) - a0[1];
+          const cells = sh.map(c => (ay + c[1])*g + (ax + c[0]));
+          const fits = sh.every((c, k) => ax + c[0] >= 0 && ax + c[0] < g
+            && ay + c[1] >= 0 && ay + c[1] < g
+            && target.has(cells[k]) && !filled.has(cells[k]));
+          if (!fits){ cell.classList.add('no');
+            ctx.after(220, () => cell.classList.remove('no')); return; }
+          const p = { part: sel, cells };
+          cells.forEach(i => filled.set(i, p));
+          placed.push(p); sel = null;
+          drawTray(); paint(); fitBoard();
+          /* Win before spending: a part that completes the mould should never
+             be the move that runs the budget out. And say() before spending,
+             because spending can end the round and this would overwrite the
+             reason it ended with a count that no longer means anything. */
+          if (filled.size === target.size){
+            done = true; grid.classList.add('made'); return ctx.win(grid);
+          }
+          say();
+          budget.spend(cell);
+        });
+      });
     }
   },
 };
