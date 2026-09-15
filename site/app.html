@@ -234,7 +234,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .ddot.dsel{box-shadow:0 0 0 3px var(--cream),0 0 12px #ff5b39aa}
 .ddot.dhit{background:radial-gradient(circle at 34% 30%,#ffe7a0,#ffc53d)}
 
-──────────────────────────────────────────────────────────── */
+/* ── Siphon ───────────────────────────────────────────────────────────── */
 .siphonwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
   flex-direction:column;justify-content:space-between;padding:6% 4%;box-sizing:border-box}
 .sprow{display:flex;gap:10px;justify-content:center;align-items:flex-end}
@@ -1215,7 +1215,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1364,7 +1364,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.13.0 (41)';
+const VERSION = 'v0.13.1 (41)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2089,6 +2089,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.13.1', date:'2026-09-15', items:[
+    'Fixed — Siphon lost its layout in the last release. Adding Drift overwrote the comment above Siphon\u2019s styles, and the leftover marker swallowed the rule that positions the board.',
+  ] },
   { v:'0.13.0', date:'2026-09-15', items:[
     'New mode — Drift. Every dot travels in a straight line and exactly one pair is on course to meet. Tap both before they do.',
     'The only mode that asks where things will be rather than where they are — and the near-misses get nearer every level.',

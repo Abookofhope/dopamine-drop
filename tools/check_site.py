@@ -125,6 +125,27 @@ if chrome_start >= 0 and chrome_end > chrome_start and modes_end > modes_start:
     check("no mode reuses a class the header owns", not shared,
           "shared: " + ", ".join(shared) if shared else "")
 
+# A stray `*/` in the stylesheet is not a parse error you can see. The CSS
+# parser treats the garbage before it as the start of a selector and swallows
+# the next rule whole. That is how a scripted edit that overwrote a section
+# comment silently deleted `.siphonwrap`, leaving a whole mode laid out as
+# plain block flow with the failure invisible to every structural test.
+stray = unterminated = 0
+for sheet in re.findall(r"<style[^>]*>(.*?)</style>", html, re.S):
+    depth, k = 0, 0
+    while k < len(sheet) - 1:
+        if sheet[k:k+2] == "/*":
+            depth += 1; k += 2; continue
+        if sheet[k:k+2] == "*/":
+            if depth == 0: stray += 1
+            else: depth -= 1
+            k += 2; continue
+        k += 1
+    unterminated += depth
+check("stylesheet comments are balanced", not stray and not unterminated,
+      "stray */: %d, unterminated /*: %d" % (stray, unterminated)
+      if (stray or unterminated) else "")
+
 # A var() naming a custom property that nothing ever defines does not warn and
 # does not fall back to the previous declaration — the whole property becomes
 # unset, so `stroke:var(--nope)` paints nothing and `background:var(--nope)`
