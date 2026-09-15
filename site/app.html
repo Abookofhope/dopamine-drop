@@ -234,6 +234,24 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .ddot.dsel{box-shadow:0 0 0 3px var(--cream),0 0 12px #ff5b39aa}
 .ddot.dhit{background:radial-gradient(circle at 34% 30%,#ffe7a0,#ffc53d)}
 
+/* ── Chalk ────────────────────────────────────────────────────────────── */
+.chalkbox{position:relative;width:100%;aspect-ratio:1;touch-action:none;overflow:hidden;
+  border-radius:var(--r-lg);background:#07050f;border:1px solid var(--edge-soft)}
+.chalkink{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.chalkink polyline{fill:none;stroke:var(--cream);stroke-width:1.6;stroke-linecap:round;
+  stroke-linejoin:round;opacity:.9;vector-effect:non-scaling-stroke}
+.cblock{position:absolute;display:block;border-radius:3px;background:var(--ink-3);
+  border:1px solid var(--edge);box-sizing:border-box}
+.cbasket{position:absolute;display:block;height:8%;border-radius:0 0 8px 8px;box-sizing:border-box;
+  border:2px solid var(--cool);border-top:none;background:#33e6c81f;transition:background var(--t-fast)}
+.cbasket.caught{background:#33e6c855;box-shadow:0 0 14px #33e6c877}
+.cball{position:absolute;display:block;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#a9dcff,#4bc0ff);box-shadow:0 0 10px #4bc0ff66}
+.cball.lost{background:radial-gradient(circle at 34% 30%,#ff9ab3,#ff3d6e)}
+.cink{position:absolute;left:0;top:0;display:block;height:3px;background:var(--cream);opacity:.55}
+.cink.low{background:var(--bad);opacity:1}
+.chalkbox.live .chalkink polyline{opacity:.5}
+
 /* ── Siphon ───────────────────────────────────────────────────────────── */
 .siphonwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
   flex-direction:column;justify-content:space-between;padding:6% 4%;box-sizing:border-box}
@@ -1215,7 +1233,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.1</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.2</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1364,7 +1382,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.13.1 (41)';
+const VERSION = 'v0.13.2 (42)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1643,6 +1661,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.chalk':'Draw a ramp — lift your finger to drop the ball', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball', 'chalk.basket':'The basket', 'm.chalk':'Chalk|Draw the ramp, then watch — no second chances',
     'p.drift':'Two are on a collision course — tap them both', 'drift.dot':'Drifting dot {n}', 'm.drift':'Drift|Two of these will meet — find them before they do',
     'p.cairn':'{n} more to stack', 'cairn.tap':'Tap to drop the stone', 'm.cairn':'Cairn|Stack the stones — every overhang is gone for good',
     'p.pour':'Hold to pour — stop inside the band', 'pour.hold':'Hold to pour', 'pour.at':'Filled to {n} percent, aiming for {m}', 'm.pour':'Pour|Fill to the line — the sand keeps falling',
@@ -1748,6 +1767,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.chalk':'Tracez une rampe — relâchez pour lâcher la bille', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La bille', 'chalk.basket':'Le panier', 'm.chalk':'Craie|Tracez la rampe, puis regardez — sans reprise',
     'p.drift':'Deux vont se percuter — touchez-les tous les deux', 'drift.dot':'Point dérivant {n}', 'm.drift':'Dérive|Deux vont se rencontrer — trouvez-les avant',
     'p.cairn':'Encore {n} à empiler', 'cairn.tap':'Touchez pour poser la pierre', 'm.cairn':'Cairn|Empilez les pierres — tout débord est perdu',
     'p.pour':'Maintenez pour verser — arrêtez dans la bande', 'pour.hold':'Maintenir pour verser', 'pour.at':'Rempli à {n} pour cent, objectif {m}', 'm.pour':'Versement|Remplissez jusqu’au trait — le sable continue',
@@ -1853,6 +1873,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.chalk':'Dibuja una rampa — suelta para lanzar la bola', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'La bola', 'chalk.basket':'La cesta', 'm.chalk':'Tiza|Dibuja la rampa y mira — sin segundas oportunidades',
     'p.drift':'Dos van a chocar — toca los dos', 'drift.dot':'Punto a la deriva {n}', 'm.drift':'Deriva|Dos van a encontrarse — encuéntralos antes',
     'p.cairn':'{n} más para apilar', 'cairn.tap':'Toca para soltar la piedra', 'm.cairn':'Mojón|Apila las piedras — lo que sobresale se pierde',
     'p.pour':'Mantén para verter — para dentro de la banda', 'pour.hold':'Mantén para verter', 'pour.at':'Lleno al {n} por ciento, objetivo {m}', 'm.pour':'Vertido|Llena hasta la línea — la arena sigue cayendo',
@@ -1958,6 +1979,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.chalk':'Zeichne eine Rampe — loslassen lässt die Kugel fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Die Kugel', 'chalk.basket':'Der Korb', 'm.chalk':'Kreide|Zeichne die Rampe und schau zu — ohne zweiten Versuch',
     'p.drift':'Zwei laufen aufeinander zu — tippe beide an', 'drift.dot':'Treibender Punkt {n}', 'm.drift':'Drift|Zwei treffen sich — finde sie vorher',
     'p.cairn':'Noch {n} zu stapeln', 'cairn.tap':'Tippen, um den Stein zu setzen', 'm.cairn':'Steinmal|Staple die Steine — jeder Überhang ist für immer weg',
     'p.pour':'Halten zum Giessen — im Band stoppen', 'pour.hold':'Halten zum Giessen', 'pour.at':'Zu {n} Prozent gefüllt, Ziel {m}', 'm.pour':'Giessen|Füll bis zur Linie — der Sand rieselt nach',
@@ -2089,6 +2111,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.13.2', date:'2026-09-15', items:[
+    'New mode — Chalk. Draw a ramp for the ball, then lift your finger. The drawing is final and everything after it is consequence.',
+    'The chalk runs out, and the budget tightens with every level — enough for a funnel at first, barely enough for one honest ramp later.',
+  ] },
   { v:'0.13.1', date:'2026-09-15', items:[
     'Fixed — Siphon lost its layout in the last release. Adding Drift overwrote the comment above Siphon\u2019s styles, and the leftover marker swallowed the rule that positions the board.',
   ] },
@@ -5750,6 +5776,176 @@ const MODES = {
         raf2 = requestAnimationFrame(frame);
       };
       raf2 = requestAnimationFrame(frame);
+    }
+  },
+
+  /* ── Chalk — the only mode you cannot correct ─────────────────────────────
+     From "gravity doodle". Descent hands you a falling object and lets you
+     steer it the whole way down; this is its exact inverse. You do not touch
+     the ball at all. You draw the world it will fall through, and the moment
+     you lift your finger the drawing is final — everything after that is
+     consequence. Nothing else in the roster asks for the whole answer before
+     anything moves.
+     The chalk runs out, and how much you get is the difficulty: enough to cheat
+     a funnel at first, barely enough for one honest ramp later. The budget is
+     always at least the straight-line distance from ball to basket plus a
+     margin, and the blockers are re-rolled until that straight line is clear,
+     so one stroke always exists that solves the board. */
+  chalk: {
+    name:'Chalk', blurb:'Draw the ramp, then watch — no second chances', cat:'physics', par:14000, bonus:3600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="4.5" r="2.6" fill="#4BC0FF"/><path d="M3 11c4.5 0 9 2.4 11 7" stroke="#4BC0FF" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-dasharray="3 2.4"/><path d="M16 20h5v-3h-5z" fill="#4BC0FF" opacity=".55"/></svg>',
+    build(ctx){
+      const R  = 3.4;                                   /* ball radius, % of field */
+      const BW = clamp(17 - ctx.level*0.35, 10, 17);    /* basket mouth */
+      const G  = 0.000062;                              /* % per ms per ms */
+      const bx = 14 + ctx.rnd()*72, by = 9;
+      /* The basket is never under the ball. If it were, the ball would simply
+         fall into it and the drawing would be decoration — you would scribble
+         anything to start the drop and win. Keeping them apart by more than the
+         basket's own half-width plus the ball means a ramp is the only way
+         across. */
+      const apart = BW/2 + R + 9;
+      const bands = [];
+      if (bx - apart > 10) bands.push([10, bx - apart]);
+      if (bx + apart < 90) bands.push([bx + apart, 90]);
+      const band = bands.length ? bands[Math.floor(ctx.rnd()*bands.length)] : [10, 90];
+      const tx = band[0] + ctx.rnd()*(band[1] - band[0]), ty = 93;
+      const reach = Math.hypot(tx - bx, ty - by);
+      /* Never less than the straight line plus a margin: the honest stroke has
+         to stay affordable however tight the level gets. */
+      const inkCap = Math.max(reach*1.14, reach * (1.55 - ctx.level*0.022));
+
+      const seg = (px2, py2, ax, ay, bx2, by2) => {
+        const dx = bx2-ax, dy = by2-ay, L = dx*dx + dy*dy;
+        let u = L < 1e-9 ? 0 : ((px2-ax)*dx + (py2-ay)*dy) / L;
+        u = clamp(u, 0, 1);
+        return { x: ax + dx*u, y: ay + dy*u };
+      };
+
+      /* Blockers, re-rolled until the straight shot from ball to basket is
+         clear of every one of them. */
+      const nBlock = Math.min(3, Math.floor(ctx.level/6));
+      const blocks = [];
+      for (let k = 0, guard = 0; k < nBlock && guard < 300; guard++){
+        const w = 14 + ctx.rnd()*20, h = 3.5 + ctx.rnd()*3;
+        const b = { x: 6 + ctx.rnd()*(88-w), y: 26 + ctx.rnd()*46, w, h };
+        const cx = b.x + w/2, cy = b.y + h/2;
+        const q = seg(cx, cy, bx, by, tx, ty);
+        if (Math.hypot(q.x-cx, q.y-cy) < Math.max(w, h)/2 + R + 4) continue;
+        /* Nothing sits under the ball either. A blocker in the fall line turns
+           a ball the player never steered into the basket often enough that
+           scribbling and hoping beats drawing a ramp. */
+        if (b.x < bx + R + 2 && b.x + w > bx - R - 2) continue;
+        if (blocks.some(o => Math.abs(o.x+o.w/2 - cx) < (o.w+w)/2 + 3 &&
+                             Math.abs(o.y+o.h/2 - cy) < (o.h+h)/2 + 4)) continue;
+        blocks.push(b); k++;
+      }
+
+      const box = mk('div','chalkbox');
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('viewBox','0 0 100 100');
+      svg.setAttribute('class','chalkink');
+      svg.setAttribute('preserveAspectRatio','none');
+      const line = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+      svg.appendChild(line); box.appendChild(svg);
+      blocks.forEach(b => { const e = mk('i','cblock');
+        e.style.left = b.x+'%'; e.style.top = b.y+'%';
+        e.style.width = b.w+'%'; e.style.height = b.h+'%'; box.appendChild(e); });
+      const cup = mk('i','cbasket');
+      cup.style.left = (tx - BW/2)+'%'; cup.style.width = BW+'%'; cup.style.top = (ty-5)+'%';
+      cup.setAttribute('role','img'); cup.setAttribute('aria-label', t('chalk.basket'));
+      box.appendChild(cup);
+      const ball = mk('i','cball');
+      ball.style.width = ball.style.height = (R*2)+'%';
+      ball.setAttribute('role','img'); ball.setAttribute('aria-label', t('chalk.ball'));
+      box.appendChild(ball);
+      const meter = mk('i','cink'); box.appendChild(meter);
+      box.setAttribute('role','application');
+      box.setAttribute('aria-label', t('chalk.draw'));
+      ctx.surface.appendChild(box);
+
+      let done = false, drawing = false, launched = false, raf2 = 0;
+      const pts = [];
+      let used = 0;
+      let px = bx, py = by, vx = 0, vy = 0;
+      const paint = () => { ball.style.left = (px-R)+'%'; ball.style.top = (py-R)+'%'; };
+      paint();
+      const drawInk = () => {
+        line.setAttribute('points', pts.map(q => q.x.toFixed(2)+','+q.y.toFixed(2)).join(' '));
+        const left = Math.max(0, 1 - used/inkCap);
+        meter.style.width = (left*100)+'%';
+        meter.classList.toggle('low', left < 0.22);
+      };
+      drawInk();
+      const say = () => ctx.prompt(t(launched ? 'p.chalkGo' : 'p.chalk'));
+      say();
+
+      onDrag(box, {
+        start: q => { if (done || launched) return;
+          drawing = true; pts.length = 0; used = 0; pts.push({x:q.x, y:q.y}); drawInk(); },
+        move:  q => { if (!drawing) return;
+          const last = pts[pts.length-1];
+          const d = Math.hypot(q.x-last.x, q.y-last.y);
+          if (d < 1.1) return;
+          if (used + d > inkCap) return;          /* the chalk simply stops */
+          used += d; pts.push({x:q.x, y:q.y}); drawInk(); },
+        end:   () => {
+          if (!drawing || done || launched) return;
+          drawing = false;
+          /* A stray tap is not a commitment. */
+          if (used < 6){ pts.length = 0; drawInk(); return; }
+          launched = true; say(); box.classList.add('live');
+          const t0 = performance.now();
+          let last = t0;
+          const step = ms => {
+            vy += G*ms;
+            let nx = px + vx*ms, ny = py + vy*ms;
+            /* Resolve against the chalk line and the blockers the same way:
+               find the nearest point on the obstacle, and if the ball overlaps
+               it, push it out and reflect the velocity about that surface. */
+            const hits = [];
+            for (let i = 1; i < pts.length; i++)
+              hits.push(seg(nx, ny, pts[i-1].x, pts[i-1].y, pts[i].x, pts[i].y));
+            for (const b of blocks)
+              hits.push({ x: clamp(nx, b.x, b.x+b.w), y: clamp(ny, b.y, b.y+b.h) });
+            for (const h of hits){
+              let dx = nx-h.x, dy = ny-h.y;
+              const d = Math.hypot(dx, dy);
+              if (d >= R || d < 1e-6) continue;
+              dx /= d; dy /= d;
+              nx = h.x + dx*R; ny = h.y + dy*R;
+              const vn = vx*dx + vy*dy;
+              if (vn < 0){
+                /* Split the velocity, do not scale it whole. The normal part
+                   loses most of itself — a ramp should carry the ball, not
+                   throw it — while the tangential part, the part that is the
+                   whole point of a ramp, is barely touched. Scaling both
+                   together runs six times a frame and stops the ball dead on
+                   the first surface it meets. */
+                const tvx = vx - vn*dx, tvy = vy - vn*dy;
+                vx = tvx*0.999 - vn*dx*0.22;
+                vy = tvy*0.999 - vn*dy*0.22;
+              }
+            }
+            px = nx; py = ny;
+          };
+          const frame = () => {
+            if (done) return;
+            const now = performance.now();
+            const ms = Math.min(48, now - last); last = now;
+            for (let k = 0; k < 6; k++) step(ms/6);
+            paint();
+            if (py + R > ty-3 && py < ty+6 && Math.abs(px - tx) < BW/2){
+              done = true; cancelAnimationFrame(raf2);
+              cup.classList.add('caught'); return ctx.win(cup); }
+            if (px < -8 || px > 108 || py > 112 || now - t0 > 7000){
+              done = true; cancelAnimationFrame(raf2);
+              ball.classList.add('lost'); return ctx.miss(ball); }
+            raf2 = requestAnimationFrame(frame);
+          };
+          raf2 = requestAnimationFrame(frame);
+        }
+      });
     }
   },
 };
