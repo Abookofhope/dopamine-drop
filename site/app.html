@@ -195,6 +195,21 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Descent ──────────────────────────────────────────────────────────── */
+.descentsky{position:relative;width:100%;aspect-ratio:1;overflow:hidden;touch-action:none;
+  border-radius:var(--r-lg);border:1px solid var(--edge-soft);
+  background:linear-gradient(180deg,#0b0a1c 0%,#141033 60%,#1d1440 100%)}
+.dbar{position:absolute;left:0;right:0;height:4.5%}
+.dbar .side{position:absolute;top:0;height:100%;border-radius:3px;
+  background:linear-gradient(180deg,#6C6191,#4a4270);box-shadow:0 2px 0 #00000040}
+.dbar .side.l{left:0}
+.dbar.cleared .side{background:linear-gradient(180deg,#33e6c8aa,#1f9e8a)}
+.dbar.struck .side{background:linear-gradient(180deg,#ff3d6e,#a5203f)}
+.dstar{position:absolute;top:10%;width:9%;height:9%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle at 40% 35%,#fff3c4,#FFC53D 60%,#e08a17);
+  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%);
+  filter:drop-shadow(0 0 8px #ffc53d88);z-index:2}
+
 /* ── Ripple ───────────────────────────────────────────────────────────── */
 .ripplepool{position:relative;width:100%;aspect-ratio:1;overflow:hidden;touch-action:none;
   border-radius:var(--r-lg);border:1px solid var(--edge-soft);
@@ -1139,7 +1154,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.4</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.5</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1288,7 +1303,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.12.4 (36)';
+const VERSION = 'v0.12.5 (37)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1567,6 +1582,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.descent':'{n} gaps below', 'm.descent':'Descent|Steer the falling star through every gap',
     'p.ripple':'{n} gates to drift through', 'm.ripple':'Ripple|Tap the water — the waves carry the leaf',
     'p.slice':'{n} more to cut', 'slice.good':'Ripe', 'slice.rotten':'Rotten — do not cut', 'm.slice':'Slice|One stroke cuts all it crosses — miss the rotten',
     'p.shift':'Find the way out', 'm.shift':'Shift|Reach the way out before the walls move again',
@@ -1667,6 +1683,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.descent':'{n} passages plus bas', 'm.descent':'Descente|Guidez l’étoile à travers chaque ouverture',
     'p.ripple':'{n} anneaux à franchir', 'm.ripple':'Ondes|Touchez l’eau — les vagues portent la feuille',
     'p.slice':'Encore {n} à trancher', 'slice.good':'Mûr', 'slice.rotten':'Pourri — à éviter', 'm.slice':'Tranche|Un geste coupe tout sur son passage — évitez le pourri',
     'p.shift':'Trouvez la sortie', 'm.shift':'Décalage|Atteignez la sortie avant que les murs bougent',
@@ -1767,6 +1784,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.descent':'{n} huecos más abajo', 'm.descent':'Caída|Guía la estrella por cada hueco',
     'p.ripple':'Faltan {n} aros', 'm.ripple':'Onda|Toca el agua — las olas llevan la hoja',
     'p.slice':'Corta {n} más', 'slice.good':'Maduro', 'slice.rotten':'Podrido — no cortar', 'm.slice':'Corte|Un trazo corta todo lo que cruza — evita lo podrido',
     'p.shift':'Encuentra la salida', 'm.shift':'Desplazo|Llega a la salida antes de que los muros cambien',
@@ -1867,6 +1885,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.descent':'Noch {n} Lücken', 'm.descent':'Sturz|Lenke den Stern durch jede Lücke',
     'p.ripple':'Noch {n} Ringe', 'm.ripple':'Welle|Tippe aufs Wasser — die Wellen tragen das Blatt',
     'p.slice':'Noch {n} schneiden', 'slice.good':'Reif', 'slice.rotten':'Faul — nicht schneiden', 'm.slice':'Schnitt|Ein Zug trifft alles auf dem Weg — meide das Faule',
     'p.shift':'Finde den Ausgang', 'm.shift':'Verschub|Erreiche den Ausgang, bevor die Wände wandern',
@@ -1993,6 +2012,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.12.5', date:'2026-09-15', items:[
+    'New mode — Descent. A star falls and you steer it through the gaps. The gaps drift, so the line you need is never quite the line you can see.',
+    'The star has weight — it chases your finger rather than snapping to it, so a late correction cannot rescue a bad one. It is the only mode that never stops moving, where doing nothing is already a decision.'
+  ]},
   { v:'0.12.4', date:'2026-09-15', items:[
     'New mode — Ripple. Tap the water and the waves push a leaf through a line of gates. You never touch the leaf itself.',
     'Only the wavefront pushes, not the whole circle, so a ripple takes a moment to reach the leaf and you are aiming at where it is going to be.',
@@ -5146,6 +5169,92 @@ const MODES = {
         pool.insertBefore(e, leaf);
         waves.push({ x, y, r: 1, el: e });
         sfx.tap(); buzz(5);
+      });
+    }
+  },
+
+  /* ── Descent — the only mode that never stops moving ─────────────────────
+     From "guide a falling star through rotating rings". Ripple steers something
+     too, but slowly and indirectly; this is the opposite pole — direct control
+     under constant fall, where doing nothing is already a decision and usually
+     the wrong one. Gaps drift rather than sit still, so the line you need is
+     never the line you can see, and the star's sideways speed has weight to it
+     so a late correction cannot save a bad one. */
+  descent: {
+    name:'Descent', blurb:'Steer the falling star through every gap', cat:'reflex', par:9000, bonus:2800,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 5.2L20 8l-4 4 1 6-5-2.8L7 18l1-6-4-4 5.8-.8z" fill="#FFC53D"/></svg>',
+    build(ctx){
+      const gates = clamp(3 + Math.floor(ctx.level/3), 3, 9);
+      const fall  = 0.30 + Math.min(0.42, ctx.level*0.018);
+      const gapW  = clamp(30 - ctx.level*0.75, 15, 30);
+      const drift = 0.10 + Math.min(0.30, ctx.level*0.013);
+
+      const sky = mk('div','descentsky');
+      const star = mk('div','dstar');
+      star.setAttribute('role','img'); star.setAttribute('aria-label','Falling star');
+      ctx.surface.appendChild(sky);
+
+      /* Bars are spaced evenly below the start so the first one is never on top
+         of the star — there has to be room to read the gap before reaching it. */
+      const bars = [];
+      for (let i=0;i<gates;i++){
+        const e = mk('div','dbar');
+        const left = mk('i','side l'), right = mk('i','side r');
+        e.appendChild(left); e.appendChild(right);
+        e.setAttribute('role','img');
+        e.setAttribute('aria-label','Gap '+(i+1)+' of '+gates);
+        sky.appendChild(e);
+        bars.push({ e, left, right,
+                    y: 34 + i*26,
+                    gx: 20 + ctx.rnd()*60,
+                    dir: ctx.rnd() < 0.5 ? -1 : 1,
+                    passed: false });
+      }
+      sky.appendChild(star);
+
+      let sx = 50, sy = 10, vx = 0, want = 50, through = 0, done = false, raf2 = 0;
+      const say = () => ctx.prompt(t('p.descent', { n: gates - through }));
+      say();
+
+      const frame = () => {
+        if (done) return;
+        /* Weight, not teleporting: the star chases the finger rather than
+           snapping to it, so a late correction genuinely cannot save you. */
+        vx += (want - sx) * 0.055;
+        vx *= 0.80;
+        sx = clamp(sx + vx, 3, 97);
+        sy += fall;
+
+        bars.forEach(b => {
+          b.gx += b.dir * drift;
+          if (b.gx < 6 + gapW/2){ b.gx = 6 + gapW/2; b.dir = 1; }
+          if (b.gx > 94 - gapW/2){ b.gx = 94 - gapW/2; b.dir = -1; }
+          const top = b.y - sy + 10;
+          b.e.style.top = top + '%';
+          b.left.style.width  = Math.max(0, b.gx - gapW/2) + '%';
+          b.right.style.left  = (b.gx + gapW/2) + '%';
+          b.right.style.width = Math.max(0, 100 - (b.gx + gapW/2)) + '%';
+          if (!b.passed && Math.abs(top - 10) < 1.6){
+            if (Math.abs(sx - b.gx) > gapW/2 - 2){
+              done = true; cancelAnimationFrame(raf2);
+              b.e.classList.add('struck');
+              return ctx.miss(star);
+            }
+            b.passed = true; b.e.classList.add('cleared');
+            through++; sfx.good(through); buzz(10);
+            if (through >= gates){ done = true; cancelAnimationFrame(raf2); return ctx.win(star); }
+            say();
+          }
+        });
+        if (done) return;
+        star.style.left = sx + '%';
+        star.style.transform = 'translate(-50%,-50%) rotate(' + (vx*6) + 'deg)';
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
+      onDrag(sky, {
+        start: q => { want = clamp(q.x, 3, 97); },
+        move:  q => { want = clamp(q.x, 3, 97); }
       });
     }
   },
