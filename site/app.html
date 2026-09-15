@@ -252,6 +252,21 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cink.low{background:var(--bad);opacity:1}
 .chalkbox.live .chalkink polyline{opacity:.5}
 
+/* ── Gather ───────────────────────────────────────────────────────────── */
+.gatherbox{position:relative;width:100%;aspect-ratio:1;touch-action:none;overflow:hidden;
+  border-radius:var(--r-lg);background:linear-gradient(180deg,#0a0818,#161031);
+  border:1px solid var(--edge-soft)}
+.gdrop{position:absolute;display:block;width:8%;height:8%;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  transform:translateX(-50%);
+  background:radial-gradient(circle at 36% 30%,#ffb3c6,#ff3d6e);box-shadow:0 0 8px #ff3d6e55}
+.gdrop.dud{background:radial-gradient(circle at 36% 30%,#4a4270,#2a2448);box-shadow:none}
+.gdrop.splat{transform:translateX(-50%) scaleY(.4) scaleX(1.5);opacity:.3;
+  transition:transform var(--t-fast),opacity var(--t-fast)}
+.gpail{position:absolute;display:block;bottom:5%;height:11%;border-radius:0 0 10px 10px;box-sizing:border-box;
+  border:3px solid var(--cool);border-top:none;background:#33e6c81a;
+  transition:background var(--t-fast),box-shadow var(--t-fast)}
+.gpail.got{background:#33e6c855;box-shadow:0 0 14px #33e6c877}
+
 /* ── Siphon ───────────────────────────────────────────────────────────── */
 .siphonwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
   flex-direction:column;justify-content:space-between;padding:6% 4%;box-sizing:border-box}
@@ -1233,7 +1248,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.2</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.3</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1382,7 +1397,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.13.2 (42)';
+const VERSION = 'v0.13.3 (43)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1661,6 +1676,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.gather':'{n} more to catch — let the dark ones fall', 'gather.pail':'Your pail', 'gather.keep':'A ripe one, worth catching', 'gather.dud':'A dud, let it fall', 'm.gather':'Gather|Catch the ripe ones, let the rest fall',
     'p.chalk':'Draw a ramp — lift your finger to drop the ball', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball', 'chalk.basket':'The basket', 'm.chalk':'Chalk|Draw the ramp, then watch — no second chances',
     'p.drift':'Two are on a collision course — tap them both', 'drift.dot':'Drifting dot {n}', 'm.drift':'Drift|Two of these will meet — find them before they do',
     'p.cairn':'{n} more to stack', 'cairn.tap':'Tap to drop the stone', 'm.cairn':'Cairn|Stack the stones — every overhang is gone for good',
@@ -1767,6 +1783,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.gather':'Encore {n} à attraper — laissez tomber les sombres', 'gather.pail':'Votre seau', 'gather.keep':'Un mûr, à attraper', 'gather.dud':'Un gâté, laissez-le tomber', 'm.gather':'Récolte|Attrapez les mûrs, laissez tomber le reste',
     'p.chalk':'Tracez une rampe — relâchez pour lâcher la bille', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La bille', 'chalk.basket':'Le panier', 'm.chalk':'Craie|Tracez la rampe, puis regardez — sans reprise',
     'p.drift':'Deux vont se percuter — touchez-les tous les deux', 'drift.dot':'Point dérivant {n}', 'm.drift':'Dérive|Deux vont se rencontrer — trouvez-les avant',
     'p.cairn':'Encore {n} à empiler', 'cairn.tap':'Touchez pour poser la pierre', 'm.cairn':'Cairn|Empilez les pierres — tout débord est perdu',
@@ -1873,6 +1890,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.gather':'{n} más que atrapar — deja caer los oscuros', 'gather.pail':'Tu cubo', 'gather.keep':'Uno maduro, para atrapar', 'gather.dud':'Uno malo, déjalo caer', 'm.gather':'Cosecha|Atrapa los maduros, deja caer el resto',
     'p.chalk':'Dibuja una rampa — suelta para lanzar la bola', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'La bola', 'chalk.basket':'La cesta', 'm.chalk':'Tiza|Dibuja la rampa y mira — sin segundas oportunidades',
     'p.drift':'Dos van a chocar — toca los dos', 'drift.dot':'Punto a la deriva {n}', 'm.drift':'Deriva|Dos van a encontrarse — encuéntralos antes',
     'p.cairn':'{n} más para apilar', 'cairn.tap':'Toca para soltar la piedra', 'm.cairn':'Mojón|Apila las piedras — lo que sobresale se pierde',
@@ -1979,6 +1997,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.gather':'Noch {n} zu fangen — die dunklen fallen lassen', 'gather.pail':'Dein Eimer', 'gather.keep':'Ein reifer, den fängst du', 'gather.dud':'Ein fauler, lass ihn fallen', 'm.gather':'Ernte|Fang die reifen, lass den Rest fallen',
     'p.chalk':'Zeichne eine Rampe — loslassen lässt die Kugel fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Die Kugel', 'chalk.basket':'Der Korb', 'm.chalk':'Kreide|Zeichne die Rampe und schau zu — ohne zweiten Versuch',
     'p.drift':'Zwei laufen aufeinander zu — tippe beide an', 'drift.dot':'Treibender Punkt {n}', 'm.drift':'Drift|Zwei treffen sich — finde sie vorher',
     'p.cairn':'Noch {n} zu stapeln', 'cairn.tap':'Tippen, um den Stein zu setzen', 'm.cairn':'Steinmal|Staple die Steine — jeder Überhang ist für immer weg',
@@ -2111,6 +2130,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.13.3', date:'2026-09-15', items:[
+    'New mode — Gather. Rain falls, some worth keeping and some not. Move the pail under the ripe ones and let the duds go past.',
+    'Dropping one you wanted ends the round just as surely as catching one you did not, so there is no hiding in a corner.',
+  ] },
   { v:'0.13.2', date:'2026-09-15', items:[
     'New mode — Chalk. Draw a ramp for the ball, then lift your finger. The drawing is final and everything after it is consequence.',
     'The chalk runs out, and the budget tightens with every level — enough for a funnel at first, barely enough for one honest ramp later.',
@@ -5946,6 +5969,126 @@ const MODES = {
           raf2 = requestAnimationFrame(frame);
         }
       });
+    }
+  },
+
+  /* ── Gather — the only mode that is a stream, not a board ─────────────────
+     From "cloud catcher". Every other mode hands you a situation: a board to
+     read, an object to steer, a thing to build. This one hands you a schedule.
+     Rain falls, some of it worth keeping and some of it not, and the work is
+     triage under a clock you do not control — decide, move, and let the rest go
+     past. Dropping one you wanted ends the round just as surely as catching one
+     you did not, so there is no playing safe by hiding in a corner.
+     A pointer can move the pail anywhere instantly, so the honest constraint is
+     not speed but conflict: two drops that need the pail in two places at the
+     same moment. The schedule is rejected and re-rolled until no such pair
+     exists, which makes every round catchable by someone quick enough. */
+  gather: {
+    name:'Gather', blurb:'Catch the ripe ones, let the rest fall', cat:'reflex', par:13000, bonus:3400,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="4" r="2" fill="#FF3D6E"/><circle cx="15" cy="8" r="2" fill="#FF3D6E" opacity=".4"/><circle cx="10" cy="11" r="2" fill="#FF3D6E"/><path d="M4 16h16l-2 5H6z" fill="none" stroke="#FF3D6E" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+    build(ctx){
+      const CW   = clamp(24 - ctx.level*0.55, 14, 24);    /* pail mouth, % of field */
+      const need = 4 + Math.min(5, Math.floor(ctx.level/4));
+      const bad  = Math.min(6, Math.floor(ctx.level/3));
+      const fall = clamp(2600 - ctx.level*72, 1200, 2600); /* ms from top to pail */
+      const gap  = clamp(820 - ctx.level*16, 430, 820);    /* ms between landings */
+      const RIM  = 84;                                     /* where the pail catches */
+      const SAFE = 280;                                    /* ms that counts as "at once" */
+
+      /* Two drops conflict when they land close enough in time that the pail
+         cannot be in both places — or, for a keeper and a dud, close enough
+         that catching one means catching the other. */
+      const conflict = (a, b) => {
+        if (Math.abs(a.t - b.t) >= SAFE) return false;
+        const dx = Math.abs(a.x - b.x);
+        if (a.good && b.good) return dx > CW*0.72;   /* too far apart to cover both */
+        if (a.good !== b.good) return dx < CW*1.05;  /* too close to take one only */
+        return false;                                 /* two duds never conflict */
+      };
+
+      let drops = null;
+      for (let attempt = 0; attempt < 500 && !drops; attempt++){
+        const total = need + bad;
+        /* Which slots hold keepers is drawn separately from when the slots are.
+           Deciding both from the same index would put every keeper first and
+           every dud last, and the round would play itself. */
+        const keepers = new Set(shuffle(Array.from({length: total}, (_, i) => i), ctx.rnd).slice(0, need));
+        const list = [];
+        let ok = true;
+        for (let i = 0; i < total; i++)
+          list.push({ good: keepers.has(i),
+                      t: fall + 420 + i*gap + ctx.rnd()*gap*0.5,
+                      x: 8 + ctx.rnd()*84 });
+        for (let i = 0; i < list.length && ok; i++)
+          for (let j = i+1; j < list.length && ok; j++)
+            if (conflict(list[i], list[j])) ok = false;
+        if (ok) drops = list;
+      }
+      /* A schedule with only the keepers in it is always catchable. */
+      if (!drops) drops = Array.from({length: need}, (_, i) =>
+        ({ good:true, t: fall + 420 + i*gap*1.4, x: 8 + ctx.rnd()*84 }));
+
+      const field = mk('div','gatherbox');
+      const pail = mk('i','gpail');
+      pail.style.width = CW + '%';
+      pail.setAttribute('role','img');
+      pail.setAttribute('aria-label', t('gather.pail'));
+      field.appendChild(pail);
+      ctx.surface.appendChild(field);
+
+      let px = 50, done = false, raf2 = 0, got = 0;
+      const movePail = () => { pail.style.left = (px - CW/2) + '%'; };
+      movePail();
+      const say = () => ctx.prompt(t('p.gather', { n: need - got }));
+      say();
+
+      drops.forEach(d => {
+        d.e = mk('i', d.good ? 'gdrop' : 'gdrop dud');
+        d.e.style.left = d.x + '%';
+        d.e.setAttribute('role','img');
+        d.e.setAttribute('aria-label', t(d.good ? 'gather.keep' : 'gather.dud'));
+        d.e.style.top = '-10%';
+        field.appendChild(d.e);
+        d.live = false; d.gone = false;
+      });
+
+      onDrag(field, {
+        start: q => { if (!done){ px = clamp(q.x, CW/2, 100 - CW/2); movePail(); } },
+        move:  q => { if (!done){ px = clamp(q.x, CW/2, 100 - CW/2); movePail(); } }
+      });
+
+      const t0 = performance.now();
+      const frame = () => {
+        if (done) return;
+        const ms = performance.now() - t0;
+        for (const d of drops){
+          if (d.gone) continue;
+          const age = ms - d.t + fall;           /* d.t is the landing moment */
+          if (age < 0){ continue; }
+          const y = -8 + (age/fall) * (RIM + 8);
+          d.e.style.top = y + '%';
+          if (!d.live){ d.live = true; d.e.classList.add('falling'); }
+          if (y >= RIM){
+            d.gone = true;
+            const caught = Math.abs(d.x - px) < CW/2;
+            if (caught && !d.good){
+              done = true; cancelAnimationFrame(raf2);
+              d.e.classList.add('splat'); return ctx.miss(d.e);
+            }
+            if (!caught && d.good){
+              done = true; cancelAnimationFrame(raf2);
+              d.e.classList.add('splat'); return ctx.miss(d.e);
+            }
+            if (caught){ got++; d.e.remove(); pail.classList.add('got');
+              ctx.after(140, () => pail.classList.remove('got'));
+              if (got >= need){ done = true; cancelAnimationFrame(raf2); return ctx.win(pail); }
+              say();
+            } else { d.e.remove(); }
+          }
+        }
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
     }
   },
 };
