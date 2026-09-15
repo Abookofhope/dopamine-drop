@@ -195,6 +195,26 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Pour ─────────────────────────────────────────────────────────────── */
+.pourwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
+  flex-direction:column;align-items:center;justify-content:space-between;padding:4% 0;box-sizing:border-box}
+.spout{width:26%;height:15%;border-radius:6px 6px 20px 20px;flex:none;
+  background:linear-gradient(180deg,#8a7fb5,#5b5182);box-shadow:inset 0 -4px 0 #00000033;
+  transition:transform var(--t-med)}
+.spout.tipped{transform:rotate(-24deg) translateX(-6%)}
+.pstream{position:absolute;top:19%;left:50%;width:5px;height:34%;transform:translateX(-50%);
+  border-radius:3px;background:linear-gradient(180deg,#ffc53d,#e0a020);opacity:0;pointer-events:none;
+  transition:opacity var(--t-fast)}
+.pstream.on{opacity:.95}
+.vessel{position:relative;width:52%;height:46%;flex:none;border-radius:6px 6px 14px 14px;overflow:hidden;
+  background:#ffffff08;border:2px solid var(--edge);transition:border-color var(--t-fast)}
+.vessel .fill{position:absolute;left:0;right:0;bottom:0;display:block;
+  background:linear-gradient(180deg,#ffd76a,#e0a020);transition:height 60ms linear}
+.vessel .band{position:absolute;left:0;right:0;display:block;pointer-events:none;
+  background:#33e6c826;border-top:2px dashed var(--cool);border-bottom:2px dashed var(--cool)}
+.vessel.over{border-color:var(--bad)}
+.vessel.good{border-color:var(--cool)}
+
 /* ── Siphon ───────────────────────────────────────────────────────────── */
 .siphonwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
   flex-direction:column;justify-content:space-between;padding:6% 4%;box-sizing:border-box}
@@ -1176,7 +1196,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.6</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.7</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1325,7 +1345,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.12.6 (38)';
+const VERSION = 'v0.12.7 (39)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1604,6 +1624,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.pour':'Hold to pour — stop inside the band', 'pour.hold':'Hold to pour', 'pour.at':'Filled to {n} percent, aiming for {m}', 'm.pour':'Pour|Fill to the line — the sand keeps falling',
     'p.siphon':'{n} jars still empty', 'sip.source':'source', 'sip.wants':'Jar wanting {c}', 'sip.done':'jar, filled', 'sip.empty':'source, emptied', 'm.siphon':'Siphon|Pour each colour into the jar that wants it',
     'p.descent':'{n} gaps below', 'm.descent':'Descent|Steer the falling star through every gap',
     'p.ripple':'{n} gates to drift through', 'm.ripple':'Ripple|Tap the water — the waves carry the leaf',
@@ -1706,6 +1727,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.pour':'Maintenez pour verser — arrêtez dans la bande', 'pour.hold':'Maintenir pour verser', 'pour.at':'Rempli à {n} pour cent, objectif {m}', 'm.pour':'Versement|Remplissez jusqu’au trait — le sable continue',
     'p.siphon':'{n} bocaux vides', 'sip.source':'source', 'sip.wants':'Bocal attendant {c}', 'sip.done':'bocal, rempli', 'sip.empty':'source, vidée', 'm.siphon':'Transvase|Versez chaque couleur dans le bon bocal',
     'p.descent':'{n} passages plus bas', 'm.descent':'Descente|Guidez l’étoile à travers chaque ouverture',
     'p.ripple':'{n} anneaux à franchir', 'm.ripple':'Ondes|Touchez l’eau — les vagues portent la feuille',
@@ -1808,6 +1830,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.pour':'Mantén para verter — para dentro de la banda', 'pour.hold':'Mantén para verter', 'pour.at':'Lleno al {n} por ciento, objetivo {m}', 'm.pour':'Vertido|Llena hasta la línea — la arena sigue cayendo',
     'p.siphon':'{n} frascos vacíos', 'sip.source':'fuente', 'sip.wants':'Frasco que pide {c}', 'sip.done':'frasco, lleno', 'sip.empty':'fuente, vacía', 'm.siphon':'Trasvase|Vierte cada color en su frasco',
     'p.descent':'{n} huecos más abajo', 'm.descent':'Caída|Guía la estrella por cada hueco',
     'p.ripple':'Faltan {n} aros', 'm.ripple':'Onda|Toca el agua — las olas llevan la hoja',
@@ -1910,6 +1933,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.pour':'Halten zum Giessen — im Band stoppen', 'pour.hold':'Halten zum Giessen', 'pour.at':'Zu {n} Prozent gefüllt, Ziel {m}', 'm.pour':'Giessen|Füll bis zur Linie — der Sand rieselt nach',
     'p.siphon':'Noch {n} Gläser leer', 'sip.source':'Quelle', 'sip.wants':'Glas will {c}', 'sip.done':'Glas, gefüllt', 'sip.empty':'Quelle, geleert', 'm.siphon':'Umfüllen|Giess jede Farbe in ihr Glas',
     'p.descent':'Noch {n} Lücken', 'm.descent':'Sturz|Lenke den Stern durch jede Lücke',
     'p.ripple':'Noch {n} Ringe', 'm.ripple':'Welle|Tippe aufs Wasser — die Wellen tragen das Blatt',
@@ -2038,6 +2062,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.12.7', date:'2026-09-15', items:[
+    'New mode — Pour. Hold to pour sand and stop inside the band. The sand keeps falling after you let go, so the stop has to be anticipated.',
+    'The only mode measured by an amount rather than an event, and the only one where doing more of the right thing is how you lose.',
+  ] },
   { v:'0.12.6', date:'2026-09-15', items:[
     'New mode — Siphon. Drag the colour out of each bottle and pour it into the jar asking for it.',
     'You are moving what is inside a thing rather than the thing itself, and a pour is all or nothing — so the work is matching them up before you start, not correcting as you go.'
@@ -5379,6 +5407,82 @@ const MODES = {
           if (filled >= n){ done = true; return ctx.win(j.e); }
           say();
         }
+      });
+    }
+  },
+
+  /* ── Pour — the only mode measured by volume ─────────────────────────────
+     From "pour sand to fill shapes". Every other mode resolves on a discrete
+     event: a tap landed, a piece moved, a gate was passed. This one resolves on
+     an amount, so the skill is knowing when to STOP — and since sand keeps
+     falling for a moment after you lift your finger, stopping has to be
+     anticipated rather than reacted to. Overfilling is the loss, which makes it
+     the only mode where doing more of the right thing is how you fail. */
+  pour: {
+    name:'Pour', blurb:'Fill to the line — the sand keeps falling', cat:'calm', par:11000, bonus:3000,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h6l-2 7 2 11H5z" fill="#FFC53D" opacity=".55"/><rect x="13" y="12" width="7" height="9" rx="1.5" fill="none" stroke="#FFC53D" stroke-width="1.8"/><rect x="13" y="16" width="7" height="5" rx="1.5" fill="#FFC53D"/></svg>',
+    build(ctx){
+      const target = 0.52 + ctx.rnd()*0.30;
+      const tol    = clamp(0.085 - ctx.level*0.0028, 0.030, 0.085);
+      const rate   = 0.0042 + Math.min(0.005, ctx.level*0.00022);
+      /* How long the mode waits after the last grain lands before it calls the
+         pour finished. Long enough that a stutter in the hold is not read as a
+         final answer, short enough that a correct stop feels immediate. */
+      const settle = 420;
+
+      const wrap = mk('div','pourwrap');
+      const spout = mk('div','spout');
+      spout.setAttribute('role','button');
+      spout.setAttribute('aria-label', t('pour.hold'));
+      wrap.appendChild(spout);
+      const stream = mk('div','pstream'); wrap.appendChild(stream);
+      const vessel = mk('div','vessel');
+      const fillEl = mk('i','fill'); vessel.appendChild(fillEl);
+      const band = mk('u','band'); vessel.appendChild(band);
+      vessel.setAttribute('role','img');
+      wrap.appendChild(vessel);
+      ctx.surface.appendChild(wrap);
+
+      band.style.bottom = (target*100) + '%';
+      band.style.height = (tol*2*100) + '%';
+      band.style.marginBottom = (-tol*100) + '%';
+
+      let level = 0, held = false, falling = 0, done = false, raf2 = 0, lift = 0;
+      const say = () => ctx.prompt(t('p.pour'));
+      say();
+
+      const frame = () => {
+        if (done) return;
+        /* Sand already in the air keeps arriving after the tap ends. That delay
+           is the entire mode; without it you could simply watch the number. */
+        if (held) falling = Math.min(1, falling + 0.08);
+        else falling = Math.max(0, falling - 0.05);
+        level = Math.min(1.25, level + rate * falling);
+        fillEl.style.height = Math.min(100, level*100) + '%';
+        stream.classList.toggle('on', falling > 0.05);
+        vessel.classList.toggle('over', level > target + tol);
+        vessel.setAttribute('aria-label',
+          t('pour.at', { n: Math.round(level*100), m: Math.round(target*100) }));
+
+        if (level > target + tol){
+          done = true; cancelAnimationFrame(raf2);
+          return ctx.miss(vessel);
+        }
+        /* Settled: not pouring, nothing left in the air, and inside the band. */
+        if (!held && falling <= 0.001 && lift && performance.now() - lift > settle){
+          if (level >= target - tol){
+            done = true; cancelAnimationFrame(raf2);
+            vessel.classList.add('good');
+            return ctx.win(vessel);
+          }
+          lift = 0;   /* under the line: let them pour again */
+        }
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
+      onDrag(spout, {
+        start: () => { if (!done){ held = true; lift = 0; spout.classList.add('tipped'); } },
+        end:   () => { held = false; lift = performance.now(); spout.classList.remove('tipped'); }
       });
     }
   },
