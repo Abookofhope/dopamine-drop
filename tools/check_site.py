@@ -125,6 +125,23 @@ if chrome_start >= 0 and chrome_end > chrome_start and modes_end > modes_start:
     check("no mode reuses a class the header owns", not shared,
           "shared: " + ", ".join(shared) if shared else "")
 
+# A var() naming a custom property that nothing ever defines does not warn and
+# does not fall back to the previous declaration — the whole property becomes
+# unset, so `stroke:var(--nope)` paints nothing and `background:var(--nope)`
+# paints transparent. Arc shipped for several versions with its chain wire
+# invisible and its lit nodes hollow because of exactly this, and no test
+# noticed: the geometry was right, the win path worked, the colour was absent.
+# A var() written with a fallback is deliberate and left alone.
+declared = set(re.findall(r"(--[a-z0-9-]+)\s*:", html))
+declared |= set(re.findall(r"setProperty\(\s*['\"](--[a-z0-9-]+)['\"]", html))
+used_bare = set()
+for m in re.finditer(r"var\(\s*(--[a-z0-9-]+)\s*([,)])", html):
+    if m.group(2) == ")":
+        used_bare.add(m.group(1))
+dead = sorted(used_bare - declared)
+check("every custom property a var() names is defined somewhere", not dead,
+      "never defined: " + ", ".join(dead) if dead else "")
+
 # Word banks are player-visible content in four languages, and the failure
 # mode is silent: a word of the wrong length just renders a puzzle with a
 # letter too few. This has already shipped twice — once as a truncated
