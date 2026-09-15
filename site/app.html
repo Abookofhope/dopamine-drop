@@ -195,6 +195,20 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* ── Slice ────────────────────────────────────────────────────────────── */
+.slicebox{position:relative;width:100%;aspect-ratio:1;touch-action:none;overflow:hidden;
+  border-radius:var(--r-lg);background:#ffffff05;border:1px solid var(--edge-soft)}
+.slicetrail{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.slicetrail polyline{fill:none;stroke:var(--cream);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 3px #fff8)}
+.bit{position:absolute;width:17%;height:17%;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #9be7a8, #4ea863);
+  box-shadow:inset 0 -4px 0 #00000030;transition:transform var(--t-med),opacity var(--t-med)}
+.bit.rot{background:radial-gradient(circle at 35% 30%, #8f7b5e, #4a3b2a)}
+.bit.rot::after{content:"";position:absolute;inset:30%;border-radius:50%;background:#2018128c}
+.bit.cut{opacity:0;transform:translate(-50%,-50%) scale(1.5) rotate(25deg)}
+.bit.hitrot{box-shadow:0 0 0 3px var(--bad)}
+
 /* ── Shift ────────────────────────────────────────────────────────────── */
 .cell.maze{background:var(--ink-2);border-radius:3px;position:relative;
   box-shadow: inset 0 calc(var(--wt,1) * 3px) 0 0 var(--edge),
@@ -1109,7 +1123,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.2</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.12.3</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1258,7 +1272,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.12.2 (34)';
+const VERSION = 'v0.12.3 (35)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1537,6 +1551,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.slice':'{n} more to cut', 'slice.good':'Ripe', 'slice.rotten':'Rotten — do not cut', 'm.slice':'Slice|One stroke cuts all it crosses — miss the rotten',
     'p.shift':'Find the way out', 'm.shift':'Shift|Reach the way out before the walls move again',
     'p.facedown':'{n} pairs left', 'fd.flips':'{n} flips left', 'm.facedown':'Facedown|Match the pairs — you only get so many flips',
     'p.glimmer':'{n} lamps still dark', 'm.glimmer':'Glimmer|Carry the light until every lamp is lit',
@@ -1635,6 +1650,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.slice':'Encore {n} à trancher', 'slice.good':'Mûr', 'slice.rotten':'Pourri — à éviter', 'm.slice':'Tranche|Un geste coupe tout sur son passage — évitez le pourri',
     'p.shift':'Trouvez la sortie', 'm.shift':'Décalage|Atteignez la sortie avant que les murs bougent',
     'p.facedown':'{n} paires restantes', 'fd.flips':'{n} retournements', 'm.facedown':'Face Cachée|Trouvez les paires — les retournements sont comptés',
     'p.glimmer':'{n} lampes éteintes', 'm.glimmer':'Lueur|Portez la lumière jusqu’à la dernière lampe',
@@ -1733,6 +1749,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.slice':'Corta {n} más', 'slice.good':'Maduro', 'slice.rotten':'Podrido — no cortar', 'm.slice':'Corte|Un trazo corta todo lo que cruza — evita lo podrido',
     'p.shift':'Encuentra la salida', 'm.shift':'Desplazo|Llega a la salida antes de que los muros cambien',
     'p.facedown':'Faltan {n} parejas', 'fd.flips':'{n} volteos', 'm.facedown':'Boca Abajo|Empareja — los volteos están contados',
     'p.glimmer':'{n} lámparas apagadas', 'm.glimmer':'Destello|Lleva la luz hasta encenderlas todas',
@@ -1831,6 +1848,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.slice':'Noch {n} schneiden', 'slice.good':'Reif', 'slice.rotten':'Faul — nicht schneiden', 'm.slice':'Schnitt|Ein Zug trifft alles auf dem Weg — meide das Faule',
     'p.shift':'Finde den Ausgang', 'm.shift':'Verschub|Erreiche den Ausgang, bevor die Wände wandern',
     'p.facedown':'Noch {n} Paare', 'fd.flips':'{n} Umdrehungen', 'm.facedown':'Verdeckt|Finde die Paare — die Umdrehungen sind gezählt',
     'p.glimmer':'Noch {n} Lampen dunkel', 'm.glimmer':'Schimmer|Trag das Licht zu jeder Lampe',
@@ -1955,6 +1973,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.12.3', date:'2026-09-15', items:[
+    'New mode — Slice. Swipe across the board and one stroke cuts everything it passes through.',
+    'It is the first mode where the path your finger takes is the input, rather than where it lands. A good combo is a line you found through the board, not a speed you hit.',
+    'Rotten pieces are what stop it being a scribble — a stroke that takes four ripe ones and one rotten is worse than a careful two.'
+  ]},
   { v:'0.12.2', date:'2026-09-12', items:[
     'New mode — Shift. A maze where the walls keep moving. Get to the way out before your route closes.',
     'A wall is only allowed to appear if the exit is still reachable from where you are actually standing, so the maze can take a route away from you but can never seal you in. Committing early is a real risk; being trapped is not.'
@@ -4917,6 +4940,96 @@ const MODES = {
         paint();
       }));
       paint();
+    }
+  },
+
+  /* ── Slice — the first mode you swipe rather than tap ────────────────────
+     From "slice ingredients, chain combos". Every one of the thirty-four modes
+     before this resolves on a tap or a drag-and-drop; none of them care about
+     the PATH your finger took. Here the path is the whole input: one stroke
+     cuts everything it crosses, so a combo is a line you found through the
+     board rather than a speed you achieved. The rotten ones are what stop that
+     being a scribble — a stroke that takes four good ones and one bad one is
+     worse than a careful two. */
+  slice: {
+    name:'Slice', blurb:'One stroke cuts all it crosses — miss the rotten', cat:'reflex', par:7000, bonus:2400,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="15" r="4" fill="#7BE38A"/><circle cx="16" cy="9" r="4.5" fill="#FF9A3D"/><path d="M3 20 21 4" stroke="#FFF3E6" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>',
+    build(ctx){
+      const need  = clamp(4 + Math.floor(ctx.level/2), 4, 14);
+      const total = clamp(5 + Math.floor(ctx.level/1.6), 5, 16);
+      const rotten = clamp(Math.floor(ctx.level/6), 0, 4);
+      const R = 8.5;
+
+      const box = mk('div','slicebox');
+      const ink = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      ink.setAttribute('viewBox','0 0 100 100');
+      ink.setAttribute('class','slicetrail');
+      const trail = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+      ink.appendChild(trail);
+      ctx.surface.appendChild(box);
+
+      const bits = [];
+      const good = total - rotten;
+      for (let i=0;i<total;i++){
+        let x=0,y=0,ok=false;
+        for (let a=0;a<260 && !ok;a++){
+          x = R + ctx.rnd()*(100-2*R); y = R + ctx.rnd()*(100-2*R);
+          ok = bits.every(p => Math.hypot(p.x-x, p.y-y) > R*2.3);
+        }
+        if (!ok) continue;
+        const bad = i >= good;
+        const e = mk('div','bit' + (bad ? ' rot' : ''));
+        e.style.left = x+'%'; e.style.top = y+'%';
+        e.setAttribute('role','img');
+        e.setAttribute('aria-label', bad ? t('slice.rotten') : t('slice.good'));
+        box.appendChild(e);
+        bits.push({ e, x, y, bad });
+      }
+      shuffle(bits, ctx.rnd);
+      box.appendChild(ink);
+
+      let cut = 0, done = false, path = [];
+      const say = () => ctx.prompt(t('p.slice', { n: Math.max(0, need - cut) }));
+      say();
+
+      /* Distance from a point to the segment just drawn — a stroke cuts what it
+         passes THROUGH, not what happens to be near where it stopped. */
+      const near = (p, a, b2) => {
+        const dx = b2.x-a.x, dy = b2.y-a.y;
+        const L = dx*dx + dy*dy;
+        const tt = L ? clamp(((p.x-a.x)*dx + (p.y-a.y)*dy) / L, 0, 1) : 0;
+        return Math.hypot(p.x - (a.x + dx*tt), p.y - (a.y + dy*tt));
+      };
+      const sweep = (a, b2) => {
+        if (done) return;
+        let hitBad = null, got = 0;
+        bits.forEach(p => {
+          if (p.gone || near(p, a, b2) > R) return;
+          if (p.bad){ hitBad = p; return; }
+          p.gone = true; p.e.classList.add('cut'); cut++; got++;
+        });
+        if (got){ sfx.good(cut); buzz(8 + got*3); say(); }
+        if (hitBad){
+          hitBad.e.classList.add('hitrot');
+          done = true;
+          return ctx.miss(hitBad.e);
+        }
+        if (cut >= need){ done = true; return ctx.win(box); }
+      };
+
+      onDrag(box, {
+        start: q => { path = [q]; trail.setAttribute('points', q.x+','+q.y); },
+        move:  q => {
+          if (done || !path.length) return;
+          const last = path[path.length-1];
+          if (Math.hypot(q.x-last.x, q.y-last.y) < 1.2) return;
+          sweep(last, q);
+          path.push(q);
+          if (path.length > 26) path.shift();
+          trail.setAttribute('points', path.map(p => p.x+','+p.y).join(' '));
+        },
+        end: () => { path = []; trail.setAttribute('points',''); }
+      });
     }
   },
 };
