@@ -101,6 +101,30 @@ if si >= 0:
         check("every language has every string", not gaps, "; ".join(gaps[:3]))
         check("string tables are not empty", len(base) >= 100, f"{len(base)} keys")
 
+# A mode that creates an element with a class the chrome already uses will
+# restyle the chrome, silently. This has happened twice now: a mode's `.target`
+# floated over another mode's header, and a mode's `.ring` resized the level
+# ring in the app bar. Neither raised an error — they just quietly broke a
+# screen nobody happened to be looking at. Classes the chrome owns and styles
+# itself are fine; the danger is one being used in both places at once.
+chrome_start = html.find('class="chrome"')
+chrome_end = html.find('id="stage"', chrome_start) if chrome_start >= 0 else -1
+modes_start = html.find("const MODES = {")
+modes_end = html.find("const MODE_IDS", modes_start) if modes_start >= 0 else -1
+if chrome_start >= 0 and chrome_end > chrome_start and modes_end > modes_start:
+    chrome_classes = set()
+    for attr in re.findall(r'class="([^"]+)"', html[chrome_start:chrome_end]):
+        chrome_classes.update(attr.split())
+    mode_src = html[modes_start:modes_end]
+    mode_classes = set()
+    for made in re.findall(r"mk\(\s*'[a-z]+'\s*,\s*'([^']+)'", mode_src):
+        mode_classes.update(re.split(r"[\s+]", made))
+    for attr in re.findall(r"class=\\?[\"']([a-z0-9 _-]+)", mode_src):
+        mode_classes.update(attr.split())
+    shared = sorted(c for c in (chrome_classes & mode_classes) if c)
+    check("no mode reuses a class the header owns", not shared,
+          "shared: " + ", ".join(shared) if shared else "")
+
 # Word banks are player-visible content in four languages, and the failure
 # mode is silent: a word of the wrong length just renders a puzzle with a
 # letter too few. This has already shipped twice — once as a truncated
