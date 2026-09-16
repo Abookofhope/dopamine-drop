@@ -234,6 +234,37 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .ddot.dsel{box-shadow:0 0 0 3px var(--cream),0 0 12px #ff5b39aa}
 .ddot.dhit{background:radial-gradient(circle at 34% 30%,#ffe7a0,#ffc53d)}
 
+/* ── Perks ────────────────────────────────────────────────────────────── */
+.seclbl u{text-decoration:none;margin-left:auto;font-weight:700;color:#c3b9df;font-size:11px}
+.perknext{margin:0 0 10px}
+.perknext .track{height:5px;border-radius:3px;background:var(--ink-3);overflow:hidden}
+.perknext .track i{display:block;height:100%;transform-origin:left;
+  background:linear-gradient(90deg,var(--zap),#ff8ad8);transition:transform var(--t-med)}
+.perknext small{display:block;margin-top:5px;font-size:11px;color:#c3b9df}
+.perkgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.perk{position:relative;border-radius:var(--r-md);border:1.5px solid var(--edge-soft);
+  background:var(--ink-2);min-height:56px;
+  transition:border-color var(--t-fast),background var(--t-fast),transform var(--t-fast)}
+.pface{display:flex;align-items:center;gap:8px;padding:10px;text-align:left;width:100%;
+  min-height:56px;border:none;background:none;color:var(--cream);cursor:pointer;
+  border-radius:var(--r-md);font:inherit}
+.perk.on{border-color:var(--pk);background:color-mix(in srgb, var(--pk) 12%, var(--ink-2))}
+.perk.deny{animation:pkno .4s}
+@keyframes pkno{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.perk .pgl{flex:none;width:22px;height:22px;color:var(--pk);opacity:.5}
+.perk.on .pgl{opacity:1}
+.perk .pgl svg{width:100%;height:100%;display:block}
+.perk .ptxt{display:flex;flex-direction:column;min-width:0;gap:1px}
+.perk .ptxt b{font-family:var(--f-disp);font-size:12px;letter-spacing:.02em}
+.perk .ptxt small{font-size:10.5px;line-height:1.3;color:#c3b9df}
+.perk .plv{position:absolute;right:8px;top:8px;display:flex;gap:2px}
+.perk .plv i,.perk .plv u{display:block;width:5px;height:5px;border-radius:50%;text-decoration:none}
+.perk .plv i{background:var(--pk)}
+.perk .plv u{background:var(--edge)}
+.pup{position:absolute;right:6px;bottom:6px;width:26px;height:26px;border-radius:50%;
+  border:1.5px solid var(--zap);background:var(--ink);color:var(--zap);cursor:pointer;
+  font-family:var(--f-data);font-weight:800;font-size:15px;line-height:1;padding:0}
+
 /* ── Chalk ────────────────────────────────────────────────────────────── */
 .chalkbox{position:relative;width:100%;aspect-ratio:1;touch-action:none;overflow:hidden;
   border-radius:var(--r-lg);background:#07050f;border:1px solid var(--edge-soft)}
@@ -1284,6 +1315,12 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
     <!-- ── STATS ───────────────────────────────────────────────────── -->
     <section class="screen" id="tabStats" hidden>
       <div class="scroll" tabindex="0" role="region" data-i18n-aria="nav.stats">
+        <div class="seclbl"><span data-i18n="perk.title">Perks</span><u id="pkSlots"></u></div>
+        <div class="perknext">
+          <div class="track"><i id="pkFill" style="transform:scaleX(0)"></i></div>
+          <small id="pkNext"></small>
+        </div>
+        <div class="perkgrid" id="pkGrid"></div>
         <div class="seclbl"><span data-i18n="stats.progress">Progress</span></div>
         <div class="xpwrap">
           <div class="top">
@@ -1343,7 +1380,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.8</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.14.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1472,6 +1509,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 const $ = id => document.getElementById(id);
 const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
 const mk = (tag, cls) => { const e = document.createElement(tag); if (cls) e.className = cls; return e; };
+/* Big numbers get thin spaces rather than commas: a comma is a decimal point in
+   half the languages this ships in. */
+const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u202F');
 const pick = (arr, rnd) => arr[Math.floor(rnd()*arr.length)];
 function shuffle(arr, rnd){
   for (let i=arr.length-1;i>0;i--){ const j = Math.floor(rnd()*(i+1)); [arr[i],arr[j]] = [arr[j],arr[i]]; }
@@ -1492,7 +1532,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.13.8 (48)';
+const VERSION = 'v0.14.0 (48)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1502,11 +1542,12 @@ const VERSION = 'v0.13.8 (48)';
        would tell the next migration to redo steps already applied.        */
 const KEY = 'dd.v1';
 const QUARANTINE = 'dd.v1.unreadable';
-const SCHEMA = 4;
+const SCHEMA = 5;
 const defaults = {
   pbBlitz:0, pbStreak:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false,
-  lang:null, seenVersion:null
+  lang:null, seenVersion:null,
+  lifetime:0, perks:[], perkLv:{}, tokens:0
 };
 
 function migrate(data){
@@ -1543,6 +1584,18 @@ function migrate(data){
     if (data.lang === undefined) data.lang = null;
     if (data.seenVersion === undefined) data.seenVersion = null;
     from = 4;
+  }
+  if (from < 5){
+    /* Schema 5 adds perks, which are paid for out of a lifetime points total
+       nobody was keeping. Seeding it at zero would tell a player with hundreds
+       of runs behind them that they have earned nothing, so estimate it from
+       the solves that WERE counted, at the average a solve is worth. An
+       estimate that respects the past beats an honest zero that erases it. */
+    if (typeof data.lifetime !== 'number') data.lifetime = Math.round((data.solved || 0) * 130);
+    if (!Array.isArray(data.perks)) data.perks = [];
+    if (!data.perkLv || typeof data.perkLv !== 'object') data.perkLv = {};
+    if (typeof data.tokens !== 'number') data.tokens = 0;
+    from = 5;
   }
   if (from <= SCHEMA) data.schema = SCHEMA;
   return data;
@@ -1771,6 +1824,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.saved':'Streak held', 'perk.title':'Perks', 'perk.used':'{a} of {b} slots', 'perk.toSlot':'{n} points to the next slot', 'perk.toToken':'{n} points to the next token', 'perk.equipped':'equipped, level {n}', 'perk.notEquipped':'not equipped', 'perk.upgrade':'Spend a token on {p}', 'perk.tokensLeft':'{n} tokens to spend', 'perk.spare':'Spare Life', 'perk.spare.d':'Start a Marathon with {n} more lives', 'perk.spare.d1':'Start a Marathon with one more life', 'perk.shield':'Streak Shield', 'perk.shield.d':'Keep your streak through {n} misses a run', 'perk.shield.d1':'Keep your streak through one miss a run', 'perk.patience':'Long Fuse', 'perk.patience.d':'{n}% longer on the round clock', 'perk.zeal':'Zeal', 'perk.zeal.d':'The multiplier climbs sooner (rank {n})', 'perk.steady':'Steady Hands', 'perk.steady.d':'{n} more moves where moves are counted', 'perk.rally':'Rally', 'perk.rally.d':'Timed runs start {n} seconds longer',
     'p.leash':'Hold it for {n} more seconds', 'leash.moth':'The moth', 'leash.box':'Press and keep your finger on the moth', 'm.leash':'Leash|Keep your finger on it — it does not want you to',
     'p.metroListen':'Listen — the bar runs twice', 'p.metroPlay':'Your turn — {n} beats to play', 'metro.pad':'Tap in time with the bar', 'm.metro':'Metronome|Hear the bar twice, then play it back',
     'p.tell':'{n} guesses left', 'tell.check':'Check', 'tell.slot':'Peg {n}, {c}, tap to change', 'tell.result':'{a} in place, {b} in the wrong place', 'm.tell':'Tell|Guess the row — every wrong guess tells you something',
@@ -1883,6 +1937,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.saved':'Série gardée', 'perk.title':'Atouts', 'perk.used':'{a} sur {b} emplacements', 'perk.toSlot':'{n} points avant le prochain emplacement', 'perk.toToken':'{n} points avant le prochain jeton', 'perk.equipped':'équipé, niveau {n}', 'perk.notEquipped':'non équipé', 'perk.upgrade':'Dépenser un jeton sur {p}', 'perk.tokensLeft':'{n} jetons à dépenser', 'perk.spare':'Vie en plus', 'perk.spare.d':'Commencez un Marathon avec {n} vies de plus', 'perk.spare.d1':'Commencez un Marathon avec une vie de plus', 'perk.shield':'Bouclier de série', 'perk.shield.d':'Gardez votre série malgré {n} échecs par partie', 'perk.shield.d1':'Gardez votre série malgré un échec par partie', 'perk.patience':'Mèche longue', 'perk.patience.d':'{n}% de temps en plus par manche', 'perk.zeal':'Ferveur', 'perk.zeal.d':'Le multiplicateur monte plus tôt (rang {n})', 'perk.steady':'Main sûre', 'perk.steady.d':'{n} coups de plus là où les coups comptent', 'perk.rally':'Élan', 'perk.rally.d':'Les parties chronométrées durent {n} secondes de plus',
     'p.leash':'Tenez-le encore {n} secondes', 'leash.moth':'Le papillon', 'leash.box':'Appuyez et gardez le doigt sur le papillon', 'm.leash':'Laisse|Gardez le doigt dessus — il ne veut pas',
     'p.metroListen':'Écoutez — la mesure passe deux fois', 'p.metroPlay':'À vous — {n} temps à jouer', 'metro.pad':'Touchez en rythme avec la mesure', 'm.metro':'Métronome|Écoutez la mesure deux fois, puis rejouez-la',
     'p.tell':'{n} essais restants', 'tell.check':'Vérifier', 'tell.slot':'Pion {n}, {c}, touchez pour changer', 'tell.result':'{a} bien placés, {b} mal placés', 'm.tell':'Indice|Devinez la rangée — chaque erreur vous apprend quelque chose',
@@ -1995,6 +2050,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.saved':'Racha mantenida', 'perk.title':'Ventajas', 'perk.used':'{a} de {b} ranuras', 'perk.toSlot':'{n} puntos para la próxima ranura', 'perk.toToken':'{n} puntos para la próxima ficha', 'perk.equipped':'equipada, nivel {n}', 'perk.notEquipped':'no equipada', 'perk.upgrade':'Gastar una ficha en {p}', 'perk.tokensLeft':'{n} fichas por gastar', 'perk.spare':'Vida extra', 'perk.spare.d':'Empieza un Maratón con {n} vidas más', 'perk.spare.d1':'Empieza un Maratón con una vida más', 'perk.shield':'Escudo de racha', 'perk.shield.d':'Conserva tu racha pese a {n} fallos por partida', 'perk.shield.d1':'Conserva tu racha pese a un fallo por partida', 'perk.patience':'Mecha larga', 'perk.patience.d':'{n}% más de tiempo por ronda', 'perk.zeal':'Fervor', 'perk.zeal.d':'El multiplicador sube antes (rango {n})', 'perk.steady':'Pulso firme', 'perk.steady.d':'{n} movimientos más donde se cuentan', 'perk.rally':'Empuje', 'perk.rally.d':'Las partidas con reloj empiezan {n} segundos más largas',
     'p.leash':'Sujétala {n} segundos más', 'leash.moth':'La polilla', 'leash.box':'Pulsa y mantén el dedo sobre la polilla', 'm.leash':'Correa|Mantén el dedo encima — ella no quiere',
     'p.metroListen':'Escucha — el compás suena dos veces', 'p.metroPlay':'Tu turno — {n} golpes que tocar', 'metro.pad':'Toca al ritmo del compás', 'm.metro':'Metrónomo|Escucha el compás dos veces y tócalo tú',
     'p.tell':'Quedan {n} intentos', 'tell.check':'Comprobar', 'tell.slot':'Ficha {n}, {c}, toca para cambiar', 'tell.result':'{a} en su sitio, {b} fuera de sitio', 'm.tell':'Pista|Adivina la fila — cada fallo te dice algo',
@@ -2107,6 +2163,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.saved':'Serie gehalten', 'perk.title':'Boni', 'perk.used':'{a} von {b} Plätzen', 'perk.toSlot':'{n} Punkte bis zum nächsten Platz', 'perk.toToken':'{n} Punkte bis zur nächsten Marke', 'perk.equipped':'ausgerüstet, Stufe {n}', 'perk.notEquipped':'nicht ausgerüstet', 'perk.upgrade':'Eine Marke für {p} ausgeben', 'perk.tokensLeft':'{n} Marken übrig', 'perk.spare':'Extraleben', 'perk.spare.d':'Starte einen Marathon mit {n} Leben mehr', 'perk.spare.d1':'Starte einen Marathon mit einem Leben mehr', 'perk.shield':'Serienschild', 'perk.shield.d':'Behalte deine Serie trotz {n} Fehlern pro Lauf', 'perk.shield.d1':'Behalte deine Serie trotz einem Fehler pro Lauf', 'perk.patience':'Lange Lunte', 'perk.patience.d':'{n}% mehr Zeit pro Runde', 'perk.zeal':'Eifer', 'perk.zeal.d':'Der Multiplikator steigt früher (Rang {n})', 'perk.steady':'Ruhige Hand', 'perk.steady.d':'{n} Züge mehr, wo Züge zählen', 'perk.rally':'Aufholjagd', 'perk.rally.d':'Zeitläufe starten {n} Sekunden länger',
     'p.leash':'Halte ihn noch {n} Sekunden', 'leash.moth':'Die Motte', 'leash.box':'Drücken und den Finger auf der Motte halten', 'm.leash':'Leine|Finger drauf halten — sie will das nicht',
     'p.metroListen':'Hör zu — der Takt läuft zweimal', 'p.metroPlay':'Du bist dran — {n} Schläge zu spielen', 'metro.pad':'Im Takt tippen', 'm.metro':'Metronom|Hör den Takt zweimal, dann spiel ihn nach',
     'p.tell':'Noch {n} Versuche', 'tell.check':'Prüfen', 'tell.slot':'Stift {n}, {c}, zum Wechseln tippen', 'tell.result':'{a} richtig platziert, {b} an falscher Stelle', 'm.tell':'Hinweis|Errate die Reihe — jeder Fehlversuch verrät etwas',
@@ -2245,6 +2302,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.14.0', date:'2026-09-16', items:[
+    'Perks. Lifetime points now buy slots on the Stats tab — an extra life, a streak shield, a longer round clock, a faster multiplier, more moves, more seconds. Every perk is there from the start; what you earn is room for more of them at once.',
+    'Past the last slot it keeps paying: every further 150 000 points is a token, and a token deepens a perk you already chose. Three ranks each.',
+    'Fixed — the lives in the header were three spans in the markup, so a run with more than three lives showed three and said nothing about the rest.',
+    'Fixed — nine modes could end a round without ever telling you why. A mode can no longer write over the line that says what happened.',
+  ] },
   { v:'0.13.8', date:'2026-09-16', items:[
     'New mode — Leash. A moth flees your finger, harder the closer you get. Win by keeping contact, not by catching it once.',
     'You are allowed a small amount of time off it, spent a fraction of a second at a time. Run that out and the round is over.',
@@ -2658,7 +2721,7 @@ function onTap(node, fn){
    guessed, so the budget is always beatable. */
 function moveBudget(ctx, minimum){
   if (ctx.relaxed) return { spend(){} };            /* Fidget Loop has no losing */
-  const slack = clamp(8 - Math.floor(ctx.level/4), 3, 8);
+  const slack = clamp(8 - Math.floor(ctx.level/4), 3, 8) + Perk.step('steady');
   let left = Math.max(1, minimum) + slack, dead = false;
   const chip = mk('div','budget');
   const paint = () => {
@@ -6403,9 +6466,7 @@ const MODES = {
           placed.push(p); sel = null;
           drawTray(); paint(); fitBoard();
           /* Win before spending: a part that completes the mould should never
-             be the move that runs the budget out. And say() before spending,
-             because spending can end the round and this would overwrite the
-             reason it ended with a count that no longer means anything. */
+             be the move that runs the budget out. */
           if (filled.size === target.size){
             done = true; grid.classList.add('made'); return ctx.win(grid);
           }
@@ -6888,6 +6949,53 @@ const idsInCat = c => MODE_IDS.filter(id => catOf(id) === c);
 
 const MODE_IDS = Object.keys(MODES);
 
+/* ═══ Perks ═══════════════════════════════════════════════════════════════
+   Lifetime points buy slots, not perks. Every perk is visible from the first
+   run; what you are earning is the right to have more of them on at once, and
+   then the right to make the ones you chose stronger. A ladder that hands out
+   new powers eventually runs out of powers; a ladder that hands out room and
+   depth does not, which is why the last tier is not the end of it — past it,
+   every further block of points is a token, and a token deepens something you
+   already picked. */
+const PERK_TIERS = [10000, 30000, 75000, 150000, 300000];
+const TOKEN_EVERY = 150000;
+const PERKS = [
+  { id:'spare',    ink:'#FF5B39', steps:[1, 2, 3],          /* extra lives      */
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20S4 14.5 4 9.4A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8 2.4C20 14.5 12 20 12 20z" fill="currentColor"/></svg>' },
+  { id:'shield',   ink:'#9C7BFF', steps:[1, 2, 3],          /* streak saves     */
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v6c0 4.4-3.3 8-8 9-4.7-1-8-4.6-8-9V6z" fill="currentColor"/></svg>' },
+  { id:'patience', ink:'#33E6C8', steps:[15, 25, 35],       /* % round clock    */
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 9v4.4l3 1.8M9 2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>' },
+  { id:'zeal',     ink:'#FFC53D', steps:[1, 2, 3],          /* faster multiplier*/
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="currentColor"/></svg>' },
+  { id:'steady',   ink:'#4BC0FF', steps:[2, 3, 4],          /* extra moves      */
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V5.5a1.5 1.5 0 0 1 3 0V11m0 0V4.5a1.5 1.5 0 0 1 3 0V11m0 0V6a1.5 1.5 0 0 1 3 0v7.5c0 4-2.5 7.5-6 7.5s-6-3-6-6.5V10a1.5 1.5 0 0 1 3 0z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>' },
+  { id:'rally',    ink:'#FF8AD8', steps:[6, 10, 14],        /* seconds on timed */
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3.5 2M12 12h0" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M19 4l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' }
+];
+const PERK_BY_ID = Object.fromEntries(PERKS.map(p => [p.id, p]));
+const Perk = {
+  /* Slots are earned, tokens are what the ladder pays after the last slot. */
+  slots: () => PERK_TIERS.filter(v => (save.lifetime || 0) >= v).length,
+  nextTier(){
+    const life = save.lifetime || 0;
+    const t = PERK_TIERS.find(v => life < v);
+    if (t) return { at: t, slot: true };
+    const past = life - PERK_TIERS[PERK_TIERS.length - 1];
+    return { at: PERK_TIERS[PERK_TIERS.length - 1] + (Math.floor(past / TOKEN_EVERY) + 1) * TOKEN_EVERY, slot: false };
+  },
+  /* Tokens already spent are recorded as levels, so the count of tokens a
+     player has is what they have earned minus what they have put to use. */
+  earned: () => Math.max(0, Math.floor(Math.max(0, (save.lifetime || 0)
+            - PERK_TIERS[PERK_TIERS.length - 1]) / TOKEN_EVERY)),
+  spent: () => PERKS.reduce((a, p) => a + Math.max(0, ((save.perkLv || {})[p.id] || 1) - 1), 0),
+  free: () => Perk.earned() - Perk.spent(),
+  on: id => (save.perks || []).indexOf(id) >= 0,
+  lv: id => Perk.on(id) ? ((save.perkLv || {})[id] || 1) : 0,
+  /* What a perk is worth right now: 0 when it is not equipped. */
+  step: id => { const l = Perk.lv(id); return l ? PERK_BY_ID[id].steps[l-1] : 0; }
+};
+
 /* ═══ Run definitions ═════════════════════════════════════════════════════ */
 const KINDS = {
   shuffle:  { label:'Shuffle',     timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
@@ -7003,7 +7111,12 @@ function celebrateLevel(level){
 }
 
 /* ═══ HUD ═════════════════════════════════════════════════════════════════ */
-const multiplier = () => run ? clamp(1 + Math.floor(run.streak/4), 1, 5) : 1;
+/* Zeal shortens the run of solves each rung of the multiplier costs; it never
+   raises the ceiling, so a perk cannot out-score the game, only get there
+   sooner. */
+const MULT_STEP = [4, 3.2, 2.7, 2.3];
+const multiplier = () => run
+  ? clamp(1 + Math.floor(run.streak / MULT_STEP[Perk.lv('zeal')]), 1, 5) : 1;
 
 function renderHud(){
   if (!run) return;
@@ -7021,8 +7134,18 @@ function renderHud(){
     $('hudMeterFill').style.transform = 'scaleX(' + clamp(run.time / k.cap, 0, 1) + ')';
     $('hudMeter').classList.toggle('warn', run.time < 10000);
   } else if (k.lives){
-    $('hudMeter').hidden = true; $('hudLives').hidden = false;
-    Array.from($('hudLives').children).forEach((s,i) => s.classList.toggle('out', i >= run.lives));
+    $('hudMeter').hidden = true;
+    const box = $('hudLives');
+    box.hidden = false;
+    /* The markup carried exactly three of these, so a run with more lives than
+       three showed three and quietly lied about the rest. Build them from the
+       run's own starting count. */
+    const max = run.livesMax || run.lives;
+    if (box.children.length !== max){
+      box.innerHTML = '';
+      for (let i = 0; i < max; i++) box.appendChild(document.createElement('span'));
+    }
+    Array.from(box.children).forEach((sp,i) => sp.classList.toggle('out', i >= run.lives));
   } else {
     $('hudMeter').hidden = true; $('hudLives').hidden = true;
   }
@@ -7087,7 +7210,8 @@ function nextRound(){
      more than twice that, easing further as the player's level raises pressure.
      It is a floor under dawdling, not a second difficulty dial. */
   if (k.roundClock){
-    run.roundLimit = Math.max(4000, Math.round(mode.par * 2.6 * run.pressure));
+    run.roundLimit = Math.max(4000,
+      Math.round(mode.par * 2.6 * run.pressure * (1 + Perk.step('patience')/100)));
     run.roundLeft = run.roundLimit;
     run.timedOut = false;
     el.roundBar.hidden = false;
@@ -7106,7 +7230,13 @@ function nextRound(){
     deal: (items, id) => run.kind === 'daily'
       ? items[Math.floor(run.rnd()*items.length)]
       : dealFrom(items, id),
-    prompt: txt => { el.prompt.textContent = txt; el.prompt.className = 'prompt'; },
+    /* Once the round is decided the shell owns this line — it is saying why.
+       A mode's pending timer or animation frame firing a moment later would
+       otherwise overwrite "Too slow" with a count that no longer means
+       anything, which is how nine modes ended rounds without ever telling the
+       player what happened. */
+    prompt: txt => { if (!roundLive) return;
+      el.prompt.textContent = txt; el.prompt.className = 'prompt'; },
     win: node => resolve(true, node),
     miss: node => resolve(false, node)
   });
@@ -7116,6 +7246,7 @@ function resolve(ok, node){
   if (!roundLive || !run) return;
   roundLive = false;
   const k = KINDS[run.kind], mode = run.curMode, r = run;
+  let saved = false;
   run.roundLeft = 0;
   Array.from(el.surface.querySelectorAll('button')).forEach(b => { b.disabled = true; });
 
@@ -7125,7 +7256,12 @@ function resolve(ok, node){
     const pts = Math.round((100 + 130*speed) * multiplier());
     run.solved++; run.streak++;
     run.bestStreak = Math.max(run.bestStreak, run.streak);
-    if (k.scored){ run.score += pts; floatPts(node, '+' + pts); }
+    if (k.scored){
+      run.score += pts; floatPts(node, '+' + pts);
+      /* Lifetime points bank per solve for the same reason XP does: quitting a
+         run should cost the run, never the progress made inside it. */
+      save.lifetime = (save.lifetime || 0) + pts;
+    }
     if (k.timed) run.time = Math.min(k.cap, run.time + mode.bonus*run.pressure);
 
     /* Banked per solve, not at the end. Closing the app mid-run should cost
@@ -7146,7 +7282,10 @@ function resolve(ok, node){
     renderHud();
     later(400, nextRound);
   } else {
-    run.missed++; run.streak = 0;
+    run.missed++;
+    /* A shield keeps the streak, not the round. The miss still costs a life or
+       the clock — it buys back momentum, never the mistake. */
+    if (run.shields > 0){ run.shields--; saved = true; } else { run.streak = 0; }
     if (k.timed) run.time = Math.max(0, run.time - k.penalty);
     if (k.lives) run.lives--;
     flash('flash-bad');
@@ -7155,7 +7294,8 @@ function resolve(ok, node){
       setTimeout(() => el.surface.classList.remove('shake'), 360);
     }
     sfx.bad(); buzz([26,40,26]);
-    el.prompt.textContent = r.timedOut ? t('p.tooSlow')
+    el.prompt.textContent = saved ? t('p.saved')
+      : r.timedOut ? t('p.tooSlow')
       : k.timed ? '−' + (k.penalty/1000) + ' seconds' : t('p.missed');
     el.prompt.className = 'prompt lost';
     renderHud();
@@ -7172,7 +7312,11 @@ function startRun(kind, modeId){
   run = {
     kind, mode: modeId || null, curMode: null, lastMode: null, bag: null,
     score:0, solved:0, missed:0, streak:0, bestStreak:0,
-    time: k.start || 0, lives: k.lives || 0, roundIdx:0, started:false,
+    time: (k.start || 0) + (k.timed ? Perk.step('rally')*1000 : 0),
+    lives: (k.lives || 0) + (k.lives ? Perk.step('spare') : 0),
+    livesMax: (k.lives || 0) + (k.lives ? Perk.step('spare') : 0),
+    shields: Perk.step('shield'),
+    roundIdx:0, started:false,
     roundLimit:0, roundLeft:0, timedOut:false,
     xpAtStart: save.xp,
     playerLevel: lvl,
@@ -7421,7 +7565,81 @@ function paintMix(){
   });
 }
 
+/* "1 misses a run" is the kind of thing that makes a screen look unfinished.
+   Where a perk's first rank is one of something, it gets its own sentence. */
+const perkLine = (id, n) => {
+  const one = 'perk.' + id + '.d1';
+  return (n === 1 && t(one) !== one) ? t(one) : t('perk.' + id + '.d', { n });
+};
+
+function paintPerks(){
+  const life = save.lifetime || 0;
+  const slots = Perk.slots(), used = (save.perks || []).length, free = Perk.free();
+  $('pkSlots').textContent = t('perk.used', { a: used, b: slots });
+  const next = Perk.nextTier();
+  const floor = next.slot
+    ? (PERK_TIERS[PERK_TIERS.indexOf(next.at) - 1] || 0)
+    : next.at - TOKEN_EVERY;
+  $('pkFill').style.transform = 'scaleX(' + clamp((life - floor) / (next.at - floor), 0, 1) + ')';
+  $('pkNext').textContent = t(next.slot ? 'perk.toSlot' : 'perk.toToken',
+    { n: fmt(next.at - life), have: fmt(life) });
+
+  const grid = $('pkGrid');
+  grid.innerHTML = '';
+  PERKS.forEach(p => {
+    const lv = Perk.lv(p.id), on = Perk.on(p.id);
+    /* The card is a plain box holding two buttons rather than a button holding
+       a button: nesting them is invalid, and a screen reader cannot offer the
+       inner one at all. */
+    const card = mk('div','perk' + (on ? ' on' : ''));
+    card.style.setProperty('--pk', p.ink);
+    const face = mk('button','pface');
+    face.type = 'button';
+    face.innerHTML = '<span class="pgl">' + p.glyph + '</span>'
+      + '<span class="ptxt"><b>' + t('perk.' + p.id) + '</b>'
+      + '<small>' + perkLine(p.id, PERK_BY_ID[p.id].steps[Math.max(0, lv-1)]) + '</small></span>'
+      + '<span class="plv">' + (on ? '<i></i>'.repeat(lv) + '<u></u>'.repeat(3-lv) : '') + '</span>';
+    face.setAttribute('aria-pressed', on ? 'true' : 'false');
+    face.setAttribute('aria-label', t('perk.' + p.id) + ' — '
+      + t(on ? 'perk.equipped' : 'perk.notEquipped', { n: lv }));
+    card.appendChild(face);
+    face.addEventListener('click', () => {
+      sfx.tap();
+      const list = save.perks || (save.perks = []);
+      const i = list.indexOf(p.id);
+      if (i >= 0){ list.splice(i, 1); }
+      else if (list.length >= Perk.slots()){
+        card.classList.add('deny');
+        setTimeout(() => card.classList.remove('deny'), 400);
+        return;
+      } else {
+        list.push(p.id);
+        if (!save.perkLv) save.perkLv = {};
+        if (!save.perkLv[p.id]) save.perkLv[p.id] = 1;
+      }
+      persist(); paintPerks();
+    });
+    /* Upgrading is a separate, smaller target so a mis-tap cannot spend a
+       token you spent an hour earning. */
+    if (on && lv < 3 && free > 0){
+      const up = mk('button','pup');
+      up.type = 'button';
+      up.textContent = '+';
+      up.setAttribute('aria-label', t('perk.upgrade', { p: t('perk.' + p.id) }));
+      up.addEventListener('click', ev => {
+        ev.stopPropagation(); sfx.good(2);
+        save.perkLv[p.id] = (save.perkLv[p.id] || 1) + 1;
+        persist(); paintPerks();
+      });
+      card.appendChild(up);
+    }
+    grid.appendChild(card);
+  });
+  $('pkGrid').setAttribute('aria-label', t('perk.tokensLeft', { n: free }));
+}
+
 function paintStats(){
+  paintPerks();
   const lvl = playerLevel();
   const into = Prog.xpIntoLevel(save.xp), span = Prog.xpSpanOfLevel(save.xp);
   $('sLevel').textContent = String(lvl);
