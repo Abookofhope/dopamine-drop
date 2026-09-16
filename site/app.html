@@ -554,6 +554,27 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .bbwrap.bad  .bbpad{border-color:var(--bad);border-style:solid;background:#ff3d6e14}
 .bbwrap.bad .bbring{border-color:var(--bad)}
 
+/* ── Ramp ─────────────────────────────────────────────────────────────── */
+.rmpwrap{display:flex;flex-direction:column;gap:18px;width:100%;height:100%;
+  min-height:0;min-width:0;max-width:100%;justify-content:center;align-items:center}
+.rmpring{
+  position:relative;flex:none;border-radius:50%;display:block;
+  width:var(--size,104px);height:var(--size,104px);
+  border:3px solid #ff8ad83d;background:radial-gradient(circle,#ff8ad814,transparent 68%);
+  transition:width 140ms linear,height 140ms linear,
+             transform 90ms ease-out,border-color var(--t-fast),box-shadow var(--t-fast);
+}
+.rmpring::after{
+  content:"";position:absolute;inset:25%;border-radius:50%;background:#ff8ad833;
+  transition:transform 90ms ease-out,background 90ms ease-out,box-shadow 90ms ease-out;
+}
+.rmpring.beat{transform:scale(1.06);border-color:#FF8AD8;box-shadow:0 0 24px #ff8ad855}
+.rmpring.beat::after{transform:scale(1.3);background:#FF8AD8;box-shadow:0 0 20px #ff8ad8aa}
+.rmpwrap .bbpad{width:100%;flex:1;min-height:110px}
+.rmpwrap.good .bbpad{border-color:var(--cool);border-style:solid;background:#33e6c814}
+.rmpwrap.bad  .bbpad{border-color:var(--bad);border-style:solid;background:#ff3d6e14}
+.rmpwrap.bad .rmpring{border-color:var(--bad)}
+
 /* ── Chorus ───────────────────────────────────────────────────────────── */
 .chwrap{display:flex;flex-direction:column;gap:12px;width:100%;height:100%;
   min-height:0;min-width:0;max-width:100%;justify-content:center}
@@ -1912,7 +1933,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.21.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.21.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -2161,7 +2182,7 @@ function dailyStreak(){
 const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.21.0 (52)';
+const VERSION = 'v0.21.1 (53)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2596,6 +2617,7 @@ const STRINGS = {
     'play.carryOn':'Carry on', 'play.carryBest':'Your best {n}', 'why.new':'Untried', 'why.star':'Near a star', 'why.rare':'Neglected', 'why.wild':'Wildcard',
     'wc.lead':'Fifty-two small puzzles. The one in front of you changes every round.', 'wc.p1':'Sixty seconds a run', 'wc.p2':'A different puzzle every round', 'wc.p3':'A miss costs time — a streak pays', 'wc.change':'Change', 'wc.start':'Start your first run', 'wc.look':'Look around first',
     'mix.tapes':'Your mixtapes', 'mix.name':'Name this mixtape', 'mix.share':'Share this mixtape', 'mix.delete':'Delete this mixtape', 'mix.untitled':'Mixtape {n}', 'mix.newTape':'+ New', 'mix.paste':'Paste a code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Delete “{name}”?', 'mix.keep':'Keep', 'mix.deleteIt':'Delete', 'mix.shareText':'My Dopamine Drop mixtape “{name}” — {n} modes. Paste this code into the Mix tab: {code}', 'mix.importTitle':'Add a mixtape', 'mix.importSub':'Paste a code someone sent you. It carries a name and a list of modes, nothing else.', 'mix.importAdd':'Add it', 'mix.importBad':'No mixtape code in that. Paste the whole message — the code starts with DD1.', 'mix.importOk':'Added “{name}”.', 'mix.importN':'{n} modes.', 'mix.importN1':'One mode.', 'mix.importDropped':'{n} of its modes are not in this version and were left out.', 'mix.importDropped1':'One of its modes is not in this version and was left out.',
+    'p.rampFast':'Listen — it is speeding up', 'p.rampSlow':'Listen — it is slowing down', 'p.rampGo':'Stay on the beat — {n} to go', 'ramp.pad':'Tap on each beat', 'm.ramp':'Ramp|The tempo is moving — stay on it',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -2720,6 +2742,7 @@ const STRINGS = {
     'play.carryOn':'Reprendre', 'play.carryBest':'Votre record {n}', 'why.new':'Jamais joué', 'why.star':'Presque une étoile', 'why.rare':'Délaissé', 'why.wild':'Au hasard',
     'wc.lead':'Cinquante-deux petits casse-têtes. Celui qui est devant vous change à chaque manche.', 'wc.p1':'Soixante secondes par partie', 'wc.p2':'Un casse-tête différent à chaque manche', 'wc.p3':'Une erreur coûte du temps — une série rapporte', 'wc.change':'Changer', 'wc.start':'Lancer votre première partie', 'wc.look':'Jeter un œil d’abord',
     'mix.tapes':'Vos playlists', 'mix.name':'Nommer cette playlist', 'mix.share':'Partager cette playlist', 'mix.delete':'Supprimer cette playlist', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Nouvelle', 'mix.paste':'Coller un code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Supprimer « {name} » ?', 'mix.keep':'Garder', 'mix.deleteIt':'Supprimer', 'mix.shareText':'Ma playlist Dopamine Drop « {name} » — {n} modes. Collez ce code dans l’onglet Mix : {code}', 'mix.importTitle':'Ajouter une playlist', 'mix.importSub':'Collez un code qu’on vous a envoyé. Il contient un nom et une liste de modes, rien d’autre.', 'mix.importAdd':'Ajouter', 'mix.importBad':'Aucun code de playlist là-dedans. Collez tout le message — le code commence par DD1.', 'mix.importOk':'« {name} » ajoutée.', 'mix.importN':'{n} modes.', 'mix.importN1':'Un mode.', 'mix.importDropped':'{n} de ses modes n’existent pas dans cette version et ont été écartés.', 'mix.importDropped1':'Un de ses modes n’existe pas dans cette version et a été écarté.',
+    'p.rampFast':'Écoutez — ça accélère', 'p.rampSlow':'Écoutez — ça ralentit', 'p.rampGo':'Restez sur le temps — encore {n}', 'ramp.pad':'Touchez sur chaque temps', 'm.ramp':'Accélération|Le tempo bouge — restez dessus',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -2844,6 +2867,7 @@ const STRINGS = {
     'play.carryOn':'Continuar', 'play.carryBest':'Tu récord {n}', 'why.new':'Sin probar', 'why.star':'Cerca de una estrella', 'why.rare':'Olvidado', 'why.wild':'Al azar',
     'wc.lead':'Cincuenta y dos pequeños rompecabezas. El que tienes delante cambia en cada ronda.', 'wc.p1':'Sesenta segundos por partida', 'wc.p2':'Un rompecabezas distinto cada ronda', 'wc.p3':'Un fallo cuesta tiempo — una racha paga', 'wc.change':'Cambiar', 'wc.start':'Empieza tu primera partida', 'wc.look':'Echar un vistazo primero',
     'mix.tapes':'Tus listas', 'mix.name':'Nombra esta lista', 'mix.share':'Compartir esta lista', 'mix.delete':'Borrar esta lista', 'mix.untitled':'Lista {n}', 'mix.newTape':'+ Nueva', 'mix.paste':'Pegar un código', 'mix.metaTape':'{name} · {n} modos', 'mix.delConfirm':'¿Borrar «{name}»?', 'mix.keep':'Conservar', 'mix.deleteIt':'Borrar', 'mix.shareText':'Mi lista de Dopamine Drop «{name}» — {n} modos. Pega este código en la pestaña Mix: {code}', 'mix.importTitle':'Añadir una lista', 'mix.importSub':'Pega un código que te hayan enviado. Lleva un nombre y una lista de modos, nada más.', 'mix.importAdd':'Añadirla', 'mix.importBad':'Ahí no hay ningún código de lista. Pega el mensaje entero — el código empieza por DD1.', 'mix.importOk':'Añadida «{name}».', 'mix.importN':'{n} modos.', 'mix.importN1':'Un modo.', 'mix.importDropped':'{n} de sus modos no están en esta versión y se han dejado fuera.', 'mix.importDropped1':'Uno de sus modos no está en esta versión y se ha dejado fuera.',
+    'p.rampFast':'Escucha — está acelerando', 'p.rampSlow':'Escucha — está frenando', 'p.rampGo':'Sigue el pulso — quedan {n}', 'ramp.pad':'Toca en cada pulso', 'm.ramp':'Rampa|El tempo se mueve — sigue con él',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -2968,6 +2992,7 @@ const STRINGS = {
     'play.carryOn':'Weiter', 'play.carryBest':'Dein Bestwert {n}', 'why.new':'Ungespielt', 'why.star':'Fast ein Stern', 'why.rare':'Vergessen', 'why.wild':'Zufall',
     'wc.lead':'Zweiundfünfzig kleine Rätsel. Das vor dir wechselt jede Runde.', 'wc.p1':'Sechzig Sekunden pro Runde', 'wc.p2':'Jede Runde ein anderes Rätsel', 'wc.p3':'Ein Fehler kostet Zeit — eine Serie zahlt sich aus', 'wc.change':'Ändern', 'wc.start':'Starte deine erste Runde', 'wc.look':'Erst mal umsehen',
     'mix.tapes':'Deine Playlists', 'mix.name':'Diese Playlist benennen', 'mix.share':'Diese Playlist teilen', 'mix.delete':'Diese Playlist löschen', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Neu', 'mix.paste':'Code einfügen', 'mix.metaTape':'{name} · {n} Modi', 'mix.delConfirm':'„{name}“ löschen?', 'mix.keep':'Behalten', 'mix.deleteIt':'Löschen', 'mix.shareText':'Meine Dopamine-Drop-Playlist „{name}“ — {n} Modi. Füge diesen Code im Mix-Tab ein: {code}', 'mix.importTitle':'Playlist hinzufügen', 'mix.importSub':'Füge einen Code ein, den dir jemand geschickt hat. Er enthält einen Namen und eine Modusliste, sonst nichts.', 'mix.importAdd':'Hinzufügen', 'mix.importBad':'Darin steckt kein Playlist-Code. Füge die ganze Nachricht ein — der Code beginnt mit DD1.', 'mix.importOk':'„{name}“ hinzugefügt.', 'mix.importN':'{n} Modi.', 'mix.importN1':'Ein Modus.', 'mix.importDropped':'{n} ihrer Modi gibt es in dieser Version nicht und wurden weggelassen.', 'mix.importDropped1':'Einen ihrer Modi gibt es in dieser Version nicht, er wurde weggelassen.',
+    'p.rampFast':'Hör zu — es wird schneller', 'p.rampSlow':'Hör zu — es wird langsamer', 'p.rampGo':'Bleib im Takt — noch {n}', 'ramp.pad':'Auf jeden Schlag tippen', 'm.ramp':'Rampe|Das Tempo bewegt sich — bleib drauf',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3111,6 +3136,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.21.1', date:'2026-09-16', items:[
+    'New mode \u2014 Ramp. Every other timing mode gives you a tempo and asks you to hold it; this one takes it away while you are standing on it. The window is narrower than a reaction, so waiting for the sound is already too late: you have to work out where the next beat is going to be. The ring tightens as it speeds up and opens as it slows, so it plays with the sound off.',
+  ] },
   { v:'0.21.0', date:'2026-09-16', items:[
     'Mixtapes have names, and you can keep more than one \u2014 a short one for a bus ride, a long one for the sofa. Tap between them in the Mix tab; the menu card names whichever is loaded.',
     'A mixtape can be sent. The share button turns it into a short code; whoever gets it pastes it into the Mix tab and has your rotation. The code carries a name and a list of modes and absolutely nothing else.',
@@ -8214,6 +8242,101 @@ const MODES = {
         }
         budget.spend(c);
       }));
+    }
+  },
+
+  /* ── Ramp ─────────────────────────────────────────────────────────────── */
+  ramp: {
+    name:'Ramp', blurb:'The tempo is moving — stay on it', cat:'rhythm', par:11500, bonus:3600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="4" cy="12" r="2.6" fill="#FF8AD8" opacity=".45"/><circle cx="10" cy="12" r="2.6" fill="#FF8AD8" opacity=".65"/><circle cx="15.5" cy="12" r="2.6" fill="#FF8AD8" opacity=".85"/><circle cx="20.5" cy="12" r="2.6" fill="#FF8AD8"/><path d="M3 19h18" stroke="#FF8AD8" stroke-width="1.5" stroke-linecap="round" opacity=".4"/></svg>',
+    build(ctx){
+      /* Every other timing mode gives you a tempo and asks you to hold it. This
+         one takes it away while you are standing on it. The window is narrower
+         than a reaction, so a tap that waits for the sound is already late —
+         the only way through is to work out where the next beat is GOING to be,
+         which is the whole skill and nothing else. */
+      const need = 4 + Math.min(3, Math.floor(ctx.level/8));
+      const LEAD = 3;
+      const total = LEAD + need + 1;
+      const iv0  = 820;
+      const span = clamp(0.18 + ctx.level*0.006, 0.18, 0.42);
+      const up   = ctx.rnd() < 0.5;            /* up = speeding up */
+      const iv1  = iv0 * (up ? 1 - span : 1 + span);
+      const tol  = clamp(170 - ctx.level*2.2, 105, 170);
+
+      /* The beat times are laid out before a note is played, so the window a
+         tap is judged against is the same one the pulse is drawn from. */
+      const at = [0];
+      for (let k = 1; k < total; k++){
+        const p = (k - 1) / Math.max(1, total - 2);
+        at.push(at[k-1] + (iv0 + (iv1 - iv0) * p));
+      }
+
+      const wrap = mk('div','rmpwrap');
+      const ring = mk('i','rmpring');
+      wrap.appendChild(ring);
+      const pips = mk('div','bbpips'), pipEls = [];
+      for (let i = 0; i < need; i++){ const e = mk('i','bbpip'); pips.appendChild(e); pipEls.push(e); }
+      wrap.appendChild(pips);
+      const pad = mk('button','bbpad');
+      pad.type = 'button';
+      pad.setAttribute('aria-label', t('ramp.pad'));
+      pad.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"'
+        + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        + '<path d="M9 11V5.5a1.8 1.8 0 0 1 3.6 0V11"/>'
+        + '<path d="M12.6 11V9.2a1.7 1.7 0 0 1 3.4 0V11"/>'
+        + '<path d="M16 11v-1a1.7 1.7 0 0 1 3.4 0v5.4a5.4 5.4 0 0 1-5.4 5.4h-1.7a5 5 0 0 1-3.8-1.8L5 14.4a1.7 1.7 0 0 1 2.6-2.2L9 13.8"/>'
+        + '</svg>';
+      wrap.appendChild(pad);
+      ctx.surface.appendChild(wrap);
+
+      let done = false, raf2 = 0, hit = 0, lastBeat = -1;
+      const t0 = performance.now();
+      const say = () => ctx.prompt(hit === 0 && performance.now() - t0 < at[LEAD] - tol
+        ? t(up ? 'p.rampFast' : 'p.rampSlow')
+        : t('p.rampGo', { n: need - hit }));
+      say();
+      const stop = () => { done = true; cancelAnimationFrame(raf2); };
+
+      const frame = () => {
+        if (done) return;
+        const ms = performance.now() - t0;
+        /* The ring carries the trend as well as the beat: tighter as it speeds
+           up, wider as it slows. Nothing here needs to be read, and nothing
+           here needs a language. */
+        let k = 0; while (k + 1 < total && ms >= at[k+1]) k++;
+        const p = k / Math.max(1, total - 1);
+        ring.style.setProperty('--size', Math.round(104 - (up ? p : -p) * 26) + 'px');
+        if (k !== lastBeat){
+          lastBeat = k;
+          ring.classList.add('beat');
+          ctx.after(100, () => ring.classList.remove('beat'));
+          tone(up ? 420 + k*14 : 520 - k*14, 0.05, 'square', 0.035);
+          if (k === LEAD) say();
+        }
+        if (ms > at[LEAD + hit] + tol){
+          stop(); wrap.classList.add('bad'); return ctx.miss(pad);
+        }
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
+
+      onTap(pad, () => {
+        if (done) return;
+        const ms = performance.now() - t0;
+        if (ms < at[LEAD] - tol) return;     /* still counting you in */
+        pad.classList.add('tapped');
+        ctx.after(90, () => pad.classList.remove('tapped'));
+        if (Math.abs(ms - at[LEAD + hit]) <= tol){
+          pipEls[hit].classList.add('on');
+          hit++;
+          tone(900, 0.06, 'triangle', 0.045);
+          if (hit >= need){ stop(); wrap.classList.add('good'); return ctx.win(pad); }
+          say();
+        } else {
+          stop(); wrap.classList.add('bad'); return ctx.miss(pad);
+        }
+      });
     }
   },
 };
