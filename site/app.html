@@ -241,6 +241,25 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .ddot.dsel{box-shadow:0 0 0 3px var(--cream),0 0 12px #ff5b39aa}
 .ddot.dhit{background:radial-gradient(circle at 34% 30%,#ffe7a0,#ffc53d)}
 
+/* A narrow no-break space is the right separator, but the display face draws it
+   wide enough that a big number reads as two numbers. Pull the groups back
+   together wherever the number is set large. */
+.big,.score,.lifestrip b,.stat b,.xpwrap .top b,.overhead .big{word-spacing:-.16em}
+
+/* ── End of run: the shape of it, and what it fed ─────────────────────── */
+.ribbon{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:0 0 12px;max-width:100%}
+.ribbon i{display:block;width:10px;height:10px;border-radius:3px;background:var(--fam);
+  box-shadow:inset 0 -2px 0 #00000026}
+.ribbon i.lost{background:var(--ink-3);box-shadow:inset 0 0 0 1.5px var(--bad)}
+.lifestrip{margin:0 0 14px;padding:11px 13px;border-radius:var(--r-md);
+  background:var(--ink-2);border:1px solid var(--edge-soft)}
+.lifestrip .row{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+.lifestrip b{font-family:var(--f-data);font-weight:800;font-size:17px;color:var(--zap);letter-spacing:-.04em}
+.lifestrip small{font-size:10.5px;color:#c3b9df;letter-spacing:.03em}
+.lifestrip .track{height:5px;border-radius:3px;background:var(--ink-3);overflow:hidden}
+.lifestrip .track i{display:block;height:100%;transform-origin:left;
+  background:linear-gradient(90deg,var(--zap),#ff8ad8);transition:transform 600ms cubic-bezier(.2,.8,.3,1)}
+
 /* ── View transitions ─────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: no-preference){
   ::view-transition-old(root),::view-transition-new(root){animation-duration:180ms}
@@ -1430,7 +1449,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.14.2</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.15.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1484,6 +1503,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <span class="big" id="overScore">0</span>
       </div>
       <span class="newbest" id="newBest" data-i18n="over.newBest" hidden>New personal best</span>
+      <div class="ribbon" id="overRibbon" role="img"></div>
       <div class="xpstrip" id="xpStrip">
         <div class="row"><b id="xpGain">+0 XP</b><span class="sp"></span><small id="xpLevel">Level 1</small></div>
         <p class="got" id="xpGot" hidden></p>
@@ -1492,6 +1512,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="stat"><b id="stSolved">0</b><small data-i18n="over.solved">Solved</small></div>
         <div class="stat"><b id="stStreak">0</b><small data-i18n="stats.bestStreak">Best streak</small></div>
         <div class="stat"><b id="stAcc">0%</b><small data-i18n="over.acc">Accuracy</small></div>
+      </div>
+      <div class="lifestrip" id="lifeStrip">
+        <div class="row"><b id="lifeGain">+0</b><span class="sp"></span><small id="lifeNext"></small></div>
+        <div class="track"><i id="lifeFill" style="transform:scaleX(0)"></i></div>
       </div>
       <button class="cta" id="againBtn" type="button">
         <span class="lbl"><b data-i18n="btn.goAgain">Go again</b><small id="againSub">Beat 0</small></span>
@@ -1585,7 +1609,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.14.2 (48)';
+const VERSION = 'v0.15.0 (48)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1877,6 +1901,8 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
+    'over.ribbon':'{a} of {b} rounds solved',
     'p.saved':'Streak held', 'perk.title':'Perks', 'perk.used':'{a} of {b} slots', 'perk.toSlot':'{n} points to the next slot', 'perk.toToken':'{n} points to the next token', 'perk.equipped':'equipped, level {n}', 'perk.notEquipped':'not equipped', 'perk.upgrade':'Spend a token on {p}', 'perk.tokensLeft':'{n} tokens to spend', 'perk.spare':'Spare Life', 'perk.spare.d':'Start a Marathon with {n} more lives', 'perk.spare.d1':'Start a Marathon with one more life', 'perk.shield':'Streak Shield', 'perk.shield.d':'Keep your streak through {n} misses a run', 'perk.shield.d1':'Keep your streak through one miss a run', 'perk.patience':'Long Fuse', 'perk.patience.d':'{n}% longer on the round clock', 'perk.zeal':'Zeal', 'perk.zeal.d':'The multiplier climbs sooner (rank {n})', 'perk.steady':'Steady Hands', 'perk.steady.d':'{n} more moves where moves are counted', 'perk.rally':'Rally', 'perk.rally.d':'Timed runs start {n} seconds longer',
     'p.leash':'Hold it for {n} more seconds', 'leash.moth':'The moth', 'leash.box':'Press and keep your finger on the moth', 'm.leash':'Leash|Keep your finger on it — it does not want you to',
     'p.metroListen':'Listen — the bar runs twice', 'p.metroPlay':'Your turn — {n} beats to play', 'metro.pad':'Tap in time with the bar', 'm.metro':'Metronome|Hear the bar twice, then play it back',
@@ -1990,6 +2016,8 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
+    'over.ribbon':'{a} manches sur {b} réussies',
     'p.saved':'Série gardée', 'perk.title':'Atouts', 'perk.used':'{a} sur {b} emplacements', 'perk.toSlot':'{n} points avant le prochain emplacement', 'perk.toToken':'{n} points avant le prochain jeton', 'perk.equipped':'équipé, niveau {n}', 'perk.notEquipped':'non équipé', 'perk.upgrade':'Dépenser un jeton sur {p}', 'perk.tokensLeft':'{n} jetons à dépenser', 'perk.spare':'Vie en plus', 'perk.spare.d':'Commencez un Marathon avec {n} vies de plus', 'perk.spare.d1':'Commencez un Marathon avec une vie de plus', 'perk.shield':'Bouclier de série', 'perk.shield.d':'Gardez votre série malgré {n} échecs par partie', 'perk.shield.d1':'Gardez votre série malgré un échec par partie', 'perk.patience':'Mèche longue', 'perk.patience.d':'{n}% de temps en plus par manche', 'perk.zeal':'Ferveur', 'perk.zeal.d':'Le multiplicateur monte plus tôt (rang {n})', 'perk.steady':'Main sûre', 'perk.steady.d':'{n} coups de plus là où les coups comptent', 'perk.rally':'Élan', 'perk.rally.d':'Les parties chronométrées durent {n} secondes de plus',
     'p.leash':'Tenez-le encore {n} secondes', 'leash.moth':'Le papillon', 'leash.box':'Appuyez et gardez le doigt sur le papillon', 'm.leash':'Laisse|Gardez le doigt dessus — il ne veut pas',
     'p.metroListen':'Écoutez — la mesure passe deux fois', 'p.metroPlay':'À vous — {n} temps à jouer', 'metro.pad':'Touchez en rythme avec la mesure', 'm.metro':'Métronome|Écoutez la mesure deux fois, puis rejouez-la',
@@ -2103,6 +2131,8 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
+    'over.ribbon':'{a} de {b} rondas resueltas',
     'p.saved':'Racha mantenida', 'perk.title':'Ventajas', 'perk.used':'{a} de {b} ranuras', 'perk.toSlot':'{n} puntos para la próxima ranura', 'perk.toToken':'{n} puntos para la próxima ficha', 'perk.equipped':'equipada, nivel {n}', 'perk.notEquipped':'no equipada', 'perk.upgrade':'Gastar una ficha en {p}', 'perk.tokensLeft':'{n} fichas por gastar', 'perk.spare':'Vida extra', 'perk.spare.d':'Empieza un Maratón con {n} vidas más', 'perk.spare.d1':'Empieza un Maratón con una vida más', 'perk.shield':'Escudo de racha', 'perk.shield.d':'Conserva tu racha pese a {n} fallos por partida', 'perk.shield.d1':'Conserva tu racha pese a un fallo por partida', 'perk.patience':'Mecha larga', 'perk.patience.d':'{n}% más de tiempo por ronda', 'perk.zeal':'Fervor', 'perk.zeal.d':'El multiplicador sube antes (rango {n})', 'perk.steady':'Pulso firme', 'perk.steady.d':'{n} movimientos más donde se cuentan', 'perk.rally':'Empuje', 'perk.rally.d':'Las partidas con reloj empiezan {n} segundos más largas',
     'p.leash':'Sujétala {n} segundos más', 'leash.moth':'La polilla', 'leash.box':'Pulsa y mantén el dedo sobre la polilla', 'm.leash':'Correa|Mantén el dedo encima — ella no quiere',
     'p.metroListen':'Escucha — el compás suena dos veces', 'p.metroPlay':'Tu turno — {n} golpes que tocar', 'metro.pad':'Toca al ritmo del compás', 'm.metro':'Metrónomo|Escucha el compás dos veces y tócalo tú',
@@ -2216,6 +2246,8 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
+    'over.ribbon':'{a} von {b} Runden gelöst',
     'p.saved':'Serie gehalten', 'perk.title':'Boni', 'perk.used':'{a} von {b} Plätzen', 'perk.toSlot':'{n} Punkte bis zum nächsten Platz', 'perk.toToken':'{n} Punkte bis zur nächsten Marke', 'perk.equipped':'ausgerüstet, Stufe {n}', 'perk.notEquipped':'nicht ausgerüstet', 'perk.upgrade':'Eine Marke für {p} ausgeben', 'perk.tokensLeft':'{n} Marken übrig', 'perk.spare':'Extraleben', 'perk.spare.d':'Starte einen Marathon mit {n} Leben mehr', 'perk.spare.d1':'Starte einen Marathon mit einem Leben mehr', 'perk.shield':'Serienschild', 'perk.shield.d':'Behalte deine Serie trotz {n} Fehlern pro Lauf', 'perk.shield.d1':'Behalte deine Serie trotz einem Fehler pro Lauf', 'perk.patience':'Lange Lunte', 'perk.patience.d':'{n}% mehr Zeit pro Runde', 'perk.zeal':'Eifer', 'perk.zeal.d':'Der Multiplikator steigt früher (Rang {n})', 'perk.steady':'Ruhige Hand', 'perk.steady.d':'{n} Züge mehr, wo Züge zählen', 'perk.rally':'Aufholjagd', 'perk.rally.d':'Zeitläufe starten {n} Sekunden länger',
     'p.leash':'Halte ihn noch {n} Sekunden', 'leash.moth':'Die Motte', 'leash.box':'Drücken und den Finger auf der Motte halten', 'm.leash':'Leine|Finger drauf halten — sie will das nicht',
     'p.metroListen':'Hör zu — der Takt läuft zweimal', 'p.metroPlay':'Du bist dran — {n} Schläge zu spielen', 'metro.pad':'Im Takt tippen', 'm.metro':'Metronom|Hör den Takt zweimal, dann spiel ihn nach',
@@ -2355,6 +2387,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.15.0', date:'2026-09-16', items:[
+    'The end of a run now shows the shape of it — one pip per round in its family colour, hollow where you missed — and what the run fed into your perks.',
+    'Fixed — a lot of the game was still in English whatever language you picked: the countdown, the praise line, the time penalty, the Go Again line, and three dozen screen-reader labels across the modes. All four languages now, everywhere.',
+  ] },
   { v:'0.14.2', date:'2026-09-16', items:[
     'Each mode now tints the top of the play screen with its family colour, so you can see what kind of thing it is before you have read its name.',
     'Fixed — only the bottom safe area was reserved, so on a notched phone the quit button and the score could sit under the cutout.',
@@ -2875,7 +2911,7 @@ const MODES = {
         b.type = 'button';
         b.style.background = 'hsl(' + (i===odd ? oddHue : hue)
           + ' 68% ' + (i===odd ? 58+light : 58) + '%)';
-        b.setAttribute('aria-label','Tile '+(i+1));
+        b.setAttribute('aria-label', t('a.tile', { n: i+1 }));
         onTap(b, () => i===odd ? ctx.win(b) : ctx.miss(b));
         g.appendChild(b);
       }
@@ -2918,7 +2954,7 @@ const MODES = {
         b.style.width = (2*r) + '%'; b.style.height = (2*r) + '%';
         b.style.transform = 'translate(-50%,-50%)';
         b.style.fontSize = 'clamp(13px,' + (r*0.42) + 'vw,26px)';
-        b.setAttribute('aria-label','Number '+num);
+        b.setAttribute('aria-label', t('a.number', { n: num }));
         onTap(b, () => {
           if (num !== next) return ctx.miss(b);
           b.classList.add('done');
@@ -2992,7 +3028,7 @@ const MODES = {
       for (let i=0;i<n*n;i++){
         const b = mk('button','cell pad');
         b.type = 'button'; b.disabled = true;
-        b.setAttribute('aria-label','Pad '+(i+1));
+        b.setAttribute('aria-label', t('a.pad', { n: i+1 }));
         onTap(b, () => hit(i, b));
         pads.push(b); g.appendChild(b);
       }
@@ -3113,7 +3149,7 @@ const MODES = {
         if (!c){ const blank = mk('div','cell pipe nul'); g.appendChild(blank); continue; }
         const b = mk('button','cell pipe' + (k===srcK ? ' src' : k===snkK ? ' snk' : ''));
         b.type = 'button';
-        b.setAttribute('aria-label', k===srcK ? 'Power source, tap to rotate' : k===snkK ? 'Target, tap to rotate' : 'Pipe, tap to rotate');
+        b.setAttribute('aria-label', t(k===srcK ? 'a.source' : k===snkK ? 'a.sink' : 'a.pipe'));
         const segs = [];
         if (c.base & 1) segs.push('M50 50 L50 0');
         if (c.base & 2) segs.push('M50 50 L100 50');
@@ -3305,7 +3341,7 @@ const MODES = {
           continue;
         }
         const b = mk('button','cell mcell'); b.type='button';
-        b.setAttribute('aria-label','Column ' + (x+1) + ', row ' + (y+1));
+        b.setAttribute('aria-label', t('a.colRow', { x: x+1, y: y+1 }));
         onTap(b, () => {
           if (placed.has(idx)){ placed.delete(idx); b.classList.remove('on'); }
           else { placed.add(idx); b.classList.add('on'); }
@@ -3346,7 +3382,7 @@ const MODES = {
           if (live.every(t => Math.hypot(t.x-x, t.y-y) > R*2.2)) break;
         }
         const e = mk('button','riser'); e.type='button';
-        e.setAttribute('aria-label','Target');
+        e.setAttribute('aria-label', t('a.target'));
         e.style.left = x+'%'; e.style.top = y+'%';
         e.style.width = (2*R)+'%'; e.style.height = (2*R)+'%';
         const target = { x, y, el:e, born: performance.now() };
@@ -3397,7 +3433,7 @@ const MODES = {
       const cells = [];
       for (let i=0;i<n*n;i++){
         const b = mk('button','cell pad'); b.type='button'; b.disabled = true;
-        b.setAttribute('aria-label','Cell ' + (i+1));
+        b.setAttribute('aria-label', t('a.cell', { n: i+1 }));
         if (pattern.has(i)) b.classList.add('lit');
         onTap(b, () => {
           if (showing || found.has(i)) return;
@@ -3575,8 +3611,7 @@ const MODES = {
             const blocked = d === 0 || !canMove(bar, d);
             const b = mk('button','cell bar ' + (bar.o === 'h' ? 'flat' : 'upright') + (blocked ? ' stuck' : ''));
             b.type = 'button';
-            b.setAttribute('aria-label', (bar.o === 'h' ? 'Flat' : 'Upright') + ' bar, tap to slide '
-              + (d === -1 ? (bar.o === 'v' ? 'up' : 'left') : d === 1 ? (bar.o === 'v' ? 'down' : 'right') : 'nowhere'));
+            b.setAttribute('aria-label', t(bar.o === 'h' ? 'a.barFlat' : 'a.barUp'));
             if (d !== 0){
               b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" '
                 + 'stroke-linecap="round" aria-hidden="true"><path d="' + ARROW[d + bar.o] + '"/></svg>';
@@ -3722,7 +3757,7 @@ const MODES = {
 
       'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(ch => {
         const b = mk('button','key'); b.type='button'; b.textContent = ch;
-        b.setAttribute('aria-label','Guess ' + ch);
+        b.setAttribute('aria-label', t('a.guess', { c: ch }));
         if (found.has(ch)) b.classList.add('used');
         onTap(b, () => {
           if (b.classList.contains('used')) return;
@@ -3812,7 +3847,7 @@ const MODES = {
       const row = mk('div','beatrow');
       for (let i=0;i<n;i++){
         const b = mk('button','beatdot'); b.type='button';
-        b.setAttribute('aria-label','Dot ' + (i+1));
+        b.setAttribute('aria-label', t('a.dot', { n: i+1 }));
         b.style.animationDuration = (i===odd ? period + offset : period) + 'ms';
         onTap(b, () => i===odd ? ctx.win(b) : ctx.miss(b));
         row.appendChild(b);
@@ -3977,7 +4012,7 @@ const MODES = {
       const dots = pts.map((p,i) => {
         const b = mk('button','arcdot'); b.type='button';
         b.style.left = p.x+'%'; b.style.top = p.y+'%';
-        b.setAttribute('aria-label','Node '+(i+1));
+        b.setAttribute('aria-label', t('a.node', { n: i+1 }));
         box.appendChild(b); return b;
       });
       const paintReach = () => {
@@ -4057,7 +4092,7 @@ const MODES = {
           shuffle(cands, ctx.rnd).forEach(d => {
             const b = mk('button','ushape'); b.type='button';
             b.innerHTML = shapeSvgOf(d);
-            b.setAttribute('aria-label','Shape');
+            b.setAttribute('aria-label', t('a.shape'));
             onTap(b, () => d === answer ? ctx.win(b) : ctx.miss(b));
             row.appendChild(b);
           });
@@ -4105,7 +4140,7 @@ const MODES = {
       const cellEls = [];
       for (let i=0;i<cells;i++){
         const b = mk('button','cell node'); b.type='button';
-        b.setAttribute('aria-label','Node '+(i+1));
+        b.setAttribute('aria-label', t('a.node', { n: i+1 }));
         cellEls.push(b); grid.appendChild(b);
       }
       cellEls[start].classList.add('on','head');
@@ -4196,7 +4231,7 @@ const MODES = {
       const knobs = pos.map((p,i) => {
         const e = mk('div','slacknode');
         e.setAttribute('role','button');
-        e.setAttribute('aria-label','Node '+(i+1));
+        e.setAttribute('aria-label', t('a.node', { n: i+1 }));
         box.appendChild(e); return e;
       });
       let done = false;
@@ -4301,7 +4336,7 @@ const MODES = {
           const x = 50 + (c - r/2) * (72/rows);
           const y = 16 + (r+1) * (58/(rows+1));
           e.style.left = x+'%'; e.style.top = y+'%';
-          e.setAttribute('aria-label','Peg');
+          e.setAttribute('aria-label', t('a.peg'));
           pegs.push({ el:e, x, y, gone:false });
           box.appendChild(e);
         }
@@ -4310,7 +4345,7 @@ const MODES = {
       const binEls = [];
       for (let i=0;i<bins;i++){
         const b = mk('button','bin2' + (i===goal ? ' goal' : '')); b.type='button';
-        b.setAttribute('aria-label', i===goal ? 'Target bin' : 'Bin '+(i+1));
+        b.setAttribute('aria-label', i===goal ? t('a.targetBin') : t('a.bin', { n: i+1 }));
         binRow.appendChild(b); binEls.push(b);
       }
       box.appendChild(binRow);
@@ -4478,7 +4513,7 @@ const MODES = {
       const els = [];
       for (let i=0;i<cells;i++){
         const b = mk('button','cell sock'); b.type='button';
-        b.setAttribute('aria-label','Empty slot');
+        b.setAttribute('aria-label', t('a.emptySlot'));
         els.push(b); grid.appendChild(b);
       }
       ctx.surface.appendChild(grid);
@@ -4495,7 +4530,7 @@ const MODES = {
         } else {
           e.style.background = '';
           e.innerHTML = '';
-          e.setAttribute('aria-label','Empty slot');
+          e.setAttribute('aria-label', t('a.emptySlot'));
         }
       };
       /* Always a PAIR, never a single. An odd item left on the board would make
@@ -4584,7 +4619,7 @@ const MODES = {
       const mark = mk('div','skimmark'); track.appendChild(mark);
       const pips = mk('div','skimpips'); track.appendChild(pips);
       const hit = mk('button','skimhit'); hit.type='button';
-      hit.setAttribute('aria-label','Skim now');
+      hit.setAttribute('aria-label', t('a.skimNow'));
       track.appendChild(hit);
       ctx.surface.appendChild(track);
 
@@ -4655,7 +4690,7 @@ const MODES = {
       const holes = [];
       for (let i=0;i<g*g;i++){
         const b = mk('button','cell hole'); b.type='button';
-        b.setAttribute('aria-label','Empty');
+        b.setAttribute('aria-label', t('a.empty'));
         holes.push({ el:b, blob:null }); grid.appendChild(b);
       }
       ctx.surface.appendChild(grid);
@@ -4666,13 +4701,13 @@ const MODES = {
         h.el.classList.toggle('up', !!b);
         if (b){
           h.el.style.setProperty('--blob', HPINK[Math.min(b.hp,3)-1]);
-          h.el.setAttribute('aria-label', b.hp + ' hits left');
+          h.el.setAttribute('aria-label', t('a.hitsLeft', { n: b.hp }));
           if (assistOn()) h.el.innerHTML = '<b class="hp">'+b.hp+'</b>';
           else h.el.innerHTML = '';
         } else {
           h.el.style.removeProperty('--blob');
           h.el.innerHTML = '';
-          h.el.setAttribute('aria-label','Empty');
+          h.el.setAttribute('aria-label', t('a.empty'));
         }
       };
       const leave = h => {
@@ -4846,7 +4881,8 @@ const MODES = {
         els.forEach((e,i) => {
           e.style.transform = 'rotate(' + (turns[i]*90) + 'deg)';
           e.classList.toggle('set', turns[i] === 0);
-          e.setAttribute('aria-label', 'Tile ' + (i+1) + ', ' + (turns[i]===0 ? 'straight' : (4-turns[i]) + ' turns from straight'));
+          e.setAttribute('aria-label', turns[i]===0 ? t('a.tileStraight', { n: i+1 })
+        : t('a.tileTurns', { n: i+1, k: 4-turns[i] }));
         });
         const left = turns.filter(v => v !== 0).length;
         ctx.prompt(t('p.pivot', { n: left }));
@@ -4910,7 +4946,7 @@ const MODES = {
       const paint = () => {
         els.forEach((e,i) => {
           face(e, cells[i]);
-          e.setAttribute('aria-label', cells[i] ? ('Coin ' + cells[i]) : 'Empty');
+          e.setAttribute('aria-label', cells[i] ? t('a.coin', { n: cells[i] }) : t('a.empty'));
         });
         ctx.prompt(t('p.mint', { n: goal }));
       };
@@ -4976,7 +5012,7 @@ const MODES = {
         b.innerHTML = '<span class="gh"><svg viewBox="0 0 24 24" aria-hidden="true">'
           + '<path d="M12 3a7 7 0 0 0-7 7v10l2.5-2 2.5 2 2-2 2 2 2.5-2 2.5 2V10a7 7 0 0 0-7-7z"/>'
           + '<circle cx="9.5" cy="10" r="1.2" class="eye"/><circle cx="14.5" cy="10" r="1.2" class="eye"/></svg></span>';
-        b.setAttribute('aria-label','Tile '+(i+1));
+        b.setAttribute('aria-label', t('a.tile', { n: i+1 }));
         els.push(b); grid.appendChild(b);
       }
       ctx.surface.appendChild(grid);
@@ -5154,7 +5190,7 @@ const MODES = {
       const box = mk('div','glimbox');
       const bug = mk('div','glimbug');
       bug.setAttribute('role','button');
-      bug.setAttribute('aria-label','Firefly');
+      bug.setAttribute('aria-label', t('a.firefly'));
       ctx.surface.appendChild(box);
 
       const pts = [];
@@ -5172,7 +5208,7 @@ const MODES = {
         const e = mk('div','glimlamp');
         e.style.left = p.x+'%'; e.style.top = p.y+'%';
         e.setAttribute('role','img');
-        e.setAttribute('aria-label','Unlit lamp '+(i+1));
+        e.setAttribute('aria-label', t('a.lampOff', { n: i+1 }));
         box.appendChild(e);
         return e;
       });
@@ -5194,7 +5230,7 @@ const MODES = {
             p.lit = true; lit++;
             els[i].classList.add('lit');
             els[i].style.opacity = 1;
-            els[i].setAttribute('aria-label','Lit lamp '+(i+1));
+            els[i].setAttribute('aria-label', t('a.lampOn', { n: i+1 }));
             reach = Math.min(46, reach + 3.5);
             sfx.good(lit); buzz(12);
             if (lit >= lamps){ done = true; return ctx.win(bug); }
@@ -5252,7 +5288,7 @@ const MODES = {
         b.innerHTML = '<span class="back"></span><span class="face"></span>';
         b.querySelector('.face').style.background = f.ink.hex;
         if (assistOn()) b.querySelector('.face').innerHTML = shapeSvg(f.ink.shape, 'var(--ink)');
-        b.setAttribute('aria-label','Face down card '+(i+1));
+        b.setAttribute('aria-label', t('a.cardDown', { n: i+1 }));
         grid.appendChild(b);
         return b;
       });
@@ -5271,7 +5307,7 @@ const MODES = {
         if (faces[a].i === faces[c].i){
           matched++;
           ctx.after(240, () => {
-            [a,c].forEach(k => { els[k].classList.add('gone'); els[k].setAttribute('aria-label','Matched'); });
+            [a,c].forEach(k => { els[k].classList.add('gone'); els[k].setAttribute('aria-label', t('a.matched')); });
             open = []; busy = false;
             sfx.good(matched); buzz(12);
             if (matched >= pairs){ done = true; return ctx.win(b); }
@@ -5282,7 +5318,7 @@ const MODES = {
           ctx.after(620, () => {
             [a,c].forEach(k => {
               els[k].classList.remove('up');
-              els[k].setAttribute('aria-label','Face down card '+(k+1));
+              els[k].setAttribute('aria-label', t('a.cardDown', { n: k+1 }));
             });
             open = []; busy = false;
             say();
@@ -5365,7 +5401,7 @@ const MODES = {
           e.style.setProperty('--wl', open.has(key(i, at(x-1, y))) && x>0 ? '0' : '1');
           e.style.setProperty('--wr', open.has(key(i, at(x+1, y))) && x<g-1 ? '0' : '1');
           e.style.setProperty('--wb', open.has(key(i, at(x, y+1))) && y<g-1 ? '0' : '1');
-          e.setAttribute('aria-label', i === goal ? 'Way out' : i === here ? 'You are here' : 'Cell '+(i+1));
+          e.setAttribute('aria-label', i === goal ? t('a.wayOut') : i === here ? t('a.youHere') : t('a.cell', { n: i+1 }));
         });
         ctx.prompt(t('p.shift'));
       };
@@ -5515,7 +5551,7 @@ const MODES = {
 
       const pool = mk('div','ripplepool');
       const leaf = mk('div','leaf');
-      leaf.setAttribute('role','img'); leaf.setAttribute('aria-label','Leaf');
+      leaf.setAttribute('role','img'); leaf.setAttribute('aria-label', t('a.leaf'));
       ctx.surface.appendChild(pool);
 
       /* Rings sit across the pool at decreasing heights and must be passed in
@@ -5527,7 +5563,7 @@ const MODES = {
         const x = 18 + ctx.rnd()*64;
         e.style.left = x+'%'; e.style.top = y+'%';
         e.setAttribute('role','img');
-        e.setAttribute('aria-label','Gate '+(i+1)+' of '+gates);
+        e.setAttribute('aria-label', t('a.gate', { a: i+1, b: gates }));
         pool.appendChild(e);
         rings.push({ e, x, y });
       }
@@ -5604,7 +5640,7 @@ const MODES = {
 
       const sky = mk('div','descentsky');
       const star = mk('div','dstar');
-      star.setAttribute('role','img'); star.setAttribute('aria-label','Falling star');
+      star.setAttribute('role','img'); star.setAttribute('aria-label', t('a.star'));
       ctx.surface.appendChild(sky);
 
       /* Bars are spaced evenly below the start so the first one is never on top
@@ -5615,7 +5651,7 @@ const MODES = {
         const left = mk('i','side l'), right = mk('i','side r');
         e.appendChild(left); e.appendChild(right);
         e.setAttribute('role','img');
-        e.setAttribute('aria-label','Gap '+(i+1)+' of '+gates);
+        e.setAttribute('aria-label', t('a.gap', { a: i+1, b: gates }));
         sky.appendChild(e);
         bars.push({ e, left, right,
                     y: 34 + i*26,
@@ -7010,6 +7046,7 @@ const CATS = [
 ];
 const CAT_INK = Object.fromEntries(CATS.map(c => [c.id, c.ink]));
 const catOf = id => (MODES[id] && MODES[id].cat) || 'focus';
+const modeIdOf = mode => MODE_IDS.find(id => MODES[id] === mode) || '';
 const catsPresent = () => CATS.map(c => c.id).filter(c => MODE_IDS.some(id => catOf(id) === c));
 const idsInCat = c => MODE_IDS.filter(id => catOf(id) === c);
 
@@ -7343,6 +7380,7 @@ function resolve(ok, node){
   run.roundLeft = 0;
   Array.from(el.surface.querySelectorAll('button')).forEach(b => { b.disabled = true; });
 
+  if (run.log) run.log.push({ id: modeIdOf(mode), ok });
   if (ok){
     const multBefore = multiplier();
     const elapsed = performance.now() - roundStart;
@@ -7369,7 +7407,7 @@ function resolve(ok, node){
 
     burst(node, '#33E6C8'); flash('flash-win');
     sfx.good(run.streak); buzz(18);
-    el.prompt.textContent = run.streak >= 4 ? 'Streak ×' + multiplier() + '!' : 'Nice';
+    el.prompt.textContent = run.streak >= 4 ? t('p.streak', { n: multiplier() }) : t('p.nice');
     el.prompt.className = 'prompt won';
     $('hudScore').classList.add('pop');
     setTimeout(() => $('hudScore').classList.remove('pop'), 160);
@@ -7395,7 +7433,7 @@ function resolve(ok, node){
     sfx.bad(); buzz([26,40,26]);
     el.prompt.textContent = saved ? t('p.saved')
       : r.timedOut ? t('p.tooSlow')
-      : k.timed ? '−' + (k.penalty/1000) + ' seconds' : t('p.missed');
+      : k.timed ? t('p.minusSec', { n: k.penalty/1000 }) : t('p.missed');
     el.prompt.className = 'prompt lost';
     renderHud();
     if (k.lives && run.lives <= 0) return later(520, endRun);
@@ -7410,7 +7448,8 @@ function startRun(kind, modeId){
   const lvl = playerLevel();
   run = {
     kind, mode: modeId || null, curMode: null, lastMode: null, bag: null,
-    score:0, solved:0, missed:0, streak:0, bestStreak:0,
+    score:0, solved:0, missed:0, streak:0, bestStreak:0, log:[],
+    lifeAtStart: save.lifetime || 0,
     time: (k.start || 0) + (k.timed ? Perk.step('rally')*1000 : 0),
     lives: (k.lives || 0) + (k.lives ? Perk.step('spare') : 0),
     livesMax: (k.lives || 0) + (k.lives ? Perk.step('spare') : 0),
@@ -7433,7 +7472,7 @@ function startRun(kind, modeId){
   paintHudPerks();
   renderHud();
   clearBoard();
-  el.prompt.textContent = 'Get ready';
+  el.prompt.textContent = t('p.ready');
   el.prompt.className = 'prompt';
 
   const cd = mk('div'); cd.id = 'count';
@@ -7499,13 +7538,47 @@ function endRun(){
   $('overKind').textContent = (r.mode ? MODES[r.mode].name + ' · ' : '') + k.label;
   $('overScore').textContent = k.scored ? fmt(r.score) : fmt(r.solved);
   $('newBest').hidden = !best;
+
+  /* The shape of the run, one pip per round. Three numbers tell you how it
+     went; this tells you where it went wrong, which is the thing that makes
+     you want another go. */
+  {
+    const rb = $('overRibbon');
+    rb.innerHTML = '';
+    const log = r.log || [];
+    rb.hidden = log.length < 2;
+    log.slice(-24).forEach(e => {
+      const i = mk('i', e.ok ? 'won' : 'lost');
+      i.style.setProperty('--fam', CAT_INK[catOf(e.id)] || 'var(--haze)');
+      rb.appendChild(i);
+    });
+    rb.setAttribute('aria-label', t('over.ribbon',
+      { a: log.filter(e => e.ok).length, b: log.length }));
+  }
+
+  /* What the run fed into the perk ladder. A run that adds nothing to anything
+     is a run you played once. */
+  {
+    const gained = Math.max(0, (save.lifetime || 0) - (r.lifeAtStart || 0));
+    const next = Perk.nextTier();
+    const floor = next.slot
+      ? (PERK_TIERS[PERK_TIERS.indexOf(next.at) - 1] || 0)
+      : next.at - TOKEN_EVERY;
+    const life = save.lifetime || 0;
+    $('lifeGain').textContent = '+' + fmt(gained);
+    $('lifeNext').textContent = t(next.slot ? 'perk.toSlot' : 'perk.toToken', { n: fmt(next.at - life) });
+    $('lifeFill').style.transform = 'scaleX(' + clamp((life - floor) / (next.at - floor), 0, 1) + ')';
+    $('lifeStrip').hidden = !k.scored;
+  }
   $('stSolved').textContent = String(r.solved);
   $('stStreak').textContent = String(r.bestStreak);
   $('stAcc').textContent = attempts ? Math.round(r.solved/attempts*100) + '%' : '—';
 
   const target = (r.kind === 'shuffle' || r.kind === 'mix') ? save.pbBlitz
     : r.kind === 'marathon' ? (save.marathon[r.mode]||0) : (save.daily[todayKey()]||0);
-  $('againSub').textContent = k.scored ? (best ? 'Can you do it twice?' : 'Beat ' + target) : 'Another round';
+  $('againSub').textContent = k.scored
+    ? (best ? t('over.twice') : t('over.beat', { n: fmt(target) }))
+    : t('over.another');
   el.over.dataset.kind = r.kind;
   el.over.dataset.mode = r.mode || '';
   show('over');
@@ -7594,13 +7667,13 @@ function paintChrome(){
 }
 
 function paintPlay(){
-  $('shuffleBest').textContent = save.pbBlitz ? t('hero.best') + ' ' + save.pbBlitz : '';
+  $('shuffleBest').textContent = save.pbBlitz ? t('hero.best') + ' ' + fmt(save.pbBlitz) : '';
   const chosen = (save.mix || []).filter(id => MODES[id]);
   $('mixMeta').textContent = chosen.length >= 2
     ? t('mix.nChosen', { n: chosen.length })
     : t('mix.tapToChoose');
   const dv = save.daily[todayKey()];
-  $('dailyMeta').textContent = dv ? t('daily.best', { n: dv }) : t('daily.sub');
+  $('dailyMeta').textContent = dv ? t('daily.best', { n: fmt(dv) }) : t('daily.sub');
 
   /* Four suggestions, not sixteen. The full list is one tab away, and putting
      every mode on the landing screen is what made it feel heavy. */
@@ -7761,7 +7834,7 @@ function paintStats(){
     row.querySelector('b').textContent = modeName(id);
     const stars = starsFor(id);
     Array.from(row.querySelectorAll('.stars i')).forEach((s,i) => s.classList.toggle('on', i < stars));
-    row.querySelector('.v').textContent = save.marathon[id] ? String(save.marathon[id]) : '—';
+    row.querySelector('.v').textContent = save.marathon[id] ? fmt(save.marathon[id]) : '—';
     frag.appendChild(row);
   });
   $('sRows').replaceChildren(frag);

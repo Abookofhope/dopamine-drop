@@ -125,6 +125,28 @@ if chrome_start >= 0 and chrome_end > chrome_start and modes_end > modes_start:
     check("no mode reuses a class the header owns", not shared,
           "shared: " + ", ".join(shared) if shared else "")
 
+# Four string tables at key parity say nothing about text that never went
+# through them. The app shipped with "Get ready", "Nice", "Beat 3200" and three
+# dozen screen-reader labels written straight into the script, so a French
+# player got French menus and English gameplay, and the parity check passed
+# every time because there was no key to be missing.
+if modes_start >= 0:
+    script = html[html.find("<script", modes_start - 400000 if modes_start > 400000 else 0):]
+    hardcoded = []
+    for m in re.finditer(r"(?:textContent|\.setAttribute\(\s*['\"]aria-label['\"])\s*(?:=|,)\s*([^;\n]{0,160})", html):
+        expr = m.group(1)
+        if "t(" in expr or "fmt(" in expr or "inkName(" in expr or "modeName(" in expr:
+            continue
+        for lit in re.findall(r"'([^']{3,})'|\"([^\"]{3,})\"", expr):
+            text = lit[0] or lit[1]
+            # a sentence or phrase of real words, not a class name or a symbol
+            if re.fullmatch(r"[A-Za-z][A-Za-z ,'\u2019\-]{2,}", text) and " " in text.strip():
+                hardcoded.append(text)
+    hardcoded = sorted(set(hardcoded))
+    check("no player-visible text is written in English by hand", not hardcoded,
+          "untranslated: " + "; ".join(hardcoded[:6]) + ("; ..." if len(hardcoded) > 6 else "")
+          if hardcoded else "")
+
 # A stray `*/` in the stylesheet is not a parse error you can see. The CSS
 # parser treats the garbage before it as the start of a selector and swallows
 # the next rule whole. That is how a scripted edit that overwrote a section
