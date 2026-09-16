@@ -1567,6 +1567,45 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 .mpvnext{margin:0;font-size:11.5px;color:var(--haze)}
 
+/* ── Welcome ─────────────────────────────────────────────────────────────
+   Below the language sheet in the stack, because choosing a language is the
+   one thing you can do from here without leaving. */
+.welcome{
+  position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;
+  padding:calc(18px + env(safe-area-inset-top)) var(--gut) calc(18px + env(safe-area-inset-bottom));
+  background:
+    radial-gradient(80% 55% at 50% 0%, #ff5b3914, transparent 62%),
+    var(--ink);
+  overflow-y:auto;
+}
+.welcome .panel{
+  width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px;
+  animation:sheetup 340ms cubic-bezier(.2,.9,.3,1);
+}
+.wordmark.big{font-size:27px;letter-spacing:.03em}
+.welcome .lead{margin:0;font-size:14.5px;line-height:1.5;color:var(--haze);max-width:30ch}
+.wcpoints{list-style:none;margin:4px 0 2px;padding:0;display:flex;flex-direction:column;gap:9px}
+.wcpoints li{display:flex;align-items:center;gap:11px}
+.wcpoints .g{
+  width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:11px;
+  background:var(--ink-3);border:1px solid var(--edge);color:var(--flare);
+}
+.wcpoints .g svg{width:18px;height:18px;display:block}
+.wcpoints b{font-size:13.5px;font-weight:600;line-height:1.35}
+.wclang{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:11px 13px;border-radius:var(--r-md);text-align:left;
+  border:1px solid var(--edge);background:#ffffff05;
+  transition:border-color var(--t-fast),transform var(--t-fast);
+}
+.wclang:active{transform:scale(.98);border-color:var(--flare)}
+.wclang svg{width:17px;height:17px;flex:none;color:var(--haze)}
+.wclang b{flex:1;font-size:13.5px;font-weight:600}
+.wclang span{
+  font-family:var(--f-data);font-size:9.5px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--flare);
+}
+
 /* ── Daily streak and sharing ────────────────────────────────────────────── */
 .dailyrow{display:flex;align-items:center;gap:10px;flex:none}
 .dstreak{
@@ -1797,7 +1836,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.19.2</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.20.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1915,6 +1954,39 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   </div>
 </div>
 
+<!-- Shown once, on a first launch. One screen, three lines and a button: a
+     game for people with no patience cannot open with a tutorial. -->
+<div class="welcome" id="welcome" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="wcTitle">
+    <h2 class="wordmark big" id="wcTitle">Dopamine<span>&nbsp;Drop</span></h2>
+    <p class="lead" data-i18n="wc.lead">Fifty-two small puzzles. The one in front of you changes every round.</p>
+    <ul class="wcpoints">
+      <li>
+        <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg></span>
+        <b data-i18n="wc.p1">Sixty seconds a run</b>
+      </li>
+      <li>
+        <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h4l4 10h6"/><path d="M3 17h4l2-5"/><path d="M17 4l4 3-4 3"/><path d="M17 14l4 3-4 3"/></svg></span>
+        <b data-i18n="wc.p2">A different puzzle every round</b>
+      </li>
+      <li>
+        <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6 .8-4.4 4.2 1.1 6.1L12 16.8 6.7 19.7l1.1-6.1L3.4 9.4l6-.8z"/></svg></span>
+        <b data-i18n="wc.p3">A miss costs time — a streak pays</b>
+      </li>
+    </ul>
+    <button class="wclang" id="wcLang" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
+      <b id="wcLangName">English</b>
+      <span data-i18n="wc.change">Change</span>
+    </button>
+    <button class="cta" id="wcStart" type="button">
+      <span class="lbl"><b data-i18n="wc.start">Start your first run</b><small data-i18n="hero.eyebrow">Every mode, on shuffle</small></span>
+      <span aria-hidden="true" style="font-size:22px">&rarr;</span>
+    </button>
+    <button class="ghost" id="wcSkip" type="button" data-i18n="wc.look">Look around first</button>
+  </div>
+</div>
+
 <div class="sheet" id="modeSheet" hidden>
   <div class="panel" role="dialog" aria-modal="true" aria-labelledby="mpvName">
     <span class="grab"></span>
@@ -1997,7 +2069,7 @@ function dailyStreak(){
 const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.19.2 (52)';
+const VERSION = 'v0.20.0 (52)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2007,14 +2079,14 @@ const VERSION = 'v0.19.2 (52)';
        would tell the next migration to redo steps already applied.        */
 const KEY = 'dd.v1';
 const QUARANTINE = 'dd.v1.unreadable';
-const SCHEMA = 7;
+const SCHEMA = 8;
 const defaults = {
   pbBlitz:0, pbStreak:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false,
   lang:null, seenVersion:null,
   lifetime:0, perks:[], perkLv:{}, tokens:0,
   dailyStreak:0, dailyLast:null, dailyBestStreak:0,
-  lastMode:null
+  lastMode:null, onboarded:false
 };
 
 function migrate(data){
@@ -2080,6 +2152,13 @@ function migrate(data){
        Nothing to reconstruct — the next run writes it. */
     if (data.lastMode === undefined) data.lastMode = null;
     from = 7;
+  }
+  if (from < 8){
+    /* Schema 8 adds a welcome, shown once. Anybody who has already played has
+       been welcomed by doing it, and must not be sat down in front of an
+       introduction to a game they know. */
+    if (typeof data.onboarded !== 'boolean') data.onboarded = (data.runs || 0) > 0;
+    from = 8;
   }
   if (from <= SCHEMA) data.schema = SCHEMA;
   return data;
@@ -2339,6 +2418,7 @@ const STRINGS = {
     'stats.filter':'Filter the mode list', 'stats.fAll':'All', 'stats.fPlayed':'Played', 'stats.fNew':'Not tried', 'stats.allPlayed':'You have played every mode at least once.', 'stats.noneYet':'Nothing here yet — play a Marathon and a score appears.',
     'p.bbListen':'Listen — two bars, then the gaps are yours', 'p.bbPlay':'Tap between the beats — {n} to go', 'bb.pad':'Tap between the beats', 'm.backbeat':'Backbeat|Tap between the beats, never on one', 'p.chorus':'One of these is not holding its tempo', 'chorus.lane':'Row {n}', 'm.chorus':'Chorus|Steady tempos, and one that is not staying steady', 'p.bridge':'{n} planks laid — reach the far bank', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Open water, column {x} row {y}, tap to lay a plank', 'bridge.plank':'A plank, column {x} row {y}, tap to lift it', 'm.bridge':'Bridge|Lay planks bank to bank — you have only so many', 'p.weave':'{n} squares still wrong', 'weave.want':'The pattern to match', 'weave.over':'Over, column {x} row {y}', 'weave.under':'Under, column {x} row {y}', 'm.weave':'Weave|Each tap pulls a whole row and column — match the cloth',
     'play.carryOn':'Carry on', 'play.carryBest':'Your best {n}', 'why.new':'Untried', 'why.star':'Near a star', 'why.rare':'Neglected', 'why.wild':'Wildcard',
+    'wc.lead':'Fifty-two small puzzles. The one in front of you changes every round.', 'wc.p1':'Sixty seconds a run', 'wc.p2':'A different puzzle every round', 'wc.p3':'A miss costs time — a streak pays', 'wc.change':'Change', 'wc.start':'Start your first run', 'wc.look':'Look around first',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -2461,6 +2541,7 @@ const STRINGS = {
     'stats.filter':'Filtrer la liste des modes', 'stats.fAll':'Tout', 'stats.fPlayed':'Joués', 'stats.fNew':'Jamais essayés', 'stats.allPlayed':'Vous avez joué à tous les modes au moins une fois.', 'stats.noneYet':'Rien ici — jouez un Marathon et un score apparaîtra.',
     'p.bbListen':'Écoutez — deux mesures, puis les silences sont à vous', 'p.bbPlay':'Touchez entre les temps — encore {n}', 'bb.pad':'Touchez entre les temps', 'm.backbeat':'Contretemps|Touchez entre les temps, jamais sur un temps', 'p.chorus':'L’une d’elles ne tient pas son tempo', 'chorus.lane':'Ligne {n}', 'm.chorus':'Chœur|Des tempos réguliers, et un qui ne l’est pas', 'p.bridge':'{n} planches posées — atteignez l’autre rive', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Eau libre, colonne {x} ligne {y}, touchez pour poser une planche', 'bridge.plank':'Une planche, colonne {x} ligne {y}, touchez pour la retirer', 'm.bridge':'Pont|Posez des planches d’une rive à l’autre — elles sont comptées', 'p.weave':'Encore {n} cases fausses', 'weave.want':'Le motif à reproduire', 'weave.over':'Dessus, colonne {x} ligne {y}', 'weave.under':'Dessous, colonne {x} ligne {y}', 'm.weave':'Tissage|Chaque touche tire toute une ligne et une colonne — reproduisez le tissu',
     'play.carryOn':'Reprendre', 'play.carryBest':'Votre record {n}', 'why.new':'Jamais joué', 'why.star':'Presque une étoile', 'why.rare':'Délaissé', 'why.wild':'Au hasard',
+    'wc.lead':'Cinquante-deux petits casse-têtes. Celui qui est devant vous change à chaque manche.', 'wc.p1':'Soixante secondes par partie', 'wc.p2':'Un casse-tête différent à chaque manche', 'wc.p3':'Une erreur coûte du temps — une série rapporte', 'wc.change':'Changer', 'wc.start':'Lancer votre première partie', 'wc.look':'Jeter un œil d’abord',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -2583,6 +2664,7 @@ const STRINGS = {
     'stats.filter':'Filtrar la lista de modos', 'stats.fAll':'Todos', 'stats.fPlayed':'Jugados', 'stats.fNew':'Sin probar', 'stats.allPlayed':'Has jugado todos los modos al menos una vez.', 'stats.noneYet':'Aquí no hay nada — juega un Maratón y aparecerá una puntuación.',
     'p.bbListen':'Escucha — dos compases y los huecos son tuyos', 'p.bbPlay':'Toca entre los golpes — quedan {n}', 'bb.pad':'Toca entre los golpes', 'm.backbeat':'Contratiempo|Toca entre los golpes, nunca sobre uno', 'p.chorus':'Una de ellas no mantiene su tempo', 'chorus.lane':'Fila {n}', 'm.chorus':'Coro|Tempos estables, y uno que no lo es', 'p.bridge':'{n} tablones puestos — llega a la otra orilla', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Agua abierta, columna {x} fila {y}, toca para poner un tablón', 'bridge.plank':'Un tablón, columna {x} fila {y}, toca para quitarlo', 'm.bridge':'Puente|Pon tablones de orilla a orilla — están contados', 'p.weave':'Quedan {n} casillas mal', 'weave.want':'El patrón que hay que igualar', 'weave.over':'Encima, columna {x} fila {y}', 'weave.under':'Debajo, columna {x} fila {y}', 'm.weave':'Telar|Cada toque tira de toda una fila y columna — iguala la tela',
     'play.carryOn':'Continuar', 'play.carryBest':'Tu récord {n}', 'why.new':'Sin probar', 'why.star':'Cerca de una estrella', 'why.rare':'Olvidado', 'why.wild':'Al azar',
+    'wc.lead':'Cincuenta y dos pequeños rompecabezas. El que tienes delante cambia en cada ronda.', 'wc.p1':'Sesenta segundos por partida', 'wc.p2':'Un rompecabezas distinto cada ronda', 'wc.p3':'Un fallo cuesta tiempo — una racha paga', 'wc.change':'Cambiar', 'wc.start':'Empieza tu primera partida', 'wc.look':'Echar un vistazo primero',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -2705,6 +2787,7 @@ const STRINGS = {
     'stats.filter':'Modusliste filtern', 'stats.fAll':'Alle', 'stats.fPlayed':'Gespielt', 'stats.fNew':'Ungespielt', 'stats.allPlayed':'Du hast jeden Modus mindestens einmal gespielt.', 'stats.noneYet':'Hier ist noch nichts — spiel einen Marathon und ein Wert erscheint.',
     'p.bbListen':'Hör zu — zwei Takte, dann gehören dir die Lücken', 'p.bbPlay':'Zwischen die Schläge tippen — noch {n}', 'bb.pad':'Zwischen die Schläge tippen', 'm.backbeat':'Nachschlag|Tippe zwischen die Schläge, nie auf einen', 'p.chorus':'Eine davon hält ihr Tempo nicht', 'chorus.lane':'Zeile {n}', 'm.chorus':'Chor|Gleichmäßige Tempi, und eines, das keines hält', 'p.bridge':'{n} Planken gelegt — erreiche das andere Ufer', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Offenes Wasser, Spalte {x} Zeile {y}, tippen zum Planken legen', 'bridge.plank':'Eine Planke, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Brücke|Lege Planken von Ufer zu Ufer — sie sind gezählt', 'p.weave':'Noch {n} Felder falsch', 'weave.want':'Das Muster, das passen muss', 'weave.over':'Oben, Spalte {x} Zeile {y}', 'weave.under':'Unten, Spalte {x} Zeile {y}', 'm.weave':'Weben|Jeder Tipp zieht eine ganze Zeile und Spalte — triff das Tuch',
     'play.carryOn':'Weiter', 'play.carryBest':'Dein Bestwert {n}', 'why.new':'Ungespielt', 'why.star':'Fast ein Stern', 'why.rare':'Vergessen', 'why.wild':'Zufall',
+    'wc.lead':'Zweiundfünfzig kleine Rätsel. Das vor dir wechselt jede Runde.', 'wc.p1':'Sechzig Sekunden pro Runde', 'wc.p2':'Jede Runde ein anderes Rätsel', 'wc.p3':'Ein Fehler kostet Zeit — eine Serie zahlt sich aus', 'wc.change':'Ändern', 'wc.start':'Starte deine erste Runde', 'wc.look':'Erst mal umsehen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -2848,6 +2931,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.20.0', date:'2026-09-16', items:[
+    'A first launch now opens on one screen rather than on fifty-two modes: what this is, the three things worth knowing, and a button that starts your first run. One screen, shown once, dismissed by either button.',
+    'The app opens in your phone\u2019s language. It always had four and always opened in English, and the picker is two taps into Settings \u2014 which you only find if you already know it is there. It is on the welcome screen too, so the first thing you can change is the language you are reading.',
+  ] },
   { v:'0.19.2', date:'2026-09-16', items:[
     'Shuffle is no longer a slab of orange on an otherwise black screen. It is a dark card with an orange edge and an orange button — still first, still the widest, but it stops being the only thing your eye can land on. Shuffle is the rotation, not a mode; it had no business owning the whole screen.',
     'Mixtape, Daily Drop, Fidget Loop and Marathon each carry their own colour now, in the icon and in a wash across the card, and every card lights its border under a thumb. Four destinations instead of four empty boxes.',
@@ -3177,6 +3264,24 @@ const inkName   = ink => t('c.'+ink.name);
 const shapeWord = shape => t('s.'+shape);
 const wordBank  = () => WORD_BANKS[save.lang] || WORD_BANKS.en;
 const phraseBank= () => PHRASE_BANKS[save.lang] || PHRASE_BANKS.en;
+
+/* A four-language app that silently opened in English on a French phone was
+   four languages nobody found: the picker is two taps into Settings, and you
+   only go looking for it if you already know it is there. The phone's own
+   preference order is the answer, and it is still a tap away in the welcome. */
+function detectLang(){
+  let list = [];
+  try {
+    list = (navigator.languages && navigator.languages.length)
+      ? navigator.languages : [navigator.language];
+  } catch(e){}
+  for (const tag of list || []){
+    if (!tag) continue;
+    const base = String(tag).toLowerCase().split('-')[0];
+    if (STRINGS[base]) return base;
+  }
+  return 'en';
+}
 
 function setLang(id){
   if (!STRINGS[id]) return;
@@ -8712,6 +8817,7 @@ function paintChrome(){
   const lang = LANGS.find(l => l.id === save.lang) || LANGS[0];
   $('langCode').textContent = lang.flag;
   const nameEl = $('langName'); if (nameEl) nameEl.textContent = lang.label;
+  const wcName = $('wcLangName'); if (wcName) wcName.textContent = lang.label;
   const logV = $('logBtnV'); if (logV) logV.textContent = 'v' + CHANGELOG[0].v;
   $('verLine').textContent = VERSION;
 }
@@ -9156,6 +9262,18 @@ $('logSheet').addEventListener('click', ev => {
   if (ev.target === $('logSheet')){ $('logSheet').hidden = true; save.seenVersion = CHANGELOG[0].v; persist(); }
 });
 
+/* ── Welcome ───────────────────────────────────────────────────────────────
+   Dismissed by either button and never shown again. Starting a run and looking
+   around first are both answers; being asked twice is not. */
+function closeWelcome(){
+  $('welcome').hidden = true;
+  save.onboarded = true;
+  persist();
+}
+$('wcLang').addEventListener('click', openLangs);
+$('wcStart').addEventListener('click', () => { closeWelcome(); startRun('shuffle'); });
+$('wcSkip').addEventListener('click', closeWelcome);
+
 /* ── Mode preview ────────────────────────────────────────────────────────────
    Forty-eight cards, each three words wide, is a list you can scroll but not
    really read. Holding one opens the same mode with room to breathe, plus the
@@ -9360,12 +9478,15 @@ $('resetBtn').addEventListener('click', () => {
 
 /* ═══ Boot ════════════════════════════════════════════════════════════════ */
 function boot(){
+  if (!save.lang) save.lang = detectLang();
   try { document.documentElement.lang = save.lang; } catch(e){}
   applyStatic();
   persist();
   show('Play');
   paintAll();
   watchForUpdates();
+
+  if (!save.onboarded) $('welcome').hidden = false;
 
   /* Shown once after an update, never on a first install: a brand new player
      has no idea what changed and does not care. */
