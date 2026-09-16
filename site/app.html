@@ -1524,7 +1524,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.17.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.17.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1684,7 +1684,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.17.0 (48)';
+const VERSION = 'v0.17.1 (48)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1935,14 +1935,14 @@ const STRINGS = {
     'set.lang':'Language', 'set.data':'Data',
     'set.backup':'Back up progress', 'set.backupSub':'Save a file you can move to another phone',
     'set.restore':'Restore progress', 'set.restoreSub':'Load a backup. This replaces what is on this device.',
-    'set.reset':'Reset progress', 'set.resetSub':'Level, XP and every best score. Settings are kept.',
+    'set.reset':'Reset progress', 'set.resetSub':'Level, XP, perks and every best score. Settings are kept.',
     'set.about':'About', 'set.whatsNew':'What’s new', 'set.whatsNewSub':'Everything that has changed, newest first',
     'set.note':'Progress is saved on this device only. There is no account, and nothing here is uploaded.',
     'btn.export':'Export', 'btn.import':'Import', 'btn.reset':'Reset', 'btn.close':'Close',
     'dlg.badBackup':'That does not look like a Dopamine Drop backup.',
     'dlg.restore':'Restore level {lvl} and its scores?\n\nWhat is on this device will be replaced.',
     'dlg.restored':'Restored. Welcome back to level {lvl}.',
-    'dlg.reset':'Reset your level, XP and every best score?\n\nSettings are kept. This cannot be undone.',
+    'dlg.reset':'Reset your level, XP, perks and every best score?\n\nSettings are kept. This cannot be undone.',
     'dlg.exportFailed':'That did not save. Try again.',
     'btn.update':'Update', 'btn.goAgain':'Go again', 'btn.backToMenu':'Back to menu',
     'update.title':'<b>New version ready.</b> Tap to update.',
@@ -1956,7 +1956,7 @@ const STRINGS = {
     'lvl.none':'Every mode is already yours to play.',
     'lang.title':'Language', 'lang.sub':'The whole game, including the word puzzles.',
     'log.title':'What’s new', 'log.sub':'Newest first.',
-    'ask.reset':'Reset your level, XP and every best score?\n\nSettings are kept. This cannot be undone.',
+    'ask.reset':'Reset your level, XP, perks and every best score?\n\nSettings are kept. This cannot be undone.',
     'ask.restore':'Restore level {n} and its scores?\n\nWhat is on this device will be replaced.',
     'alert.bad':'That does not look like a Dopamine Drop backup.',
     'alert.ok':'Restored. Welcome back to level {n}.',
@@ -2052,14 +2052,14 @@ const STRINGS = {
     'set.lang':'Langue', 'set.data':'Données',
     'set.backup':'Sauvegarder la progression', 'set.backupSub':'Un fichier à transférer sur un autre téléphone',
     'set.restore':'Restaurer la progression', 'set.restoreSub':'Charger une sauvegarde. Remplace ce qui est sur cet appareil.',
-    'set.reset':'Réinitialiser', 'set.resetSub':'Niveau, XP et tous les records. Les réglages sont conservés.',
+    'set.reset':'Réinitialiser', 'set.resetSub':'Niveau, XP, atouts et tous les records. Les réglages sont conservés.',
     'set.about':'À propos', 'set.whatsNew':'Nouveautés', 'set.whatsNewSub':'Tout ce qui a changé, du plus récent',
     'set.note':'La progression est enregistrée sur cet appareil uniquement. Aucun compte, rien n’est envoyé.',
     'btn.export':'Exporter', 'btn.import':'Importer', 'btn.reset':'Réinitialiser', 'btn.close':'Fermer',
     'dlg.badBackup':'Cela ne ressemble pas à une sauvegarde Dopamine Drop.',
     'dlg.restore':'Restaurer le niveau {lvl} et ses scores ?\n\nCe qui se trouve sur cet appareil sera remplacé.',
     'dlg.restored':'Restauré. Bon retour au niveau {lvl}.',
-    'dlg.reset':'Effacer votre niveau, votre XP et tous vos records ?\n\nLes réglages sont conservés. C’est irréversible.',
+    'dlg.reset':'Effacer votre niveau, votre XP, vos atouts et tous vos records ?\n\nLes réglages sont conservés. C’est irréversible.',
     'dlg.exportFailed':'L’enregistrement a échoué. Réessayez.',
     'btn.update':'Mettre à jour', 'btn.goAgain':'Rejouer', 'btn.backToMenu':'Retour au menu',
     'update.title':'<b>Nouvelle version prête.</b> Touchez pour mettre à jour.',
@@ -2073,7 +2073,7 @@ const STRINGS = {
     'lvl.none':'Tous les modes sont déjà à vous.',
     'lang.title':'Langue', 'lang.sub':'Tout le jeu, y compris les casse-tête de mots.',
     'log.title':'Nouveautés', 'log.sub':'Du plus récent.',
-    'ask.reset':'Réinitialiser votre niveau, vos XP et tous vos records ?\n\nLes réglages sont conservés. Action irréversible.',
+    'ask.reset':'Réinitialiser votre niveau, vos XP, vos atouts et tous vos records ?\n\nLes réglages sont conservés. Action irréversible.',
     'ask.restore':'Restaurer le niveau {n} et ses scores ?\n\nCe qui est sur cet appareil sera remplacé.',
     'alert.bad':'Ce fichier ne ressemble pas à une sauvegarde Dopamine Drop.',
     'alert.ok':'Restauré. Bon retour au niveau {n}.',
@@ -2169,14 +2169,14 @@ const STRINGS = {
     'set.lang':'Idioma', 'set.data':'Datos',
     'set.backup':'Guardar progreso', 'set.backupSub':'Un archivo que puedes llevar a otro teléfono',
     'set.restore':'Restaurar progreso', 'set.restoreSub':'Carga una copia. Reemplaza lo que hay en este dispositivo.',
-    'set.reset':'Borrar progreso', 'set.resetSub':'Nivel, XP y todos los récords. Los ajustes se conservan.',
+    'set.reset':'Borrar progreso', 'set.resetSub':'Nivel, XP, ventajas y todos los récords. Los ajustes se conservan.',
     'set.about':'Acerca de', 'set.whatsNew':'Novedades', 'set.whatsNewSub':'Todo lo que ha cambiado, lo más reciente primero',
     'set.note':'El progreso se guarda solo en este dispositivo. No hay cuenta y nada se sube.',
     'btn.export':'Exportar', 'btn.import':'Importar', 'btn.reset':'Borrar', 'btn.close':'Cerrar',
     'dlg.badBackup':'Esto no parece una copia de seguridad de Dopamine Drop.',
     'dlg.restore':'¿Restaurar el nivel {lvl} y sus puntuaciones?\n\nSe reemplazará lo que hay en este dispositivo.',
     'dlg.restored':'Restaurado. Bienvenido de nuevo al nivel {lvl}.',
-    'dlg.reset':'¿Borrar tu nivel, tu XP y todos tus récords?\n\nLos ajustes se conservan. No se puede deshacer.',
+    'dlg.reset':'¿Borrar tu nivel, tu XP, tus ventajas y todos tus récords?\n\nLos ajustes se conservan. No se puede deshacer.',
     'dlg.exportFailed':'No se pudo guardar. Inténtalo de nuevo.',
     'btn.update':'Actualizar', 'btn.goAgain':'Otra vez', 'btn.backToMenu':'Volver al menú',
     'update.title':'<b>Nueva versión lista.</b> Toca para actualizar.',
@@ -2190,7 +2190,7 @@ const STRINGS = {
     'lvl.none':'Todos los modos ya son tuyos.',
     'lang.title':'Idioma', 'lang.sub':'Todo el juego, incluidos los retos de palabras.',
     'log.title':'Novedades', 'log.sub':'Lo más reciente primero.',
-    'ask.reset':'¿Borrar tu nivel, XP y todos los récords?\n\nLos ajustes se conservan. No se puede deshacer.',
+    'ask.reset':'¿Borrar tu nivel, XP, ventajas y todos los récords?\n\nLos ajustes se conservan. No se puede deshacer.',
     'ask.restore':'¿Restaurar el nivel {n} y sus puntuaciones?\n\nLo que hay en este dispositivo será reemplazado.',
     'alert.bad':'Eso no parece una copia de Dopamine Drop.',
     'alert.ok':'Restaurado. Bienvenido de vuelta al nivel {n}.',
@@ -2286,14 +2286,14 @@ const STRINGS = {
     'set.lang':'Sprache', 'set.data':'Daten',
     'set.backup':'Fortschritt sichern', 'set.backupSub':'Eine Datei für ein anderes Telefon',
     'set.restore':'Fortschritt laden', 'set.restoreSub':'Sicherung laden. Ersetzt, was auf diesem Gerät ist.',
-    'set.reset':'Fortschritt löschen', 'set.resetSub':'Level, XP und alle Rekorde. Einstellungen bleiben.',
+    'set.reset':'Fortschritt löschen', 'set.resetSub':'Level, XP, Boni und alle Rekorde. Einstellungen bleiben.',
     'set.about':'Über', 'set.whatsNew':'Neuerungen', 'set.whatsNewSub':'Alles, was sich geändert hat, neueste zuerst',
     'set.note':'Der Fortschritt liegt nur auf diesem Gerät. Kein Konto, nichts wird hochgeladen.',
     'btn.export':'Sichern', 'btn.import':'Laden', 'btn.reset':'Löschen', 'btn.close':'Schließen',
     'dlg.badBackup':'Das sieht nicht nach einer Dopamine-Drop-Sicherung aus.',
     'dlg.restore':'Level {lvl} und die zugehörigen Punkte wiederherstellen?\n\nWas auf diesem Gerät ist, wird ersetzt.',
     'dlg.restored':'Wiederhergestellt. Willkommen zurück auf Level {lvl}.',
-    'dlg.reset':'Level, XP und alle Bestwerte löschen?\n\nEinstellungen bleiben erhalten. Das lässt sich nicht rückgängig machen.',
+    'dlg.reset':'Level, XP, Boni und alle Bestwerte löschen?\n\nEinstellungen bleiben erhalten. Das lässt sich nicht rückgängig machen.',
     'dlg.exportFailed':'Das Sichern hat nicht geklappt. Bitte erneut versuchen.',
     'btn.update':'Aktualisieren', 'btn.goAgain':'Nochmal', 'btn.backToMenu':'Zum Menü',
     'update.title':'<b>Neue Version bereit.</b> Zum Aktualisieren tippen.',
@@ -2307,7 +2307,7 @@ const STRINGS = {
     'lvl.none':'Alle Modi gehören dir bereits.',
     'lang.title':'Sprache', 'lang.sub':'Das ganze Spiel, auch die Worträtsel.',
     'log.title':'Neuerungen', 'log.sub':'Neueste zuerst.',
-    'ask.reset':'Level, XP und alle Rekorde löschen?\n\nEinstellungen bleiben. Das lässt sich nicht rückgängig machen.',
+    'ask.reset':'Level, XP, Boni und alle Rekorde löschen?\n\nEinstellungen bleiben. Das lässt sich nicht rückgängig machen.',
     'ask.restore':'Level {n} und die Punkte wiederherstellen?\n\nWas auf diesem Gerät ist, wird ersetzt.',
     'alert.bad':'Das sieht nicht nach einer Dopamine-Drop-Sicherung aus.',
     'alert.ok':'Geladen. Willkommen zurück auf Level {n}.',
@@ -2477,6 +2477,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.17.1', date:'2026-09-16', items:[
+    'Fixed — Reset progress left your perks and lifetime points untouched, so a reset account kept every perk slot at level one.',
+    'Fixed — tapping the close button while already paused ended the run outright, which is the one thing pausing exists to prevent.',
+  ] },
   { v:'0.17.0', date:'2026-09-16', items:[
     'Pause. A run can be interrupted and picked back up: the round starts over when you come back, so you lose the seconds you had spent on it and nothing else.',
     'Leaving the app now pauses instead of costing you the round. The clock stopped when you switched away but a mode\u2019s own timers did not, so you came back to something you had already lost.',
@@ -8315,7 +8319,11 @@ $('quitBtn').addEventListener('click', () => {
      worth a question first — including one you are thirty seconds into with
      nothing solved yet, which is exactly when losing it stings most. During
      the count-in there is nothing to lose, so it still leaves at once. */
-  if (run && run.started && !run.paused) return pauseRun();
+  /* Already paused: the sheet has two explicit buttons and this one means
+     neither of them. Tapping it here used to fall through and end the run
+     outright — the exact thing pausing exists to prevent. */
+  if (run && run.paused) return;
+  if (run && run.started) return pauseRun();
   clearTimers();
   if (raf){ rawCAF(raf); raf = 0; }
   if (run && (run.solved || run.missed)) return endRun();
@@ -8391,8 +8399,12 @@ $('importFile').addEventListener('change', ev => {
 });
 $('resetBtn').addEventListener('click', () => {
   if (!window.confirm(t('dlg.reset'))) return;
-  ['pbBlitz','pbStreak','runs','xp','solved'].forEach(k => { save[k] = defaults[k]; });
+  /* Perks are progress too, and the reset predates them: it cleared the level
+     and every best score and left a player with five perk slots and a
+     level-one account, which is every advantage and no ladder. */
+  ['pbBlitz','pbStreak','runs','xp','solved','lifetime','tokens'].forEach(k => { save[k] = defaults[k]; });
   save.marathon = {}; save.daily = {};
+  save.perks = []; save.perkLv = {};
   persist(); paintAll();
 });
 
