@@ -443,6 +443,105 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   border-radius:0 0 3px 0;pointer-events:none;opacity:.6}
 .lslip.low{background:var(--bad);opacity:1}
 
+/* ── Backbeat ─────────────────────────────────────────────────────────── */
+.bbwrap{display:flex;flex-direction:column;gap:18px;width:100%;height:100%;
+  min-height:0;min-width:0;max-width:100%;justify-content:center;align-items:center}
+.bbring{
+  position:relative;width:104px;height:104px;flex:none;border-radius:50%;display:block;
+  border:3px solid #ff8ad83d;background:radial-gradient(circle,#ff8ad814,transparent 68%);
+  transition:transform 90ms ease-out,border-color var(--t-fast),box-shadow var(--t-fast);
+}
+/* A ring on its own is a hole in the screen between beats. The core gives the
+   pulse something to happen to, so the tempo is visible and not only audible —
+   this mode has to be playable with the sound off. */
+.bbring::after{
+  content:"";position:absolute;inset:26px;border-radius:50%;background:#ff8ad833;
+  transition:transform 90ms ease-out,background 90ms ease-out,box-shadow 90ms ease-out;
+}
+.bbring.beat{transform:scale(1.06);border-color:#FF8AD8;box-shadow:0 0 24px #ff8ad855}
+.bbring.beat::after{transform:scale(1.28);background:#FF8AD8;box-shadow:0 0 20px #ff8ad8aa}
+.bbpips{display:flex;gap:8px;flex:none}
+.bbpip{width:12px;height:12px;border-radius:50%;display:block;background:var(--edge);
+  transition:background var(--t-fast),box-shadow var(--t-fast)}
+.bbpip.on{background:var(--cool);box-shadow:0 0 10px #33e6c888}
+.bbpad{width:100%;flex:1;min-height:110px;border-radius:var(--r-lg);cursor:pointer;
+  display:grid;place-items:center;
+  border:2px dashed var(--edge);background:#ffffff05;
+  transition:background var(--t-fast),transform var(--t-fast),border-color var(--t-fast)}
+.bbpad svg{width:34px;height:34px;color:var(--haze);opacity:.34;pointer-events:none}
+.bbpad.tapped{background:#ff8ad833;transform:scale(.985)}
+.bbwrap.good .bbpad{border-color:var(--cool);border-style:solid;background:#33e6c814}
+.bbwrap.bad  .bbpad{border-color:var(--bad);border-style:solid;background:#ff3d6e14}
+.bbwrap.bad .bbring{border-color:var(--bad)}
+
+/* ── Chorus ───────────────────────────────────────────────────────────── */
+.chwrap{display:flex;flex-direction:column;gap:12px;width:100%;height:100%;
+  min-height:0;min-width:0;max-width:100%;justify-content:center}
+.chrow{
+  position:relative;flex:1;min-height:56px;max-height:110px;width:100%;cursor:pointer;
+  border-radius:var(--r-md);border:2px solid var(--edge-soft);background:#ffffff05;
+  display:grid;place-items:center;
+  transition:border-color var(--t-fast),background var(--t-fast),transform var(--t-fast);
+}
+.chrow:active{transform:scale(.99)}
+.chdot{
+  width:30px;height:30px;border-radius:50%;display:block;background:#ff8ad83d;
+  transition:transform 100ms ease-out,background 100ms ease-out,box-shadow 100ms ease-out;
+}
+.chdot.beat{transform:scale(1.5);background:#FF8AD8;box-shadow:0 0 20px #ff8ad877}
+.chrow.is{border-color:var(--cool);background:#33e6c814}
+.chrow.no{border-color:var(--bad);background:#ff3d6e14}
+
+/* ── Bridge ───────────────────────────────────────────────────────────── */
+/* A column, so the square board's main axis is the one that runs out: as a row
+   its explicit height could not shrink and the grid hung off the bottom of the
+   surface on anything shorter than a large phone. */
+.brwrap{display:flex;flex-direction:column;width:100%;height:100%;
+  min-height:0;min-width:0;max-width:100%;align-items:center;justify-content:center}
+.brgrid{display:grid;gap:6px;height:330px;max-width:100%;aspect-ratio:1;
+  flex:0 1 auto;min-height:0;min-width:0;transition:filter var(--t-med)}
+.brcell{
+  display:block;border-radius:9px;background:#ffffff07;border:1.5px solid var(--edge-soft);
+  cursor:pointer;transition:background var(--t-fast),border-color var(--t-fast),transform var(--t-fast);
+}
+.brcell:active{transform:scale(.94)}
+.brcell.plank{background:#C08BFF;border-color:#C08BFF;box-shadow:0 0 12px #c08bff55;cursor:pointer}
+.brcell.rock{background:#0a0714;border-color:#0a0714;cursor:default;
+  background-image:repeating-linear-gradient(45deg,#ffffff0d 0 3px,transparent 3px 7px)}
+.brcell.bank{background:var(--cool);border-color:var(--cool);cursor:default;
+  box-shadow:0 0 14px #33e6c855}
+.brgrid.good .brcell.plank{background:var(--cool);border-color:var(--cool);box-shadow:0 0 14px #33e6c877}
+
+/* ── Weave ────────────────────────────────────────────────────────────── */
+.wvwrap{display:flex;flex-direction:column;gap:10px;width:100%;height:100%;
+  min-height:0;min-width:0;max-width:100%;align-items:center;justify-content:center}
+/* The swatch sits beside its caption rather than under it: stacked, the two
+   boards and two lines of chrome did not fit a short phone, and the working
+   grid spilled past the bottom of the surface at every width tested. */
+.wvhead{display:flex;align-items:center;gap:10px;flex:none;max-width:100%;min-width:0}
+.wvhead .wvlbl{min-width:0}
+.wvlbl{font-family:var(--f-data);font-size:9.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--haze);text-align:right;line-height:1.35}
+/* 48px, not 76: the swatch and a four-wide board of 44px squares both have to
+   fit the shortest surface the app runs on, and the board is the one you have
+   to hit. */
+.wvtarget{display:grid;gap:2px;width:48px;flex:none}
+.wvt{display:block;aspect-ratio:1;border-radius:3px;background:#ffffff0f}
+.wvt.on{background:#C08BFF}
+/* Height first, width from the ratio: a square that is told its width can only
+   overflow downwards, and downwards is where the surface ends. */
+.wvgrid{display:grid;gap:7px;height:282px;max-width:100%;aspect-ratio:1;
+  flex:0 1 auto;min-height:0;min-width:0;transition:filter var(--t-med)}
+.wvc{
+  display:block;aspect-ratio:1;border-radius:10px;cursor:pointer;
+  background:#ffffff07;border:1.5px solid var(--edge-soft);
+  transition:background var(--t-fast),border-color var(--t-fast),transform var(--t-fast);
+}
+.wvc:active{transform:scale(.94)}
+.wvc.on{background:#C08BFF;border-color:#C08BFF}
+.wvc.wrong{border-color:var(--flare)}
+.wvgrid.good .wvc{border-color:var(--cool)}
+
 /* ── Siphon ───────────────────────────────────────────────────────────── */
 .siphonwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
   flex-direction:column;justify-content:space-between;padding:6% 4%;box-sizing:border-box}
@@ -1057,6 +1156,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    wrong, so it is the last thing that should be hard to read. */
 .verline{flex:none;text-align:right;font-family:var(--f-data);font-size:10.5px;color:var(--haze);opacity:.85;padding:14px 2px 4px;letter-spacing:.04em}
 .note{flex:none;font-size:11px;color:var(--haze);line-height:1.5;padding-top:10px}
+.note.holdhint{padding:2px 0 8px}
 
 /* ── Shared board pieces ─────────────────────────────────────────────────── */
 .grid{display:grid;gap:8px;width:100%;max-width:380px;aspect-ratio:1}
@@ -1350,6 +1450,80 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 .logentry:not(.latest) li{color:var(--haze)}
 .logentry:not(.latest) li::before{background:var(--edge)}
+
+/* ── Mode preview ────────────────────────────────────────────────────────── */
+.mpvtop{display:flex;align-items:center;gap:13px}
+.mpvtop .g{
+  width:54px;height:54px;flex:none;display:grid;place-items:center;border-radius:16px;
+  background:var(--ink-3);border:1px solid var(--edge);
+}
+.mpvtop .g svg{width:30px;height:30px;display:block}
+.mpvtop .txt{min-width:0;flex:1}
+.mpvtop .txt b{
+  display:block;font-family:var(--f-disp);font-weight:800;font-size:21px;
+  text-transform:uppercase;line-height:1.05;
+}
+.mpvfam{
+  display:inline-flex;align-items:center;gap:6px;margin-top:6px;
+  font-family:var(--f-data);font-size:9.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--mpv,var(--flare));
+}
+.mpvfam i{width:7px;height:7px;border-radius:99px;background:currentColor;flex:none}
+.mpvblurb{margin:0;font-size:14px;line-height:1.5;color:var(--cream)}
+.mpvgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.mpvcell{
+  padding:11px 13px;border-radius:var(--r-md);
+  background:var(--ink-3);border:1px solid var(--edge-soft);
+}
+.mpvcell b{display:block;font-family:var(--f-data);font-size:17px;font-weight:700;line-height:1.1;color:var(--cream)}
+.mpvcell .stars{margin:3px 0 1px}
+.mpvcell .stars i{width:12px;height:12px}
+.mpvcell small{
+  display:block;margin-top:4px;font-size:9.5px;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--haze);
+}
+.mpvnext{margin:0;font-size:11.5px;color:var(--haze)}
+
+/* ── Daily streak and sharing ────────────────────────────────────────────── */
+.dailyrow{display:flex;align-items:center;gap:10px;flex:none}
+.dstreak{
+  flex:1;display:inline-flex;align-items:center;gap:8px;min-width:0;
+  padding:9px 13px;border-radius:99px;
+  background:#FFC53D14;border:1px solid #FFC53D3d;
+  font-family:var(--f-data);font-size:10.5px;font-weight:700;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--zap);
+}
+.dstreak i{
+  width:8px;height:8px;border-radius:99px;flex:none;
+  background:currentColor;box-shadow:0 0 9px currentColor;
+}
+.sharebtn{
+  display:inline-flex;align-items:center;gap:7px;flex:none;
+  padding:9px 15px;border-radius:99px;border:1px solid var(--edge);
+  background:#ffffff08;color:var(--cream);
+  transition:border-color var(--t-fast),background var(--t-fast),transform var(--t-fast);
+}
+.sharebtn:active{transform:scale(.95)}
+.sharebtn svg{width:15px;height:15px}
+.sharebtn b{font-family:var(--f-data);font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.sharebtn.done{border-color:var(--cool);color:var(--cool)}
+.qcard.streaking{border-color:#FFC53D5c}
+
+/* ── Segmented filter ────────────────────────────────────────────────────── */
+.segrow{display:flex;gap:6px;padding:0 0 10px}
+.seg{
+  flex:1;padding:8px 4px;border-radius:99px;border:1px solid var(--edge);
+  background:#ffffff05;color:var(--haze);text-align:center;
+  font-family:var(--f-data);font-size:9.5px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;line-height:1.25;
+  transition:color var(--t-fast),border-color var(--t-fast),background var(--t-fast);
+}
+/* No opacity on the count: dimmed, the 12px bold digits came out at 4.16:1
+   against the panel, under the 4.5 small text needs. It inherits the chip's
+   own colour instead, which already passes in both states. */
+.seg u{display:block;text-decoration:none;font-size:12px;letter-spacing:0}
+.seg.on{color:var(--ink);background:var(--cream);border-color:var(--cream)}
+.seg:active{transform:scale(.97)}
 </style>
 
 <div class="cab">
@@ -1430,6 +1604,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
                  spellcheck="false" enterkeyhint="search">
           <button class="findx" id="modeFindX" type="button" hidden>&times;</button>
         </div>
+        <p class="note holdhint" data-i18n="modes.hold">Hold a card to read what a mode is before you start it.</p>
         <div class="catstrip" id="catStrip" data-i18n-aria="modes.filter"></div>
         <div id="modeSections"></div>
         <p class="note" data-i18n="modes.note">
@@ -1487,6 +1662,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <div class="stat"><b id="sStars">0</b><small data-i18n="stats.stars">Stars earned</small></div>
         </div>
         <div class="seclbl"><span data-i18n="stats.everyMode">Every mode</span></div>
+        <div class="segrow" id="sFilter" role="group" data-i18n-aria="stats.filter">
+          <button class="seg on" type="button" data-f="all"><span data-i18n="stats.fAll">All</span><u></u></button>
+          <button class="seg" type="button" data-f="played"><span data-i18n="stats.fPlayed">Played</span><u></u></button>
+          <button class="seg" type="button" data-f="new"><span data-i18n="stats.fNew">Not tried</span><u></u></button>
+        </div>
         <div id="sRows"></div>
       </div>
     </section>
@@ -1496,7 +1676,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
       <div class="scroll">
         <div class="seclbl"><span data-i18n="set.feedback">Feedback</span></div>
         <div class="setrow">
-          <span class="txt"><b data-i18n="set.sound">Sound</b><small data-i18n="set.soundSub">Taps, streak chimes and the run-over sting</small></span>
+          <span class="txt"><b data-i18n="set.sound">Sound</b><small data-i18n="set.soundSub">Taps and streak chimes — each family in its own key</small></span>
           <button class="sw" id="swSound" role="switch" aria-checked="true" aria-label="Sound"></button>
         </div>
         <div class="setrow">
@@ -1524,7 +1704,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.17.1</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.18.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1578,6 +1758,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <span class="big" id="overScore">0</span>
       </div>
       <span class="newbest" id="newBest" data-i18n="over.newBest" hidden>New personal best</span>
+      <div class="dailyrow" id="dailyRow" hidden>
+        <span class="dstreak"><i aria-hidden="true"></i><span id="dailyStreakTxt"></span></span>
+        <button class="sharebtn" id="shareBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+          <b data-i18n="btn.share">Share</b>
+        </button>
+      </div>
       <div class="ribbon" id="overRibbon" role="img"></div>
       <div class="xpstrip" id="xpStrip">
         <div class="row"><b id="xpGain">+0 XP</b><span class="sp"></span><small id="xpLevel">Level 1</small></div>
@@ -1626,21 +1813,42 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 </div>
 
 <div class="sheet" id="langSheet" hidden>
-  <div class="panel">
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="langTitle">
     <span class="grab"></span>
-    <h3 data-i18n="lang.title">Language</h3>
+    <h3 id="langTitle" data-i18n="lang.title">Language</h3>
     <p class="sub" data-i18n="lang.sub">The whole game, including the word puzzles.</p>
     <div class="body" id="langList"></div>
     <button class="ghost" id="langClose" type="button" data-i18n="btn.close">Close</button>
   </div>
 </div>
 
-<div class="sheet" id="logSheet" hidden>
-  <div class="panel">
+<div class="sheet" id="modeSheet" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="mpvName">
     <span class="grab"></span>
-    <h3 data-i18n="log.title">What’s new</h3>
+    <div class="mpvtop">
+      <span class="g" id="mpvGlyph" aria-hidden="true"></span>
+      <span class="txt"><b id="mpvName"></b><span class="mpvfam" id="mpvFam"><i></i><span></span></span></span>
+    </div>
+    <p class="mpvblurb" id="mpvBlurb"></p>
+    <div class="mpvgrid">
+      <div class="mpvcell"><b id="mpvBest">—</b><small data-i18n="mpv.best">Your best</small></div>
+      <div class="mpvcell"><span class="stars" id="mpvStars"><i></i><i></i><i></i></span><small data-i18n="mpv.mastery">Mastery</small></div>
+    </div>
+    <p class="mpvnext" id="mpvNext"></p>
+    <button class="cta" id="mpvPlay" type="button">
+      <span class="lbl"><b data-i18n="mpv.play">Play</b><small data-i18n="marathon.sub">One mode, three lives</small></span>
+      <span aria-hidden="true" style="font-size:22px">&rarr;</span>
+    </button>
+    <button class="ghost" id="mpvClose" type="button" data-i18n="btn.close">Close</button>
+  </div>
+</div>
+
+<div class="sheet" id="logSheet" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="logTitle">
+    <span class="grab"></span>
+    <h3 id="logTitle" data-i18n="log.title">What’s new</h3>
     <p class="sub" data-i18n="log.sub">Newest first.</p>
-    <div class="body" id="logList"></div>
+    <div class="body" id="logList" tabindex="0" role="region" data-i18n-aria="log.title"></div>
     <button class="ghost" id="logClose" type="button" data-i18n="btn.close">Close</button>
   </div>
 </div>
@@ -1678,13 +1886,25 @@ function mulberry32(a){
   };
 }
 function hashStr(s){ let h = 2166136261; for (let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
-function todayKey(){
+function dayKey(offset){
   const d = new Date();
+  if (offset) d.setDate(d.getDate() + offset);
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
+function todayKey(){ return dayKey(0); }
+
+/* A streak that has lapsed reads as zero the moment it lapses, rather than
+   staying on screen until the next Daily is played. A number you have already
+   lost is worse than no number. */
+function dailyStreak(){
+  const last = save.dailyLast;
+  if (!last) return 0;
+  return (last === todayKey() || last === dayKey(-1)) ? (save.dailyStreak || 0) : 0;
+}
+const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.17.1 (48)';
+const VERSION = 'v0.18.0 (52)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1694,12 +1914,13 @@ const VERSION = 'v0.17.1 (48)';
        would tell the next migration to redo steps already applied.        */
 const KEY = 'dd.v1';
 const QUARANTINE = 'dd.v1.unreadable';
-const SCHEMA = 5;
+const SCHEMA = 6;
 const defaults = {
   pbBlitz:0, pbStreak:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false,
   lang:null, seenVersion:null,
-  lifetime:0, perks:[], perkLv:{}, tokens:0
+  lifetime:0, perks:[], perkLv:{}, tokens:0,
+  dailyStreak:0, dailyLast:null, dailyBestStreak:0
 };
 
 function migrate(data){
@@ -1748,6 +1969,17 @@ function migrate(data){
     if (!data.perkLv || typeof data.perkLv !== 'object') data.perkLv = {};
     if (typeof data.tokens !== 'number') data.tokens = 0;
     from = 5;
+  }
+  if (from < 6){
+    /* Schema 6 counts Daily Drop days in a row. There is no honest way to
+       reconstruct a streak from the scores that were kept — they record which
+       days were PLAYED WELL, not which were played — so the count starts at
+       whatever today proves, and yesterday's evidence is used where it exists
+       rather than inventing a longer run than the save can support. */
+    if (typeof data.dailyStreak !== 'number') data.dailyStreak = 0;
+    if (typeof data.dailyBestStreak !== 'number') data.dailyBestStreak = 0;
+    if (data.dailyLast === undefined) data.dailyLast = null;
+    from = 6;
   }
   if (from <= SCHEMA) data.schema = SCHEMA;
   return data;
@@ -1814,13 +2046,32 @@ function tone(freq, dur, type, gain){
     o.start(); o.stop(actx.currentTime + (dur || 0.09) + 0.02);
   } catch(e){}
 }
+/* Every family plays in its own key. The sound design was one chirp for a tap
+   and one for a solve, identical in all forty-eight modes, which made an hour
+   of Shuffle sound like one very long mode. The offsets are all notes of C
+   major so a run that rotates through six families still agrees with itself,
+   and the shift only moves what the player causes — a miss and the run-over
+   sting stay where they are, because those should never sound pleasant or
+   negotiable. */
+const CAT_TONE = {
+  focus: 0, numbers: 2, logic: 4, rhythm: 5, reflex: 7, words: 9, make: 12,
+  physics: -3, memory: -5, calm: -12
+};
+let toneShift = 1;
+function setFamilyTone(modeId){
+  const semi = CAT_TONE[catOf(modeId)];
+  toneShift = Math.pow(2, (typeof semi === 'number' ? semi : 0) / 12);
+}
+
 const sfx = {
-  tap:  () => tone(520, 0.045, 'square', 0.028),
-  good: n => { tone(600 + Math.min(n,10)*42, 0.085, 'triangle', 0.05); setTimeout(()=>tone(900 + Math.min(n,10)*52, 0.075, 'triangle', 0.035), 55); },
+  tap:  () => tone(520 * toneShift, 0.045, 'square', 0.028),
+  good: n => { const s = toneShift;
+    tone((600 + Math.min(n,10)*42) * s, 0.085, 'triangle', 0.05);
+    setTimeout(()=>tone((900 + Math.min(n,10)*52) * s, 0.075, 'triangle', 0.035), 55); },
   bad:  () => tone(150, 0.2, 'sawtooth', 0.05),
   over: () => { [420,340,260].forEach((f,i)=>setTimeout(()=>tone(f,0.2,'triangle',0.045), i*130)); },
   level:() => { [520,660,880].forEach((f,i)=>setTimeout(()=>tone(f,0.26,'triangle',0.05), i*110)); },
-  go:   () => tone(760, 0.14, 'triangle', 0.05)
+  go:   () => tone(760 * toneShift, 0.14, 'triangle', 0.05)
 };
 function buzz(ms){
   if (!save.haptics) return;
@@ -1926,7 +2177,7 @@ const STRINGS = {
     'stats.bestShuffle':'Best shuffle', 'stats.bestStreak':'Best streak', 'stats.runs':'Runs played',
     'stats.solved':'Puzzles solved', 'stats.mastered':'Modes mastered', 'stats.stars':'Stars earned',
     'stats.everyMode':'Every mode',
-    'set.feedback':'Feedback', 'set.sound':'Sound', 'set.soundSub':'Taps, streak chimes and the run-over sting',
+    'set.feedback':'Feedback', 'set.sound':'Sound', 'set.soundSub':'Taps and streak chimes — each family in its own key',
     'set.vib':'Vibration', 'set.vibSub':'A short pulse on every answer',
     'set.motion':'Reduce motion', 'set.motionSub':'No particles, no screen shake',
     'set.access':'Accessibility', 'set.assist':'Colour assist',
@@ -1983,6 +2234,10 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'modes.hold':'Hold a card to read what a mode is before you start it.', 'mpv.best':'Your best', 'mpv.mastery':'Mastery', 'mpv.play':'Play', 'mpv.mastered':'Mastered — all three stars', 'mpv.toNext':'{n} more points for the next star',
+    'daily.streak':'{n}-day streak', 'daily.streak1':'Streak started today', 'daily.share':'Dopamine Drop — Daily Drop {d}: {n} points, day {s} of my streak.', 'btn.share':'Share', 'daily.copied':'Copied',
+    'stats.filter':'Filter the mode list', 'stats.fAll':'All', 'stats.fPlayed':'Played', 'stats.fNew':'Not tried', 'stats.allPlayed':'You have played every mode at least once.', 'stats.noneYet':'Nothing here yet — play a Marathon and a score appears.',
+    'p.bbListen':'Listen — two bars, then the gaps are yours', 'p.bbPlay':'Tap between the beats — {n} to go', 'bb.pad':'Tap between the beats', 'm.backbeat':'Backbeat|Tap between the beats, never on one', 'p.chorus':'One of these is not holding its tempo', 'chorus.lane':'Row {n}', 'm.chorus':'Chorus|Steady tempos, and one that is not staying steady', 'p.bridge':'{n} planks laid — reach the far bank', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Open water, column {x} row {y}, tap to lay a plank', 'bridge.plank':'A plank, column {x} row {y}, tap to lift it', 'm.bridge':'Bridge|Lay planks bank to bank — you have only so many', 'p.weave':'{n} squares still wrong', 'weave.want':'The pattern to match', 'weave.over':'Over, column {x} row {y}', 'weave.under':'Under, column {x} row {y}', 'm.weave':'Weave|Each tap pulls a whole row and column — match the cloth',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -2043,7 +2298,7 @@ const STRINGS = {
     'stats.bestStreak':'Meilleure série', 'stats.runs':'Parties jouées',
     'stats.solved':'Casse-tête résolus', 'stats.mastered':'Modes maîtrisés', 'stats.stars':'Étoiles gagnées',
     'stats.everyMode':'Chaque mode',
-    'set.feedback':'Retours', 'set.sound':'Son', 'set.soundSub':'Touches, séries et fin de partie',
+    'set.feedback':'Retours', 'set.sound':'Son', 'set.soundSub':'Touches et séries — chaque famille dans sa tonalité',
     'set.vib':'Vibration', 'set.vibSub':'Une brève impulsion à chaque réponse',
     'set.motion':'Réduire les animations', 'set.motionSub':'Ni particules, ni secousses',
     'set.access':'Accessibilité', 'set.assist':'Aide aux couleurs',
@@ -2100,6 +2355,10 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'modes.hold':'Maintenez une carte pour lire ce qu’est un mode avant de le lancer.', 'mpv.best':'Votre record', 'mpv.mastery':'Maîtrise', 'mpv.play':'Jouer', 'mpv.mastered':'Maîtrisé — les trois étoiles', 'mpv.toNext':'Encore {n} points pour la prochaine étoile',
+    'daily.streak':'Série de {n} jours', 'daily.streak1':'Série commencée aujourd’hui', 'daily.share':'Dopamine Drop — Tirage du jour {d} : {n} points, {s}ᵉ jour de ma série.', 'btn.share':'Partager', 'daily.copied':'Copié',
+    'stats.filter':'Filtrer la liste des modes', 'stats.fAll':'Tout', 'stats.fPlayed':'Joués', 'stats.fNew':'Jamais essayés', 'stats.allPlayed':'Vous avez joué à tous les modes au moins une fois.', 'stats.noneYet':'Rien ici — jouez un Marathon et un score apparaîtra.',
+    'p.bbListen':'Écoutez — deux mesures, puis les silences sont à vous', 'p.bbPlay':'Touchez entre les temps — encore {n}', 'bb.pad':'Touchez entre les temps', 'm.backbeat':'Contretemps|Touchez entre les temps, jamais sur un temps', 'p.chorus':'L’une d’elles ne tient pas son tempo', 'chorus.lane':'Ligne {n}', 'm.chorus':'Chœur|Des tempos réguliers, et un qui ne l’est pas', 'p.bridge':'{n} planches posées — atteignez l’autre rive', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Eau libre, colonne {x} ligne {y}, touchez pour poser une planche', 'bridge.plank':'Une planche, colonne {x} ligne {y}, touchez pour la retirer', 'm.bridge':'Pont|Posez des planches d’une rive à l’autre — elles sont comptées', 'p.weave':'Encore {n} cases fausses', 'weave.want':'Le motif à reproduire', 'weave.over':'Dessus, colonne {x} ligne {y}', 'weave.under':'Dessous, colonne {x} ligne {y}', 'm.weave':'Tissage|Chaque touche tire toute une ligne et une colonne — reproduisez le tissu',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -2160,7 +2419,7 @@ const STRINGS = {
     'stats.bestStreak':'Mejor racha', 'stats.runs':'Partidas jugadas',
     'stats.solved':'Retos resueltos', 'stats.mastered':'Modos dominados', 'stats.stars':'Estrellas ganadas',
     'stats.everyMode':'Cada modo',
-    'set.feedback':'Respuesta', 'set.sound':'Sonido', 'set.soundSub':'Toques, rachas y final de partida',
+    'set.feedback':'Respuesta', 'set.sound':'Sonido', 'set.soundSub':'Toques y rachas — cada familia en su tono',
     'set.vib':'Vibración', 'set.vibSub':'Un pulso breve en cada respuesta',
     'set.motion':'Reducir movimiento', 'set.motionSub':'Sin partículas ni sacudidas',
     'set.access':'Accesibilidad', 'set.assist':'Ayuda de color',
@@ -2217,6 +2476,10 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'modes.hold':'Mantén pulsada una tarjeta para leer qué es un modo antes de empezar.', 'mpv.best':'Tu récord', 'mpv.mastery':'Dominio', 'mpv.play':'Jugar', 'mpv.mastered':'Dominado — las tres estrellas', 'mpv.toNext':'{n} puntos más para la siguiente estrella',
+    'daily.streak':'Racha de {n} días', 'daily.streak1':'Racha empezada hoy', 'daily.share':'Dopamine Drop — Reto diario {d}: {n} puntos, día {s} de mi racha.', 'btn.share':'Compartir', 'daily.copied':'Copiado',
+    'stats.filter':'Filtrar la lista de modos', 'stats.fAll':'Todos', 'stats.fPlayed':'Jugados', 'stats.fNew':'Sin probar', 'stats.allPlayed':'Has jugado todos los modos al menos una vez.', 'stats.noneYet':'Aquí no hay nada — juega un Maratón y aparecerá una puntuación.',
+    'p.bbListen':'Escucha — dos compases y los huecos son tuyos', 'p.bbPlay':'Toca entre los golpes — quedan {n}', 'bb.pad':'Toca entre los golpes', 'm.backbeat':'Contratiempo|Toca entre los golpes, nunca sobre uno', 'p.chorus':'Una de ellas no mantiene su tempo', 'chorus.lane':'Fila {n}', 'm.chorus':'Coro|Tempos estables, y uno que no lo es', 'p.bridge':'{n} tablones puestos — llega a la otra orilla', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Agua abierta, columna {x} fila {y}, toca para poner un tablón', 'bridge.plank':'Un tablón, columna {x} fila {y}, toca para quitarlo', 'm.bridge':'Puente|Pon tablones de orilla a orilla — están contados', 'p.weave':'Quedan {n} casillas mal', 'weave.want':'El patrón que hay que igualar', 'weave.over':'Encima, columna {x} fila {y}', 'weave.under':'Debajo, columna {x} fila {y}', 'm.weave':'Telar|Cada toque tira de toda una fila y columna — iguala la tela',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -2277,7 +2540,7 @@ const STRINGS = {
     'stats.bestStreak':'Beste Serie', 'stats.runs':'Runden gespielt',
     'stats.solved':'Rätsel gelöst', 'stats.mastered':'Modi gemeistert', 'stats.stars':'Sterne verdient',
     'stats.everyMode':'Jeder Modus',
-    'set.feedback':'Rückmeldung', 'set.sound':'Ton', 'set.soundSub':'Tippen, Serien und Rundenende',
+    'set.feedback':'Rückmeldung', 'set.sound':'Ton', 'set.soundSub':'Tippen und Serien — jede Familie in eigener Tonart',
     'set.vib':'Vibration', 'set.vibSub':'Ein kurzer Impuls bei jeder Antwort',
     'set.motion':'Bewegung reduzieren', 'set.motionSub':'Keine Partikel, kein Wackeln',
     'set.access':'Barrierefreiheit', 'set.assist':'Farbhilfe',
@@ -2334,6 +2597,10 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'modes.hold':'Halte eine Karte gedrückt, um vor dem Start zu lesen, was ein Modus ist.', 'mpv.best':'Dein Bestwert', 'mpv.mastery':'Meisterschaft', 'mpv.play':'Spielen', 'mpv.mastered':'Gemeistert — alle drei Sterne', 'mpv.toNext':'Noch {n} Punkte bis zum nächsten Stern',
+    'daily.streak':'{n} Tage in Folge', 'daily.streak1':'Serie heute begonnen', 'daily.share':'Dopamine Drop — Tagesrunde {d}: {n} Punkte, Tag {s} meiner Serie.', 'btn.share':'Teilen', 'daily.copied':'Kopiert',
+    'stats.filter':'Modusliste filtern', 'stats.fAll':'Alle', 'stats.fPlayed':'Gespielt', 'stats.fNew':'Ungespielt', 'stats.allPlayed':'Du hast jeden Modus mindestens einmal gespielt.', 'stats.noneYet':'Hier ist noch nichts — spiel einen Marathon und ein Wert erscheint.',
+    'p.bbListen':'Hör zu — zwei Takte, dann gehören dir die Lücken', 'p.bbPlay':'Zwischen die Schläge tippen — noch {n}', 'bb.pad':'Zwischen die Schläge tippen', 'm.backbeat':'Nachschlag|Tippe zwischen die Schläge, nie auf einen', 'p.chorus':'Eine davon hält ihr Tempo nicht', 'chorus.lane':'Zeile {n}', 'm.chorus':'Chor|Gleichmäßige Tempi, und eines, das keines hält', 'p.bridge':'{n} Planken gelegt — erreiche das andere Ufer', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Offenes Wasser, Spalte {x} Zeile {y}, tippen zum Planken legen', 'bridge.plank':'Eine Planke, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Brücke|Lege Planken von Ufer zu Ufer — sie sind gezählt', 'p.weave':'Noch {n} Felder falsch', 'weave.want':'Das Muster, das passen muss', 'weave.over':'Oben, Spalte {x} Zeile {y}', 'weave.under':'Unten, Spalte {x} Zeile {y}', 'm.weave':'Weben|Jeder Tipp zieht eine ganze Zeile und Spalte — triff das Tuch',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -2477,6 +2744,14 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.18.0', date:'2026-09-16', items:[
+    'Four new modes. Rhythm had two and Make had one; they have four and three now. Backbeat asks for the gaps between the beats rather than the beats. Chorus plays several steady tempos and one that is quietly speeding up. Bridge hands you a counted pile of planks and two banks. Weave gives you a pattern and threads that pull a whole row and column at once.',
+    'Hold a mode card to read what it is before you commit to it — the family, the rule, your best, and how far off the next star is.',
+    'Daily Drop counts days in a row now, and a finished Daily can be shared: the day, the score and the streak, nothing else.',
+    'The mode list in Stats can be filtered to the ones you have never tried, which is the question forty-eight of them makes worth asking.',
+    'Every family plays in its own key. A miss still sounds like a miss everywhere.',
+    'Fixed — the language, changelog and preview sheets were invisible to a screen reader as dialogs, and the release notes could not be scrolled from the keyboard.',
+  ] },
   { v:'0.17.1', date:'2026-09-16', items:[
     'Fixed — Reset progress left your perks and lifetime points untouched, so a reset account kept every perk slot at level one.',
     'Fixed — tapping the close button while already paused ended the run outright, which is the one thing pausing exists to prevent.',
@@ -2947,6 +3222,33 @@ function onTap(node, fn){
   };
   node.addEventListener('pointerdown', hit);
   node.addEventListener('click', hit);
+}
+
+/* A press that is held rather than tapped. A normal tap is untouched: the hold
+   only counts once a finger has stayed within a thumb's width for long enough,
+   and when it does fire it eats the click that would otherwise follow, so a
+   card cannot both open its preview and start a run. Right-click / the context
+   gesture opens it too, which is what a desktop or a switch device offers. */
+function onHold(node, fn){
+  let timer = 0, sx = 0, sy = 0, held = false;
+  const stop = () => { if (timer) clearTimeout(timer); timer = 0; };
+  node.addEventListener('pointerdown', ev => {
+    if (ev.button) return;
+    held = false; sx = ev.clientX; sy = ev.clientY;
+    stop();
+    timer = setTimeout(() => { timer = 0; held = true; buzz(14); fn(); }, 460);
+  });
+  node.addEventListener('pointermove', ev => {
+    if (timer && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 12) stop();
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(k => node.addEventListener(k, stop));
+  /* Capture alone is not enough here: at the target, listeners run in the order
+     they were registered, so the card's own onclick would still fire. */
+  node.addEventListener('click', ev => {
+    if (!held) return;
+    held = false; ev.preventDefault(); ev.stopImmediatePropagation();
+  }, true);
+  node.addEventListener('contextmenu', ev => { ev.preventDefault(); if (!held) fn(); });
 }
 
 /* Three modes are "fiddle with it until it is right": no tap is ever wrong,
@@ -7161,6 +7463,350 @@ const MODES = {
       raf2 = requestAnimationFrame(frame);
     }
   },
+
+  /* ── Backbeat ─────────────────────────────────────────────────────────── */
+  backbeat: {
+    name:'Backbeat', blurb:'Tap between the beats, never on one', cat:'rhythm', par:11000, bonus:3400,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h3M11 12h2M18 12h3" stroke="#FF8AD8" stroke-width="1.8" stroke-linecap="round"/><circle cx="8.5" cy="12" r="2.5" fill="#FF8AD8"/><circle cx="15.5" cy="12" r="2.5" fill="#FF8AD8"/><path d="M12 4.5v3M12 16.5v3" stroke="#FF8AD8" stroke-width="1.8" stroke-linecap="round" opacity=".5"/></svg>',
+    build(ctx){
+      /* Metronome asks for the beats. This asks for what is between them, which
+         is a different thing to feel: the pulse is handed to you and the answer
+         is the silence. Two free bars first, because nobody can find an
+         off-beat in a tempo they have not heard yet. */
+      const need = 3 + Math.min(3, Math.floor(ctx.level/8));
+      const iv   = clamp(920 - ctx.level*13, 560, 920);
+      /* A quarter of the gap either side of the middle, floored so that even at
+         the fastest tempo the window is a tap and not a coin toss. */
+      const tol  = clamp(iv*0.26, 108, 210);
+      const LEAD = 2;
+      const gapAt = k => (LEAD + k)*iv + iv/2;
+
+      const wrap = mk('div','bbwrap');
+      const ring = mk('i','bbring');
+      wrap.appendChild(ring);
+      const pips = mk('div','bbpips'), pipEls = [];
+      for (let i=0;i<need;i++){ const e = mk('i','bbpip'); pips.appendChild(e); pipEls.push(e); }
+      wrap.appendChild(pips);
+      const pad = mk('button','bbpad');
+      pad.type = 'button';
+      pad.setAttribute('aria-label', t('bb.pad'));
+      pad.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"'
+        + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        + '<path d="M9 11V5.5a1.8 1.8 0 0 1 3.6 0V11"/>'
+        + '<path d="M12.6 11V9.2a1.7 1.7 0 0 1 3.4 0V11"/>'
+        + '<path d="M16 11v-1a1.7 1.7 0 0 1 3.4 0v5.4a5.4 5.4 0 0 1-5.4 5.4h-1.7a5 5 0 0 1-3.8-1.8L5 14.4a1.7 1.7 0 0 1 2.6-2.2L9 13.8"/>'
+        + '</svg>';
+      wrap.appendChild(pad);
+      ctx.surface.appendChild(wrap);
+
+      let done = false, raf2 = 0, hit = 0, lastPulse = -1;
+      const t0 = performance.now();
+      const say = () => ctx.prompt(performance.now() - t0 < LEAD*iv
+        ? t('p.bbListen') : t('p.bbPlay', { n: need - hit }));
+      say();
+      const stop = () => { done = true; cancelAnimationFrame(raf2); };
+
+      const frame = () => {
+        if (done) return;
+        const ms = performance.now() - t0;
+        const pi = Math.floor(ms / iv);
+        if (pi !== lastPulse){
+          lastPulse = pi;
+          ring.classList.add('beat');
+          ctx.after(110, () => ring.classList.remove('beat'));
+          tone(440, 0.05, 'square', 0.035);
+          if (pi === LEAD) say();
+        }
+        /* A gap that goes by untapped is the miss. Without it the round could be
+           sat out forever, which is the hole every timing mode starts with. */
+        if (hit < need && ms > gapAt(hit) + tol){
+          stop(); wrap.classList.add('bad'); return ctx.miss(pad);
+        }
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
+
+      onTap(pad, () => {
+        if (done) return;
+        const ms = performance.now() - t0;
+        if (ms < LEAD*iv - tol) return;     /* still listening — no penalty yet */
+        pad.classList.add('tapped');
+        ctx.after(90, () => pad.classList.remove('tapped'));
+        if (Math.abs(ms - gapAt(hit)) <= tol){
+          pipEls[hit].classList.add('on');
+          hit++;
+          tone(880, 0.07, 'triangle', 0.045);
+          if (hit >= need){ stop(); wrap.classList.add('good'); return ctx.win(pad); }
+          say();
+        } else {
+          stop(); wrap.classList.add('bad'); return ctx.miss(pad);
+        }
+      });
+    }
+  },
+
+  /* ── Chorus ───────────────────────────────────────────────────────────── */
+  chorus: {
+    name:'Chorus', blurb:'Steady tempos, and one that is not staying steady', cat:'rhythm', par:9500, bonus:3100,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="4.5" cy="5" r="1.8" fill="#FF8AD8" opacity=".55"/><circle cx="12" cy="5" r="1.8" fill="#FF8AD8" opacity=".55"/><circle cx="19.5" cy="5" r="1.8" fill="#FF8AD8" opacity=".55"/><circle cx="4.5" cy="12" r="1.8" fill="#FF8AD8" opacity=".55"/><circle cx="14" cy="12" r="1.8" fill="#FF8AD8" opacity=".55"/><circle cx="20" cy="12" r="1.8" fill="#FF8AD8" opacity=".55"/><circle cx="4.5" cy="19" r="2.4" fill="#FF8AD8"/><circle cx="10" cy="19" r="2.4" fill="#FF8AD8"/><circle cx="16.5" cy="19" r="2.4" fill="#FF8AD8"/></svg>',
+    build(ctx){
+      /* Off Beat is a question about phase inside one bar. This is a question
+         about tempo across many of them: nothing here is out of place at any
+         single instant, and the only way to answer is to keep listening. */
+      const lanes = ctx.level >= 14 ? 4 : 3;
+      /* How far the odd lane's interval has travelled by the deadline. Below
+         about a seventh nobody can hear it, so that is the floor. */
+      const drift = clamp(0.40 - ctx.level*0.008, 0.15, 0.40);
+      const LIMIT = 11000;
+      /* Steady intervals spread wide enough that two lanes are never confused
+         for each other, so the only lane doing anything odd is the one moving. */
+      const base = shuffle([640, 760, 880, 1000], ctx.rnd).slice(0, lanes);
+      const odd  = Math.floor(ctx.rnd()*lanes);
+      const up   = ctx.rnd() < 0.5;
+
+      const wrap = mk('div','chwrap');
+      const rows = [], dots = [];
+      for (let i=0;i<lanes;i++){
+        const r = mk('button','chrow');
+        r.type = 'button';
+        r.setAttribute('aria-label', t('chorus.lane', { n: i+1 }));
+        const d = mk('i','chdot');
+        r.appendChild(d);
+        wrap.appendChild(r); rows.push(r); dots.push(d);
+      }
+      ctx.surface.appendChild(wrap);
+      ctx.prompt(t('p.chorus'));
+
+      let done = false, raf2 = 0;
+      const t0 = performance.now();
+      const next = base.slice();
+      const ivAt = (i, ms) => i !== odd ? base[i]
+        : base[i] * (1 + (up ? -drift : drift) * Math.min(1, ms/LIMIT));
+
+      const frame = () => {
+        if (done) return;
+        const ms = performance.now() - t0;
+        for (let i=0;i<lanes;i++){
+          if (ms < next[i]) continue;
+          /* A stalled frame must not leave a lane owing several beats and fire
+             them back to back — catch the schedule up, flash once. */
+          let guard = 0;
+          do { next[i] += ivAt(i, ms); } while (ms >= next[i] && ++guard < 8);
+          const d = dots[i];
+          d.classList.add('beat');
+          ctx.after(120, () => d.classList.remove('beat'));
+          tone(300 + i*120, 0.05, 'triangle', 0.028);
+        }
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
+
+      const finish = (i, node) => {
+        if (done) return;
+        done = true; cancelAnimationFrame(raf2);
+        rows[odd].classList.add('is');
+        if (i === odd) return ctx.win(node);
+        if (rows[i]) rows[i].classList.add('no');
+        return ctx.miss(node);
+      };
+      rows.forEach((r,i) => onTap(r, () => finish(i, r)));
+      /* Listening forever is not an answer — and the deadline passes -1, which
+         is nobody's lane, so it must not try to mark the row that was picked. */
+      ctx.after(LIMIT + 1400, () => finish(-1, rows[odd]));
+    }
+  },
+
+  /* ── Bridge ───────────────────────────────────────────────────────────── */
+  bridge: {
+    name:'Bridge', blurb:'Lay planks bank to bank — you have only so many', cat:'make', par:14000, bonus:4000,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 15h4M18 15h4" stroke="#C08BFF" stroke-width="2" stroke-linecap="round"/><rect x="7" y="13" width="4" height="4" rx="1" fill="#C08BFF"/><rect x="13" y="13" width="4" height="4" rx="1" fill="#C08BFF" opacity=".45"/><path d="M4 15v5M20 15v5" stroke="#C08BFF" stroke-width="1.6" stroke-linecap="round" opacity=".5"/><path d="M6 9h12" stroke="#C08BFF" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2.5 2.5" opacity=".6"/></svg>',
+    build(ctx){
+      const g = 5;
+      /* The crossing is WALKED before it is drawn, so one always exists and the
+         plank allowance handed out is the count of a route that genuinely
+         works — never a number guessed at a board nobody solved. */
+      const sy = Math.floor(ctx.rnd()*g);
+      let y = sy;
+      const path = [[0, y]];
+      for (let x = 1; x < g; x++){
+        path.push([x, y]);
+        const ny = clamp(y + (Math.floor(ctx.rnd()*3) - 1), 0, g-1);
+        const step = ny > y ? 1 : -1;
+        while (y !== ny){ y += step; path.push([x, y]); }
+      }
+      const kk = (x,yy) => yy*g + x;
+      const onPath = new Set(path.map(c => kk(c[0], c[1])));
+      const start = kk(0, sy), end = kk(g-1, y);
+
+      const free = [];
+      for (let i = 0; i < g*g; i++) if (!onPath.has(i)) free.push(i);
+      const rocks = new Set(shuffle(free, ctx.rnd)
+        .slice(0, Math.min(free.length, 3 + Math.min(5, Math.floor(ctx.level/5)))));
+
+      const need = path.length - 2;         /* the banks are already there */
+
+      const wrap = mk('div','brwrap');
+      const grid = mk('div','brgrid');
+      grid.style.gridTemplateColumns = 'repeat(' + g + ',1fr)';
+      const cells = [];
+      for (let i = 0; i < g*g; i++){
+        const c = mk('i','brcell');
+        const x = i % g, yy = Math.floor(i / g);
+        if (i === start || i === end){
+          c.classList.add('bank');
+          /* A bank and deep water are scenery, not controls. An aria-label on a
+             bare <i> is a prohibited attribute — the role has to say what the
+             label is describing before the label means anything. */
+          c.setAttribute('role','img');
+          c.setAttribute('aria-label', t('bridge.bank', { x: x+1, y: yy+1 }));
+        } else if (rocks.has(i)){
+          c.classList.add('rock');
+          c.setAttribute('role','img');
+          c.setAttribute('aria-label', t('bridge.rock', { x: x+1, y: yy+1 }));
+        } else {
+          c.setAttribute('role','button');
+          c.setAttribute('aria-label', t('bridge.open', { x: x+1, y: yy+1 }));
+        }
+        grid.appendChild(c); cells.push(c);
+      }
+      wrap.appendChild(grid);
+      ctx.surface.appendChild(wrap);
+
+      const budget = moveBudget(ctx, need);
+      const planks = new Set();
+      let done = false;
+
+      const solid = i => i === start || i === end || planks.has(i);
+      const crossed = () => {
+        const seen = new Set([start]), queue = [start];
+        while (queue.length){
+          const at = queue.pop();
+          if (at === end) return true;
+          const x = at % g, yy = Math.floor(at / g);
+          [[1,0],[-1,0],[0,1],[0,-1]].forEach(d => {
+            const nx = x + d[0], ny = yy + d[1];
+            if (nx < 0 || ny < 0 || nx >= g || ny >= g) return;
+            const n = kk(nx, ny);
+            if (seen.has(n) || !solid(n)) return;
+            seen.add(n); queue.push(n);
+          });
+        }
+        return false;
+      };
+      const say = () => ctx.prompt(t('p.bridge', { n: planks.size }));
+      say();
+
+      cells.forEach((c, i) => {
+        if (i === start || i === end || rocks.has(i)) return;
+        onTap(c, () => {
+          if (done) return;
+          if (planks.has(i)) planks.delete(i); else planks.add(i);
+          c.classList.toggle('plank', planks.has(i));
+          c.setAttribute('aria-label',
+            t(planks.has(i) ? 'bridge.plank' : 'bridge.open',
+              { x: (i % g) + 1, y: Math.floor(i / g) + 1 }));
+          /* The win is read before the plank is charged for, so a crossing
+             finished on the very last plank is a crossing, not a bankruptcy. */
+          if (crossed()){
+            done = true;
+            grid.classList.add('good');
+            return ctx.win(c);
+          }
+          budget.spend(c);
+          say();
+        });
+      });
+    }
+  },
+
+  /* ── Weave ────────────────────────────────────────────────────────────── */
+  weave: {
+    name:'Weave', blurb:'Each tap pulls a whole row and column — match the cloth', cat:'make', par:15000, bonus:4200,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.4" fill="#C08BFF"/><rect x="14" y="3" width="7" height="7" rx="1.4" fill="none" stroke="#C08BFF" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.4" fill="none" stroke="#C08BFF" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.4" fill="#C08BFF"/></svg>',
+    build(ctx){
+      const g = 4, N = g*g;
+      /* Pulling a thread moves everything it passes through: the row and the
+         column, the tapped square counted once. Two pulls of the same square
+         cancel, so a board is a SET of pulls rather than a sequence — which is
+         what makes the allowance below honest. */
+      const pull = (arr, x, yy) => {
+        for (let i = 0; i < g; i++) arr[yy*g + i] = !arr[yy*g + i];
+        for (let j = 0; j < g; j++) if (j !== yy) arr[j*g + x] = !arr[j*g + x];
+      };
+      const want = 2 + Math.min(3, Math.floor(ctx.level/7));
+
+      const target = Array.from({ length: N }, () => ctx.rnd() < 0.5);
+      let cur = target.slice(), least = 1;
+      for (let attempt = 0; attempt < 24; attempt++){
+        cur = target.slice();
+        const set = new Set();
+        for (let i = 0; i < want; i++){
+          let key, guard = 0;
+          do { key = Math.floor(ctx.rnd()*N); } while (set.has(key) && ++guard < 40);
+          if (set.has(key)) continue;
+          set.add(key);
+          pull(cur, key % g, Math.floor(key / g));
+        }
+        least = set.size;
+        /* Distinct pulls, so undoing exactly those pulls is a solution and the
+           board can never need more moves than it took to scramble. */
+        if (cur.some((v,i) => v !== target[i])) break;
+      }
+      if (!cur.some((v,i) => v !== target[i])){ pull(cur, 0, 0); least = 1; }
+
+      const wrap = mk('div','wvwrap');
+      const head = mk('div','wvhead');
+      const lbl = mk('div','wvlbl');
+      lbl.textContent = t('weave.want');
+      head.appendChild(lbl);
+      const tgt = mk('div','wvtarget');
+      tgt.style.gridTemplateColumns = 'repeat(' + g + ',1fr)';
+      tgt.setAttribute('role','img');
+      tgt.setAttribute('aria-label', t('weave.want'));
+      for (let i = 0; i < N; i++){
+        const e = mk('i','wvt' + (target[i] ? ' on' : ''));
+        tgt.appendChild(e);
+      }
+      head.appendChild(tgt);
+      wrap.appendChild(head);
+      const grid = mk('div','wvgrid');
+      grid.style.gridTemplateColumns = 'repeat(' + g + ',1fr)';
+      const cells = [];
+      for (let i = 0; i < N; i++){
+        const c = mk('i','wvc');
+        c.setAttribute('role','button');
+        grid.appendChild(c); cells.push(c);
+      }
+      wrap.appendChild(grid);
+      ctx.surface.appendChild(wrap);
+
+      const budget = moveBudget(ctx, least);
+      let done = false;
+      const off = () => cur.reduce((n,v,i) => n + (v !== target[i] ? 1 : 0), 0);
+      const paint = () => {
+        cells.forEach((c,i) => {
+          c.classList.toggle('on', cur[i]);
+          c.classList.toggle('wrong', cur[i] !== target[i]);
+          c.setAttribute('aria-label', t(cur[i] ? 'weave.over' : 'weave.under',
+            { x: (i % g) + 1, y: Math.floor(i / g) + 1 }));
+        });
+        ctx.prompt(t('p.weave', { n: off() }));
+      };
+      paint();
+
+      cells.forEach((c,i) => onTap(c, () => {
+        if (done) return;
+        pull(cur, i % g, Math.floor(i / g));
+        paint();
+        if (!off()){
+          done = true;
+          grid.classList.add('good');
+          return ctx.win(c);
+        }
+        budget.spend(c);
+      }));
+    }
+  },
 };
 
 /* ═══ Phrase bank ═════════════════════════════════════════════════════════
@@ -7408,6 +8054,7 @@ function paintHudPerks(){
 function setFamily(modeId){
   const ink = CAT_INK[catOf(modeId)] || 'transparent';
   el.play.style.setProperty('--fam', ink);
+  setFamilyTone(modeId);
 }
 
 function renderHud(){
@@ -7771,6 +8418,7 @@ function endRun(){
      but still a live subtree with listeners on it for as long as the app was
      open. Nothing else clears it, because nextRound never runs again. */
   clearBoard();
+  toneShift = 1;                       /* the menu always sounds the same */
   sfx.over(); buzz([30,60,30,60,60]);
 
   let best = false;
@@ -7781,8 +8429,15 @@ function endRun(){
       if (r.score > prev){ save.marathon[r.mode] = r.score; best = true; }
     }
     if (r.kind === 'daily'){
-      const t = todayKey();
-      if (r.score > (save.daily[t] || 0)){ save.daily[t] = r.score; best = true; }
+      const today = todayKey();
+      if (r.score > (save.daily[today] || 0)){ save.daily[today] = r.score; best = true; }
+      /* One bump a day. A run after a missed day starts a new streak rather
+         than extending a dead one — that is the whole point of a streak. */
+      if (save.dailyLast !== today){
+        save.dailyStreak = (save.dailyLast === dayKey(-1)) ? (save.dailyStreak || 0) + 1 : 1;
+        save.dailyLast = today;
+        if (save.dailyStreak > (save.dailyBestStreak || 0)) save.dailyBestStreak = save.dailyStreak;
+      }
     }
   }
   if (r.bestStreak > save.pbStreak) save.pbStreak = r.bestStreak;
@@ -7846,6 +8501,10 @@ function endRun(){
     : t('over.another');
   el.over.dataset.kind = r.kind;
   el.over.dataset.mode = r.mode || '';
+  el.over.dataset.score = String(r.score);
+  const dRow = $('dailyRow'), dSt = dailyStreak();
+  dRow.hidden = r.kind !== 'daily';
+  if (!dRow.hidden) $('dailyStreakTxt').textContent = streakLine(dSt || 1);
   show('over');
 
   /* The celebration waits for the run to be over. Freezing the board mid-run
@@ -7872,6 +8531,9 @@ function modeCard(id, opts){
       '<b></b><small></small>' +
       '<span class="foot"><span class="stars"><i></i><i></i><i></i></span><span class="pb"></span></span>' +
       '<span class="pin" hidden>✓</span>';
+    /* Attached to the cached node, inside the build branch: the roster repaints
+       on every tab visit and a listener added per paint would stack up. */
+    onHold(card, () => openModePreview(id));
     cardCache.set(key, card);
   }
   card.querySelector('b').textContent = modeName(id);
@@ -7937,8 +8599,10 @@ function paintPlay(){
   $('mixMeta').textContent = chosen.length >= 2
     ? t('mix.nChosen', { n: chosen.length })
     : t('mix.tapToChoose');
-  const dv = save.daily[todayKey()];
-  $('dailyMeta').textContent = dv ? t('daily.best', { n: fmt(dv) }) : t('daily.sub');
+  const dv = save.daily[todayKey()], dSt = dailyStreak();
+  $('dailyMeta').textContent = dSt ? streakLine(dSt)
+    : dv ? t('daily.best', { n: fmt(dv) }) : t('daily.sub');
+  $('dailyBtn').classList.toggle('streaking', dSt > 1);
 
   /* Four suggestions, not sixteen. The full list is one tab away, and putting
      every mode on the landing screen is what made it feel heavy. */
@@ -8098,6 +8762,8 @@ function paintPerks(){
   $('pkGrid').setAttribute('aria-label', t('perk.tokensLeft', { n: free }));
 }
 
+let statFilter = 'all';
+
 function paintStats(){
   paintPerks();
   const lvl = playerLevel();
@@ -8113,8 +8779,28 @@ function paintStats(){
   $('sMastered').textContent = masteredCount() + '/' + MODE_IDS.length;
   $('sStars').textContent = totalStars() + '/' + (MODE_IDS.length*3);
 
+  /* "Every mode" was a leaderboard: the modes you have played, best first, and
+     the ones you have not buried under them. The thing it could not answer is
+     the one worth asking with forty-eight of them — what have I not tried? */
+  const counts = { all: MODE_IDS.length,
+                   played: MODE_IDS.filter(id => save.marathon[id]).length };
+  counts['new'] = counts.all - counts.played;
+  Array.from($('sFilter').children).forEach(b => {
+    const on = b.dataset.f === statFilter;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', String(on));
+    b.querySelector('u').textContent = counts[b.dataset.f];
+  });
+  const rows = MODE_IDS.filter(id => statFilter === 'all' ? true
+    : statFilter === 'played' ? !!save.marathon[id] : !save.marathon[id]);
+  /* Untouched modes have no score to rank by, so they read alphabetically —
+     a list to work through rather than a table of zeroes. */
+  rows.sort(statFilter === 'new'
+    ? (a,b) => modeName(a).localeCompare(modeName(b))
+    : (a,b) => (save.marathon[b]||0) - (save.marathon[a]||0));
+
   const frag = document.createDocumentFragment();
-  MODE_IDS.slice().sort((a,b) => (save.marathon[b]||0) - (save.marathon[a]||0)).forEach(id => {
+  rows.forEach(id => {
     const row = mk('div','srow');
     row.innerHTML = '<span class="g">' + MODES[id].glyph + '</span><b></b>'
       + '<span class="stars"><i></i><i></i><i></i></span><span class="v"></span>';
@@ -8124,6 +8810,11 @@ function paintStats(){
     row.querySelector('.v').textContent = save.marathon[id] ? fmt(save.marathon[id]) : '—';
     frag.appendChild(row);
   });
+  if (!rows.length){
+    const none = mk('p','note');
+    none.textContent = t(statFilter === 'new' ? 'stats.allPlayed' : 'stats.noneYet');
+    frag.appendChild(none);
+  }
   $('sRows').replaceChildren(frag);
 }
 
@@ -8284,6 +8975,50 @@ $('logSheet').addEventListener('click', ev => {
   if (ev.target === $('logSheet')){ $('logSheet').hidden = true; save.seenVersion = CHANGELOG[0].v; persist(); }
 });
 
+/* ── Mode preview ────────────────────────────────────────────────────────────
+   Forty-eight cards, each three words wide, is a list you can scroll but not
+   really read. Holding one opens the same mode with room to breathe, plus the
+   one thing the card cannot fit: how far off the next star is.              */
+let mpvId = null;
+function openModePreview(id){
+  if (!MODES[id] || run) return;
+  mpvId = id;
+  const cat = catOf(id);
+  $('mpvGlyph').innerHTML = MODES[id].glyph;
+  $('mpvName').textContent = modeName(id);
+  const fam = $('mpvFam');
+  fam.style.setProperty('--mpv', CAT_INK[cat] || 'var(--flare)');
+  fam.querySelector('span').textContent = t('cat.' + cat);
+  $('mpvBlurb').textContent = modeBlurb(id);
+  const best = save.marathon[id] || 0;
+  $('mpvBest').textContent = best ? fmt(best) : '—';
+  const stars = starsFor(id);
+  Array.from($('mpvStars').children).forEach((s,i) => s.classList.toggle('on', i < stars));
+  $('mpvNext').textContent = stars >= 3
+    ? t('mpv.mastered')
+    : t('mpv.toNext', { n: fmt(STAR_AT[stars] - best) });
+  $('modeSheet').hidden = false;
+  sfx.tap();
+  $('mpvPlay').focus();
+}
+function closeModePreview(){ $('modeSheet').hidden = true; mpvId = null; }
+$('mpvClose').addEventListener('click', closeModePreview);
+$('mpvPlay').addEventListener('click', () => {
+  const id = mpvId; closeModePreview();
+  if (id) startRun('marathon', id);
+});
+$('modeSheet').addEventListener('click', ev => {
+  if (ev.target === $('modeSheet')) closeModePreview();
+});
+/* Escape closes whichever sheet is up, and closes it the way its own button
+   would — the changelog still counts as read. */
+document.addEventListener('keydown', ev => {
+  if (ev.key !== 'Escape') return;
+  if (!$('modeSheet').hidden) return closeModePreview();
+  if (!$('logSheet').hidden) return $('logClose').click();
+  if (!$('langSheet').hidden) return $('langClose').click();
+});
+
 /* ═══ Wiring ══════════════════════════════════════════════════════════════ */
 Array.from(el.tabbar.children).forEach(b =>
   b.addEventListener('click', () => { sfx.tap(); goTab(b.dataset.tab); }));
@@ -8309,6 +9044,40 @@ $('mixAll').addEventListener('click', () => {
   save.mix = all ? [] : MODE_IDS.slice();
   persist(); paintMix(); paintPlay();
 });
+
+/* Every Daily is the same twelve puzzles for everyone that day, which is the
+   only result in the game worth comparing. The share carries the day, the score
+   and the streak — never the save, and never anything that identifies anybody. */
+$('shareBtn').addEventListener('click', () => {
+  const btn = $('shareBtn');
+  const text = t('daily.share', {
+    d: todayKey(),
+    n: fmt(Number(el.over.dataset.score || 0)),
+    s: dailyStreak() || 1
+  });
+  const url = location.origin + location.pathname;
+  const flash = key => {
+    btn.querySelector('b').textContent = t(key);
+    btn.classList.add('done');
+    setTimeout(() => { btn.querySelector('b').textContent = t('btn.share'); btn.classList.remove('done'); }, 1800);
+  };
+  const copy = () => {
+    try {
+      navigator.clipboard.writeText(text + ' ' + url).then(() => flash('daily.copied'), () => {});
+    } catch(e){}
+  };
+  if (navigator.share){
+    /* A cancelled share is not a failure and must not fall through to the
+       clipboard — that would put something on it the player chose not to send. */
+    navigator.share({ text, url }).catch(err => {
+      if (err && err.name === 'AbortError') return;
+      copy();
+    });
+  } else copy();
+});
+
+Array.from($('sFilter').children).forEach(b =>
+  onTap(b, () => { statFilter = b.dataset.f; sfx.tap(); paintStats(); }));
 
 $('homeBtn').addEventListener('click', () => goTab('Play'));
 $('againBtn').addEventListener('click', () =>
