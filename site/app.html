@@ -34,11 +34,20 @@
   --tabh:60px;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+/* A definite height on the ROOT, so everything below can be a percentage of
+   the space that is actually left rather than of the whole viewport. With
+   border-box, any padding the page is wrapped in — a host's safe-area insets,
+   for instance — comes out of this box rather than being added to it. */
+html{-webkit-text-size-adjust:100%;height:100%}
 body{
   margin:0;background:var(--ink);color:var(--cream);
   font-family:var(--f-body);font-size:16px;line-height:1.45;
-  min-height:100dvh;max-height:100dvh;overflow:hidden;display:flex;justify-content:center;
+  /* 100dvh so the column tracks a phone's collapsing URL bar, capped at the
+     root's content box so it can never exceed the room an ancestor left it.
+     Without that cap the app was exactly one viewport tall starting BELOW a
+     host's top inset, so its last 34 pixels — the whole tab bar — hung off the
+     bottom of the screen with nothing able to scroll to them. */
+  height:100dvh;max-height:100%;overflow:hidden;display:flex;justify-content:center;
   -webkit-tap-highlight-color:transparent;
   overscroll-behavior:none;
   /* A drag that starts on a board and crosses a label was selecting the label
@@ -58,7 +67,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    100vh first as the fallback for anything without dvh. */
 .cab{
   width:100%;max-width:460px;
-  height:100vh;height:100dvh;max-height:100dvh;overflow:hidden;
+  height:100%;max-height:100%;overflow:hidden;
   display:flex;flex-direction:column;position:relative;
   /* Only the bottom inset was reserved, so on a notched phone the quit button
      and the score sat under the cutout. Both ends are the phone's now. */
@@ -149,8 +158,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:color var(--t-fast);
 }
 .tab svg{width:21px;height:21px;display:block}
-.tab[aria-selected="true"]{color:var(--flare)}
-.tab[aria-selected="true"] svg{filter:drop-shadow(0 0 7px #ff5b3966)}
+.tab[aria-current="page"]{color:var(--flare)}
+.tab[aria-current="page"] svg{filter:drop-shadow(0 0 7px #ff5b3966)}
 
 .seclbl{
   display:flex;align-items:center;gap:9px;flex:none;margin:14px 0 8px;
@@ -1759,7 +1768,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.19.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.19.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1959,7 +1968,7 @@ function dailyStreak(){
 const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.19.0 (52)';
+const VERSION = 'v0.19.1 (52)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2810,6 +2819,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.19.1', date:'2026-09-16', items:[
+    'Fixed — the Play/Modes/Mix/Stats/Settings bar was missing when the app first opened, and only turned up after a run. The app was sized to the whole screen but started below the phone’s top inset, so its last inch — the entire bar — hung off the bottom with nothing able to scroll to it.',
+    'Fixed — the tab you are on was never highlighted. The bar has been marking it correctly for screen readers the whole time; the colour was keyed to a different attribute and so never applied.',
+  ] },
   { v:'0.19.0', date:'2026-09-16', items:[
     'The menu opens with what you were last doing. One tap puts you back in that Marathon.',
     'The four suggestions under “Jump straight in” now have a reason behind them: something you have never opened, the one closest to its next star, something from the family you have left alone, and a wildcard. They carry their family’s colour, like the cards in the full list.',
