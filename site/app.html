@@ -815,21 +815,36 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   font-family:var(--f-data);font-size:11px;font-weight:700;color:var(--haze);
   transition:color var(--t-fast),background var(--t-fast),border-color var(--t-fast);
 }
-.streak.hot{color:#2A1200;background:var(--zap);border-color:var(--zap)}
+.streak.hot{color:#2A1200;background:var(--zap);border-color:var(--zap);transform:scale(1.08)}
+.streak.pop{animation:stpop .28s cubic-bezier(.2,.8,.3,1)}
+@keyframes stpop{0%{transform:scale(1)}45%{transform:scale(1.22)}100%{transform:scale(1)}}
+.hudrow{display:flex;align-items:center;gap:10px}
+.hudrow .lives{flex:1;min-width:0}
+.perkbar{display:flex;gap:5px;flex:none}
+.perkbar i{display:block;width:15px;height:15px;color:var(--pk);opacity:.85}
+.perkbar i svg{width:100%;height:100%;display:block}
 .meter{height:6px;border-radius:99px;background:var(--ink-3);overflow:hidden;border:1px solid var(--edge-soft)}
 .meter i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--cool),#7BF0A8);transform-origin:left}
 .meter.warn i{background:linear-gradient(90deg,var(--bad),var(--flare))}
-.lives{display:flex;gap:5px;height:6px}
-.lives span{flex:1;border-radius:99px;background:var(--flare)}
-.lives span.out{background:var(--ink-3)}
+.lives{display:flex;gap:5px;height:8px;align-items:center}
+.lives span{flex:1;max-width:44px;height:8px;border-radius:99px;background:var(--flare);
+  transition:background var(--t-fast),opacity var(--t-fast)}
+.lives span.out{background:var(--ink-3);opacity:.7}
+/* Past six, stretched pills read as a broken progress bar. Shrink to dots and
+   let the row stay honest about the count. */
+.lives.many span{flex:none;width:8px;max-width:none;border-radius:50%}
+/* The board is centred in whatever height is left, which on a tall phone put
+   the prompt 227px above the thing it was talking about — a quarter of the
+   screen of nothing in between. Both autos together centre the PAIR instead, so
+   the line that tells you what to do sits directly above where you do it. */
 .prompt{
-  flex:none;text-align:center;min-height:18px;margin:10px 0 8px;
+  flex:none;text-align:center;min-height:18px;margin:auto 0 10px;
   font-size:12px;letter-spacing:.07em;text-transform:uppercase;font-weight:600;color:var(--haze);
 }
 .prompt.won{color:var(--cool)}
 .prompt.lost{color:var(--bad)}
 #surface{
-  flex:0 1 auto;margin-block:auto;width:min(100%,62vh);aspect-ratio:1;
+  flex:0 1 auto;margin:0 auto auto;width:min(100%,62vh);aspect-ratio:1;
   min-height:0;display:grid;place-items:center;position:relative;overflow:hidden;
   border-radius:var(--r-lg);border:1px solid var(--edge-soft);
   background:#ffffff05;padding:14px;contain:layout paint;
@@ -995,10 +1010,14 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 /* Marathon has lives but no clock, so in most modes you could sit on a board
    indefinitely and the run could not end. Every mode now has a round limit
    there, drawn from its own par time, so slowness is a real way to lose. */
-.roundbar{flex:none;height:3px;border-radius:2px;background:#ffffff10;overflow:hidden;margin:6px 0 0}
-.roundbar i{display:block;height:100%;width:100%;border-radius:2px;background:var(--cool);
+.roundbar{flex:none;height:6px;border-radius:99px;background:var(--ink-3);overflow:hidden;
+  margin:7px 0 0;border:1px solid var(--edge-soft)}
+.roundbar i{display:block;height:100%;width:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--cool),#7BF0A8);
   transform-origin:left;transition:background var(--t-fast)}
-.roundbar.warn i{background:var(--bad)}
+.roundbar.warn i{background:linear-gradient(90deg,var(--bad),var(--flare))}
+.roundbar.warn{animation:rbpulse .9s ease-in-out infinite}
+@keyframes rbpulse{0%,100%{opacity:1}50%{opacity:.55}}
 .budget{
   flex:none;align-self:flex-end;margin:0 2px 6px;pointer-events:none;
   font-family:var(--f-data);font-size:11px;font-weight:700;letter-spacing:.06em;
@@ -1380,7 +1399,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.14.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.14.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1417,7 +1436,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <span class="score" id="hudScore">0</span>
         </div>
         <div class="meter" id="hudMeter"><i id="hudMeterFill"></i></div>
-        <div class="lives" id="hudLives" hidden></div>
+        <div class="hudrow">
+          <div class="lives" id="hudLives" hidden></div>
+          <div class="perkbar" id="hudPerks" aria-live="off"></div>
+        </div>
       </div>
       <div class="roundbar" id="roundBar" hidden><i id="roundFill"></i></div>
       <p class="prompt" id="prompt">Get ready</p>
@@ -1532,7 +1554,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.14.0 (48)';
+const VERSION = 'v0.14.1 (48)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2302,6 +2324,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.14.1', date:'2026-09-16', items:[
+    'The prompt now sits just above the board instead of at the top of the screen — it was 194px away from the thing it was talking about.',
+    'The round clock is twice as tall, fills like the other meters, and pulses red when it is nearly out.',
+    'Lives read as lives: they stay a sensible size however many you have, and turn into dots past six.',
+    'The perks you have on now show in the header while you play.',
+  ] },
   { v:'0.14.0', date:'2026-09-16', items:[
     'Perks. Lifetime points now buy slots on the Stats tab — an extra life, a streak shield, a longer round clock, a faster multiplier, more moves, more seconds. Every perk is there from the start; what you earn is room for more of them at once.',
     'Past the last slot it keeps paying: every further 150 000 points is a token, and a token deepens a perk you already chose. Three ranks each.',
@@ -7118,6 +7146,24 @@ const MULT_STEP = [4, 3.2, 2.7, 2.3];
 const multiplier = () => run
   ? clamp(1 + Math.floor(run.streak / MULT_STEP[Perk.lv('zeal')]), 1, 5) : 1;
 
+/* What you chose on the Stats tab should be visible while it is doing its work.
+   Drawn once per run rather than per frame — the set cannot change mid-run. */
+function paintHudPerks(){
+  const bar = $('hudPerks');
+  if (!bar) return;
+  const on = (save.perks || []).filter(id => PERK_BY_ID[id]);
+  bar.innerHTML = '';
+  on.forEach(id => {
+    const p = PERK_BY_ID[id];
+    const e = mk('i');
+    e.style.setProperty('--pk', p.ink);
+    e.innerHTML = p.glyph;
+    e.setAttribute('role','img');
+    e.setAttribute('aria-label', t('perk.' + id) + ' ' + t('perk.equipped', { n: Perk.lv(id) }));
+    bar.appendChild(e);
+  });
+}
+
 function renderHud(){
   if (!run) return;
   const k = KINDS[run.kind];
@@ -7145,6 +7191,7 @@ function renderHud(){
       box.innerHTML = '';
       for (let i = 0; i < max; i++) box.appendChild(document.createElement('span'));
     }
+    box.classList.toggle('many', max > 6);
     Array.from(box.children).forEach((sp,i) => sp.classList.toggle('out', i >= run.lives));
   } else {
     $('hudMeter').hidden = true; $('hudLives').hidden = true;
@@ -7251,6 +7298,7 @@ function resolve(ok, node){
   Array.from(el.surface.querySelectorAll('button')).forEach(b => { b.disabled = true; });
 
   if (ok){
+    const multBefore = multiplier();
     const elapsed = performance.now() - roundStart;
     const speed = clamp(1 - elapsed / (mode.par * run.pressure), 0, 1);
     const pts = Math.round((100 + 130*speed) * multiplier());
@@ -7279,6 +7327,11 @@ function resolve(ok, node){
     el.prompt.className = 'prompt won';
     $('hudScore').classList.add('pop');
     setTimeout(() => $('hudScore').classList.remove('pop'), 160);
+    if (multiplier() > multBefore){
+      const st = $('hudStreak');
+      st.classList.add('pop');
+      setTimeout(() => st.classList.remove('pop'), 300);
+    }
     renderHud();
     later(400, nextRound);
   } else {
@@ -7331,6 +7384,7 @@ function startRun(kind, modeId){
   for (let i=0;i<(k.lives||0);i++) $('hudLives').appendChild(mk('span'));
 
   show('play');
+  paintHudPerks();
   renderHud();
   clearBoard();
   el.prompt.textContent = 'Get ready';
