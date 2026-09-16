@@ -599,6 +599,43 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .kpwrap.bad  .bbpad{border-color:var(--bad);border-style:solid;background:#ff3d6e14}
 .kpwrap.bad .kpring{border-color:var(--bad)}
 
+/* ── Braid ────────────────────────────────────────────────────────────── */
+.brdwrap{display:flex;flex-direction:column;gap:16px;width:100%;height:100%;
+  min-height:0;min-width:0;max-width:100%;justify-content:center;align-items:center}
+.brdhead{display:flex;align-items:center;gap:10px;flex:none;max-width:100%;min-width:0}
+.brdtarget{display:flex;gap:4px;flex:none}
+.brdswatch{width:18px;height:18px;border-radius:5px;display:grid;place-items:center}
+.brdswatch .shp{width:12px;height:12px;display:block}
+/* A definite height, or the lane takes its height from strands that have no
+   content to be tall with — the braid came out as a row of 22-pixel slivers
+   and the crossings between them were not a tap target. */
+.brdlane{
+  position:relative;display:flex;align-items:stretch;justify-content:center;gap:5px;
+  width:100%;height:240px;max-height:100%;flex:0 1 auto;min-height:0;min-width:0;
+  transition:filter var(--t-med);
+}
+.brdstrand{
+  flex:1 1 0;min-width:0;border-radius:12px;display:grid;place-items:center;
+  box-shadow:inset 0 -4px 0 #00000026;
+  transition:box-shadow var(--t-fast),transform var(--t-med),opacity var(--t-fast);
+}
+.brdstrand .shp{width:26px;height:26px;display:block;opacity:.85}
+.brdstrand.home{box-shadow:inset 0 -4px 0 #00000026, 0 0 0 2px var(--cool)}
+.brdcross{
+  position:absolute;top:0;bottom:0;width:46px;transform:translateX(-50%);cursor:pointer;
+  display:grid;place-items:center;background:none;border:none;z-index:1;
+  transition:transform var(--t-fast);
+}
+.brdcross::before{
+  content:"";width:24px;height:24px;border-radius:50%;
+  background:var(--ink-2);border:1px solid var(--edge);
+  background-image:linear-gradient(45deg,transparent 42%,var(--haze) 42% 58%,transparent 58%),
+                   linear-gradient(-45deg,transparent 42%,var(--haze) 42% 58%,transparent 58%);
+  box-shadow:0 2px 8px #00000059;
+}
+.brdcross:active{transform:translateX(-50%) scale(.88)}
+.brdlane.good .brdstrand{box-shadow:inset 0 -4px 0 #00000026, 0 0 0 2px var(--cool)}
+
 /* ── Chorus ───────────────────────────────────────────────────────────── */
 .chwrap{display:flex;flex-direction:column;gap:12px;width:100%;height:100%;
   min-height:0;min-width:0;max-width:100%;justify-content:center}
@@ -1957,7 +1994,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.21.2</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.21.3</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -2206,7 +2243,7 @@ function dailyStreak(){
 const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.21.2 (54)';
+const VERSION = 'v0.21.3 (55)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2643,6 +2680,7 @@ const STRINGS = {
     'mix.tapes':'Your mixtapes', 'mix.name':'Name this mixtape', 'mix.share':'Share this mixtape', 'mix.delete':'Delete this mixtape', 'mix.untitled':'Mixtape {n}', 'mix.newTape':'+ New', 'mix.paste':'Paste a code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Delete “{name}”?', 'mix.keep':'Keep', 'mix.deleteIt':'Delete', 'mix.shareText':'My Dopamine Drop mixtape “{name}” — {n} modes. Paste this code into the Mix tab: {code}', 'mix.importTitle':'Add a mixtape', 'mix.importSub':'Paste a code someone sent you. It carries a name and a list of modes, nothing else.', 'mix.importAdd':'Add it', 'mix.importBad':'No mixtape code in that. Paste the whole message — the code starts with DD1.', 'mix.importOk':'Added “{name}”.', 'mix.importN':'{n} modes.', 'mix.importN1':'One mode.', 'mix.importDropped':'{n} of its modes are not in this version and were left out.', 'mix.importDropped1':'One of its modes is not in this version and was left out.',
     'p.rampFast':'Listen — it is speeding up', 'p.rampSlow':'Listen — it is slowing down', 'p.rampGo':'Stay on the beat — {n} to go', 'ramp.pad':'Tap on each beat', 'm.ramp':'Ramp|The tempo is moving — stay on it',
     'p.keepListen':'Four beats — then it is only you', 'p.keepGo':'Keep the beat — {n} to go', 'keep.pad':'Keep tapping the beat after the sound stops', 'm.keep':'Keep|The pulse stops — keep it going anyway',
+    'p.braid':'{n} strands still out of place', 'braid.want':'The braid to match', 'braid.wantIs':'The braid to match, left to right: {list}', 'braid.strand':'Strand {n}, {c}', 'braid.cross':'Cross {a} and {b}', 'm.braid':'Braid|Cross the strands until they match the pattern',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -2769,6 +2807,7 @@ const STRINGS = {
     'mix.tapes':'Vos playlists', 'mix.name':'Nommer cette playlist', 'mix.share':'Partager cette playlist', 'mix.delete':'Supprimer cette playlist', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Nouvelle', 'mix.paste':'Coller un code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Supprimer « {name} » ?', 'mix.keep':'Garder', 'mix.deleteIt':'Supprimer', 'mix.shareText':'Ma playlist Dopamine Drop « {name} » — {n} modes. Collez ce code dans l’onglet Mix : {code}', 'mix.importTitle':'Ajouter une playlist', 'mix.importSub':'Collez un code qu’on vous a envoyé. Il contient un nom et une liste de modes, rien d’autre.', 'mix.importAdd':'Ajouter', 'mix.importBad':'Aucun code de playlist là-dedans. Collez tout le message — le code commence par DD1.', 'mix.importOk':'« {name} » ajoutée.', 'mix.importN':'{n} modes.', 'mix.importN1':'Un mode.', 'mix.importDropped':'{n} de ses modes n’existent pas dans cette version et ont été écartés.', 'mix.importDropped1':'Un de ses modes n’existe pas dans cette version et a été écarté.',
     'p.rampFast':'Écoutez — ça accélère', 'p.rampSlow':'Écoutez — ça ralentit', 'p.rampGo':'Restez sur le temps — encore {n}', 'ramp.pad':'Touchez sur chaque temps', 'm.ramp':'Accélération|Le tempo bouge — restez dessus',
     'p.keepListen':'Quatre temps — ensuite il n’y a plus que vous', 'p.keepGo':'Tenez le tempo — encore {n}', 'keep.pad':'Continuez à marquer le temps après le silence', 'm.keep':'Tenir|Le pouls s’arrête — continuez quand même',
+    'p.braid':'Encore {n} brins mal placés', 'braid.want':'La tresse à reproduire', 'braid.wantIs':'La tresse à reproduire, de gauche à droite : {list}', 'braid.strand':'Brin {n}, {c}', 'braid.cross':'Croiser {a} et {b}', 'm.braid':'Tresse|Croisez les brins jusqu’à reproduire le motif',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -2895,6 +2934,7 @@ const STRINGS = {
     'mix.tapes':'Tus listas', 'mix.name':'Nombra esta lista', 'mix.share':'Compartir esta lista', 'mix.delete':'Borrar esta lista', 'mix.untitled':'Lista {n}', 'mix.newTape':'+ Nueva', 'mix.paste':'Pegar un código', 'mix.metaTape':'{name} · {n} modos', 'mix.delConfirm':'¿Borrar «{name}»?', 'mix.keep':'Conservar', 'mix.deleteIt':'Borrar', 'mix.shareText':'Mi lista de Dopamine Drop «{name}» — {n} modos. Pega este código en la pestaña Mix: {code}', 'mix.importTitle':'Añadir una lista', 'mix.importSub':'Pega un código que te hayan enviado. Lleva un nombre y una lista de modos, nada más.', 'mix.importAdd':'Añadirla', 'mix.importBad':'Ahí no hay ningún código de lista. Pega el mensaje entero — el código empieza por DD1.', 'mix.importOk':'Añadida «{name}».', 'mix.importN':'{n} modos.', 'mix.importN1':'Un modo.', 'mix.importDropped':'{n} de sus modos no están en esta versión y se han dejado fuera.', 'mix.importDropped1':'Uno de sus modos no está en esta versión y se ha dejado fuera.',
     'p.rampFast':'Escucha — está acelerando', 'p.rampSlow':'Escucha — está frenando', 'p.rampGo':'Sigue el pulso — quedan {n}', 'ramp.pad':'Toca en cada pulso', 'm.ramp':'Rampa|El tempo se mueve — sigue con él',
     'p.keepListen':'Cuatro pulsos — después solo quedas tú', 'p.keepGo':'Mantén el pulso — quedan {n}', 'keep.pad':'Sigue marcando el pulso cuando pare el sonido', 'm.keep':'Mantener|El pulso se detiene — mantenlo tú',
+    'p.braid':'Quedan {n} hebras fuera de sitio', 'braid.want':'La trenza que hay que igualar', 'braid.wantIs':'La trenza que hay que igualar, de izquierda a derecha: {list}', 'braid.strand':'Hebra {n}, {c}', 'braid.cross':'Cruzar {a} y {b}', 'm.braid':'Trenza|Cruza las hebras hasta igualar el patrón',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3021,6 +3061,7 @@ const STRINGS = {
     'mix.tapes':'Deine Playlists', 'mix.name':'Diese Playlist benennen', 'mix.share':'Diese Playlist teilen', 'mix.delete':'Diese Playlist löschen', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Neu', 'mix.paste':'Code einfügen', 'mix.metaTape':'{name} · {n} Modi', 'mix.delConfirm':'„{name}“ löschen?', 'mix.keep':'Behalten', 'mix.deleteIt':'Löschen', 'mix.shareText':'Meine Dopamine-Drop-Playlist „{name}“ — {n} Modi. Füge diesen Code im Mix-Tab ein: {code}', 'mix.importTitle':'Playlist hinzufügen', 'mix.importSub':'Füge einen Code ein, den dir jemand geschickt hat. Er enthält einen Namen und eine Modusliste, sonst nichts.', 'mix.importAdd':'Hinzufügen', 'mix.importBad':'Darin steckt kein Playlist-Code. Füge die ganze Nachricht ein — der Code beginnt mit DD1.', 'mix.importOk':'„{name}“ hinzugefügt.', 'mix.importN':'{n} Modi.', 'mix.importN1':'Ein Modus.', 'mix.importDropped':'{n} ihrer Modi gibt es in dieser Version nicht und wurden weggelassen.', 'mix.importDropped1':'Einen ihrer Modi gibt es in dieser Version nicht, er wurde weggelassen.',
     'p.rampFast':'Hör zu — es wird schneller', 'p.rampSlow':'Hör zu — es wird langsamer', 'p.rampGo':'Bleib im Takt — noch {n}', 'ramp.pad':'Auf jeden Schlag tippen', 'm.ramp':'Rampe|Das Tempo bewegt sich — bleib drauf',
     'p.keepListen':'Vier Schläge — danach nur noch du', 'p.keepGo':'Halte den Takt — noch {n}', 'keep.pad':'Weiter im Takt tippen, wenn der Ton aufhört', 'm.keep':'Halten|Der Puls hört auf — halte ihn trotzdem',
+    'p.braid':'Noch {n} Stränge falsch', 'braid.want':'Der Zopf, der passen muss', 'braid.wantIs':'Der Zopf, der passen muss, von links nach rechts: {list}', 'braid.strand':'Strang {n}, {c}', 'braid.cross':'{a} und {b} kreuzen', 'm.braid':'Zopf|Kreuze die Stränge, bis das Muster passt',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3164,6 +3205,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.21.3', date:'2026-09-16', items:[
+    'New mode \u2014 Braid. Forge fits parts into a hole and Weave flips a cloth; the third thing you can do to a set of pieces is put them in order. Only neighbours can cross, so the puzzle is the route rather than the destination, and the crossings are counted.',
+  ] },
   { v:'0.21.2', date:'2026-09-16', items:[
     'New mode \u2014 Keep. Four beats, and then nothing: the sound stops, the light goes out, and you carry the pulse on your own. Every other timing mode leaves the beat playing and asks you to sit on it, in front of it or between its beats. This one asks whether you were keeping time or only following it.',
   ] },
@@ -8455,6 +8499,107 @@ const MODES = {
           stop(); wrap.classList.add('bad'); return ctx.miss(pad);
         }
       });
+    }
+  },
+
+  /* ── Braid ────────────────────────────────────────────────────────────── */
+  braid: {
+    name:'Braid', blurb:'Cross the strands until they match the pattern', cat:'make', par:13000, bonus:3900,
+    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#C08BFF" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M7 3c0 4 10 5 10 9s-10 5-10 9"/><path d="M17 3c0 4-10 5-10 9s10 5 10 9"/></svg>',
+    build(ctx){
+      /* Forge fits parts into a hole and Weave flips a cloth; this is the third
+         thing you can do to a set of pieces, which is put them in the right
+         order. Only neighbours can cross, so the puzzle is the route rather
+         than the destination — and because the board is made by crossing a
+         finished braid a counted number of times, undoing exactly those
+         crossings is always a solution and the allowance is always enough. */
+      const n = 3 + Math.min(2, Math.floor(ctx.level/9));
+      const want = 2 + Math.min(4, Math.floor(ctx.level/5));
+
+      const inks = shuffle(INKS.slice(), ctx.rnd).slice(0, n);
+      const target = inks.map((_, i) => i);
+      let order = target.slice(), used = 0;
+      for (let attempt = 0; attempt < 24; attempt++){
+        order = target.slice(); used = 0;
+        for (let k = 0; k < want; k++){
+          const i = Math.floor(ctx.rnd() * (n - 1));
+          const tmp = order[i]; order[i] = order[i+1]; order[i+1] = tmp;
+          used++;
+        }
+        /* A scramble that lands back on the answer is not a board. */
+        if (order.some((v, i) => v !== target[i])) break;
+      }
+      if (!order.some((v, i) => v !== target[i])){
+        const tmp = order[0]; order[0] = order[1]; order[1] = tmp; used = 1;
+      }
+
+      const wrap = mk('div','brdwrap');
+      const head = mk('div','brdhead');
+      const lbl = mk('div','wvlbl');
+      lbl.textContent = t('braid.want');
+      head.appendChild(lbl);
+      const tgt = mk('div','brdtarget');
+      tgt.setAttribute('role','img');
+      tgt.setAttribute('aria-label', t('braid.wantIs',
+        { list: target.map(v => inkName(inks[v])).join(', ') }));
+      target.forEach(v => {
+        const e = mk('i','brdswatch');
+        e.style.background = inks[v].hex;
+        if (assistOn()) e.innerHTML = shapeSvg(inks[v].shape, 'var(--ink)');
+        tgt.appendChild(e);
+      });
+      head.appendChild(tgt);
+      wrap.appendChild(head);
+
+      const lane = mk('div','brdlane');
+      wrap.appendChild(lane);
+      ctx.surface.appendChild(wrap);
+
+      const budget = moveBudget(ctx, used);
+      let done = false;
+      const solved = () => order.every((v, i) => v === target[i]);
+
+      const paint = () => {
+        lane.replaceChildren();
+        order.forEach((v, i) => {
+          const strand = mk('i','brdstrand');
+          strand.style.background = inks[v].hex;
+          strand.setAttribute('role','img');
+          strand.setAttribute('aria-label', t('braid.strand', { n: i + 1, c: inkName(inks[v]) }));
+          if (assistOn()) strand.innerHTML = shapeSvg(inks[v].shape, 'var(--ink)');
+          strand.classList.toggle('home', v === target[i]);
+          lane.appendChild(strand);
+        });
+        /* The crossings sit ON the boundaries rather than between them. In the
+           flow they ate the width instead: five strands and four 44px buttons
+           left each strand under twenty pixels on a small phone, so either the
+           strand or the button had to be too small to aim at. Overlapping costs
+           nothing — a strand is a picture, not a control. */
+        for (let i = 0; i < order.length - 1; i++){
+          const cross = mk('button','brdcross');
+          cross.type = 'button';
+          cross.style.left = ((i + 1) / order.length * 100) + '%';
+          cross.setAttribute('aria-label', t('braid.cross',
+            { a: inkName(inks[order[i]]), b: inkName(inks[order[i+1]]) }));
+          onTap(cross, () => {
+            if (done) return;
+            const tmp = order[i]; order[i] = order[i+1]; order[i+1] = tmp;
+            /* The win is read before the crossing is charged for, so a braid
+               finished on the last move is finished, not bankrupt. */
+            if (solved()){
+              done = true;
+              paint();
+              lane.classList.add('good');
+              return ctx.win(cross);
+            }
+            paint();
+            budget.spend(cross);
+          });
+          lane.appendChild(cross);
+        }
+        ctx.prompt(t('p.braid', { n: order.reduce((a, v, i) => a + (v === target[i] ? 0 : 1), 0) }));
+      };
+      paint();
     }
   },
 };
