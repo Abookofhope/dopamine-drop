@@ -923,6 +923,21 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 #count b{font-family:var(--f-disp);font-weight:800;font-size:clamp(60px,20vw,92px);color:var(--flare);animation:cdpop 600ms cubic-bezier(.2,.8,.3,1)}
 @keyframes cdpop{0%{transform:scale(.5);opacity:0}40%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:1}}
 
+/* ── The mode changed ─────────────────────────────────────────────────── */
+.swap{
+  position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:5px;pointer-events:none;
+  border-radius:var(--r-lg);
+  background:radial-gradient(90% 60% at 50% 50%, color-mix(in srgb, var(--fam) 20%, transparent), transparent 70%), #0D0918d9;
+}
+.swap b{font-family:var(--f-disp);font-weight:800;font-size:clamp(22px,7vw,30px);
+  letter-spacing:-.02em;color:var(--cream);text-align:center;padding:0 16px}
+.swap small{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--fam)}
+.swap{animation:swapIn 900ms cubic-bezier(.2,.8,.3,1) forwards}
+.swap b{animation:swapWord 900ms cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes swapIn{0%{opacity:0}14%{opacity:1}68%{opacity:1}100%{opacity:0}}
+@keyframes swapWord{0%{transform:translateY(8px) scale(.96)}22%{transform:none}100%{transform:none}}
+
 /* ── Level up ────────────────────────────────────────────────────────────── */
 #levelup{
   position:fixed;inset:0;z-index:70;display:grid;place-items:center;
@@ -1470,7 +1485,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.15.2</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.16.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1630,7 +1645,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.15.2 (48)';
+const VERSION = 'v0.16.0 (48)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2408,6 +2423,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.16.0', date:'2026-09-16', items:[
+    'The header now names the mode you are actually playing. In Shuffle, Mixtape and the Daily it used to say the name of the run for the whole sixty seconds — forty-eight modes, and the one in front of you was never named.',
+    'When the mode changes, it says so: the name and its family, over the board, for a moment. That change is the whole point of a shuffle and it used to happen in silence.',
+    'Fixed — the mode name in the header and on the results screen was English whatever language you had chosen, so it disagreed with the card you tapped to start it. The run names are translated now too.',
+  ] },
   { v:'0.15.2', date:'2026-09-16', items:[
     'Fixed — the first filter chip on Modes sat flush against the screen edge with its rounded end cut off.',
     'Mode cards now line their stars and best score up along a common floor, instead of the row drifting with the length of the blurb.',
@@ -7168,13 +7188,16 @@ window.requestAnimationFrame = function(fn){
 };
 
 /* ═══ Run definitions ═════════════════════════════════════════════════════ */
+/* Each kind's name is already translated for its card on the home screen, so
+   the run carries the key rather than a second English copy of the word. */
 const KINDS = {
-  shuffle:  { label:'Shuffle',     timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
-  mix:      { label:'Mixtape',     timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
-  daily:    { label:'Daily Drop',  timed:true,  cap:90000, start:90000, penalty:4000, scored:true, rounds:12 },
-  marathon: { label:'Marathon',    timed:false, lives:3,   scored:true, roundClock:true },
-  zen:      { label:'Fidget Loop', timed:false, scored:false }
+  shuffle:  { label:'Shuffle',     key:'hero.title',     timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
+  mix:      { label:'Mixtape',     key:'mix.title',      timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
+  daily:    { label:'Daily Drop',  key:'daily.title',    timed:true,  cap:90000, start:90000, penalty:4000, scored:true, rounds:12 },
+  marathon: { label:'Marathon',    key:'marathon.title', timed:false, lives:3,   scored:true, roundClock:true },
+  zen:      { label:'Fidget Loop', key:'zen.title',      timed:false, scored:false }
 };
+const kindName = kind => t(KINDS[kind].key);
 
 /* ═══ Shell state ═════════════════════════════════════════════════════════ */
 const el = {
@@ -7318,7 +7341,13 @@ function setFamily(modeId){
 function renderHud(){
   if (!run) return;
   const k = KINDS[run.kind];
-  $('hudKind').textContent = run.mode ? MODES[run.mode].name : k.label;
+  /* In Shuffle, Mixtape and the Daily the puzzle changes every round and the
+     header said "Shuffle" the whole way through — forty-eight modes and the one
+     you were looking at was never named. It names the mode now, in every kind,
+     and in the player's own language: MODES[id].name is the English original,
+     which is why the header used to disagree with the card that launched it. */
+  const nowId = run.curMode ? modeIdOf(run.curMode) : run.mode;
+  $('hudKind').textContent = nowId ? modeName(nowId) : kindName(run.kind);
   $('hudScore').textContent = k.scored ? fmt(run.score) : fmt(run.solved) + ' solved';
   const m = multiplier();
   const chip = $('hudStreak');
@@ -7393,6 +7422,27 @@ function pickMode(){
   return id;
 }
 
+/* "The puzzle changes every round" is the whole premise, and the change used to
+   happen in silence: a new board appeared 400ms after the last one and nothing
+   said what it was. Name it for a moment, in the family's colour, over the top
+   of the board it belongs to. Only when the mode actually changed — in a
+   Marathon it never does, and a plate every round would be noise. */
+function announceMode(id){
+  /* Built fresh each time rather than kept in the markup: clearBoard empties
+     the surface between rounds, so a plate that lived there was destroyed the
+     first time a round ended and never came back. */
+  if (motionOff()) return;   /* the header carries the name; a plate that cannot
+                                fade is just something in the way */
+  const box = mk('div','swap');
+  box.style.setProperty('--fam', CAT_INK[catOf(id)] || 'var(--flare)');
+  const name = mk('b'); name.textContent = modeName(id);
+  const fam  = mk('small'); fam.textContent = t('cat.' + catOf(id));
+  box.appendChild(name); box.appendChild(fam);
+  box.setAttribute('aria-hidden','true');   /* the header already announces it */
+  el.surface.appendChild(box);
+  later(900, () => box.remove());
+}
+
 function nextRound(){
   if (!run) return;
   const k = KINDS[run.kind];
@@ -7402,8 +7452,11 @@ function nextRound(){
   run.roundIdx++;
   const id = pickMode();
   const mode = MODES[id];
+  const changed = run.shownMode && run.shownMode !== id;
+  run.shownMode = id;
   run.curMode = mode;
   setFamily(id);
+  if (changed) announceMode(id);
   roundLive = true;
   roundStart = performance.now();
   /* Generous on purpose: par is how long the mode expects to take, and this is
@@ -7605,7 +7658,7 @@ function endRun(){
   if (up) got.textContent = 'Level ' + r.playerLevel + ' → ' + lvlAfter;
 
   const attempts = r.solved + r.missed;
-  $('overKind').textContent = (r.mode ? MODES[r.mode].name + ' · ' : '') + k.label;
+  $('overKind').textContent = (r.mode ? modeName(r.mode) + ' · ' : '') + kindName(r.kind);
   $('overScore').textContent = k.scored ? fmt(r.score) : fmt(r.solved);
   $('newBest').hidden = !best;
 
