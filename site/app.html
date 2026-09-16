@@ -1001,6 +1001,69 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   background:var(--flare);color:#1A0A04;
 }
 
+/* ── Mixtapes ────────────────────────────────────────────────────────────── */
+.tapestrip{
+  display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;flex:none;min-width:0;max-width:100%;
+  scrollbar-width:none;padding:0 0 10px;
+  margin:0 calc(var(--gut) * -1);padding-inline:var(--gut);
+}
+.tapestrip::-webkit-scrollbar{display:none}
+.tapechip{
+  flex:none;display:inline-flex;align-items:center;gap:7px;min-height:44px;
+  padding:9px 14px;border-radius:99px;border:1px solid var(--edge);
+  background:#ffffff05;color:var(--haze);max-width:60vw;
+  font-size:12.5px;font-weight:600;
+  transition:color var(--t-fast),border-color var(--t-fast),background var(--t-fast),transform var(--t-fast);
+}
+.tapechip:active{transform:scale(.96)}
+.tapechip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tapechip u{
+  text-decoration:none;flex:none;font-family:var(--f-data);font-size:10px;font-weight:700;
+  padding:1px 6px;border-radius:99px;background:var(--ink-3);color:var(--haze);
+}
+.tapechip.on{color:var(--ink);background:var(--flare);border-color:var(--flare)}
+.tapechip.on u{background:#00000026;color:#1A0A04}
+.tapechip.add{color:var(--flare);border-style:dashed}
+.taperow{display:flex;gap:8px;flex:none;margin-bottom:10px}
+.tapename{
+  flex:1;min-width:0;height:44px;padding:0 13px;border-radius:var(--r-md);
+  border:1px solid var(--edge);background:#ffffff06;color:var(--cream);
+  font:inherit;font-size:14px;font-weight:650;-webkit-appearance:none;appearance:none;
+}
+.tapename:focus{outline:none;border-color:var(--flare)}
+.tapename:disabled{opacity:.4}
+.tapebtn{
+  width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:var(--r-md);
+  border:1px solid var(--edge);background:#ffffff05;color:var(--haze);
+  transition:color var(--t-fast),border-color var(--t-fast),transform var(--t-fast);
+}
+.tapebtn:active{transform:scale(.94)}
+.tapebtn svg{width:19px;height:19px;display:block}
+.tapebtn:disabled{opacity:.35}
+.tapebtn.done{color:var(--cool);border-color:var(--cool)}
+.tapeconfirm{
+  display:flex;align-items:center;gap:8px;flex:none;margin-bottom:10px;
+  padding:9px 10px 9px 13px;border-radius:var(--r-md);
+  border:1px solid #ff3d6e4d;background:#ff3d6e0f;
+}
+.tapeconfirm span{flex:1;min-width:0;font-size:12.5px;color:var(--cream);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tapeconfirm button{
+  flex:none;padding:8px 13px;border-radius:99px;font-size:11.5px;font-weight:700;
+  border:1px solid var(--edge);color:var(--cream);
+}
+.tapeconfirm .yes{background:var(--bad);border-color:var(--bad);color:#2A0410}
+.tapepaste{
+  width:100%;border-radius:var(--r-md);border:1px solid var(--edge);
+  background:#ffffff06;color:var(--cream);padding:11px 13px;resize:none;
+  font-family:var(--f-data);font-size:12px;line-height:1.5;
+  -webkit-appearance:none;appearance:none;-webkit-user-select:text;user-select:text;
+}
+.tapepaste:focus{outline:none;border-color:var(--flare)}
+.tapesay{margin:0;font-size:12px;line-height:1.45;color:var(--haze)}
+.tapesay.bad{color:var(--bad)}
+.tapesay.good{color:var(--cool)}
+
 /* Rotation editor: same cards, toggling membership instead of launching. */
 .mixnote{
   flex:none;font-size:11.5px;color:var(--haze);line-height:1.5;
@@ -1490,7 +1553,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 @keyframes sheetup{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 .sheet .grab{width:38px;height:4px;border-radius:99px;background:var(--edge);margin:0 auto 4px}
-.sheet h3{font-family:var(--f-disp);font-weight:800;font-size:22px;margin:0;text-transform:uppercase}
+.sheet h2{font-family:var(--f-disp);font-weight:800;font-size:22px;margin:0;text-transform:uppercase}
 .sheet .sub{margin:0;font-size:12.5px;color:var(--haze)}
 .sheet .body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;contain:layout paint;
   -webkit-user-select:text;user-select:text}
@@ -1751,10 +1814,23 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
     <section class="screen" id="tabMix" hidden>
       <div class="scroll">
         <div class="seclbl"><span data-i18n="mix.build">Build your rotation</span></div>
-        <p class="mixnote">
-          Pick the modes you actually like. <b>Mixtape</b> shuffles only those.
-          Two or more to make a rotation &mdash; <b id="mixCount">0 chosen</b>.
-        </p>
+        <div class="tapestrip" id="tapeStrip" role="group" data-i18n-aria="mix.tapes"></div>
+        <div class="taperow" id="tapeRow">
+          <input class="tapename" id="tapeName" type="text" maxlength="24"
+                 autocomplete="off" spellcheck="false" data-i18n-aria="mix.name">
+          <button class="tapebtn" id="tapeShare" type="button" data-i18n-aria="mix.share">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+          </button>
+          <button class="tapebtn" id="tapeDel" type="button" data-i18n-aria="mix.delete">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>
+          </button>
+        </div>
+        <div class="tapeconfirm" id="tapeConfirm" hidden>
+          <span id="tapeConfirmTxt"></span>
+          <button class="no" type="button" id="tapeKeep" data-i18n="mix.keep">Keep</button>
+          <button class="yes" type="button" id="tapeGone" data-i18n="mix.deleteIt">Delete</button>
+        </div>
+        <p class="mixnote" id="mixNote"></p>
         <div class="modegrid" id="mixGrid"></div>
       </div>
       <div class="mixbar">
@@ -1836,7 +1912,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.20.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.21.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1947,7 +2023,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 <div class="sheet" id="langSheet" hidden>
   <div class="panel" role="dialog" aria-modal="true" aria-labelledby="langTitle">
     <span class="grab"></span>
-    <h3 id="langTitle" data-i18n="lang.title">Language</h3>
+    <h2 id="langTitle" data-i18n="lang.title">Language</h2>
     <p class="sub" data-i18n="lang.sub">The whole game, including the word puzzles.</p>
     <div class="body" id="langList"></div>
     <button class="ghost" id="langClose" type="button" data-i18n="btn.close">Close</button>
@@ -1987,6 +2063,22 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   </div>
 </div>
 
+<div class="sheet" id="tapeSheet" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="tapeSheetTitle">
+    <span class="grab"></span>
+    <h2 id="tapeSheetTitle" data-i18n="mix.importTitle">Add a mixtape</h2>
+    <p class="sub" data-i18n="mix.importSub">Paste a code someone sent you.</p>
+    <textarea class="tapepaste" id="tapePaste" rows="3" autocomplete="off" spellcheck="false"
+              data-i18n-aria="mix.importTitle"></textarea>
+    <p class="tapesay" id="tapeSay" hidden></p>
+    <button class="cta" id="tapeAdd" type="button">
+      <span class="lbl"><b data-i18n="mix.importAdd">Add it</b></span>
+      <span aria-hidden="true" style="font-size:22px">&rarr;</span>
+    </button>
+    <button class="ghost" id="tapeSheetClose" type="button" data-i18n="btn.close">Close</button>
+  </div>
+</div>
+
 <div class="sheet" id="modeSheet" hidden>
   <div class="panel" role="dialog" aria-modal="true" aria-labelledby="mpvName">
     <span class="grab"></span>
@@ -2011,7 +2103,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 <div class="sheet" id="logSheet" hidden>
   <div class="panel" role="dialog" aria-modal="true" aria-labelledby="logTitle">
     <span class="grab"></span>
-    <h3 id="logTitle" data-i18n="log.title">What’s new</h3>
+    <h2 id="logTitle" data-i18n="log.title">What’s new</h2>
     <p class="sub" data-i18n="log.sub">Newest first.</p>
     <div class="body" id="logList" tabindex="0" role="region" data-i18n-aria="log.title"></div>
     <button class="ghost" id="logClose" type="button" data-i18n="btn.close">Close</button>
@@ -2069,7 +2161,7 @@ function dailyStreak(){
 const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.20.0 (52)';
+const VERSION = 'v0.21.0 (52)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2079,14 +2171,15 @@ const VERSION = 'v0.20.0 (52)';
        would tell the next migration to redo steps already applied.        */
 const KEY = 'dd.v1';
 const QUARANTINE = 'dd.v1.unreadable';
-const SCHEMA = 8;
+const SCHEMA = 9;
 const defaults = {
   pbBlitz:0, pbStreak:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false,
   lang:null, seenVersion:null,
   lifetime:0, perks:[], perkLv:{}, tokens:0,
   dailyStreak:0, dailyLast:null, dailyBestStreak:0,
-  lastMode:null, onboarded:false
+  lastMode:null, onboarded:false,
+  tapes:[], tapeId:null
 };
 
 function migrate(data){
@@ -2160,6 +2253,17 @@ function migrate(data){
     if (typeof data.onboarded !== 'boolean') data.onboarded = (data.runs || 0) > 0;
     from = 8;
   }
+  if (from < 9){
+    /* Schema 9 turns the one anonymous list of modes into named tapes. The
+       list becomes the first tape rather than being thrown away, and it keeps
+       an empty name so it is still labelled in whatever language is read. */
+    if (!Array.isArray(data.tapes)) data.tapes = [];
+    if (!data.tapes.length && Array.isArray(data.mix) && data.mix.length)
+      data.tapes = [{ id:'t0', name:'', modes: data.mix.slice() }];
+    if (data.tapeId === undefined || data.tapeId === null)
+      data.tapeId = data.tapes.length ? data.tapes[0].id : null;
+    from = 9;
+  }
   if (from <= SCHEMA) data.schema = SCHEMA;
   return data;
 }
@@ -2192,6 +2296,12 @@ function pruneDaily(){
 }
 function persist(){
   pruneDaily();
+  /* The pre-tape field is kept as a mirror of the active tape rather than left
+     to rot. A save written here and then opened by an older build still finds a
+     rotation where it expects one, and the tapes survive to be picked up again
+     on the way back. Deleting the field would have made a downgrade silently
+     lose the Mixtape. */
+  if (typeof tapeModes === 'function' && Array.isArray(save.tapes)) save.mix = tapeModes();
   try { localStorage.setItem(KEY, JSON.stringify(save)); } catch(e){}
 }
 
@@ -2307,17 +2417,83 @@ const totalStars = () => MODE_IDS.reduce((n,id) => n + starsFor(id), 0);
 const masteredCount = () => MODE_IDS.filter(id => starsFor(id) >= 3).length;
 
 /* ═══ Custom rotation ═════════════════════════════════════════════════════ */
+/* ── Mixtapes ─────────────────────────────────────────────────────────────
+   One anonymous list of modes was the whole feature. You could not keep a
+   short tape for a bus ride and a long one for the sofa, you had no name for
+   the thing you had made, and there was no way to tell anyone what was on it.
+   A tape is a name and a set of mode ids — nothing else, which is also what
+   makes it small enough to send.                                          */
+const tapeList = () => { if (!Array.isArray(save.tapes)) save.tapes = []; return save.tapes; };
+const activeTape = () => { const l = tapeList(); return l.find(x => x.id === save.tapeId) || l[0] || null; };
+const tapeModes = () => { const tp = activeTape(); return tp ? tp.modes.filter(id => MODES[id]) : []; };
+const tapeName = (tp, i) => (tp && tp.name) || t('mix.untitled', { n: (i < 0 ? tapeList().length : i) + 1 });
+const tapeIndex = tp => tapeList().indexOf(tp);
+
+function newTape(name, modes){
+  const tape = {
+    id: 't' + Date.now().toString(36) + Math.floor(Math.random()*1296).toString(36),
+    name: name || '',
+    modes: (modes || []).filter(id => MODES[id])
+  };
+  tapeList().push(tape);
+  save.tapeId = tape.id;
+  persist();
+  return tape;
+}
+function deleteTape(tp){
+  const l = tapeList(), i = l.indexOf(tp);
+  if (i < 0) return;
+  l.splice(i, 1);
+  save.tapeId = l.length ? l[Math.max(0, i - 1)].id : null;
+  persist();
+}
+
 function mixModes(){
-  const chosen = (save.mix || []).filter(id => MODES[id]);
+  const chosen = tapeModes();
   /* A rotation of one is not a rotation. Below two, fall back to everything
      rather than silently handing the player a single-mode Shuffle. */
   return chosen.length >= 2 ? chosen : MODE_IDS.slice();
 }
 function toggleMix(id){
-  const set = new Set(save.mix || []);
+  const tape = activeTape() || newTape();
+  const set = new Set(tape.modes);
   if (set.has(id)) set.delete(id); else set.add(id);
-  save.mix = Array.from(set);
+  tape.modes = Array.from(set);
   persist();
+}
+
+/* A tape travels as its name and its mode ids and nothing else: no save, no
+   scores, nothing that identifies anybody. Ids rather than positions, so a
+   code written today still means the same modes after the roster grows. */
+const TAPE_PREFIX = 'DD1.';
+function b64url(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = ''; bytes.forEach(byte => { bin += String.fromCharCode(byte); });
+  return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function unb64url(str){
+  const s = str.replace(/-/g,'+').replace(/_/g,'/');
+  const bin = atob(s + '==='.slice((s.length + 3) % 4));
+  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+}
+function tapeCode(tp){
+  return TAPE_PREFIX + b64url((tp.name || '') + '\n' + tp.modes.filter(id => MODES[id]).join(','));
+}
+function readTapeCode(text){
+  const raw = String(text || '');
+  const at = raw.indexOf(TAPE_PREFIX);
+  if (at < 0) return null;
+  let body;
+  try { body = unb64url(raw.slice(at + TAPE_PREFIX.length).split(/[\s"'<>]/)[0]); }
+  catch(e){ return null; }
+  const nl = body.indexOf('\n');
+  if (nl < 0) return null;
+  const asked = body.slice(nl + 1).split(',').filter(Boolean);
+  /* A tape from a newer build can name modes this one has never heard of.
+     Take what is recognised and say how much was left behind. */
+  const modes = asked.filter(id => Object.prototype.hasOwnProperty.call(MODES, id));
+  if (!modes.length) return null;
+  return { name: body.slice(0, nl).slice(0, 24), modes, dropped: asked.length - modes.length };
 }
 
 /* ═══ Languages ═══════════════════════════════════════════════════════════
@@ -2419,6 +2595,7 @@ const STRINGS = {
     'p.bbListen':'Listen — two bars, then the gaps are yours', 'p.bbPlay':'Tap between the beats — {n} to go', 'bb.pad':'Tap between the beats', 'm.backbeat':'Backbeat|Tap between the beats, never on one', 'p.chorus':'One of these is not holding its tempo', 'chorus.lane':'Row {n}', 'm.chorus':'Chorus|Steady tempos, and one that is not staying steady', 'p.bridge':'{n} planks laid — reach the far bank', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Open water, column {x} row {y}, tap to lay a plank', 'bridge.plank':'A plank, column {x} row {y}, tap to lift it', 'm.bridge':'Bridge|Lay planks bank to bank — you have only so many', 'p.weave':'{n} squares still wrong', 'weave.want':'The pattern to match', 'weave.over':'Over, column {x} row {y}', 'weave.under':'Under, column {x} row {y}', 'm.weave':'Weave|Each tap pulls a whole row and column — match the cloth',
     'play.carryOn':'Carry on', 'play.carryBest':'Your best {n}', 'why.new':'Untried', 'why.star':'Near a star', 'why.rare':'Neglected', 'why.wild':'Wildcard',
     'wc.lead':'Fifty-two small puzzles. The one in front of you changes every round.', 'wc.p1':'Sixty seconds a run', 'wc.p2':'A different puzzle every round', 'wc.p3':'A miss costs time — a streak pays', 'wc.change':'Change', 'wc.start':'Start your first run', 'wc.look':'Look around first',
+    'mix.tapes':'Your mixtapes', 'mix.name':'Name this mixtape', 'mix.share':'Share this mixtape', 'mix.delete':'Delete this mixtape', 'mix.untitled':'Mixtape {n}', 'mix.newTape':'+ New', 'mix.paste':'Paste a code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Delete “{name}”?', 'mix.keep':'Keep', 'mix.deleteIt':'Delete', 'mix.shareText':'My Dopamine Drop mixtape “{name}” — {n} modes. Paste this code into the Mix tab: {code}', 'mix.importTitle':'Add a mixtape', 'mix.importSub':'Paste a code someone sent you. It carries a name and a list of modes, nothing else.', 'mix.importAdd':'Add it', 'mix.importBad':'No mixtape code in that. Paste the whole message — the code starts with DD1.', 'mix.importOk':'Added “{name}”.', 'mix.importN':'{n} modes.', 'mix.importN1':'One mode.', 'mix.importDropped':'{n} of its modes are not in this version and were left out.', 'mix.importDropped1':'One of its modes is not in this version and was left out.',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -2542,6 +2719,7 @@ const STRINGS = {
     'p.bbListen':'Écoutez — deux mesures, puis les silences sont à vous', 'p.bbPlay':'Touchez entre les temps — encore {n}', 'bb.pad':'Touchez entre les temps', 'm.backbeat':'Contretemps|Touchez entre les temps, jamais sur un temps', 'p.chorus':'L’une d’elles ne tient pas son tempo', 'chorus.lane':'Ligne {n}', 'm.chorus':'Chœur|Des tempos réguliers, et un qui ne l’est pas', 'p.bridge':'{n} planches posées — atteignez l’autre rive', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Eau libre, colonne {x} ligne {y}, touchez pour poser une planche', 'bridge.plank':'Une planche, colonne {x} ligne {y}, touchez pour la retirer', 'm.bridge':'Pont|Posez des planches d’une rive à l’autre — elles sont comptées', 'p.weave':'Encore {n} cases fausses', 'weave.want':'Le motif à reproduire', 'weave.over':'Dessus, colonne {x} ligne {y}', 'weave.under':'Dessous, colonne {x} ligne {y}', 'm.weave':'Tissage|Chaque touche tire toute une ligne et une colonne — reproduisez le tissu',
     'play.carryOn':'Reprendre', 'play.carryBest':'Votre record {n}', 'why.new':'Jamais joué', 'why.star':'Presque une étoile', 'why.rare':'Délaissé', 'why.wild':'Au hasard',
     'wc.lead':'Cinquante-deux petits casse-têtes. Celui qui est devant vous change à chaque manche.', 'wc.p1':'Soixante secondes par partie', 'wc.p2':'Un casse-tête différent à chaque manche', 'wc.p3':'Une erreur coûte du temps — une série rapporte', 'wc.change':'Changer', 'wc.start':'Lancer votre première partie', 'wc.look':'Jeter un œil d’abord',
+    'mix.tapes':'Vos playlists', 'mix.name':'Nommer cette playlist', 'mix.share':'Partager cette playlist', 'mix.delete':'Supprimer cette playlist', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Nouvelle', 'mix.paste':'Coller un code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Supprimer « {name} » ?', 'mix.keep':'Garder', 'mix.deleteIt':'Supprimer', 'mix.shareText':'Ma playlist Dopamine Drop « {name} » — {n} modes. Collez ce code dans l’onglet Mix : {code}', 'mix.importTitle':'Ajouter une playlist', 'mix.importSub':'Collez un code qu’on vous a envoyé. Il contient un nom et une liste de modes, rien d’autre.', 'mix.importAdd':'Ajouter', 'mix.importBad':'Aucun code de playlist là-dedans. Collez tout le message — le code commence par DD1.', 'mix.importOk':'« {name} » ajoutée.', 'mix.importN':'{n} modes.', 'mix.importN1':'Un mode.', 'mix.importDropped':'{n} de ses modes n’existent pas dans cette version et ont été écartés.', 'mix.importDropped1':'Un de ses modes n’existe pas dans cette version et a été écarté.',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -2665,6 +2843,7 @@ const STRINGS = {
     'p.bbListen':'Escucha — dos compases y los huecos son tuyos', 'p.bbPlay':'Toca entre los golpes — quedan {n}', 'bb.pad':'Toca entre los golpes', 'm.backbeat':'Contratiempo|Toca entre los golpes, nunca sobre uno', 'p.chorus':'Una de ellas no mantiene su tempo', 'chorus.lane':'Fila {n}', 'm.chorus':'Coro|Tempos estables, y uno que no lo es', 'p.bridge':'{n} tablones puestos — llega a la otra orilla', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Agua abierta, columna {x} fila {y}, toca para poner un tablón', 'bridge.plank':'Un tablón, columna {x} fila {y}, toca para quitarlo', 'm.bridge':'Puente|Pon tablones de orilla a orilla — están contados', 'p.weave':'Quedan {n} casillas mal', 'weave.want':'El patrón que hay que igualar', 'weave.over':'Encima, columna {x} fila {y}', 'weave.under':'Debajo, columna {x} fila {y}', 'm.weave':'Telar|Cada toque tira de toda una fila y columna — iguala la tela',
     'play.carryOn':'Continuar', 'play.carryBest':'Tu récord {n}', 'why.new':'Sin probar', 'why.star':'Cerca de una estrella', 'why.rare':'Olvidado', 'why.wild':'Al azar',
     'wc.lead':'Cincuenta y dos pequeños rompecabezas. El que tienes delante cambia en cada ronda.', 'wc.p1':'Sesenta segundos por partida', 'wc.p2':'Un rompecabezas distinto cada ronda', 'wc.p3':'Un fallo cuesta tiempo — una racha paga', 'wc.change':'Cambiar', 'wc.start':'Empieza tu primera partida', 'wc.look':'Echar un vistazo primero',
+    'mix.tapes':'Tus listas', 'mix.name':'Nombra esta lista', 'mix.share':'Compartir esta lista', 'mix.delete':'Borrar esta lista', 'mix.untitled':'Lista {n}', 'mix.newTape':'+ Nueva', 'mix.paste':'Pegar un código', 'mix.metaTape':'{name} · {n} modos', 'mix.delConfirm':'¿Borrar «{name}»?', 'mix.keep':'Conservar', 'mix.deleteIt':'Borrar', 'mix.shareText':'Mi lista de Dopamine Drop «{name}» — {n} modos. Pega este código en la pestaña Mix: {code}', 'mix.importTitle':'Añadir una lista', 'mix.importSub':'Pega un código que te hayan enviado. Lleva un nombre y una lista de modos, nada más.', 'mix.importAdd':'Añadirla', 'mix.importBad':'Ahí no hay ningún código de lista. Pega el mensaje entero — el código empieza por DD1.', 'mix.importOk':'Añadida «{name}».', 'mix.importN':'{n} modos.', 'mix.importN1':'Un modo.', 'mix.importDropped':'{n} de sus modos no están en esta versión y se han dejado fuera.', 'mix.importDropped1':'Uno de sus modos no está en esta versión y se ha dejado fuera.',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -2788,6 +2967,7 @@ const STRINGS = {
     'p.bbListen':'Hör zu — zwei Takte, dann gehören dir die Lücken', 'p.bbPlay':'Zwischen die Schläge tippen — noch {n}', 'bb.pad':'Zwischen die Schläge tippen', 'm.backbeat':'Nachschlag|Tippe zwischen die Schläge, nie auf einen', 'p.chorus':'Eine davon hält ihr Tempo nicht', 'chorus.lane':'Zeile {n}', 'm.chorus':'Chor|Gleichmäßige Tempi, und eines, das keines hält', 'p.bridge':'{n} Planken gelegt — erreiche das andere Ufer', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Offenes Wasser, Spalte {x} Zeile {y}, tippen zum Planken legen', 'bridge.plank':'Eine Planke, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Brücke|Lege Planken von Ufer zu Ufer — sie sind gezählt', 'p.weave':'Noch {n} Felder falsch', 'weave.want':'Das Muster, das passen muss', 'weave.over':'Oben, Spalte {x} Zeile {y}', 'weave.under':'Unten, Spalte {x} Zeile {y}', 'm.weave':'Weben|Jeder Tipp zieht eine ganze Zeile und Spalte — triff das Tuch',
     'play.carryOn':'Weiter', 'play.carryBest':'Dein Bestwert {n}', 'why.new':'Ungespielt', 'why.star':'Fast ein Stern', 'why.rare':'Vergessen', 'why.wild':'Zufall',
     'wc.lead':'Zweiundfünfzig kleine Rätsel. Das vor dir wechselt jede Runde.', 'wc.p1':'Sechzig Sekunden pro Runde', 'wc.p2':'Jede Runde ein anderes Rätsel', 'wc.p3':'Ein Fehler kostet Zeit — eine Serie zahlt sich aus', 'wc.change':'Ändern', 'wc.start':'Starte deine erste Runde', 'wc.look':'Erst mal umsehen',
+    'mix.tapes':'Deine Playlists', 'mix.name':'Diese Playlist benennen', 'mix.share':'Diese Playlist teilen', 'mix.delete':'Diese Playlist löschen', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Neu', 'mix.paste':'Code einfügen', 'mix.metaTape':'{name} · {n} Modi', 'mix.delConfirm':'„{name}“ löschen?', 'mix.keep':'Behalten', 'mix.deleteIt':'Löschen', 'mix.shareText':'Meine Dopamine-Drop-Playlist „{name}“ — {n} Modi. Füge diesen Code im Mix-Tab ein: {code}', 'mix.importTitle':'Playlist hinzufügen', 'mix.importSub':'Füge einen Code ein, den dir jemand geschickt hat. Er enthält einen Namen und eine Modusliste, sonst nichts.', 'mix.importAdd':'Hinzufügen', 'mix.importBad':'Darin steckt kein Playlist-Code. Füge die ganze Nachricht ein — der Code beginnt mit DD1.', 'mix.importOk':'„{name}“ hinzugefügt.', 'mix.importN':'{n} Modi.', 'mix.importN1':'Ein Modus.', 'mix.importDropped':'{n} ihrer Modi gibt es in dieser Version nicht und wurden weggelassen.', 'mix.importDropped1':'Einen ihrer Modi gibt es in dieser Version nicht, er wurde weggelassen.',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -2931,6 +3111,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.21.0', date:'2026-09-16', items:[
+    'Mixtapes have names, and you can keep more than one \u2014 a short one for a bus ride, a long one for the sofa. Tap between them in the Mix tab; the menu card names whichever is loaded.',
+    'A mixtape can be sent. The share button turns it into a short code; whoever gets it pastes it into the Mix tab and has your rotation. The code carries a name and a list of modes and absolutely nothing else.',
+    'A code from a newer build still works: modes this version has never heard of are left out, and it tells you how many.',
+    'Fixed \u2014 the whole Mix tab was written in English no matter which language you had chosen. The translations existed and were never used.',
+  ] },
   { v:'0.20.0', date:'2026-09-16', items:[
     'A first launch now opens on one screen rather than on fifty-two modes: what this is, the three things worth knowing, and a button that starts your first run. One screen, shown once, dismissed by either button.',
     'The app opens in your phone\u2019s language. It always had four and always opened in English, and the picker is two taps into Settings \u2014 which you only find if you already know it is there. It is on the welcome screen too, so the first thing you can change is the language you are reading.',
@@ -8776,7 +8962,7 @@ function modeCard(id, opts){
   });
   const best = save.marathon[id] || 0;
   card.querySelector('.pb').textContent = best ? String(best) : '';
-  const inMix = (save.mix || []).includes(id);
+  const inMix = tapeModes().includes(id);
   card.classList.toggle('inmix', opts.mode === 'mix' && inMix);
   card.querySelector('.pin').hidden = !(opts.mode === 'mix' && inMix);
   card.querySelector('.why').hidden = true;   /* the caller turns it back on */
@@ -8824,9 +9010,9 @@ function paintChrome(){
 
 function paintPlay(){
   $('shuffleBest').textContent = save.pbBlitz ? t('hero.best') + ' ' + fmt(save.pbBlitz) : '';
-  const chosen = (save.mix || []).filter(id => MODES[id]);
+  const chosen = tapeModes(), tape = activeTape();
   $('mixMeta').textContent = chosen.length >= 2
-    ? t('mix.nChosen', { n: chosen.length })
+    ? t('mix.metaTape', { name: tapeName(tape, tapeIndex(tape)), n: chosen.length })
     : t('mix.tapToChoose');
   const dv = save.daily[todayKey()], dSt = dailyStreak();
   $('dailyMeta').textContent = dSt ? streakLine(dSt)
@@ -8967,9 +9153,41 @@ function paintModes(){
   $('modeFindX').hidden = !modeQuery;
 }
 
+function paintTapeStrip(){
+  const list = tapeList(), tape = activeTape();
+  const strip = $('tapeStrip');
+  strip.replaceChildren();
+  list.forEach((tp, i) => {
+    const b = mk('button','tapechip' + (tape && tp.id === tape.id ? ' on' : ''));
+    b.type = 'button';
+    b.innerHTML = '<span></span><u></u>';
+    b.querySelector('span').textContent = tapeName(tp, i);
+    b.querySelector('u').textContent = tp.modes.filter(id => MODES[id]).length;
+    onTap(b, () => { save.tapeId = tp.id; persist(); sfx.tap(); hideTapeConfirm(); paintMix(); paintPlay(); });
+    strip.appendChild(b);
+  });
+  [[t('mix.newTape'), () => { newTape(); sfx.tap(); hideTapeConfirm(); paintMix(); paintPlay(); }],
+   [t('mix.paste'),   openTapeImport]].forEach(([label, fn]) => {
+    const b = mk('button','tapechip add');
+    b.type = 'button';
+    b.innerHTML = '<span></span>';
+    b.querySelector('span').textContent = label;
+    onTap(b, fn);
+    strip.appendChild(b);
+  });
+}
+
 function paintMix(){
-  const chosen = (save.mix || []).filter(id => MODES[id]);
-  $('mixCount').textContent = t('mix.chosen', { n: chosen.length });
+  const tape = activeTape();
+  paintTapeStrip();
+  const name = $('tapeName');
+  name.value = tape ? tapeName(tape, tapeIndex(tape)) : '';
+  name.disabled = !tape;
+  $('tapeShare').disabled = !tape || !tape.modes.length;
+  $('tapeDel').disabled = !tape;
+
+  const chosen = tapeModes();
+  $('mixNote').innerHTML = t('mix.note', { n: chosen.length });
   fillGrid($('mixGrid'), MODE_IDS, { mode:'mix', onTap:null });
   Array.from($('mixGrid').children).forEach((c,i) => {
     c.onclick = () => { toggleMix(MODE_IDS[i]); sfx.tap(); buzz(8); paintMix(); paintPlay(); };
@@ -9324,10 +9542,9 @@ Array.from(el.tabbar.children).forEach(b =>
 
 $('shuffleBtn').addEventListener('click', () => startRun('shuffle'));
 $('mixBtn').addEventListener('click', () => {
-  const chosen = (save.mix || []).filter(id => MODES[id]);
   /* First tap opens the editor, because a Mixtape nobody has built is just
      Shuffle with a different name. */
-  if (chosen.length >= 2) startRun('mix'); else goTab('Mix');
+  if (tapeModes().length >= 2) startRun('mix'); else goTab('Mix');
 });
 $('dailyBtn').addEventListener('click', () => startRun('daily'));
 $('zenBtn').addEventListener('click', () => startRun('zen', pick(MODE_IDS, Math.random)));
@@ -9339,9 +9556,92 @@ $('modeFindX').addEventListener('click', () => {
 });
 $('mixDone').addEventListener('click', () => goTab('Play'));
 $('mixAll').addEventListener('click', () => {
-  const all = (save.mix || []).length === MODE_IDS.length;
-  save.mix = all ? [] : MODE_IDS.slice();
+  const tape = activeTape() || newTape();
+  tape.modes = tape.modes.length === MODE_IDS.length ? [] : MODE_IDS.slice();
   persist(); paintMix(); paintPlay();
+});
+
+/* ── Mixtape: naming, deleting, sending, receiving ────────────────────────── */
+$('tapeName').addEventListener('input', ev => {
+  const tape = activeTape();
+  if (!tape) return;
+  tape.name = (ev.target.value || '').slice(0, 24);
+  persist();
+  /* The strip and the menu card, never the field being typed into — repainting
+     that mid-word puts the caret back at the end and, worse, once left a tape's
+     old name on screen after switching to a different one. */
+  paintTapeStrip(); paintPlay();
+});
+
+function hideTapeConfirm(){ $('tapeConfirm').hidden = true; $('tapeRow').hidden = false; }
+$('tapeDel').addEventListener('click', () => {
+  const tape = activeTape();
+  if (!tape) return;
+  $('tapeConfirmTxt').textContent = t('mix.delConfirm', { name: tapeName(tape, tapeIndex(tape)) });
+  $('tapeConfirm').hidden = false;
+  $('tapeRow').hidden = true;
+});
+$('tapeKeep').addEventListener('click', hideTapeConfirm);
+$('tapeGone').addEventListener('click', () => {
+  const tape = activeTape();
+  hideTapeConfirm();
+  if (tape) deleteTape(tape);
+  sfx.tap(); paintMix(); paintPlay();
+});
+
+$('tapeShare').addEventListener('click', () => {
+  const tape = activeTape();
+  if (!tape || !tape.modes.length) return;
+  const btn = $('tapeShare');
+  const code = tapeCode(tape);
+  const text = t('mix.shareText', {
+    name: tapeName(tape, tapeIndex(tape)),
+    n: tape.modes.filter(id => MODES[id]).length,
+    code
+  });
+  const flash = () => {
+    btn.classList.add('done');
+    setTimeout(() => btn.classList.remove('done'), 1800);
+  };
+  const copy = () => {
+    try { navigator.clipboard.writeText(text).then(flash, () => {}); } catch(e){}
+  };
+  if (navigator.share){
+    /* A cancelled share must not fall through to the clipboard: that would put
+       something on it the player chose not to send. */
+    navigator.share({ text }).then(flash, err => { if (!err || err.name !== 'AbortError') copy(); });
+  } else copy();
+});
+
+function openTapeImport(){
+  $('tapePaste').value = '';
+  const say = $('tapeSay'); say.hidden = true; say.className = 'tapesay';
+  $('tapeSheet').hidden = false;
+  $('tapePaste').focus();
+}
+$('tapeSheetClose').addEventListener('click', () => { $('tapeSheet').hidden = true; });
+$('tapeSheet').addEventListener('click', ev => {
+  if (ev.target === $('tapeSheet')) $('tapeSheet').hidden = true;
+});
+$('tapeAdd').addEventListener('click', () => {
+  const say = $('tapeSay');
+  const got = readTapeCode($('tapePaste').value);
+  say.hidden = false;
+  if (!got){
+    say.className = 'tapesay bad';
+    say.textContent = t('mix.importBad');
+    return;
+  }
+  newTape(got.name, got.modes);
+  say.className = 'tapesay good';
+  /* "1 modes" is the kind of thing that makes a screen look unfinished. */
+  const one = (key, n) => t(n === 1 ? key + '1' : key, { n });
+  say.textContent = t('mix.importOk', { name: got.name || t('mix.untitled', { n: tapeList().length }) })
+    + ' ' + one('mix.importN', got.modes.length)
+    + (got.dropped ? ' ' + one('mix.importDropped', got.dropped) : '');
+  sfx.good(1);
+  paintMix(); paintPlay();
+  setTimeout(() => { $('tapeSheet').hidden = true; }, 1400);
 });
 
 /* Every Daily is the same twelve puzzles for everyone that day, which is the
