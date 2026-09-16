@@ -297,6 +297,29 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .hbit{position:absolute;display:block;border-radius:50%;
   background:radial-gradient(circle at 34% 30%,#ffe29a,#f0a81c);box-shadow:inset 0 -2px 4px #00000033}
 
+/* ── Tell ─────────────────────────────────────────────────────────────── */
+.tellwrap{display:flex;flex-direction:column;gap:8px;width:100%;height:100%;min-height:0}
+.tlog{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:5px;
+  padding:6px;border-radius:var(--r-md);background:#ffffff05;border:1px solid var(--edge-soft)}
+.trow{display:flex;align-items:center;gap:6px}
+.trow.tnow{gap:10px;justify-content:center;padding:4px 0}
+.trow.got .tpeg{box-shadow:0 0 0 2px var(--cool)}
+.trow.truth{opacity:.85;border-top:1px dashed var(--bad);padding-top:5px}
+.tpeg{display:block;width:44px;height:44px;border-radius:50%;flex:none;
+  box-shadow:inset 0 -3px 0 #00000033}
+.tpeg.small{width:22px;height:22px;box-shadow:inset 0 -2px 0 #00000033}
+.tslot{padding:0;border:none;background:none;border-radius:50%;cursor:pointer;
+  display:grid;place-items:center;min-width:44px;min-height:44px}
+.tslot:active{transform:scale(.93)}
+.tmarks{display:flex;flex-wrap:wrap;gap:3px;margin-left:auto;max-width:44%;justify-content:flex-end}
+.tm{display:block;width:9px;height:9px;border-radius:50%;box-sizing:border-box}
+.tm.hit{background:var(--cool)}
+.tm.near{border:2px solid var(--haze)}
+.tgo{flex:none;height:44px;border-radius:var(--r-md);border:2px solid var(--cool);
+  background:#33e6c81a;color:var(--cream);font-family:var(--f-disp);font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;font-size:13px;cursor:pointer}
+.tgo:active{transform:scale(.98)}
+
 /* ── Siphon ───────────────────────────────────────────────────────────── */
 .siphonwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
   flex-direction:column;justify-content:space-between;padding:6% 4%;box-sizing:border-box}
@@ -1278,7 +1301,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.5</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.6</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1427,7 +1450,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.13.5 (45)';
+const VERSION = 'v0.13.6 (46)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1706,6 +1729,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.tell':'{n} guesses left', 'tell.check':'Check', 'tell.slot':'Peg {n}, {c}, tap to change', 'tell.result':'{a} in place, {b} in the wrong place', 'm.tell':'Tell|Guess the row — every wrong guess tells you something',
     'p.heft':'Which side weighs more?', 'heft.pile':'A pile of {n} pieces', 'm.heft':'Heft|Which pile weighs more? Counting will not tell you',
     'p.forge':'{n} squares of the mould still open', 'forge.hole':'Mould, column {x} row {y}', 'forge.solid':'Solid, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Forge|Fit every part into the mould — nothing left over',
     'p.gather':'{n} more to catch — let the dark ones fall', 'gather.pail':'Your pail', 'gather.keep':'A ripe one, worth catching', 'gather.dud':'A dud, let it fall', 'm.gather':'Gather|Catch the ripe ones, let the rest fall',
@@ -1815,6 +1839,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.tell':'{n} essais restants', 'tell.check':'Vérifier', 'tell.slot':'Pion {n}, {c}, touchez pour changer', 'tell.result':'{a} bien placés, {b} mal placés', 'm.tell':'Indice|Devinez la rangée — chaque erreur vous apprend quelque chose',
     'p.heft':'Quel côté pèse le plus ?', 'heft.pile':'Un tas de {n} pièces', 'm.heft':'Poids|Quel tas pèse le plus ? Compter ne vous dira rien',
     'p.forge':'Encore {n} cases du moule', 'forge.hole':'Moule, colonne {x} ligne {y}', 'forge.solid':'Plein, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Forge|Placez chaque pièce dans le moule — rien en trop',
     'p.gather':'Encore {n} à attraper — laissez tomber les sombres', 'gather.pail':'Votre seau', 'gather.keep':'Un mûr, à attraper', 'gather.dud':'Un gâté, laissez-le tomber', 'm.gather':'Récolte|Attrapez les mûrs, laissez tomber le reste',
@@ -1924,6 +1949,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.tell':'Quedan {n} intentos', 'tell.check':'Comprobar', 'tell.slot':'Ficha {n}, {c}, toca para cambiar', 'tell.result':'{a} en su sitio, {b} fuera de sitio', 'm.tell':'Pista|Adivina la fila — cada fallo te dice algo',
     'p.heft':'¿Qué lado pesa más?', 'heft.pile':'Un montón de {n} piezas', 'm.heft':'Peso|¿Qué montón pesa más? Contar no te lo dirá',
     'p.forge':'Quedan {n} casillas del molde', 'forge.hole':'Molde, columna {x} fila {y}', 'forge.solid':'Macizo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Fragua|Encaja cada pieza en el molde — sin sobras',
     'p.gather':'{n} más que atrapar — deja caer los oscuros', 'gather.pail':'Tu cubo', 'gather.keep':'Uno maduro, para atrapar', 'gather.dud':'Uno malo, déjalo caer', 'm.gather':'Cosecha|Atrapa los maduros, deja caer el resto',
@@ -2033,6 +2059,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.tell':'Noch {n} Versuche', 'tell.check':'Prüfen', 'tell.slot':'Stift {n}, {c}, zum Wechseln tippen', 'tell.result':'{a} richtig platziert, {b} an falscher Stelle', 'm.tell':'Hinweis|Errate die Reihe — jeder Fehlversuch verrät etwas',
     'p.heft':'Welche Seite wiegt mehr?', 'heft.pile':'Ein Haufen aus {n} Stücken', 'm.heft':'Gewicht|Welcher Haufen wiegt mehr? Zählen hilft nicht',
     'p.forge':'Noch {n} Felder der Form offen', 'forge.hole':'Form, Spalte {x} Zeile {y}', 'forge.solid':'Massiv, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Schmiede|Füge jedes Teil in die Form — nichts bleibt übrig',
     'p.gather':'Noch {n} zu fangen — die dunklen fallen lassen', 'gather.pail':'Dein Eimer', 'gather.keep':'Ein reifer, den fängst du', 'gather.dud':'Ein fauler, lass ihn fallen', 'm.gather':'Ernte|Fang die reifen, lass den Rest fallen',
@@ -2168,6 +2195,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.13.6', date:'2026-09-16', items:[
+    'New mode — Tell. Guess the row; every guess comes back with how many pegs are right in the right place and how many are the right colour in the wrong place.',
+    'The only mode where being wrong is useful. Losing is running out of guesses, not guessing wrong.',
+  ] },
   { v:'0.13.5', date:'2026-09-16', items:[
     'New mode — Heft. Two piles, one weighs more. The lighter pile usually holds more pieces, so counting them is the wrong move.',
     'The gap narrows from a third down to six per cent as you climb, which is about as fine as an eye can call without a ruler.',
@@ -6442,6 +6473,108 @@ const MODES = {
       });
 
       ctx.prompt(t('p.heft'));
+    }
+  },
+
+  /* ── Tell — the only mode that answers a wrong answer ─────────────────────
+     Everywhere else a wrong answer costs you the round and tells you nothing.
+     Here it is the only way to learn anything: every guess comes back with how
+     many pegs are right in the right place and how many are the right colour in
+     the wrong place, and the board is the record of what you have ruled out.
+     Losing is running out of guesses, not guessing wrong — so the skill is
+     spending each guess on the one that divides the remaining possibilities,
+     which is a thing no other mode in the roster rewards. */
+  tell: {
+    name:'Tell', blurb:'Guess the row — every wrong guess tells you something', cat:'logic', par:18000, bonus:4600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="7" r="2.6" fill="#33E6C8"/><circle cx="12" cy="7" r="2.6" fill="#33E6C8" opacity=".55"/><circle cx="18.5" cy="7" r="2.6" fill="#33E6C8" opacity=".3"/><circle cx="6" cy="16" r="1.5" fill="#33E6C8"/><circle cx="11" cy="16" r="1.5" fill="none" stroke="#33E6C8" stroke-width="1.2"/><circle cx="16" cy="16" r="1.5" fill="none" stroke="#33E6C8" stroke-width="1.2" opacity=".5"/></svg>',
+    build(ctx){
+      const k    = ctx.level < 8 ? 3 : 4;                       /* pegs in the row */
+      const c    = clamp(4 + Math.floor(ctx.level/7), 4, 6);    /* colours in play */
+      const rows = k + 3;                                       /* guesses allowed */
+      const pal  = shuffle(INKS.slice(), ctx.rnd).slice(0, c);
+      const code = Array.from({length:k}, () => Math.floor(ctx.rnd()*c));
+
+      /* Right colour right place, and right colour wrong place. Counted the
+         standard way: exact matches are removed before the loose ones are
+         paired off, so a colour can never be credited twice. */
+      const score = guess => {
+        let exact = 0;
+        const g = {}, d = {};
+        for (let i = 0; i < k; i++){
+          if (guess[i] === code[i]) exact++;
+          else { g[guess[i]] = (g[guess[i]]||0) + 1; d[code[i]] = (d[code[i]]||0) + 1; }
+        }
+        let near = 0;
+        for (const key in g) near += Math.min(g[key], d[key] || 0);
+        return { exact, near };
+      };
+
+      const wrap = mk('div','tellwrap');
+      const log  = mk('div','tlog');
+      wrap.appendChild(log);
+      const bar  = mk('div','trow tnow');
+      const btn  = mk('button','tgo');
+      btn.type = 'button';
+      btn.textContent = t('tell.check');
+      wrap.appendChild(bar);
+      wrap.appendChild(btn);
+      ctx.surface.appendChild(wrap);
+
+      const peg = (ci, cls) => {
+        const e = mk('i', 'tpeg' + (cls ? ' ' + cls : ''));
+        const ink = pal[ci];
+        e.style.background = ink.hex;
+        if (assistOn()) e.innerHTML = shapeSvg(ink.shape, '#0D0918');
+        e.setAttribute('aria-label', ink.name);
+        return e;
+      };
+
+      const guess = Array.from({length:k}, () => 0);
+      let used = 0, done = false;
+
+      const slots = [];
+      for (let i = 0; i < k; i++){
+        const b = mk('button','tslot');
+        b.type = 'button';
+        const draw = () => {
+          b.innerHTML = '';
+          b.appendChild(peg(guess[i]));
+          b.setAttribute('aria-label', t('tell.slot', { n: i + 1, c: pal[guess[i]].name }));
+        };
+        draw();
+        onTap(b, () => { if (done) return; guess[i] = (guess[i] + 1) % c; draw(); });
+        bar.appendChild(b); slots.push({ b, draw });
+      }
+
+      const say = () => ctx.prompt(t('p.tell', { n: rows - used }));
+      say();
+
+      onTap(btn, () => {
+        if (done) return;
+        const r = score(guess);
+        const line = mk('div','trow');
+        guess.forEach(ci => line.appendChild(peg(ci, 'small')));
+        const marks = mk('span','tmarks');
+        for (let i = 0; i < r.exact; i++) marks.appendChild(mk('u','tm hit'));
+        for (let i = 0; i < r.near;  i++) marks.appendChild(mk('u','tm near'));
+        marks.setAttribute('aria-label', t('tell.result', { a: r.exact, b: r.near }));
+        line.appendChild(marks);
+        log.appendChild(line);
+        log.scrollTop = log.scrollHeight;
+        used++;
+        if (r.exact === k){
+          done = true; line.classList.add('got'); return ctx.win(line);
+        }
+        if (used >= rows){
+          done = true;
+          const truth = mk('div','trow truth');
+          code.forEach(ci => truth.appendChild(peg(ci, 'small')));
+          log.appendChild(truth);
+          log.scrollTop = log.scrollHeight;
+          return ctx.miss(truth);
+        }
+        say();
+      });
     }
   },
 };
