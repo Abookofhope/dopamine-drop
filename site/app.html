@@ -660,6 +660,24 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .ltcrow.lined .ltcstrip{border-color:var(--cool);background:#33e6c80f}
 .ltcrow.lined .ltccell.notch{background:var(--cool);box-shadow:0 0 12px #33e6c877}
 
+/* ── Splice ───────────────────────────────────────────────────────────── */
+.splwrap{display:flex;gap:12px;width:100%;height:100%;
+  min-height:0;min-width:0;max-width:100%;align-items:center;justify-content:center}
+.splcol{display:flex;flex-direction:column;gap:9px;flex:1 1 0;min-width:0;max-width:150px}
+.spltile{
+  width:100%;min-height:48px;padding:10px 6px;border-radius:13px;cursor:pointer;
+  border:1px solid var(--edge);background:#ffffff06;color:var(--cream);
+  font-family:var(--f-disp);font-weight:800;font-size:19px;letter-spacing:.06em;
+  transition:border-color var(--t-fast),background var(--t-fast),
+             color var(--t-fast),transform var(--t-fast);
+}
+.spltile:active{transform:scale(.96)}
+.spltile.on{border-color:#4BC0FF;background:#4bc0ff1f;color:#9ad9ff}
+.spltile.locked{border-color:var(--cool);background:#33e6c814;color:var(--cool);cursor:default}
+.spltile.wrong{border-color:var(--bad);background:#ff3d6e14;color:var(--bad)}
+.spltile.nudge{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
+.splwrap.good .spltile{border-color:var(--cool)}
+
 /* ── Chorus ───────────────────────────────────────────────────────────── */
 .chwrap{display:flex;flex-direction:column;gap:12px;width:100%;height:100%;
   min-height:0;min-width:0;max-width:100%;justify-content:center}
@@ -2018,7 +2036,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.21.4</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.22.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -2267,7 +2285,7 @@ function dailyStreak(){
 const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.21.4 (56)';
+const VERSION = 'v0.22.0 (57)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2706,6 +2724,7 @@ const STRINGS = {
     'p.keepListen':'Four beats — then it is only you', 'p.keepGo':'Keep the beat — {n} to go', 'keep.pad':'Keep tapping the beat after the sound stops', 'm.keep':'Keep|The pulse stops — keep it going anyway',
     'p.braid':'{n} strands still out of place', 'braid.want':'The braid to match', 'braid.wantIs':'The braid to match, left to right: {list}', 'braid.strand':'Strand {n}, {c}', 'braid.cross':'Cross {a} and {b}', 'm.braid':'Braid|Cross the strands until they match the pattern',
     'p.latch':'{n} rows still off the line', 'latch.row':'Row {n}, notch at position {c}', 'latch.left':'Turn row {n} left', 'latch.right':'Turn row {n} right', 'm.latch':'Latch|Turn the rows until every notch lines up',
+    'p.splice':'{n} words still in pieces', 'splice.head':'Beginning: {s}', 'splice.tail':'Ending: {s}', 'm.splice':'Splice|Put the beginnings back on the right endings',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -2834,6 +2853,7 @@ const STRINGS = {
     'p.keepListen':'Quatre temps — ensuite il n’y a plus que vous', 'p.keepGo':'Tenez le tempo — encore {n}', 'keep.pad':'Continuez à marquer le temps après le silence', 'm.keep':'Tenir|Le pouls s’arrête — continuez quand même',
     'p.braid':'Encore {n} brins mal placés', 'braid.want':'La tresse à reproduire', 'braid.wantIs':'La tresse à reproduire, de gauche à droite : {list}', 'braid.strand':'Brin {n}, {c}', 'braid.cross':'Croiser {a} et {b}', 'm.braid':'Tresse|Croisez les brins jusqu’à reproduire le motif',
     'p.latch':'Encore {n} rangées hors de l’axe', 'latch.row':'Rangée {n}, encoche en position {c}', 'latch.left':'Tourner la rangée {n} vers la gauche', 'latch.right':'Tourner la rangée {n} vers la droite', 'm.latch':'Loquet|Tournez les rangées jusqu’à aligner toutes les encoches',
+    'p.splice':'Encore {n} mots en morceaux', 'splice.head':'Début : {s}', 'splice.tail':'Fin : {s}', 'm.splice':'Recoller|Remettez chaque début sur la bonne fin',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -2962,6 +2982,7 @@ const STRINGS = {
     'p.keepListen':'Cuatro pulsos — después solo quedas tú', 'p.keepGo':'Mantén el pulso — quedan {n}', 'keep.pad':'Sigue marcando el pulso cuando pare el sonido', 'm.keep':'Mantener|El pulso se detiene — mantenlo tú',
     'p.braid':'Quedan {n} hebras fuera de sitio', 'braid.want':'La trenza que hay que igualar', 'braid.wantIs':'La trenza que hay que igualar, de izquierda a derecha: {list}', 'braid.strand':'Hebra {n}, {c}', 'braid.cross':'Cruzar {a} y {b}', 'm.braid':'Trenza|Cruza las hebras hasta igualar el patrón',
     'p.latch':'Quedan {n} filas fuera de la línea', 'latch.row':'Fila {n}, muesca en la posición {c}', 'latch.left':'Girar la fila {n} a la izquierda', 'latch.right':'Girar la fila {n} a la derecha', 'm.latch':'Pestillo|Gira las filas hasta alinear todas las muescas',
+    'p.splice':'Quedan {n} palabras partidas', 'splice.head':'Principio: {s}', 'splice.tail':'Final: {s}', 'm.splice':'Empalme|Vuelve a unir cada principio con su final',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3090,6 +3111,7 @@ const STRINGS = {
     'p.keepListen':'Vier Schläge — danach nur noch du', 'p.keepGo':'Halte den Takt — noch {n}', 'keep.pad':'Weiter im Takt tippen, wenn der Ton aufhört', 'm.keep':'Halten|Der Puls hört auf — halte ihn trotzdem',
     'p.braid':'Noch {n} Stränge falsch', 'braid.want':'Der Zopf, der passen muss', 'braid.wantIs':'Der Zopf, der passen muss, von links nach rechts: {list}', 'braid.strand':'Strang {n}, {c}', 'braid.cross':'{a} und {b} kreuzen', 'm.braid':'Zopf|Kreuze die Stränge, bis das Muster passt',
     'p.latch':'Noch {n} Reihen neben der Linie', 'latch.row':'Reihe {n}, Kerbe an Position {c}', 'latch.left':'Reihe {n} nach links drehen', 'latch.right':'Reihe {n} nach rechts drehen', 'm.latch':'Riegel|Dreh die Reihen, bis jede Kerbe auf einer Linie steht',
+    'p.splice':'Noch {n} Wörter in Teilen', 'splice.head':'Anfang: {s}', 'splice.tail':'Ende: {s}', 'm.splice':'Fügen|Setz jeden Anfang wieder auf sein richtiges Ende',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3233,6 +3255,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.22.0', date:'2026-09-16', items:[
+    'New mode \u2014 Splice. The other three word modes work on one word at a time; this one is about the set. Four words cut in half with the endings shuffled, and no beginning fits any ending but its own \u2014 which is checked when the board is built, not hoped for.',
+  ] },
   { v:'0.21.4', date:'2026-09-16', items:[
     'New mode \u2014 Latch. A lock, taken apart: turn the rows past each other until every notch stands on one line. It does not care which line, which is the whole puzzle \u2014 the cheapest column to meet in is rarely the one any single row is already at.',
     'Make now has five modes and Rhythm six. They had one and two when this started.',
@@ -8717,6 +8742,116 @@ const MODES = {
         ctx.prompt(t('p.latch', { n: rows - best }));
       };
       paint();
+    }
+  },
+
+  /* ── Splice ───────────────────────────────────────────────────────────── */
+  splice: {
+    name:'Splice', blurb:'Put the beginnings back on the right endings', cat:'words', par:14000, bonus:4000,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="8" height="6" rx="2" fill="#4BC0FF"/><rect x="13.5" y="4" width="8" height="6" rx="2" fill="#4BC0FF" opacity=".45"/><rect x="2.5" y="14" width="8" height="6" rx="2" fill="#4BC0FF" opacity=".45"/><rect x="13.5" y="14" width="8" height="6" rx="2" fill="#4BC0FF"/><path d="M11 7h2M11 17h2" stroke="#4BC0FF" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    build(ctx){
+      /* The three word modes all work on one word at a time. This one is about
+         the set: four words cut in half, the endings shuffled, and the only
+         thing stopping it being guesswork is that no beginning fits any ending
+         but its own. That is checked rather than hoped for — a board where two
+         answers both spell real words is thrown away and rebuilt. */
+      const len  = ctx.level >= 14 ? 6 : ctx.level >= 6 ? 5 : 4;
+      const want = 3 + Math.min(1, Math.floor(ctx.level/10));
+      const bank = wordBank()[len] || wordBank()[4];
+      const cut  = Math.floor(len / 2);
+      const known = new Set(bank);
+
+      let words = null;
+      for (let attempt = 0; attempt < 40 && !words; attempt++){
+        const pick = [];
+        for (let i = 0; i < want; i++){
+          const w = ctx.deal(bank, 'splice:' + save.lang + ':' + len);
+          if (!pick.includes(w)) pick.push(w);
+        }
+        if (pick.length < want) continue;
+        const heads = pick.map(w => w.slice(0, cut));
+        const tails = pick.map(w => w.slice(cut));
+        /* A cross-pairing that also spells a word would make two answers right
+           and the board unfair. */
+        let clean = true;
+        for (let i = 0; i < want && clean; i++)
+          for (let j = 0; j < want; j++)
+            if (i !== j && known.has(heads[i] + tails[j])){ clean = false; break; }
+        if (clean) words = pick;
+      }
+      /* Two words never collide with each other in a way three might, so the
+         smallest honest board is the fallback rather than an unfair bigger one. */
+      if (!words) words = [ctx.deal(bank, 'splice:' + save.lang + ':' + len),
+                           ctx.deal(bank, 'splice:' + save.lang + ':' + len)]
+                          .filter((w, i, a) => a.indexOf(w) === i);
+
+      const heads = words.map(w => w.slice(0, cut));
+      const tails = words.map(w => w.slice(cut));
+      const tailOrder = shuffle(tails.map((_, i) => i), ctx.rnd);
+
+      const wrap = mk('div','splwrap');
+      const colA = mk('div','splcol');
+      const colB = mk('div','splcol');
+      wrap.appendChild(colA); wrap.appendChild(colB);
+      ctx.surface.appendChild(wrap);
+
+      const budget = moveBudget(ctx, words.length);
+      let done = false, sel = -1, joined = 0;
+      const headEls = [], tailEls = [];
+
+      const say = () => ctx.prompt(t('p.splice', { n: words.length - joined }));
+
+      heads.forEach((h, i) => {
+        const b = mk('button','spltile head');
+        b.type = 'button';
+        b.textContent = h;
+        b.setAttribute('aria-label', t('splice.head', { s: h.split('').join(' ') }));
+        colA.appendChild(b); headEls.push(b);
+      });
+      tailOrder.forEach((src, slot) => {
+        const b = mk('button','spltile tail');
+        b.type = 'button';
+        b.textContent = tails[src];
+        b.dataset.src = String(src);
+        b.setAttribute('aria-label', t('splice.tail', { s: tails[src].split('').join(' ') }));
+        colB.appendChild(b); tailEls.push(b);
+      });
+
+      const clearSel = () => { headEls.forEach(e => e.classList.remove('on')); sel = -1; };
+
+      headEls.forEach((b, i) => onTap(b, () => {
+        if (done || b.classList.contains('locked')) return;
+        clearSel();
+        sel = i; b.classList.add('on');
+        sfx.tap();
+      }));
+
+      tailEls.forEach(b => onTap(b, () => {
+        if (done || b.classList.contains('locked')) return;
+        if (sel < 0){ b.classList.add('nudge'); ctx.after(320, () => b.classList.remove('nudge')); return; }
+        const src = Number(b.dataset.src);
+        const head = headEls[sel];
+        if (src === sel){
+          head.classList.add('locked'); head.classList.remove('on');
+          b.classList.add('locked');
+          joined++;
+          sfx.good(joined);
+          clearSel();
+          if (joined >= words.length){
+            done = true;
+            wrap.classList.add('good');
+            return ctx.win(b);
+          }
+          say();
+        } else {
+          head.classList.add('wrong'); b.classList.add('wrong');
+          ctx.after(320, () => { head.classList.remove('wrong'); b.classList.remove('wrong'); });
+          clearSel();
+          budget.spend(b);
+          say();
+        }
+      }));
+      say();
     }
   },
 };
