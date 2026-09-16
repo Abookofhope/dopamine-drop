@@ -739,6 +739,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;
   scrollbar-width:none;scroll-snap-type:x proximity;min-width:0;max-width:100%;
   padding:2px 0 10px;margin:0 calc(var(--gut) * -1);padding-inline:var(--gut);
+  /* The strip bleeds to both screen edges and pads itself back in. Snapping
+     aligns a chip's edge with the SCROLLPORT edge, which is the screen edge, so
+     the browser scrolled that padding away on load and the first chip sat flush
+     against the glass with its rounded cap cut off. Snap to the gutter instead. */
+  scroll-padding-inline:var(--gut);
 }
 .catstrip::-webkit-scrollbar{display:none}
 .catchip{
@@ -763,7 +768,15 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 /* A card wears its family colour on the glyph, so the roster reads as grouped
    even when it is scrolled past the headings. */
 .mcard .glyph{border-radius:8px}
-.mcard[data-cat]{border-left:2px solid var(--cink,transparent)}
+/* The family accent used to be a left border. A 2px border on a box with a
+   16px radius gets tapered away by the corners at both ends, leaving a thin
+   crescent that reads as a rendering fault rather than a deliberate rail. An
+   inset bar with its own radius reads as what it is. */
+.mcard[data-cat]{overflow:hidden}
+.mcard[data-cat]::before{
+  content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;
+  border-radius:0 3px 3px 0;background:var(--cink,transparent);
+}
 .mcard{
   position:relative;border:1px solid var(--edge-soft);border-radius:var(--r-lg);
   background:#ffffff05;padding:12px;text-align:left;
@@ -776,14 +789,17 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .mcard .glyph svg{width:100%;height:100%;display:block}
 .mcard b{font-size:13px;font-weight:650;line-height:1.2}
 .mcard small{font-size:10px;color:var(--haze);line-height:1.3;flex:1}
-.mcard .foot{display:flex;align-items:center;gap:6px}
+/* A card with a score has a 10px line in this row and a card without has only
+   9px stars, so the row was 3px taller on played modes and the stars sat at two
+   different heights across a pair. Fix the row's height so the floor is level. */
+.mcard .foot{display:flex;align-items:center;gap:6px;min-height:15px}
 .stars{display:flex;gap:2px}
 .stars i{
   width:9px;height:9px;display:block;font-style:normal;
   background:var(--edge);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
 }
 .stars i.on{background:var(--zap)}
-.mcard .pb{margin-left:auto;font-family:var(--f-data);font-size:10px;color:var(--haze)}
+.mcard .pb{margin-left:auto;font-family:var(--f-data);font-size:10px;line-height:1;color:var(--haze)}
 .mcard.inmix{border-color:var(--flare)}
 .mcard .pin{
   position:absolute;top:9px;right:9px;width:20px;height:20px;border-radius:50%;
@@ -976,7 +992,12 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .sw::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--haze);transition:transform var(--t-fast),background var(--t-fast)}
 .sw[aria-checked="true"]{background:var(--cool);border-color:var(--cool)}
 .sw[aria-checked="true"]::after{transform:translateX(19px);background:var(--ink)}
-.setrow .ghost{width:auto;padding:8px 14px;font-size:13px}
+/* These buttons size to their own labels, so "English", "v0.15.1", "Export",
+   "Import" and "Reset" each started at a different x down a column of rows that
+   line up everywhere else. levelSettingButtons() measures the widest and gives
+   them all that width — a fixed number could not do it, because the widest
+   label is "Réinitialiser" in one language and "Export" in another. */
+.setrow .ghost{width:auto;padding:8px 14px;font-size:13px;flex:none}
 .danger b{color:var(--bad)}
 .assistprev{display:flex;align-items:center;gap:8px;padding:10px 11px;margin:2px 0 10px;border:1px solid var(--edge-soft);border-radius:var(--r-md);background:#ffffff05}
 .assistprev .sq{width:32px;height:32px;border-radius:9px;flex:none}
@@ -1449,7 +1470,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.15.1</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.15.2</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1609,7 +1630,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.15.1 (48)';
+const VERSION = 'v0.15.2 (48)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2387,6 +2408,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.15.2', date:'2026-09-16', items:[
+    'Fixed — the first filter chip on Modes sat flush against the screen edge with its rounded end cut off.',
+    'Mode cards now line their stars and best score up along a common floor, instead of the row drifting with the length of the blurb.',
+    'The family colour on a mode card is a proper inset rail. As a left border it was tapered away by the rounded corners and read as a rendering fault.',
+    'The Settings buttons line up down the right in every language, measured rather than guessed.',
+  ] },
   { v:'0.15.1', date:'2026-09-16', items:[
     'Fixed — 38 of 48 modes kept animating after you quit them, and the loops stacked. A few minutes of browsing left the phone drawing several dead games at once.',
     'Fixed — quitting Peril mid-duel could take a life off whatever you played next, a second or two later, with no input at all.',
@@ -2696,6 +2723,19 @@ function applyStatic(){
     const lbl = b.querySelector('span');
     if (lbl) lbl.textContent = t('tab.' + b.dataset.tab);
   });
+}
+
+/* The Settings rows line up down the left; their buttons did not line up down
+   the right, because each sized to its own word. Measure them after every
+   language change and give them all the widest one's width, capped so a long
+   word cannot squeeze the description it sits beside. */
+function levelSettingButtons(){
+  const bs = Array.from(document.querySelectorAll('.setrow .ghost'));
+  if (!bs.length) return;
+  bs.forEach(b => { b.style.minWidth = ''; });
+  const wide = Math.ceil(Math.max(...bs.map(b => b.getBoundingClientRect().width)));
+  const w = clamp(wide, 84, 138);
+  bs.forEach(b => { b.style.minWidth = w + 'px'; });
 }
 
 /* ═══ Colour set, with shapes ═════════════════════════════════════════════
@@ -7871,6 +7911,10 @@ function paintStats(){
 }
 
 function paintSettings(){
+  /* Measured here rather than in applyStatic: at boot, and on a language change
+     made from another tab, this screen is hidden and every width measures zero.
+     Painting happens when it is on screen. */
+  levelSettingButtons();
   [['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist']]
     .forEach(([id,key]) => $(id).setAttribute('aria-checked', String(!!save[key])));
   const prev = $('assistPrev');
