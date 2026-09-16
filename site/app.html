@@ -200,6 +200,21 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .qcard.mix{border-color:#ff5b3940;background:#ff5b390d}
 .qcard.mix b{color:var(--flare)}
 
+/* ── Find a mode ──────────────────────────────────────────────────────── */
+.findrow{position:relative;display:flex;margin:2px 0 8px}
+.find{
+  flex:1;min-width:0;height:40px;padding:0 38px 0 13px;border-radius:999px;
+  border:1px solid var(--edge);background:#ffffff06;color:var(--cream);
+  font:inherit;font-size:13px;-webkit-appearance:none;appearance:none;
+}
+.find::placeholder{color:var(--haze);opacity:.85}
+.find::-webkit-search-cancel-button{display:none}
+.find:focus{outline:none;border-color:var(--flare)}
+.findx{
+  position:absolute;right:4px;top:4px;width:32px;height:32px;border-radius:50%;
+  border:none;background:none;color:var(--haze);font-size:19px;line-height:1;cursor:pointer;
+}
+
 /* ── Mode cards ──────────────────────────────────────────────────────────── */
 .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 /* ── Pour ─────────────────────────────────────────────────────────────── */
@@ -923,6 +938,25 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 #count b{font-family:var(--f-disp);font-weight:800;font-size:clamp(60px,20vw,92px);color:var(--flare);animation:cdpop 600ms cubic-bezier(.2,.8,.3,1)}
 @keyframes cdpop{0%{transform:scale(.5);opacity:0}40%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:1}}
 
+/* ── Paused ───────────────────────────────────────────────────────────── */
+.pausebox{
+  position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;padding:22px;
+  border-radius:var(--r-lg);background:#0D0918f2;text-align:center;
+}
+.pausebox b{font-family:var(--f-disp);font-weight:800;font-size:clamp(24px,7vw,32px);color:var(--cream)}
+.pausebox > small{font-size:11.5px;color:var(--haze);line-height:1.45;max-width:30ch;margin-bottom:6px}
+.pauserule{
+  display:flex;flex-direction:column;gap:3px;align-items:center;
+  padding:10px 16px;margin:2px 0 4px;border-radius:var(--r-md);
+  border:1px solid color-mix(in srgb, var(--fam) 45%, transparent);
+  background:color-mix(in srgb, var(--fam) 10%, transparent);max-width:32ch;
+}
+.pauserule b{font-family:var(--f-disp);font-size:14px;font-weight:700;color:var(--fam);letter-spacing:.01em}
+.pauserule small{font-size:11.5px;color:var(--cream);opacity:.85;line-height:1.4;text-align:center}
+.pausebox .cta{width:100%;max-width:240px;justify-content:center;padding:14px 18px;font-size:15px}
+.pausebox .ghost{width:100%;max-width:240px;padding:11px 18px;font-size:13px}
+
 /* ── The mode changed ─────────────────────────────────────────────────── */
 .swap{
   position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;
@@ -1391,6 +1425,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
     <!-- ── MODES ───────────────────────────────────────────────────── -->
     <section class="screen" id="tabModes" hidden>
       <div class="scroll">
+        <div class="findrow">
+          <input class="find" id="modeFind" type="search" autocomplete="off"
+                 spellcheck="false" enterkeyhint="search">
+          <button class="findx" id="modeFindX" type="button" hidden>&times;</button>
+        </div>
         <div class="catstrip" id="catStrip" data-i18n-aria="modes.filter"></div>
         <div id="modeSections"></div>
         <p class="note" data-i18n="modes.note">
@@ -1485,7 +1524,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.16.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.17.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1645,7 +1684,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.16.0 (48)';
+const VERSION = 'v0.17.0 (48)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1746,7 +1785,14 @@ function persist(){
 }
 
 ['visibilitychange','pagehide','freeze'].forEach(ev =>
-  document.addEventListener(ev, () => { if (document.visibilityState !== 'visible') persist(); }, true)
+  document.addEventListener(ev, () => {
+    if (document.visibilityState === 'visible') return;
+    persist();
+    /* Going away mid-run used to cost the round: the shell's clock stops with
+       the tab but a mode's own timers keep running, so you came back to a
+       board that had already timed out. */
+    if (typeof pauseRun === 'function') pauseRun();
+  }, true)
 );
 window.addEventListener('beforeunload', persist);
 
@@ -1937,6 +1983,8 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
+    'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
     'over.ribbon':'{a} of {b} rounds solved',
     'p.saved':'Streak held', 'perk.title':'Perks', 'perk.used':'{a} of {b} slots', 'perk.toSlot':'{n} points to the next slot', 'perk.toToken':'{n} points to the next token', 'perk.equipped':'equipped, level {n}', 'perk.notEquipped':'not equipped', 'perk.upgrade':'Spend a token on {p}', 'perk.tokensLeft':'{n} tokens to spend', 'perk.spare':'Spare Life', 'perk.spare.d':'Start a Marathon with {n} more lives', 'perk.spare.d1':'Start a Marathon with one more life', 'perk.shield':'Streak Shield', 'perk.shield.d':'Keep your streak through {n} misses a run', 'perk.shield.d1':'Keep your streak through one miss a run', 'perk.patience':'Long Fuse', 'perk.patience.d':'{n}% longer on the round clock', 'perk.zeal':'Zeal', 'perk.zeal.d':'The multiplier climbs sooner (rank {n})', 'perk.steady':'Steady Hands', 'perk.steady.d':'{n} more moves where moves are counted', 'perk.rally':'Rally', 'perk.rally.d':'Timed runs start {n} seconds longer',
@@ -2052,6 +2100,8 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
+    'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
     'over.ribbon':'{a} manches sur {b} réussies',
     'p.saved':'Série gardée', 'perk.title':'Atouts', 'perk.used':'{a} sur {b} emplacements', 'perk.toSlot':'{n} points avant le prochain emplacement', 'perk.toToken':'{n} points avant le prochain jeton', 'perk.equipped':'équipé, niveau {n}', 'perk.notEquipped':'non équipé', 'perk.upgrade':'Dépenser un jeton sur {p}', 'perk.tokensLeft':'{n} jetons à dépenser', 'perk.spare':'Vie en plus', 'perk.spare.d':'Commencez un Marathon avec {n} vies de plus', 'perk.spare.d1':'Commencez un Marathon avec une vie de plus', 'perk.shield':'Bouclier de série', 'perk.shield.d':'Gardez votre série malgré {n} échecs par partie', 'perk.shield.d1':'Gardez votre série malgré un échec par partie', 'perk.patience':'Mèche longue', 'perk.patience.d':'{n}% de temps en plus par manche', 'perk.zeal':'Ferveur', 'perk.zeal.d':'Le multiplicateur monte plus tôt (rang {n})', 'perk.steady':'Main sûre', 'perk.steady.d':'{n} coups de plus là où les coups comptent', 'perk.rally':'Élan', 'perk.rally.d':'Les parties chronométrées durent {n} secondes de plus',
@@ -2167,6 +2217,8 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
+    'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
     'over.ribbon':'{a} de {b} rondas resueltas',
     'p.saved':'Racha mantenida', 'perk.title':'Ventajas', 'perk.used':'{a} de {b} ranuras', 'perk.toSlot':'{n} puntos para la próxima ranura', 'perk.toToken':'{n} puntos para la próxima ficha', 'perk.equipped':'equipada, nivel {n}', 'perk.notEquipped':'no equipada', 'perk.upgrade':'Gastar una ficha en {p}', 'perk.tokensLeft':'{n} fichas por gastar', 'perk.spare':'Vida extra', 'perk.spare.d':'Empieza un Maratón con {n} vidas más', 'perk.spare.d1':'Empieza un Maratón con una vida más', 'perk.shield':'Escudo de racha', 'perk.shield.d':'Conserva tu racha pese a {n} fallos por partida', 'perk.shield.d1':'Conserva tu racha pese a un fallo por partida', 'perk.patience':'Mecha larga', 'perk.patience.d':'{n}% más de tiempo por ronda', 'perk.zeal':'Fervor', 'perk.zeal.d':'El multiplicador sube antes (rango {n})', 'perk.steady':'Pulso firme', 'perk.steady.d':'{n} movimientos más donde se cuentan', 'perk.rally':'Empuje', 'perk.rally.d':'Las partidas con reloj empiezan {n} segundos más largas',
@@ -2282,6 +2334,8 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
+    'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
     'over.ribbon':'{a} von {b} Runden gelöst',
     'p.saved':'Serie gehalten', 'perk.title':'Boni', 'perk.used':'{a} von {b} Plätzen', 'perk.toSlot':'{n} Punkte bis zum nächsten Platz', 'perk.toToken':'{n} Punkte bis zur nächsten Marke', 'perk.equipped':'ausgerüstet, Stufe {n}', 'perk.notEquipped':'nicht ausgerüstet', 'perk.upgrade':'Eine Marke für {p} ausgeben', 'perk.tokensLeft':'{n} Marken übrig', 'perk.spare':'Extraleben', 'perk.spare.d':'Starte einen Marathon mit {n} Leben mehr', 'perk.spare.d1':'Starte einen Marathon mit einem Leben mehr', 'perk.shield':'Serienschild', 'perk.shield.d':'Behalte deine Serie trotz {n} Fehlern pro Lauf', 'perk.shield.d1':'Behalte deine Serie trotz einem Fehler pro Lauf', 'perk.patience':'Lange Lunte', 'perk.patience.d':'{n}% mehr Zeit pro Runde', 'perk.zeal':'Eifer', 'perk.zeal.d':'Der Multiplikator steigt früher (Rang {n})', 'perk.steady':'Ruhige Hand', 'perk.steady.d':'{n} Züge mehr, wo Züge zählen', 'perk.rally':'Aufholjagd', 'perk.rally.d':'Zeitläufe starten {n} Sekunden länger',
@@ -2423,6 +2477,13 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.17.0', date:'2026-09-16', items:[
+    'Pause. A run can be interrupted and picked back up: the round starts over when you come back, so you lose the seconds you had spent on it and nothing else.',
+    'Leaving the app now pauses instead of costing you the round. The clock stopped when you switched away but a mode\u2019s own timers did not, so you came back to something you had already lost.',
+    'The close button asks first. It used to end a run outright, on one tap, in the corner where a thumb reaching for the board lands.',
+    'While paused it reminds you what the mode is and what it wants — halfway through one you have met twice is exactly when you want that back.',
+    'Find a mode by name or by what it does: “draw” finds Chalk, “weigh” finds Heft. Accents are ignored, so “demelage” finds Démêlage.',
+  ] },
   { v:'0.16.0', date:'2026-09-16', items:[
     'The header now names the mode you are actually playing. In Shuffle, Mixtape and the Daily it used to say the name of the run for the whole sixty seconds — forty-eight modes, and the one in front of you was never named.',
     'When the mode changes, it says so: the name and its family, over the board, for a moment. That change is the whole point of a shuffle and it used to happen in silence.',
@@ -2743,6 +2804,13 @@ function applyStatic(){
     const lbl = b.querySelector('span');
     if (lbl) lbl.textContent = t('tab.' + b.dataset.tab);
   });
+  const find = $('modeFind');
+  if (find){
+    find.placeholder = t('modes.find');
+    find.setAttribute('aria-label', t('modes.find'));
+  }
+  const findX = $('modeFindX');
+  if (findX) findX.setAttribute('aria-label', t('modes.clearFind'));
 }
 
 /* The Settings rows line up down the left; their buttons did not line up down
@@ -7380,6 +7448,7 @@ function renderHud(){
 
 function tick(ts){
   if (!run || screen !== 'play'){ raf = 0; return; }
+  if (run.paused){ lastTs = ts; raf = rawRAF(tick); return; }
   const dt = Math.min(ts - lastTs, 250);
   lastTs = ts;
   const kind = KINDS[run.kind];
@@ -7411,6 +7480,8 @@ function tick(ts){
    the game having far less in it than it does. A bag deals every mode once
    before any of them comes back. */
 function pickMode(){
+  /* Set only by a pause, so resuming hands back the puzzle it took away. */
+  if (run.forceMode){ const id = run.forceMode; run.forceMode = null; return id; }
   if (run.mode) return run.mode;
   if (!run.bag || !run.bag.length){
     run.bag = shuffle(run.pool.slice(), run.rnd);
@@ -7598,24 +7669,91 @@ function startRun(kind, modeId){
   el.prompt.textContent = t('p.ready');
   el.prompt.className = 'prompt';
 
+  countIn(() => {
+    run.started = true;
+    lastTs = performance.now();
+    if (!raf) raf = rawRAF(tick);
+    nextRound();
+  });
+}
+
+/* Three, two, one — used to start a run, and again to come back from a pause,
+   because dropping someone straight back onto a live board is how you lose the
+   round you just protected them from losing. */
+function countIn(then){
+  clearBoard();
   const cd = mk('div'); cd.id = 'count';
   const b = mk('b'); b.textContent = '3';
   cd.appendChild(b);
   el.surface.appendChild(cd);
-
   ['3','2','1'].forEach((n, i) => later(i*330, () => {
     b.textContent = n;
     b.style.animation = 'none'; void b.offsetWidth; b.style.animation = '';
     tone(i === 2 ? 660 : 480, 0.07, 'triangle', 0.04);
   }));
-  later(3*330, () => {
-    cd.remove();
-    run.started = true;
-    sfx.go();
-    lastTs = performance.now();
-    if (!raf) raf = rawRAF(tick);
-    nextRound();
-  });
+  later(3*330, () => { cd.remove(); sfx.go(); then(); });
+}
+
+/* ═══ Pause ═══════════════════════════════════════════════════════════════
+   A sixty-second run on a phone will be interrupted — a call, a message,
+   someone talking to you — and until now the only way out was to end the run.
+   Worse, the shell's own clock freezes when the tab is hidden but a mode's
+   fail timers do not, so coming back from another app meant coming back to a
+   round you had already lost, through no fault of your own.
+
+   Pausing throws the current round away and gives it back whole: the board is
+   cleared, so nothing can be studied while paused and no timer can fire, and
+   resuming replays the SAME mode as the SAME round number after a fresh
+   count-in. You lose the seconds you had spent on it, which is the honest
+   price, and you lose nothing else. */
+function pauseRun(){
+  if (!run || run.paused || !run.started) return;
+  run.paused = true;
+  roundLive = false;
+  clearTimers();
+  /* Come back to the same puzzle at the same round number, not a new one. */
+  run.forceMode = run.curMode ? modeIdOf(run.curMode) : null;
+  run.roundIdx = Math.max(0, run.roundIdx - 1);
+  run.timedOut = false;
+  clearBoard();
+  /* The sheet says "Paused" in 32px type a centimetre below; the status line
+     saying it too is just the same word twice. */
+  el.prompt.textContent = '';
+  el.prompt.className = 'prompt';
+  const box = mk('div','pausebox');
+  const h = mk('b'); h.textContent = t('pause.title');
+  /* Also the one place to answer "what am I even doing here": halfway through a
+     round of a mode you have met twice is exactly when you want its rule back,
+     and the prompt only ever says the next step, never the point. */
+  const was = run.forceMode;
+  if (was){
+    const rule = mk('span','pauserule');
+    const nm = mk('b'); nm.textContent = modeName(was);
+    const bl = mk('small'); bl.textContent = modeBlurb(was);
+    rule.style.setProperty('--fam', CAT_INK[catOf(was)] || 'var(--flare)');
+    rule.appendChild(nm); rule.appendChild(bl);
+    box.appendChild(rule);
+  }
+  const sub = mk('small'); sub.textContent = t('pause.sub');
+  const go = mk('button','cta pauseGo'); go.type = 'button';
+  go.textContent = t('pause.resume');
+  const out = mk('button','ghost'); out.type = 'button';
+  out.textContent = t('pause.end');
+  box.insertBefore(h, box.firstChild);
+  box.appendChild(sub); box.appendChild(go); box.appendChild(out);
+  el.surface.appendChild(box);
+  go.addEventListener('click', () => { sfx.tap(); resumeRun(); });
+  out.addEventListener('click', () => { sfx.tap(); run.paused = false; endRun(); });
+  go.focus();
+  renderHud();
+}
+
+function resumeRun(){
+  if (!run || !run.paused) return;
+  run.paused = false;
+  clearBoard();
+  el.prompt.textContent = t('p.ready');
+  countIn(() => { lastTs = performance.now(); if (!raf) raf = rawRAF(tick); nextRound(); });
 }
 
 function endRun(){
@@ -7808,6 +7946,7 @@ function paintPlay(){
 }
 
 let catFilter = 'all';
+let modeQuery = '';
 
 function paintModes(){
   const strip = $('catStrip');
@@ -7829,9 +7968,22 @@ function paintModes(){
 
   const host = $('modeSections');
   host.replaceChildren();
-  const show = catFilter === 'all' ? cats : [catFilter];
+  /* Forty-eight modes is more than a filter strip can solve on its own. The
+     search reads the translated name and blurb, so it finds a mode by what it
+     is as well as by what it is called. */
+  /* Folded so an accent is never a barrier: someone typing "melange" on a
+     phone keyboard should still find "Mélange", and "loschen" "Löschen". */
+  const fold = x => x.toLowerCase()
+    .replace(/\u00df/g, 'ss')       /* NFD leaves ß alone, and nobody types it */
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const q = fold(modeQuery.trim());
+  const hit = id => !q || fold(modeName(id) + ' ' + modeBlurb(id) + ' ' + t('cat.' + catOf(id)))
+    .includes(q);
+  const show = q ? cats : (catFilter === 'all' ? cats : [catFilter]);
+  let found = 0;
   show.forEach(c => {
-    const ids = idsInCat(c);
+    const ids = idsInCat(c).filter(hit);
+    found += ids.length;
     if (!ids.length) return;
     const sec = mk('div','catsec');
     const head = mk('div','head');
@@ -7850,6 +8002,14 @@ function paintModes(){
     sec.appendChild(grid);
     host.appendChild(sec);
   });
+  /* A search that finds nothing has to say so, or the screen just looks broken. */
+  if (q && !found){
+    const none = mk('p','note');
+    none.textContent = t('modes.none', { q: modeQuery.trim() });
+    host.appendChild(none);
+  }
+  $('catStrip').hidden = !!q;   /* the family filter means nothing while searching */
+  $('modeFindX').hidden = !modeQuery;
 }
 
 function paintMix(){
@@ -8134,6 +8294,11 @@ $('mixBtn').addEventListener('click', () => {
 $('dailyBtn').addEventListener('click', () => startRun('daily'));
 $('zenBtn').addEventListener('click', () => startRun('zen', pick(MODE_IDS, Math.random)));
 $('marathonBtn').addEventListener('click', () => goTab('Modes'));
+$('modeFind').addEventListener('input', ev => { modeQuery = ev.target.value || ''; paintModes(); });
+$('modeFindX').addEventListener('click', () => {
+  modeQuery = ''; $('modeFind').value = '';
+  paintModes(); $('modeFind').focus();
+});
 $('mixDone').addEventListener('click', () => goTab('Play'));
 $('mixAll').addEventListener('click', () => {
   const all = (save.mix || []).length === MODE_IDS.length;
@@ -8145,6 +8310,12 @@ $('homeBtn').addEventListener('click', () => goTab('Play'));
 $('againBtn').addEventListener('click', () =>
   startRun(el.over.dataset.kind || 'shuffle', el.over.dataset.mode || null));
 $('quitBtn').addEventListener('click', () => {
+  /* This used to end the run on a single tap, in the top-left corner where a
+     thumb reaching for the board lands. Any run that has actually begun is
+     worth a question first — including one you are thirty seconds into with
+     nothing solved yet, which is exactly when losing it stings most. During
+     the count-in there is nothing to lose, so it still leaves at once. */
+  if (run && run.started && !run.paused) return pauseRun();
   clearTimers();
   if (raf){ rawCAF(raf); raf = 0; }
   if (run && (run.solved || run.missed)) return endRun();
