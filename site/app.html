@@ -342,6 +342,26 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:background var(--t-fast),transform var(--t-fast)}
 .mpad.tapped{background:#ff8ad833;transform:scale(.98)}
 
+/* ── Leash ────────────────────────────────────────────────────────────── */
+.leashbox{position:relative;width:100%;aspect-ratio:1;touch-action:none;overflow:hidden;
+  border-radius:var(--r-lg);background:#08060f;border:2px solid var(--edge-soft);
+  transition:border-color var(--t-fast)}
+.leashbox.held{border-color:var(--cool)}
+.leashbox.won{border-color:var(--cool);background:#33e6c814}
+.leashbox.gone{border-color:var(--bad);background:#ff3d6e14}
+.moth{position:absolute;display:block;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#ffb3c6,#ff3d6e);box-shadow:0 0 12px #ff3d6e66;
+  transition:box-shadow var(--t-fast)}
+.moth.caught{background:radial-gradient(circle at 34% 30%,#9cf6e6,#33e6c8);box-shadow:0 0 16px #33e6c888}
+.lring{position:absolute;display:block;border-radius:50%;pointer-events:none;opacity:0;
+  border:1.5px dashed var(--haze);transition:opacity var(--t-fast)}
+.lring.show{opacity:.45}
+.lmeter{position:absolute;left:0;bottom:0;display:block;height:5px;background:var(--cool);
+  border-radius:0 3px 0 0;pointer-events:none}
+.lslip{position:absolute;left:0;top:0;display:block;height:5px;background:var(--haze);
+  border-radius:0 0 3px 0;pointer-events:none;opacity:.6}
+.lslip.low{background:var(--bad);opacity:1}
+
 /* ── Siphon ───────────────────────────────────────────────────────────── */
 .siphonwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
   flex-direction:column;justify-content:space-between;padding:6% 4%;box-sizing:border-box}
@@ -1323,7 +1343,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.7</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.8</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1472,7 +1492,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.13.7 (47)';
+const VERSION = 'v0.13.8 (48)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1751,6 +1771,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.leash':'Hold it for {n} more seconds', 'leash.moth':'The moth', 'leash.box':'Press and keep your finger on the moth', 'm.leash':'Leash|Keep your finger on it — it does not want you to',
     'p.metroListen':'Listen — the bar runs twice', 'p.metroPlay':'Your turn — {n} beats to play', 'metro.pad':'Tap in time with the bar', 'm.metro':'Metronome|Hear the bar twice, then play it back',
     'p.tell':'{n} guesses left', 'tell.check':'Check', 'tell.slot':'Peg {n}, {c}, tap to change', 'tell.result':'{a} in place, {b} in the wrong place', 'm.tell':'Tell|Guess the row — every wrong guess tells you something',
     'p.heft':'Which side weighs more?', 'heft.pile':'A pile of {n} pieces', 'm.heft':'Heft|Which pile weighs more? Counting will not tell you',
@@ -1862,6 +1883,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.leash':'Tenez-le encore {n} secondes', 'leash.moth':'Le papillon', 'leash.box':'Appuyez et gardez le doigt sur le papillon', 'm.leash':'Laisse|Gardez le doigt dessus — il ne veut pas',
     'p.metroListen':'Écoutez — la mesure passe deux fois', 'p.metroPlay':'À vous — {n} temps à jouer', 'metro.pad':'Touchez en rythme avec la mesure', 'm.metro':'Métronome|Écoutez la mesure deux fois, puis rejouez-la',
     'p.tell':'{n} essais restants', 'tell.check':'Vérifier', 'tell.slot':'Pion {n}, {c}, touchez pour changer', 'tell.result':'{a} bien placés, {b} mal placés', 'm.tell':'Indice|Devinez la rangée — chaque erreur vous apprend quelque chose',
     'p.heft':'Quel côté pèse le plus ?', 'heft.pile':'Un tas de {n} pièces', 'm.heft':'Poids|Quel tas pèse le plus ? Compter ne vous dira rien',
@@ -1973,6 +1995,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.leash':'Sujétala {n} segundos más', 'leash.moth':'La polilla', 'leash.box':'Pulsa y mantén el dedo sobre la polilla', 'm.leash':'Correa|Mantén el dedo encima — ella no quiere',
     'p.metroListen':'Escucha — el compás suena dos veces', 'p.metroPlay':'Tu turno — {n} golpes que tocar', 'metro.pad':'Toca al ritmo del compás', 'm.metro':'Metrónomo|Escucha el compás dos veces y tócalo tú',
     'p.tell':'Quedan {n} intentos', 'tell.check':'Comprobar', 'tell.slot':'Ficha {n}, {c}, toca para cambiar', 'tell.result':'{a} en su sitio, {b} fuera de sitio', 'm.tell':'Pista|Adivina la fila — cada fallo te dice algo',
     'p.heft':'¿Qué lado pesa más?', 'heft.pile':'Un montón de {n} piezas', 'm.heft':'Peso|¿Qué montón pesa más? Contar no te lo dirá',
@@ -2084,6 +2107,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.leash':'Halte ihn noch {n} Sekunden', 'leash.moth':'Die Motte', 'leash.box':'Drücken und den Finger auf der Motte halten', 'm.leash':'Leine|Finger drauf halten — sie will das nicht',
     'p.metroListen':'Hör zu — der Takt läuft zweimal', 'p.metroPlay':'Du bist dran — {n} Schläge zu spielen', 'metro.pad':'Im Takt tippen', 'm.metro':'Metronom|Hör den Takt zweimal, dann spiel ihn nach',
     'p.tell':'Noch {n} Versuche', 'tell.check':'Prüfen', 'tell.slot':'Stift {n}, {c}, zum Wechseln tippen', 'tell.result':'{a} richtig platziert, {b} an falscher Stelle', 'm.tell':'Hinweis|Errate die Reihe — jeder Fehlversuch verrät etwas',
     'p.heft':'Welche Seite wiegt mehr?', 'heft.pile':'Ein Haufen aus {n} Stücken', 'm.heft':'Gewicht|Welcher Haufen wiegt mehr? Zählen hilft nicht',
@@ -2221,6 +2245,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.13.8', date:'2026-09-16', items:[
+    'New mode — Leash. A moth flees your finger, harder the closer you get. Win by keeping contact, not by catching it once.',
+    'You are allowed a small amount of time off it, spent a fraction of a second at a time. Run that out and the round is over.',
+  ] },
   { v:'0.13.7', date:'2026-09-16', items:[
     'New mode — Metronome. The bar runs twice with the beats lit and sounding, then once with them hidden and yours to play.',
     'Both ways of being wrong cost the round: a beat you let pass, and a tap with no beat under it.',
@@ -6722,6 +6750,113 @@ const MODES = {
         tone(880, 0.05, 'triangle', 0.04); buzz(8);
         say();
       });
+    }
+  },
+
+  /* ── Leash — the only mode scored on staying, not landing ────────────────
+     Everything else resolves on events: a tap landed, a piece moved, a gate was
+     passed. This one is scored on a state you have to hold. A moth flees your
+     finger — harder the closer you get — and the round is won by keeping
+     contact long enough, not by catching it once. Losing is not a wrong move
+     either: it is running out of the time you are allowed to be off it, which
+     you spend a fraction of a second at a time without noticing.
+     A pointer can move anywhere instantly, so the moth is never outrunning you;
+     it is making you commit to where it will be, over and over, without pause. */
+  leash: {
+    name:'Leash', blurb:'Keep your finger on it — it does not want you to', cat:'reflex', par:13000, bonus:3400,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="15" cy="9" r="4" fill="#FF3D6E"/><path d="M4 20c2.5-4 5.5-6.5 8-7.6" stroke="#FF3D6E" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-dasharray="2.6 2.4"/><circle cx="4" cy="20" r="2" fill="#FF3D6E" opacity=".5"/></svg>',
+    build(ctx){
+      const R     = 7.5;                                        /* moth radius, % */
+      const grab  = clamp(15 - ctx.level*0.22, 9, 15);           /* contact radius */
+      const need  = clamp(2600 + ctx.level*130, 2600, 6200);     /* ms of contact */
+      const slack = clamp(1100 - ctx.level*22, 420, 1100);       /* ms off it allowed */
+      const flee  = 0.00024 + Math.min(0.0004, ctx.level*0.000022);
+      const vMax  = 0.055 + Math.min(0.05, ctx.level*0.0028);    /* % per ms */
+
+      const box = mk('div','leashbox');
+      const moth = mk('i','moth');
+      moth.style.width = moth.style.height = (R*2) + '%';
+      moth.setAttribute('role','img');
+      moth.setAttribute('aria-label', t('leash.moth'));
+      box.appendChild(moth);
+      const ring = mk('i','lring');
+      box.appendChild(ring);
+      const meter = mk('i','lmeter');
+      box.appendChild(meter);
+      const slip = mk('i','lslip');
+      box.appendChild(slip);
+      box.setAttribute('role','application');
+      box.setAttribute('aria-label', t('leash.box'));
+      ctx.surface.appendChild(box);
+
+      let mx = 50, my = 50, vx = 0, vy = 0;
+      let px = -999, py = -999, touching = false;
+      let held = 0, lost = 0, done = false, raf2 = 0, last = performance.now();
+
+      const say = () => ctx.prompt(t('p.leash', { n: Math.max(0, Math.ceil((need - held)/1000)) }));
+      say();
+
+      onDrag(box, {
+        start: q => { px = q.x; py = q.y; touching = true; },
+        move:  q => { px = q.x; py = q.y; },
+        end:   () => { touching = false; px = -999; py = -999; }
+      });
+
+      const frame = () => {
+        if (done) return;
+        const now = performance.now();
+        const ms = Math.min(48, now - last); last = now;
+
+        /* Flee harder the closer the finger is, and never quite stop: a moth
+           that settles in a corner is a moth you can just park on. */
+        if (touching){
+          const dx = mx - px, dy = my - py;
+          const d = Math.hypot(dx, dy);
+          /* Directly underneath, "away from the finger" has no direction and the
+             moth sits perfectly still — pinned by a finger that is exactly on
+             it. A moth under a finger bolts, so pick a way and bolt. */
+          let ux, uy;
+          if (d < 1.5){ const a = ctx.rnd()*Math.PI*2; ux = Math.cos(a); uy = Math.sin(a); }
+          else { ux = dx/d; uy = dy/d; }
+          const push = flee * (900 / Math.max(9, d*d));
+          vx += ux * push * ms;
+          vy += uy * push * ms;
+        }
+        vx += (ctx.rnd() - 0.5) * 0.0009 * ms;
+        vy += (ctx.rnd() - 0.5) * 0.0009 * ms;
+        /* Walls push back rather than bounce, so it cannot be pinned in a corner
+           where fleeing and the wall cancel out. */
+        const edge = (v, p) => v + (p < 18 ? (18-p)*0.00028 : 0) - (p > 82 ? (p-82)*0.00028 : 0);
+        vx = edge(vx, mx); vy = edge(vy, my);
+        vx *= 0.94; vy *= 0.94;
+        const sp = Math.hypot(vx, vy);
+        if (sp > vMax){ vx = vx/sp*vMax; vy = vy/sp*vMax; }
+        mx = clamp(mx + vx*ms, R, 100-R);
+        my = clamp(my + vy*ms, R, 100-R);
+        moth.style.left = (mx - R) + '%';
+        moth.style.top  = (my - R) + '%';
+
+        const on = touching && Math.hypot(mx - px, my - py) <= grab;
+        ring.style.left = (px - grab) + '%';
+        ring.style.top  = (py - grab) + '%';
+        ring.style.width = ring.style.height = (grab*2) + '%';
+        ring.classList.toggle('show', touching);
+        box.classList.toggle('held', on);
+        moth.classList.toggle('caught', on);
+
+        if (on) held += ms; else if (held > 0 || touching) lost += ms;
+        meter.style.width = Math.min(100, held/need*100) + '%';
+        slip.style.width = Math.min(100, lost/slack*100) + '%';
+        slip.classList.toggle('low', lost > slack*0.7);
+        say();
+
+        if (held >= need){ done = true; cancelAnimationFrame(raf2);
+          box.classList.add('won'); return ctx.win(moth); }
+        if (lost >= slack){ done = true; cancelAnimationFrame(raf2);
+          box.classList.add('gone'); return ctx.miss(moth); }
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
     }
   },
 };
