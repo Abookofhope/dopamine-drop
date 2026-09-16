@@ -320,6 +320,28 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   letter-spacing:.06em;text-transform:uppercase;font-size:13px;cursor:pointer}
 .tgo:active{transform:scale(.98)}
 
+/* ── Metronome ────────────────────────────────────────────────────────── */
+.metrowrap{display:flex;flex-direction:column;gap:16px;width:100%;height:100%;
+  justify-content:center;align-items:center;min-height:0}
+.mlane{position:relative;width:100%;height:56px;flex:none;border-radius:var(--r-md);
+  background:#ffffff06;border:2px solid var(--edge-soft);overflow:hidden;
+  transition:border-color var(--t-fast),background var(--t-fast)}
+.mlane.beat{background:#ff8ad81f}
+.mlane.yours{border-color:#FF8AD8}
+.mlane.good{border-color:var(--cool);background:#33e6c81f}
+.mlane.bad{border-color:var(--bad);background:#ff3d6e1f}
+.mmark{position:absolute;top:8px;display:block;width:10px;height:40px;border-radius:5px;
+  transform:translateX(-50%);background:#ff8ad855;transition:opacity var(--t-fast),background var(--t-fast)}
+.mmark.lit{background:#FF8AD8;box-shadow:0 0 12px #ff8ad8aa}
+.mmark.hidden{opacity:0}
+.mmark.done{opacity:1;background:var(--cool);box-shadow:0 0 10px #33e6c888}
+.mhead{position:absolute;top:0;display:block;width:2px;height:100%;background:var(--cream);
+  transform:translateX(-50%);opacity:.75}
+.mpad{width:100%;flex:1;min-height:120px;border-radius:var(--r-lg);cursor:pointer;
+  border:2px dashed var(--edge);background:#ffffff05;
+  transition:background var(--t-fast),transform var(--t-fast)}
+.mpad.tapped{background:#ff8ad833;transform:scale(.98)}
+
 /* ── Siphon ───────────────────────────────────────────────────────────── */
 .siphonwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
   flex-direction:column;justify-content:space-between;padding:6% 4%;box-sizing:border-box}
@@ -1301,7 +1323,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.6</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.7</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1450,7 +1472,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.13.6 (46)';
+const VERSION = 'v0.13.7 (47)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1729,6 +1751,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.metroListen':'Listen — the bar runs twice', 'p.metroPlay':'Your turn — {n} beats to play', 'metro.pad':'Tap in time with the bar', 'm.metro':'Metronome|Hear the bar twice, then play it back',
     'p.tell':'{n} guesses left', 'tell.check':'Check', 'tell.slot':'Peg {n}, {c}, tap to change', 'tell.result':'{a} in place, {b} in the wrong place', 'm.tell':'Tell|Guess the row — every wrong guess tells you something',
     'p.heft':'Which side weighs more?', 'heft.pile':'A pile of {n} pieces', 'm.heft':'Heft|Which pile weighs more? Counting will not tell you',
     'p.forge':'{n} squares of the mould still open', 'forge.hole':'Mould, column {x} row {y}', 'forge.solid':'Solid, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Forge|Fit every part into the mould — nothing left over',
@@ -1839,6 +1862,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.metroListen':'Écoutez — la mesure passe deux fois', 'p.metroPlay':'À vous — {n} temps à jouer', 'metro.pad':'Touchez en rythme avec la mesure', 'm.metro':'Métronome|Écoutez la mesure deux fois, puis rejouez-la',
     'p.tell':'{n} essais restants', 'tell.check':'Vérifier', 'tell.slot':'Pion {n}, {c}, touchez pour changer', 'tell.result':'{a} bien placés, {b} mal placés', 'm.tell':'Indice|Devinez la rangée — chaque erreur vous apprend quelque chose',
     'p.heft':'Quel côté pèse le plus ?', 'heft.pile':'Un tas de {n} pièces', 'm.heft':'Poids|Quel tas pèse le plus ? Compter ne vous dira rien',
     'p.forge':'Encore {n} cases du moule', 'forge.hole':'Moule, colonne {x} ligne {y}', 'forge.solid':'Plein, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Forge|Placez chaque pièce dans le moule — rien en trop',
@@ -1949,6 +1973,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.metroListen':'Escucha — el compás suena dos veces', 'p.metroPlay':'Tu turno — {n} golpes que tocar', 'metro.pad':'Toca al ritmo del compás', 'm.metro':'Metrónomo|Escucha el compás dos veces y tócalo tú',
     'p.tell':'Quedan {n} intentos', 'tell.check':'Comprobar', 'tell.slot':'Ficha {n}, {c}, toca para cambiar', 'tell.result':'{a} en su sitio, {b} fuera de sitio', 'm.tell':'Pista|Adivina la fila — cada fallo te dice algo',
     'p.heft':'¿Qué lado pesa más?', 'heft.pile':'Un montón de {n} piezas', 'm.heft':'Peso|¿Qué montón pesa más? Contar no te lo dirá',
     'p.forge':'Quedan {n} casillas del molde', 'forge.hole':'Molde, columna {x} fila {y}', 'forge.solid':'Macizo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Fragua|Encaja cada pieza en el molde — sin sobras',
@@ -2059,6 +2084,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.metroListen':'Hör zu — der Takt läuft zweimal', 'p.metroPlay':'Du bist dran — {n} Schläge zu spielen', 'metro.pad':'Im Takt tippen', 'm.metro':'Metronom|Hör den Takt zweimal, dann spiel ihn nach',
     'p.tell':'Noch {n} Versuche', 'tell.check':'Prüfen', 'tell.slot':'Stift {n}, {c}, zum Wechseln tippen', 'tell.result':'{a} richtig platziert, {b} an falscher Stelle', 'm.tell':'Hinweis|Errate die Reihe — jeder Fehlversuch verrät etwas',
     'p.heft':'Welche Seite wiegt mehr?', 'heft.pile':'Ein Haufen aus {n} Stücken', 'm.heft':'Gewicht|Welcher Haufen wiegt mehr? Zählen hilft nicht',
     'p.forge':'Noch {n} Felder der Form offen', 'forge.hole':'Form, Spalte {x} Zeile {y}', 'forge.solid':'Massiv, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Schmiede|Füge jedes Teil in die Form — nichts bleibt übrig',
@@ -2195,6 +2221,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.13.7', date:'2026-09-16', items:[
+    'New mode — Metronome. The bar runs twice with the beats lit and sounding, then once with them hidden and yours to play.',
+    'Both ways of being wrong cost the round: a beat you let pass, and a tap with no beat under it.',
+  ] },
   { v:'0.13.6', date:'2026-09-16', items:[
     'New mode — Tell. Guess the row; every guess comes back with how many pegs are right in the right place and how many are the right colour in the wrong place.',
     'The only mode where being wrong is useful. Losing is running out of guesses, not guessing wrong.',
@@ -6573,6 +6603,123 @@ const MODES = {
           log.scrollTop = log.scrollHeight;
           return ctx.miss(truth);
         }
+        say();
+      });
+    }
+  },
+
+  /* ── Metronome — the only mode you have to perform ───────────────────────
+     Off Beat asks you to SPOT the dot that is out of time. This asks you to
+     play the thing yourself, which is a different organ entirely: recognising a
+     rhythm and producing one share almost nothing. The bar runs three times at
+     one unbroken tempo — twice with the beats lit and sounding, once with them
+     hidden and yours to fill — so the tempo is never in doubt and the only
+     question is whether your hands know what your ears just heard.
+     Both ways of being wrong cost the round: a beat you let pass, and a tap
+     with no beat under it. Nothing else here is scored on what you did not do. */
+  metro: {
+    name:'Metronome', blurb:'Hear the bar twice, then play it back', cat:'rhythm', par:12000, bonus:3600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l3 18H6z" fill="none" stroke="#FF8AD8" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 19 16 6" stroke="#FF8AD8" stroke-width="1.7" stroke-linecap="round"/><circle cx="16" cy="6" r="1.9" fill="#FF8AD8"/></svg>',
+    build(ctx){
+      const STEPS = 8;
+      const n    = 3 + Math.min(3, Math.floor(ctx.level/7));
+      const bar  = clamp(2900 - ctx.level*45, 1850, 2900);
+      const tol  = clamp(300 - ctx.level*7, 115, 300);
+      const step = bar / STEPS;
+
+      /* The downbeat is always there. Without something to hang the bar on,
+         playing it back is guesswork rather than rhythm. */
+      const rest = shuffle(Array.from({length: STEPS-1}, (_, i) => i+1), ctx.rnd).slice(0, n-1);
+      const idx  = [0].concat(rest).sort((a,b) => a-b);
+      const beats = idx.map(i => ({ at: i*step, i, hit: false, gone: false }));
+
+      const wrap = mk('div','metrowrap');
+      const lane = mk('div','mlane');
+      const marks = beats.map(b => {
+        const e = mk('i','mmark');
+        e.style.left = (b.i / STEPS * 100) + '%';
+        lane.appendChild(e); return e;
+      });
+      const head = mk('i','mhead');
+      lane.appendChild(head);
+      wrap.appendChild(lane);
+      const pad = mk('button','mpad');
+      pad.type = 'button';
+      pad.setAttribute('aria-label', t('metro.pad'));
+      wrap.appendChild(pad);
+      ctx.surface.appendChild(wrap);
+
+      let done = false, raf2 = 0, pass = 0, fired = -1;
+      const t0 = performance.now();
+      const say = () => ctx.prompt(t(pass < 2 ? 'p.metroListen' : 'p.metroPlay',
+        { n: beats.filter(b => !b.hit).length }));
+      say();
+
+      const pulse = () => {
+        lane.classList.add('beat');
+        ctx.after(90, () => lane.classList.remove('beat'));
+      };
+
+      const frame = () => {
+        if (done) return;
+        const ms = performance.now() - t0;
+        const p = Math.floor(ms / bar);
+        const within = ms - p*bar;
+        head.style.left = (within / bar * 100) + '%';
+        if (p !== pass){
+          pass = p; fired = -1;
+          if (pass === 2){
+            lane.classList.add('yours');
+            marks.forEach(e => e.classList.add('hidden'));
+            sfx.go();
+          }
+          say();
+        }
+        if (pass < 2){
+          /* Play the bar: light and sound on each beat as the head passes it. */
+          beats.forEach((b, k) => {
+            if (k > fired && within >= b.at){ fired = k; marks[k].classList.add('lit');
+              ctx.after(120, () => marks[k].classList.remove('lit'));
+              pulse(); tone(660, 0.06, 'triangle', 0.045); }
+          });
+        } else {
+          /* A beat that goes by untapped is a miss, the same as a wrong tap. */
+          for (const b of beats){
+            if (!b.hit && !b.gone && within > b.at + tol){
+              b.gone = true; done = true; cancelAnimationFrame(raf2);
+              lane.classList.add('bad');
+              return ctx.miss(pad);
+            }
+          }
+          if (within > (beats[beats.length-1].at + tol) && beats.every(b => b.hit)){
+            done = true; cancelAnimationFrame(raf2);
+            lane.classList.add('good');
+            return ctx.win(pad);
+          }
+        }
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
+
+      onTap(pad, () => {
+        if (done || pass < 2) return;
+        const within = (performance.now() - t0) - pass*bar;
+        let best = null, bestD = 1e9;
+        for (const b of beats){
+          if (b.hit) continue;
+          const d = Math.abs(within - b.at);
+          if (d < bestD){ bestD = d; best = b; }
+        }
+        if (!best || bestD > tol){
+          done = true; cancelAnimationFrame(raf2);
+          lane.classList.add('bad'); sfx.bad();
+          return ctx.miss(pad);
+        }
+        best.hit = true;
+        marks[beats.indexOf(best)].classList.add('done');
+        pad.classList.add('tapped');
+        ctx.after(110, () => pad.classList.remove('tapped'));
+        tone(880, 0.05, 'triangle', 0.04); buzz(8);
         say();
       });
     }
