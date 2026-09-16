@@ -286,6 +286,17 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .fbit{display:block;width:14px;height:14px;border-radius:3px;background:transparent}
 .fbit.on{background:linear-gradient(180deg,#d4b4ff,#9b6cf0)}
 
+/* ── Heft ─────────────────────────────────────────────────────────────── */
+.heftwrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;aspect-ratio:2/1}
+.hpan{position:relative;border-radius:var(--r-lg);border:2px solid var(--edge-soft);
+  background:#ffffff06;padding:0;cursor:pointer;overflow:hidden;
+  transition:border-color var(--t-fast),transform var(--t-fast)}
+.hpan:active{transform:scale(.97)}
+.hpan.right{border-color:var(--cool);background:#33e6c81f}
+.hpan.wrong{border-color:var(--bad);background:#ff3d6e1f}
+.hbit{position:absolute;display:block;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#ffe29a,#f0a81c);box-shadow:inset 0 -2px 4px #00000033}
+
 /* ── Siphon ───────────────────────────────────────────────────────────── */
 .siphonwrap{position:relative;width:100%;aspect-ratio:1;touch-action:none;display:flex;
   flex-direction:column;justify-content:space-between;padding:6% 4%;box-sizing:border-box}
@@ -1267,7 +1278,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.4</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.13.5</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1416,7 +1427,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.13.4 (44)';
+const VERSION = 'v0.13.5 (45)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -1695,6 +1706,7 @@ const STRINGS = {
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
+    'p.heft':'Which side weighs more?', 'heft.pile':'A pile of {n} pieces', 'm.heft':'Heft|Which pile weighs more? Counting will not tell you',
     'p.forge':'{n} squares of the mould still open', 'forge.hole':'Mould, column {x} row {y}', 'forge.solid':'Solid, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Forge|Fit every part into the mould — nothing left over',
     'p.gather':'{n} more to catch — let the dark ones fall', 'gather.pail':'Your pail', 'gather.keep':'A ripe one, worth catching', 'gather.dud':'A dud, let it fall', 'm.gather':'Gather|Catch the ripe ones, let the rest fall',
     'p.chalk':'Draw a ramp — lift your finger to drop the ball', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball', 'chalk.basket':'The basket', 'm.chalk':'Chalk|Draw the ramp, then watch — no second chances',
@@ -1803,6 +1815,7 @@ const STRINGS = {
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
+    'p.heft':'Quel côté pèse le plus ?', 'heft.pile':'Un tas de {n} pièces', 'm.heft':'Poids|Quel tas pèse le plus ? Compter ne vous dira rien',
     'p.forge':'Encore {n} cases du moule', 'forge.hole':'Moule, colonne {x} ligne {y}', 'forge.solid':'Plein, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Forge|Placez chaque pièce dans le moule — rien en trop',
     'p.gather':'Encore {n} à attraper — laissez tomber les sombres', 'gather.pail':'Votre seau', 'gather.keep':'Un mûr, à attraper', 'gather.dud':'Un gâté, laissez-le tomber', 'm.gather':'Récolte|Attrapez les mûrs, laissez tomber le reste',
     'p.chalk':'Tracez une rampe — relâchez pour lâcher la bille', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La bille', 'chalk.basket':'Le panier', 'm.chalk':'Craie|Tracez la rampe, puis regardez — sans reprise',
@@ -1911,6 +1924,7 @@ const STRINGS = {
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
+    'p.heft':'¿Qué lado pesa más?', 'heft.pile':'Un montón de {n} piezas', 'm.heft':'Peso|¿Qué montón pesa más? Contar no te lo dirá',
     'p.forge':'Quedan {n} casillas del molde', 'forge.hole':'Molde, columna {x} fila {y}', 'forge.solid':'Macizo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Fragua|Encaja cada pieza en el molde — sin sobras',
     'p.gather':'{n} más que atrapar — deja caer los oscuros', 'gather.pail':'Tu cubo', 'gather.keep':'Uno maduro, para atrapar', 'gather.dud':'Uno malo, déjalo caer', 'm.gather':'Cosecha|Atrapa los maduros, deja caer el resto',
     'p.chalk':'Dibuja una rampa — suelta para lanzar la bola', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'La bola', 'chalk.basket':'La cesta', 'm.chalk':'Tiza|Dibuja la rampa y mira — sin segundas oportunidades',
@@ -2019,6 +2033,7 @@ const STRINGS = {
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
+    'p.heft':'Welche Seite wiegt mehr?', 'heft.pile':'Ein Haufen aus {n} Stücken', 'm.heft':'Gewicht|Welcher Haufen wiegt mehr? Zählen hilft nicht',
     'p.forge':'Noch {n} Felder der Form offen', 'forge.hole':'Form, Spalte {x} Zeile {y}', 'forge.solid':'Massiv, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Schmiede|Füge jedes Teil in die Form — nichts bleibt übrig',
     'p.gather':'Noch {n} zu fangen — die dunklen fallen lassen', 'gather.pail':'Dein Eimer', 'gather.keep':'Ein reifer, den fängst du', 'gather.dud':'Ein fauler, lass ihn fallen', 'm.gather':'Ernte|Fang die reifen, lass den Rest fallen',
     'p.chalk':'Zeichne eine Rampe — loslassen lässt die Kugel fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Die Kugel', 'chalk.basket':'Der Korb', 'm.chalk':'Kreide|Zeichne die Rampe und schau zu — ohne zweiten Versuch',
@@ -2153,6 +2168,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.13.5', date:'2026-09-16', items:[
+    'New mode — Heft. Two piles, one weighs more. The lighter pile usually holds more pieces, so counting them is the wrong move.',
+    'The gap narrows from a third down to six per cent as you climb, which is about as fine as an eye can call without a ruler.',
+  ] },
   { v:'0.13.4', date:'2026-09-15', items:[
     'New mode — Forge, and the first thing in the Make family. You are given a mould and the exact parts that fill it. Tap a part, tap where its first square goes.',
     'Nothing to rotate and nothing wasted: the mould is made by laying the parts down, so a fit always exists and the tray holds exactly what it takes.',
@@ -6305,6 +6324,124 @@ const MODES = {
           budget.spend(cell);
         });
       });
+    }
+  },
+
+  /* ── Heft — the only mode where counting is the wrong move ───────────────
+     Count Fast is exact arithmetic under a clock. This is its opposite: the
+     answer is how much, not how many, and the two disagree on purpose. The
+     lighter pile usually holds MORE pieces, so anyone who counts gets it wrong
+     most of the time and has to learn to stop. Nothing else in the roster asks
+     for a judgement you cannot check before you commit to it.
+     Built to an exact ratio rather than measured after the fact: the pieces are
+     drawn at random sizes, then one side is scaled so the two areas land on the
+     target ratio precisely, and both sides shrink together until they pack — a
+     shared scale changes nothing about which is heavier. */
+  heft: {
+    name:'Heft', blurb:'Which pile weighs more? Counting will not tell you', cat:'numbers', par:9000, bonus:2800,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.5" cy="8" r="4" fill="#FFC53D"/><circle cx="16" cy="6" r="2.1" fill="#FFC53D" opacity=".6"/><circle cx="20" cy="10" r="2.1" fill="#FFC53D" opacity=".6"/><circle cx="16.5" cy="12.5" r="2.1" fill="#FFC53D" opacity=".6"/><path d="M3 19h18" stroke="#FFC53D" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    build(ctx){
+      /* How much heavier the heavy side is. At the top of the curve six per
+         cent is about as fine as an eye can call without a ruler. */
+      const edge = clamp(0.46 - ctx.level*0.013, 0.06, 0.46);
+      const heavyFirst = ctx.rnd() < 0.5;
+      /* The lighter side gets more pieces most of the time. That is the whole
+         mode: the obvious count is the wrong answer more often than not. */
+      const decoy = ctx.rnd() < 0.72;
+      const base  = 3 + Math.floor(ctx.rnd()*3);
+      const extra = 2 + Math.floor(ctx.rnd()*3) + Math.min(4, Math.floor(ctx.level/6));
+      const nHeavy = decoy ? base : base + extra;
+      const nLight = decoy ? base + extra : base;
+
+      const radii = n => Array.from({length:n}, () => 0.55 + ctx.rnd()*0.9);
+      const area  = rs => rs.reduce((a,r) => a + r*r, 0);
+      let rH = radii(nHeavy), rL = radii(nLight);
+      /* Scale the light side onto the exact ratio we asked for. */
+      const wantL = area(rH) / (1 + edge);
+      const k = Math.sqrt(wantL / area(rL));
+      rL = rL.map(r => r*k);
+
+      const wrap = mk('div','heftwrap');
+      const pans = [];
+      const sides = heavyFirst ? [['heavy', rH], ['light', rL]] : [['light', rL], ['heavy', rH]];
+      sides.forEach(([which, rs]) => {
+        const pan = mk('button','hpan');
+        pan.type = 'button';
+        pan.setAttribute('aria-label', t('heft.pile', { n: rs.length }));
+        wrap.appendChild(pan);
+        pans.push({ pan, which, rs });
+      });
+      ctx.surface.appendChild(wrap);
+
+      /* Pack both sides at one shared scale, shrinking until everything fits.
+         Shrinking both by the same factor cannot change which is heavier. */
+      const W = 100, H = 100, PAD = 7;
+      let scale = 17, laid = null;
+      for (let pass = 0; pass < 26 && !laid; pass++, scale *= 0.9){
+        const out = [];
+        let ok = true;
+        for (const p of pans){
+          const put = [];
+          for (const r0 of p.rs){
+            const r = r0*scale;
+            let placed = false;
+            for (let tryN = 0; tryN < 260 && !placed; tryN++){
+              const x = PAD + r + ctx.rnd()*(W - 2*PAD - 2*r);
+              const y = PAD + r + ctx.rnd()*(H - 2*PAD - 2*r);
+              if (r*2 > W - 2*PAD) break;
+              if (put.every(q => Math.hypot(q.x-x, q.y-y) > q.r + r + 1.2)){
+                put.push({ x, y, r }); placed = true;
+              }
+            }
+            if (!placed){ ok = false; break; }
+          }
+          if (!ok) break;
+          out.push(put);
+        }
+        if (ok) laid = out;
+      }
+      /* If scattering them never packs, fall back to rows — but never to one
+         size for everything. A fallback that flattens the radii hands the round
+         to whichever pile has more pieces, quietly inverting the answer the
+         mode was built to ask. Rows keep every radius, so the weights survive. */
+      if (!laid){
+        const shelf = (rs, sc) => {
+          const out = []; let x = PAD, y = PAD, row = 0;
+          for (const r0 of rs.slice().sort((a, b) => b - a)){
+            const r = r0*sc;
+            if (x + 2*r > W - PAD){ x = PAD; y += 2*row + 1.5; row = 0; }
+            if (y + 2*r > H - PAD) return null;
+            out.push({ x: x + r, y: y + r, r });
+            x += 2*r + 1.5; row = Math.max(row, r);
+          }
+          return out;
+        };
+        for (let sc = scale; sc > 0.4 && !laid; sc *= 0.92){
+          const tryOut = pans.map(p => shelf(p.rs, sc));
+          if (tryOut.every(Boolean)) laid = tryOut;
+        }
+      }
+      if (!laid) laid = pans.map(p => p.rs.map((r, i) =>
+        ({ x: 12 + (i % 4)*24, y: 12 + Math.floor(i/4)*24, r: Math.max(2, r*4) })));
+
+      pans.forEach((p, i) => {
+        laid[i].forEach(q => {
+          const e = mk('i','hbit');
+          e.style.left = (q.x - q.r) + '%'; e.style.top = (q.y - q.r) + '%';
+          e.style.width = e.style.height = (q.r*2) + '%';
+          p.pan.appendChild(e);
+        });
+        onTap(p.pan, () => {
+          if (wrap.classList.contains('spent')) return;
+          wrap.classList.add('spent');
+          if (p.which === 'heavy'){ p.pan.classList.add('right'); return ctx.win(p.pan); }
+          p.pan.classList.add('wrong');
+          pans.find(o => o.which === 'heavy').pan.classList.add('right');
+          return ctx.miss(p.pan);
+        });
+      });
+
+      ctx.prompt(t('p.heft'));
     }
   },
 };
