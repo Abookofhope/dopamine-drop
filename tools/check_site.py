@@ -125,6 +125,17 @@ if chrome_start >= 0 and chrome_end > chrome_start and modes_end > modes_start:
     check("no mode reuses a class the header owns", not shared,
           "shared: " + ", ".join(shared) if shared else "")
 
+# A mode's own setTimeout outlives its round. Peril armed its hesitation timer
+# with a raw one, so quitting mid-tell and starting anything else took a life
+# off the new round a beat later, with no input at all. The shell hands every
+# mode ctx.after for exactly this — it registers the timer so ending a round
+# disposes of it.
+if modes_start >= 0 and modes_end > modes_start:
+    mode_body = html[modes_start:modes_end]
+    raw = len(re.findall(r"\bsetTimeout\(", mode_body)) + len(re.findall(r"\bsetInterval\(", mode_body))
+    check("no mode arms a timer the shell cannot clear", raw == 0,
+          "%d raw setTimeout/setInterval calls inside the mode registry" % raw if raw else "")
+
 # Four string tables at key parity say nothing about text that never went
 # through them. The app shipped with "Get ready", "Nice", "Beat 3200" and three
 # dozen screen-reader labels written straight into the script, so a French

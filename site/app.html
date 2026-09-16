@@ -1449,7 +1449,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.15.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.15.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -1609,7 +1609,7 @@ function todayKey(){
 }
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.15.0 (48)';
+const VERSION = 'v0.15.1 (48)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2387,6 +2387,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.15.1', date:'2026-09-16', items:[
+    'Fixed — 38 of 48 modes kept animating after you quit them, and the loops stacked. A few minutes of browsing left the phone drawing several dead games at once.',
+    'Fixed — quitting Peril mid-duel could take a life off whatever you played next, a second or two later, with no input at all.',
+  ] },
   { v:'0.15.0', date:'2026-09-16', items:[
     'The end of a run now shows the shape of it — one pip per round in its family colour, hollow where you missed — and what the run fed into your perks.',
     'Fixed — a lot of the game was still in English whatever language you picked: the countdown, the praise line, the time penalty, the Go Again line, and three dozen screen-reader labels across the modes. All four languages now, everywhere.',
@@ -3907,7 +3911,7 @@ const MODES = {
 
         label.textContent = t('sort.' + (rule === 'colour' ? 'colour' : rule === 'size' ? 'size' : 'fill'));
         label.classList.add('flip');
-        setTimeout(() => label.classList.remove('flip'), 280);
+        ctx.after(280, () => label.classList.remove('flip'));
 
         stage.innerHTML = '';
         const dot = mk('div','sortitem' + (item.solid ? '' : ' hollow'));
@@ -4458,8 +4462,11 @@ const MODES = {
         foeBar.classList.add('strike');
         ctx.prompt(t('p.peril', { n: foe }));
         clearTimeout(timer);
-        /* Hesitating is itself an answer, and the wrong one. */
-        timer = setTimeout(() => { if (!locked) answer(null, btns[0]); }, beat);
+        /* Hesitating is itself an answer, and the wrong one. Armed through the
+           shell's own timer so that ending the round disposes of it: a raw
+           setTimeout here outlives the round, and firing a beat or two later it
+           would take a life off whatever round had started in the meantime. */
+        timer = ctx.after(beat, () => { if (!locked) answer(null, btns[0]); });
       }
 
       function answer(mv, node){
@@ -4471,12 +4478,12 @@ const MODES = {
           foe -= (tell === 'charge' ? 2 : 1);
           sfx.good(1); buzz(14);
           node.classList.add('hit');
-          setTimeout(() => node.classList.remove('hit'), 260);
+          ctx.after(260, () => node.classList.remove('hit'));
         } else {
           you -= (tell === 'charge' ? 2 : 1);
           sfx.bad(); buzz([20,30,20]);
           wrap.classList.add('hurt');
-          setTimeout(() => wrap.classList.remove('hurt'), 300);
+          ctx.after(300, () => wrap.classList.remove('hurt'));
         }
         paint();
         if (foe <= 0) return ctx.win(node);
@@ -7099,6 +7106,27 @@ const Perk = {
   step: id => { const l = Perk.lv(id); return l ? PERK_BY_ID[id].steps[l-1] : 0; }
 };
 
+/* ═══ Frame guard ═════════════════════════════════════════════════════════
+   A mode's animation loop reschedules itself every frame and stops only when
+   the mode decides it is finished — a win, a miss, its own timer. Quitting is
+   not something the mode decides, so every loop outlived the round that owned
+   it: thirty-eight of forty-eight modes were still scheduling frames after you
+   backed out to the menu, and they stacked, so a few minutes of browsing left
+   the phone rendering several dead games at once.
+
+   Rather than teach forty-eight modes to notice, the shell stamps every frame
+   a mode asks for with the round that asked, and drops it if that round is
+   over. A dead loop costs one frame and then stops, whatever it was doing and
+   whether or not it ever heard about the round ending. The shell's own loop
+   uses the raw call so it is never touched. */
+const rawRAF = window.requestAnimationFrame.bind(window);
+const rawCAF = window.cancelAnimationFrame.bind(window);
+let roundGen = 0;
+window.requestAnimationFrame = function(fn){
+  const gen = roundGen;
+  return rawRAF(function(ts){ if (gen !== roundGen) return; return fn(ts); });
+};
+
 /* ═══ Run definitions ═════════════════════════════════════════════════════ */
 const KINDS = {
   shuffle:  { label:'Shuffle',     timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
@@ -7124,6 +7152,8 @@ function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
    not just the one. A board left behind is invisible but still a live subtree
    with listeners on it for as long as the app stays open. */
 function clearBoard(){
+  /* Anything the last round scheduled belongs to the last round. */
+  roundGen++;
   el.roundBar.hidden = true;
   el.surface.innerHTML = '';
   Array.from(el.surface.parentNode.querySelectorAll('.budget')).forEach(n => n.remove());
@@ -7303,7 +7333,7 @@ function tick(ts){
     }
   }
   renderHud();
-  raf = requestAnimationFrame(tick);
+  raf = rawRAF(tick);
 }
 
 /* ═══ Rounds ══════════════════════════════════════════════════════════════ */
@@ -7490,7 +7520,7 @@ function startRun(kind, modeId){
     run.started = true;
     sfx.go();
     lastTs = performance.now();
-    if (!raf) raf = requestAnimationFrame(tick);
+    if (!raf) raf = rawRAF(tick);
     nextRound();
   });
 }
@@ -7498,7 +7528,7 @@ function startRun(kind, modeId){
 function endRun(){
   if (!run) return;
   clearTimers();
-  if (raf){ cancelAnimationFrame(raf); raf = 0; }
+  if (raf){ rawCAF(raf); raf = 0; }
   roundLive = false;
   const k = KINDS[run.kind], r = run;
   run = null;
@@ -7649,7 +7679,7 @@ function countTo(node, value, ms){
     const p = Math.min(1, (now - t0) / dur);
     const eased = 1 - Math.pow(1 - p, 3);
     node.textContent = fmt(from + (value - from) * eased);
-    if (p < 1) requestAnimationFrame(step);
+    if (p < 1) rawRAF(step);
   })(performance.now());
 }
 
@@ -8019,7 +8049,7 @@ $('againBtn').addEventListener('click', () =>
   startRun(el.over.dataset.kind || 'shuffle', el.over.dataset.mode || null));
 $('quitBtn').addEventListener('click', () => {
   clearTimers();
-  if (raf){ cancelAnimationFrame(raf); raf = 0; }
+  if (raf){ rawCAF(raf); raf = 0; }
   if (run && (run.solved || run.missed)) return endRun();
   run = null; clearBoard(); goTab('Play');
 });
