@@ -346,6 +346,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .ribbon i{display:block;width:10px;height:10px;border-radius:3px;background:var(--fam);
   box-shadow:inset 0 -2px 0 #00000026}
 .ribbon i.lost{background:var(--ink-3);box-shadow:inset 0 0 0 1.5px var(--bad)}
+.ribbon i.todo{background:var(--ink-3);box-shadow:inset 0 0 0 1.5px var(--edge)}
+.hudribbon{margin:0;gap:3px;justify-content:flex-start}
+.hudribbon i{width:8px;height:8px;border-radius:2px}
 .lifestrip{margin:0 0 14px;padding:11px 13px;border-radius:var(--r-md);
   background:var(--ink-2);border:1px solid var(--edge-soft)}
 .lifestrip .row{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
@@ -2166,7 +2169,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <button class="qcard" id="dailyBtn" type="button" style="--acc:#33E6C8">
             <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
             <b data-i18n="daily.title">Daily Drop</b>
-            <small id="dailyMeta">12 rounds &middot; same for everyone</small>
+            <small id="dailyMeta">12 rounds, one from every family &middot; same for everyone</small>
           </button>
           <button class="qcard" id="zenBtn" type="button" style="--acc:#7BE38A">
             <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><circle cx="12" cy="12" r="3"/></svg>
@@ -2350,6 +2353,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <div class="perkbar" id="hudPerks" aria-live="off"></div>
         </div>
         <div class="meter" id="hudMeter"><i id="hudMeterFill"></i></div>
+        <div class="ribbon hudribbon" id="hudRounds" hidden role="img"></div>
       </div>
       <div class="scoreband">
         <span class="score" id="hudScore">0</span>
@@ -2574,7 +2578,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.25.0';
+const VERSION_TAG = 'v0.26.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -2982,7 +2986,7 @@ const STRINGS = {
     'mix.nChosen':'{n} modes chosen', 'mix.build':'Build your rotation',
     'mix.note':'Pick the modes you actually like. <b>Mixtape</b> shuffles only those. Two or more to make a rotation — <b>{n} chosen</b>.',
     'mix.chosen':'{n} chosen', 'mix.selectAll':'Select all', 'mix.done':'Done',
-    'daily.title':'Daily Drop', 'daily.sub':'12 rounds · same for everyone',
+    'daily.title':'Daily Drop', 'daily.sub':'12 rounds, one from every family · same for everyone',
     'daily.best':'Today’s best: {n}',
     'zen.title':'Fidget Loop', 'zen.sub':'No timer, no score',
     'marathon.title':'Marathon', 'marathon.sub':'One mode, three lives',
@@ -3050,7 +3054,7 @@ const STRINGS = {
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
     'modes.hold':'Hold a card to read what a mode is before you start it.', 'mpv.best':'Your best', 'mpv.mastery':'Mastery', 'mpv.play':'Play', 'mpv.mastered':'Mastered — all three stars', 'mpv.toNext':'{n} more points for the next star',
-    'daily.streak':'{n}-day streak', 'daily.streak1':'Streak started today', 'daily.share':'Dopamine Drop — Daily Drop {d}: {n} points, day {s} of my streak.', 'btn.share':'Share', 'daily.copied':'Copied',
+    'daily.streak':'{n}-day streak', 'daily.streak1':'Streak started today', 'daily.share':'Dopamine Drop — Daily Drop {d}: {a}/{b} solved for {n} points, day {s} of my streak.', 'btn.share':'Share', 'daily.copied':'Copied',
     'stats.filter':'Filter the mode list', 'stats.fAll':'All', 'stats.fPlayed':'Played', 'stats.fNew':'Not tried', 'stats.allPlayed':'You have played every mode at least once.', 'stats.noneYet':'Nothing here yet — play a Marathon and a score appears.',
     'p.bbListen':'Listen — two bars, then the gaps are yours', 'p.bbPlay':'Tap between the beats — {n} to go', 'bb.pad':'Tap between the beats', 'm.backbeat':'Backbeat|Tap between the beats, never on one', 'p.chorus':'One of these is not holding its tempo', 'chorus.lane':'Row {n}', 'm.chorus':'Chorus|Steady tempos, and one that is not staying steady', 'p.bridge':'{n} planks laid — reach the far bank', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Open water, column {x} row {y}, tap to lay a plank', 'bridge.plank':'A plank, column {x} row {y}, tap to lift it', 'm.bridge':'Bridge|Lay planks bank to bank — you have only so many', 'p.weave':'{n} squares still wrong', 'weave.want':'The pattern to match', 'weave.over':'Over, column {x} row {y}', 'weave.under':'Under, column {x} row {y}', 'm.weave':'Weave|Each tap pulls a whole row and column — match the cloth',
     'play.carryOn':'Carry on', 'play.carryBest':'Your best {n}', 'why.new':'Untried', 'why.star':'Near a star', 'why.rare':'Neglected', 'why.wild':'Wildcard',
@@ -3068,6 +3072,7 @@ const STRINGS = {
     'perk.callSlot1':'A slot is free — pick a perk', 'perk.callSlot':'{n} slots free — pick a perk', 'perk.callToken1':'A token to spend — make a perk stronger', 'perk.callToken':'{n} tokens to spend — make a perk stronger',
     'p.seek':'Find {w} — first letter, then last', 'seek.cell':'{l}, row {r} column {c}', 'm.seek':'Seek|Find the word hidden in the grid', 'p.thaw':'The frost melts wider where it is warmer', 'thaw.pane':'A frosted pane — drag a finger across it to melt it', 'm.thaw':'Thaw|Follow the warmth under the frost',
     'set.vibNone':'This phone has no vibration for a web app to use',
+    'hud.rounds':'{a} of {b} solved so far',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3118,7 +3123,7 @@ const STRINGS = {
     'mix.nChosen':'{n} modes choisis', 'mix.build':'Composez votre rotation',
     'mix.note':'Choisissez les modes que vous aimez vraiment. <b>Playlist</b> ne mélange que ceux-là. Deux au minimum — <b>{n} choisis</b>.',
     'mix.chosen':'{n} choisis', 'mix.selectAll':'Tout choisir', 'mix.done':'Terminé',
-    'daily.title':'Défi du jour', 'daily.sub':'12 manches · identique pour tous',
+    'daily.title':'Défi du jour', 'daily.sub':'12 manches, une par famille · identique pour tous',
     'daily.best':'Record du jour : {n}',
     'zen.title':'Boucle calme', 'zen.sub':'Sans chrono, sans score',
     'marathon.title':'Marathon', 'marathon.sub':'Un seul mode, trois vies',
@@ -3186,7 +3191,7 @@ const STRINGS = {
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
     'modes.hold':'Maintenez une carte pour lire ce qu’est un mode avant de le lancer.', 'mpv.best':'Votre record', 'mpv.mastery':'Maîtrise', 'mpv.play':'Jouer', 'mpv.mastered':'Maîtrisé — les trois étoiles', 'mpv.toNext':'Encore {n} points pour la prochaine étoile',
-    'daily.streak':'Série de {n} jours', 'daily.streak1':'Série commencée aujourd’hui', 'daily.share':'Dopamine Drop — Tirage du jour {d} : {n} points, {s}ᵉ jour de ma série.', 'btn.share':'Partager', 'daily.copied':'Copié',
+    'daily.streak':'Série de {n} jours', 'daily.streak1':'Série commencée aujourd’hui', 'daily.share':'Dopamine Drop — Tirage du jour {d} : {a}/{b} réussis pour {n} points, {s}ᵉ jour de ma série.', 'btn.share':'Partager', 'daily.copied':'Copié',
     'stats.filter':'Filtrer la liste des modes', 'stats.fAll':'Tout', 'stats.fPlayed':'Joués', 'stats.fNew':'Jamais essayés', 'stats.allPlayed':'Vous avez joué à tous les modes au moins une fois.', 'stats.noneYet':'Rien ici — jouez un Marathon et un score apparaîtra.',
     'p.bbListen':'Écoutez — deux mesures, puis les silences sont à vous', 'p.bbPlay':'Touchez entre les temps — encore {n}', 'bb.pad':'Touchez entre les temps', 'm.backbeat':'Contretemps|Touchez entre les temps, jamais sur un temps', 'p.chorus':'L’une d’elles ne tient pas son tempo', 'chorus.lane':'Ligne {n}', 'm.chorus':'Chœur|Des tempos réguliers, et un qui ne l’est pas', 'p.bridge':'{n} planches posées — atteignez l’autre rive', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Eau libre, colonne {x} ligne {y}, touchez pour poser une planche', 'bridge.plank':'Une planche, colonne {x} ligne {y}, touchez pour la retirer', 'm.bridge':'Pont|Posez des planches d’une rive à l’autre — elles sont comptées', 'p.weave':'Encore {n} cases fausses', 'weave.want':'Le motif à reproduire', 'weave.over':'Dessus, colonne {x} ligne {y}', 'weave.under':'Dessous, colonne {x} ligne {y}', 'm.weave':'Tissage|Chaque touche tire toute une ligne et une colonne — reproduisez le tissu',
     'play.carryOn':'Reprendre', 'play.carryBest':'Votre record {n}', 'why.new':'Jamais joué', 'why.star':'Presque une étoile', 'why.rare':'Délaissé', 'why.wild':'Au hasard',
@@ -3204,6 +3209,7 @@ const STRINGS = {
     'perk.callSlot1':'Un emplacement libre — choisissez un atout', 'perk.callSlot':'{n} emplacements libres — choisissez un atout', 'perk.callToken1':'Un jeton à dépenser — renforcez un atout', 'perk.callToken':'{n} jetons à dépenser — renforcez un atout',
     'p.seek':'Trouvez {w} — première lettre, puis dernière', 'seek.cell':'{l}, ligne {r} colonne {c}', 'm.seek':'Cherche|Trouvez le mot caché dans la grille', 'p.thaw':'Le givre fond plus large là où c’est plus chaud', 'thaw.pane':'Une vitre givrée — glissez un doigt dessus pour la faire fondre', 'm.thaw':'Dégel|Suivez la chaleur sous le givre',
     'set.vibNone':'Ce téléphone n’offre pas de vibration à une application web',
+    'hud.rounds':'{a} sur {b} réussis pour l’instant',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3254,7 +3260,7 @@ const STRINGS = {
     'mix.nChosen':'{n} modos elegidos', 'mix.build':'Arma tu rotación',
     'mix.note':'Elige los modos que de verdad te gustan. <b>Lista</b> solo mezcla esos. Dos o más para una rotación — <b>{n} elegidos</b>.',
     'mix.chosen':'{n} elegidos', 'mix.selectAll':'Elegir todos', 'mix.done':'Listo',
-    'daily.title':'Reto diario', 'daily.sub':'12 rondas · igual para todos',
+    'daily.title':'Reto diario', 'daily.sub':'12 rondas, una de cada familia · igual para todos',
     'daily.best':'Récord de hoy: {n}',
     'zen.title':'Modo calma', 'zen.sub':'Sin reloj, sin puntos',
     'marathon.title':'Maratón', 'marathon.sub':'Un modo, tres vidas',
@@ -3322,7 +3328,7 @@ const STRINGS = {
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
     'modes.hold':'Mantén pulsada una tarjeta para leer qué es un modo antes de empezar.', 'mpv.best':'Tu récord', 'mpv.mastery':'Dominio', 'mpv.play':'Jugar', 'mpv.mastered':'Dominado — las tres estrellas', 'mpv.toNext':'{n} puntos más para la siguiente estrella',
-    'daily.streak':'Racha de {n} días', 'daily.streak1':'Racha empezada hoy', 'daily.share':'Dopamine Drop — Reto diario {d}: {n} puntos, día {s} de mi racha.', 'btn.share':'Compartir', 'daily.copied':'Copiado',
+    'daily.streak':'Racha de {n} días', 'daily.streak1':'Racha empezada hoy', 'daily.share':'Dopamine Drop — Reto diario {d}: {a}/{b} resueltos por {n} puntos, día {s} de mi racha.', 'btn.share':'Compartir', 'daily.copied':'Copiado',
     'stats.filter':'Filtrar la lista de modos', 'stats.fAll':'Todos', 'stats.fPlayed':'Jugados', 'stats.fNew':'Sin probar', 'stats.allPlayed':'Has jugado todos los modos al menos una vez.', 'stats.noneYet':'Aquí no hay nada — juega un Maratón y aparecerá una puntuación.',
     'p.bbListen':'Escucha — dos compases y los huecos son tuyos', 'p.bbPlay':'Toca entre los golpes — quedan {n}', 'bb.pad':'Toca entre los golpes', 'm.backbeat':'Contratiempo|Toca entre los golpes, nunca sobre uno', 'p.chorus':'Una de ellas no mantiene su tempo', 'chorus.lane':'Fila {n}', 'm.chorus':'Coro|Tempos estables, y uno que no lo es', 'p.bridge':'{n} tablones puestos — llega a la otra orilla', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Agua abierta, columna {x} fila {y}, toca para poner un tablón', 'bridge.plank':'Un tablón, columna {x} fila {y}, toca para quitarlo', 'm.bridge':'Puente|Pon tablones de orilla a orilla — están contados', 'p.weave':'Quedan {n} casillas mal', 'weave.want':'El patrón que hay que igualar', 'weave.over':'Encima, columna {x} fila {y}', 'weave.under':'Debajo, columna {x} fila {y}', 'm.weave':'Telar|Cada toque tira de toda una fila y columna — iguala la tela',
     'play.carryOn':'Continuar', 'play.carryBest':'Tu récord {n}', 'why.new':'Sin probar', 'why.star':'Cerca de una estrella', 'why.rare':'Olvidado', 'why.wild':'Al azar',
@@ -3340,6 +3346,7 @@ const STRINGS = {
     'perk.callSlot1':'Una ranura libre — elige una ventaja', 'perk.callSlot':'{n} ranuras libres — elige una ventaja', 'perk.callToken1':'Una ficha por gastar — mejora una ventaja', 'perk.callToken':'{n} fichas por gastar — mejora una ventaja',
     'p.seek':'Encuentra {w} — primera letra, luego la última', 'seek.cell':'{l}, fila {r} columna {c}', 'm.seek':'Busca|Encuentra la palabra escondida en la cuadrícula', 'p.thaw':'La escarcha se derrite más donde hace más calor', 'thaw.pane':'Un cristal escarchado — desliza un dedo para derretirlo', 'm.thaw':'Deshielo|Sigue el calor bajo la escarcha',
     'set.vibNone':'Este teléfono no ofrece vibración a una aplicación web',
+    'hud.rounds':'{a} de {b} resueltos hasta ahora',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3390,7 +3397,7 @@ const STRINGS = {
     'mix.nChosen':'{n} Modi gewählt', 'mix.build':'Stelle deine Rotation zusammen',
     'mix.note':'Wähle die Modi, die dir wirklich gefallen. <b>Playlist</b> mischt nur diese. Mindestens zwei — <b>{n} gewählt</b>.',
     'mix.chosen':'{n} gewählt', 'mix.selectAll':'Alle wählen', 'mix.done':'Fertig',
-    'daily.title':'Tagesrätsel', 'daily.sub':'12 Runden · für alle gleich',
+    'daily.title':'Tagesrätsel', 'daily.sub':'12 Runden, eine je Familie · für alle gleich',
     'daily.best':'Heutiger Rekord: {n}',
     'zen.title':'Ruhemodus', 'zen.sub':'Ohne Uhr, ohne Punkte',
     'marathon.title':'Marathon', 'marathon.sub':'Ein Modus, drei Leben',
@@ -3458,7 +3465,7 @@ const STRINGS = {
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
     'modes.hold':'Halte eine Karte gedrückt, um vor dem Start zu lesen, was ein Modus ist.', 'mpv.best':'Dein Bestwert', 'mpv.mastery':'Meisterschaft', 'mpv.play':'Spielen', 'mpv.mastered':'Gemeistert — alle drei Sterne', 'mpv.toNext':'Noch {n} Punkte bis zum nächsten Stern',
-    'daily.streak':'{n} Tage in Folge', 'daily.streak1':'Serie heute begonnen', 'daily.share':'Dopamine Drop — Tagesrunde {d}: {n} Punkte, Tag {s} meiner Serie.', 'btn.share':'Teilen', 'daily.copied':'Kopiert',
+    'daily.streak':'{n} Tage in Folge', 'daily.streak1':'Serie heute begonnen', 'daily.share':'Dopamine Drop — Tagesrunde {d}: {a}/{b} gelöst für {n} Punkte, Tag {s} meiner Serie.', 'btn.share':'Teilen', 'daily.copied':'Kopiert',
     'stats.filter':'Modusliste filtern', 'stats.fAll':'Alle', 'stats.fPlayed':'Gespielt', 'stats.fNew':'Ungespielt', 'stats.allPlayed':'Du hast jeden Modus mindestens einmal gespielt.', 'stats.noneYet':'Hier ist noch nichts — spiel einen Marathon und ein Wert erscheint.',
     'p.bbListen':'Hör zu — zwei Takte, dann gehören dir die Lücken', 'p.bbPlay':'Zwischen die Schläge tippen — noch {n}', 'bb.pad':'Zwischen die Schläge tippen', 'm.backbeat':'Nachschlag|Tippe zwischen die Schläge, nie auf einen', 'p.chorus':'Eine davon hält ihr Tempo nicht', 'chorus.lane':'Zeile {n}', 'm.chorus':'Chor|Gleichmäßige Tempi, und eines, das keines hält', 'p.bridge':'{n} Planken gelegt — erreiche das andere Ufer', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Offenes Wasser, Spalte {x} Zeile {y}, tippen zum Planken legen', 'bridge.plank':'Eine Planke, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Brücke|Lege Planken von Ufer zu Ufer — sie sind gezählt', 'p.weave':'Noch {n} Felder falsch', 'weave.want':'Das Muster, das passen muss', 'weave.over':'Oben, Spalte {x} Zeile {y}', 'weave.under':'Unten, Spalte {x} Zeile {y}', 'm.weave':'Weben|Jeder Tipp zieht eine ganze Zeile und Spalte — triff das Tuch',
     'play.carryOn':'Weiter', 'play.carryBest':'Dein Bestwert {n}', 'why.new':'Ungespielt', 'why.star':'Fast ein Stern', 'why.rare':'Vergessen', 'why.wild':'Zufall',
@@ -3476,6 +3483,7 @@ const STRINGS = {
     'perk.callSlot1':'Ein Platz ist frei — wähl einen Vorteil', 'perk.callSlot':'{n} Plätze frei — wähl einen Vorteil', 'perk.callToken1':'Eine Marke übrig — mach einen Vorteil stärker', 'perk.callToken':'{n} Marken übrig — mach einen Vorteil stärker',
     'p.seek':'Finde {w} — erster Buchstabe, dann der letzte', 'seek.cell':'{l}, Zeile {r} Spalte {c}', 'm.seek':'Suche|Finde das Wort im Buchstabenfeld', 'p.thaw':'Der Reif schmilzt weiter, wo es wärmer ist', 'thaw.pane':'Eine bereifte Scheibe — zieh einen Finger darüber, um sie zu schmelzen', 'm.thaw':'Tauwetter|Folge der Wärme unter dem Reif',
     'set.vibNone':'Dieses Telefon bietet Web-Apps keine Vibration',
+    'hud.rounds':'Bisher {a} von {b} gelöst',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3619,6 +3627,13 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.26.0', date:'2026-09-17', items:[
+    'The Daily Drop is now twelve rounds everybody actually finishes. It had a 90-second clock AND a promise of twelve rounds, and the two were in conflict: twelve rounds at the median mode\u2019s par is 126 seconds of play, and twelve perfect solves earn back at most 35. Nobody was reaching round ten, so \u201cthe same twelve puzzles for everyone\u201d was only ever the same seed \u2014 the set you actually played depended on how fast you are. The shared clock is gone; a per-round clock keeps it moving without cutting it short.',
+    'The Daily draws one mode from every family, then two more. Twelve pulled at random out of sixty-two is a lottery, and because everyone gets the same draw it is the same lottery for everyone \u2014 a day could be four reflex modes and no calm at all. Checked over four hundred days: every family on every day, no repeats inside a day, no two days alike, and no mode left out.',
+    'A run with a fixed number of rounds shows where it is in them. Twelve pips along the top fill as you go \u2014 solved, missed, still to come \u2014 the same shape the results screen ends with, so the record you finish with is the one you watched fill. The share line carries it too.',
+    'Difficulty \u2014 audited all sixty-two ramps, and seventeen knobs across nine modes were racing to their ceiling. Colour Trap stopped getting harder at level 9, Letter Gap and Siphon by 12, while the median mode was barely half way through its range. Every ceiling is unchanged; they are simply reached at a comparable pace, so a run rotating families no longer mixes finished modes with ones that have hardly started.',
+    'The build now refuses a mode that stops getting harder before level 15, and says how many of the roster it read while checking \u2014 the audit is a gate rather than a thing somebody remembers to do.',
+  ] },
   { v:'0.25.0', date:'2026-09-17', items:[
     'New mode \u2014 Seek. The other four word modes all hand you one broken word to put back together; this one hands you a finished word and hides it in a grid of letters. The filler is drawn from the language\u2019s own words so the grid reads as that language rather than as noise, and the word is checked to appear exactly once in all eight directions \u2014 not just the direction it was placed in.',
     'New mode \u2014 Thaw. Calm could hold steady, stop in time and follow a line, but nothing in it was about looking for something, which is the calmest thing there is when nothing is chasing you. Drag across a frosted pane and the frost melts wider the closer you are. The picture is the whole signal \u2014 there is no number anywhere \u2014 and warm ground costs almost nothing, so a good look around is free and aimless scrubbing is not.',
@@ -4310,12 +4325,12 @@ const MODES = {
     name:'Odd One Out', blurb:'Spot the tile that doesn’t match', cat:'focus', par:2600, bonus:1200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="13" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="3" y="13" width="8" height="8" rx="2" fill="#6C6191"/><rect x="13" y="13" width="8" height="8" rx="2" fill="#FF5B39"/></svg>',
     build(ctx){
-      const n = clamp(2 + Math.floor(ctx.level/2), 2, 6);
+      const n = clamp(2 + Math.floor(ctx.level/4), 2, 6);
       /* A perceptual target, not a hue offset — and floored well above the
          threshold of noticing, because past that point difficulty should come
          from the grid growing, never from the tile being invisible. */
-      const want = Math.max(0.040, 0.21 - ctx.level*0.011);
-      const light = assistOn() ? clamp(20 - ctx.level*1.2, 8.5, 20) : 0;
+      const want = Math.max(0.040, 0.21 - ctx.level*0.0085);
+      const light = assistOn() ? clamp(20 - ctx.level*0.6, 8.5, 20) : 0;
       const hue = Math.floor(ctx.rnd()*360);
       const oddHue = hueForDistance(hue, want, 68, 58, ctx.rnd() < 0.5 ? 1 : -1);
       const odd = Math.floor(ctx.rnd()*n*n);
@@ -4388,7 +4403,7 @@ const MODES = {
     name:'Color Trap', blurb:'Match the ink colour, ignore the word', cat:'focus', par:2400, bonus:1200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="10" r="6" fill="#FF5B39" opacity=".85"/><circle cx="15" cy="14" r="6" fill="#33E6C8" opacity=".8"/></svg>',
     build(ctx){
-      const k = clamp(3 + Math.floor(ctx.level/3), 3, 6);
+      const k = clamp(3 + Math.floor(ctx.level/6), 3, 6);
       const pool = shuffle(INKS.slice(), ctx.rnd).slice(0, k);
       const ink = pool[Math.floor(ctx.rnd()*pool.length)];
       const others = pool.filter(c => c !== ink);
@@ -5059,7 +5074,7 @@ const MODES = {
     name:'Word Snap', blurb:'Unscramble the word, letter by letter', cat:'words', par:6500, bonus:2000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="7" height="8" rx="1.5" fill="#FF5B39"/><rect x="14" y="8" width="7" height="8" rx="1.5" fill="#6C6191"/></svg>',
     build(ctx){
-      const len = ctx.level < 5 ? 4 : ctx.level < 12 ? 5 : 6;
+      const len = ctx.level < 8 ? 4 : ctx.level < 18 ? 5 : 6;
       const w = ctx.deal(wordBank()[len], 'word:' + save.lang + ':' + len);
 
       /* Rejecting only the fully-solved rack was too weak a test. A rack with
@@ -5200,11 +5215,11 @@ const MODES = {
     name:'Letter Gap', blurb:'Fill in the missing letters', cat:'words', par:5000, bonus:1800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="6" height="8" rx="1.5" fill="#6C6191"/><rect x="10" y="8" width="4" height="8" rx="1.5" fill="none" stroke="#FF5B39" stroke-width="2" stroke-dasharray="2 2"/><rect x="15" y="8" width="6" height="8" rx="1.5" fill="#6C6191"/></svg>',
     build(ctx){
-      const len = ctx.level < 5 ? 4 : ctx.level < 12 ? 5 : 6;
+      const len = ctx.level < 8 ? 4 : ctx.level < 18 ? 5 : 6;
       const word = ctx.deal(wordBank()[len], 'gap:' + save.lang + ':' + len);
       /* More holes as the level climbs, but never the first letter: a word
          with no visible start is a guess, not a puzzle. */
-      const holes = clamp(1 + Math.floor(ctx.level/6), 1, Math.min(3, len-2));
+      const holes = clamp(1 + Math.floor(ctx.level/9), 1, Math.min(3, len-2));
       const idx = shuffle(Array.from({length:len-1},(_,i)=>i+1), ctx.rnd)
         .slice(0,holes).sort((a,b)=>a-b);
 
@@ -6179,7 +6194,7 @@ const MODES = {
     name:'Needle', blurb:'Find the one that is both — nothing here stands out', cat:'focus', par:5600, bonus:2200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="7" r="3" fill="#6C6191"/><circle cx="17" cy="8" r="4.5" fill="#6C6191"/><circle cx="8" cy="17" r="4.5" fill="#FF5B39"/><circle cx="17" cy="17" r="3" fill="#FF5B39"/></svg>',
     build(ctx){
-      const total = Math.round(clamp(9 + ctx.level*1.9, 9, 34));
+      const total = Math.round(clamp(9 + ctx.level*1.25, 9, 34));
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, 2);
       const SIZES = [7.5, 12.5];
       const wantInk = pal[Math.floor(ctx.rnd()*2)];
@@ -6267,7 +6282,7 @@ const MODES = {
     name:'Pivot', blurb:'Each tap turns two — straighten the whole pattern', cat:'logic', par:9500, bonus:2800,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 8-8v3"/><path d="M20 12a8 8 0 0 1-8 8v-3" stroke="#FF5B39"/></svg>',
     build(ctx){
-      const g = ctx.level < 5 ? 2 : ctx.level < 14 ? 3 : 4;
+      const g = ctx.level < 6 ? 2 : ctx.level < 17 ? 3 : 4;
       const n = g*g;
       const turns = new Array(n).fill(0);
       /* Tapping i also turns its right neighbour, wrapping inside the row, so
@@ -7136,7 +7151,7 @@ const MODES = {
     name:'Siphon', blurb:'Pour each colour into the jar that wants it', cat:'focus', par:10000, bonus:2800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h5v6l-3 10H6z" fill="#FF5B39"/><path d="M13 8h5v11h-5z" fill="#33E6C8" opacity=".55"/></svg>',
     build(ctx){
-      const n = clamp(2 + Math.floor(ctx.level/4), 2, 5);
+      const n = clamp(2 + Math.floor(ctx.level/6), 2, 5);
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, n);
       const order = shuffle(pal.slice(), ctx.rnd);
 
@@ -8174,8 +8189,8 @@ const MODES = {
     name:'Tell', blurb:'Guess the row — every wrong guess tells you something', cat:'logic', par:18000, bonus:4600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="7" r="2.6" fill="#33E6C8"/><circle cx="12" cy="7" r="2.6" fill="#33E6C8" opacity=".55"/><circle cx="18.5" cy="7" r="2.6" fill="#33E6C8" opacity=".3"/><circle cx="6" cy="16" r="1.5" fill="#33E6C8"/><circle cx="11" cy="16" r="1.5" fill="none" stroke="#33E6C8" stroke-width="1.2"/><circle cx="16" cy="16" r="1.5" fill="none" stroke="#33E6C8" stroke-width="1.2" opacity=".5"/></svg>',
     build(ctx){
-      const k    = ctx.level < 8 ? 3 : 4;                       /* pegs in the row */
-      const c    = clamp(4 + Math.floor(ctx.level/7), 4, 6);    /* colours in play */
+      const k    = ctx.level < 10 ? 3 : 4;                      /* pegs in the row */
+      const c    = clamp(4 + Math.floor(ctx.level/8), 4, 6);    /* colours in play */
       const rows = k + 3;                                       /* guesses allowed */
       const pal  = shuffle(INKS.slice(), ctx.rnd).slice(0, c);
       const code = Array.from({length:k}, () => Math.floor(ctx.rnd()*c));
@@ -9210,8 +9225,8 @@ const MODES = {
          thing stopping it being guesswork is that no beginning fits any ending
          but its own. That is checked rather than hoped for — a board where two
          answers both spell real words is thrown away and rebuilt. */
-      const len  = ctx.level >= 14 ? 6 : ctx.level >= 6 ? 5 : 4;
-      const want = 3 + Math.min(1, Math.floor(ctx.level/10));
+      const len  = ctx.level >= 17 ? 6 : ctx.level >= 7 ? 5 : 4;
+      const want = 3 + Math.min(1, Math.floor(ctx.level/13));
       const bank = wordBank()[len] || wordBank()[4];
       const cut  = Math.floor(len / 2);
       const known = new Set(bank);
@@ -9553,14 +9568,14 @@ const MODES = {
          together. This one hands you a finished word and hides it — the work is
          reading a field rather than repairing a string, which is the one thing
          a set of letters can ask that the others do not. */
-      const N    = 5 + Math.min(2, Math.floor(ctx.level/7));
-      const len  = Math.min(N, 4 + Math.min(2, Math.floor(ctx.level/6)));
+      const N    = 5 + Math.min(2, Math.floor(ctx.level/9));
+      const len  = Math.min(N, 4 + Math.min(2, Math.floor(ctx.level/8)));
       const bank = wordBank()[len] || wordBank()[4];
       const word = ctx.deal(bank, 'seek:' + save.lang + ':' + len);
 
       /* Straight on first, then the diagonals, then backwards. */
       const DIRS = [[1,0],[0,1],[1,1],[1,-1],[-1,0],[0,-1],[-1,-1],[-1,1]];
-      const open = ctx.level < 5 ? 2 : ctx.level < 11 ? 4 : 8;
+      const open = ctx.level < 6 ? 2 : ctx.level < 13 ? 4 : 8;
 
       /* Filler is drawn from the language's own letters, so the grid reads as
          that language rather than as noise with a word buried in it. */
@@ -10017,7 +10032,14 @@ window.requestAnimationFrame = function(fn){
 const KINDS = {
   shuffle:  { label:'Shuffle',     key:'hero.title',     timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
   mix:      { label:'Mixtape',     key:'mix.title',      timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
-  daily:    { label:'Daily Drop',  key:'daily.title',    timed:true,  cap:90000, start:90000, penalty:4000, scored:true, rounds:12 },
+  /* The card promised twelve rounds and a 90-second clock, and the two were in
+     conflict: twelve rounds at the median mode's par is 126 seconds of play,
+     and twelve perfect solves earn back at most 35. Nobody was reaching round
+     ten, so "the same twelve puzzles for everyone" was only ever the same seed
+     — the set you actually played depended on how fast you are. A daily is a
+     fixed thing everybody finishes; the per-round clock keeps it moving without
+     cutting it short. */
+  daily:    { label:'Daily Drop',  key:'daily.title',    timed:false, scored:true, rounds:12, roundClock:true },
   marathon: { label:'Marathon',    key:'marathon.title', timed:false, lives:3,   scored:true, roundClock:true },
   zen:      { label:'Fidget Loop', key:'zen.title',      timed:false, scored:false }
 };
@@ -10201,6 +10223,29 @@ function renderHud(){
   } else {
     $('hudMeter').hidden = true; $('hudLives').hidden = true;
   }
+
+  /* A run with no clock and no lives showed nothing at all about where it was.
+     Twelve pips: solved, missed, and still to come — the same shape the results
+     screen uses, so the record you end with is the one you watched fill. */
+  const rib = $('hudRounds');
+  if (rib){
+    rib.hidden = !k.rounds;
+    if (k.rounds){
+      const log = run.log || [];
+      if (rib.childNodes.length !== k.rounds){
+        rib.innerHTML = '';
+        for (let i = 0; i < k.rounds; i++) rib.appendChild(mk('i','todo'));
+      }
+      Array.from(rib.children).forEach((pip, i) => {
+        const e = log[i];
+        pip.className = !e ? 'todo' : (e.ok ? 'won' : 'lost');
+        if (e) pip.style.setProperty('--fam', CAT_INK[catOf(e.id)] || 'var(--haze)');
+        else pip.style.removeProperty('--fam');
+      });
+      rib.setAttribute('aria-label', t('hud.rounds',
+        { a: log.filter(e => e.ok).length, b: k.rounds }));
+    }
+  }
 }
 
 function tick(ts){
@@ -10236,6 +10281,24 @@ function tick(ts){
    three modes twice each in a one-minute run — random clumps, and it reads as
    the game having far less in it than it does. A bag deals every mode once
    before any of them comes back. */
+/* Twelve drawn at random from sixty-two is a lottery, and because everyone gets
+   the same draw it is the same lottery for everyone: a day could be four reflex
+   modes and no calm at all. Ten families, twelve rounds — so one from each, then
+   two more from what is left, shuffled so the families do not arrive in order.
+   Seeded like everything else about the day, so it is still identical for
+   everybody. */
+function dailyBag(rnd){
+  const fams = shuffle(catsPresent(), rnd);
+  const picked = [];
+  fams.forEach(c => {
+    const ids = idsInCat(c);
+    if (ids.length) picked.push(shuffle(ids.slice(), rnd)[0]);
+  });
+  const rest = shuffle(MODE_IDS.filter(id => picked.indexOf(id) < 0), rnd);
+  while (picked.length < 12 && rest.length) picked.push(rest.shift());
+  return shuffle(picked, rnd).slice(0, 12);
+}
+
 function pickMode(){
   /* Set only by a pause, so resuming hands back the puzzle it took away. */
   if (run.forceMode){ const id = run.forceMode; run.forceMode = null; return id; }
@@ -10413,6 +10476,9 @@ function startRun(kind, modeId){
     pool: kind === 'mix' ? mixModes() : MODE_IDS.slice(),
     rnd: kind === 'daily' ? mulberry32(hashStr(todayKey())) : Math.random
   };
+  /* pickMode only reshuffles when the bag is empty, so a bag handed over here
+     is played in the order it was built. */
+  if (kind === 'daily') run.bag = dailyBag(run.rnd);
   /* The menu's first offer is the thing you were doing. Only Marathon is
      worth remembering: the other four are already a button each. */
   if (kind === 'marathon' && modeId) save.lastMode = modeId;
@@ -10616,6 +10682,7 @@ function endRun(){
   el.over.dataset.kind = r.kind;
   el.over.dataset.mode = r.mode || '';
   el.over.dataset.score = String(r.score);
+  el.over.dataset.solved = String(r.solved);
   const dRow = $('dailyRow'), dSt = dailyStreak();
   dRow.hidden = r.kind !== 'daily';
   if (!dRow.hidden) $('dailyStreakTxt').textContent = streakLine(dSt || 1);
@@ -11455,6 +11522,8 @@ $('shareBtn').addEventListener('click', () => {
   const btn = $('shareBtn');
   const text = t('daily.share', {
     d: todayKey(),
+    a: Number(el.over.dataset.solved || 0),
+    b: KINDS.daily.rounds,
     n: fmt(Number(el.over.dataset.score || 0)),
     s: dailyStreak() || 1
   });

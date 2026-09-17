@@ -232,6 +232,100 @@ if m:
           not problems, "; ".join(problems[:4]))
     check("word banks are large enough to not repeat", total >= 400, f"{total} words")
 
+# ── Difficulty ramps ──────────────────────────────────────────────────────
+# A mode whose every knob has hit its clamp stops getting harder for good, and
+# nothing on screen says so. Stroop topped out at ctx.level 9 and three others
+# by 12, while the median mode was barely half way — so a run rotating families
+# mixed finished modes with ones that had hardly started. The ceilings are real
+# (a 12x12 grid does not fit on a phone); what has to hold is that no mode
+# reaches its ceiling while the rest of the roster is still climbing.
+RAMP_FLOOR = 15          # no mode may stop changing before this ctx.level
+
+def _ternary(src):
+    """a ? b : c  ->  ((b) if (a) else (c)). JS chains right-associatively, so
+    the match for the first '?' is the ':' that balances it, not the first one."""
+    i = src.find("?")
+    if i < 0:
+        return src
+    depth = 0
+    for j in range(i + 1, len(src)):
+        c = src[j]
+        if c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth < 0:
+                return None
+        elif depth == 0 and c == "?":
+            inner = _ternary(src[j:])
+            if inner is None:
+                return None
+            return _ternary(src[:j] + inner) if "?" in src[:j] else src[:j] + inner
+        elif depth == 0 and c == ":":
+            cond, then, els = src[:i], src[i + 1:j], src[j + 1:]
+            els = _ternary(els)
+            if els is None:
+                return None
+            return f"(({then}) if ({cond}) else ({els}))"
+    return None
+
+
+def _js_number(expr, level):
+    """Evaluate the small arithmetic the difficulty knobs are written in.
+    Anything richer than this is skipped rather than guessed at."""
+    import math as _m
+    e = expr.strip()
+    if not re.fullmatch(r"[0-9A-Za-z_.,:?<>=!+\-*/() ]+", e):
+        return None
+    py = e.replace("ctx.level", str(level))
+    py = py.replace("Math.floor", "_m.floor").replace("Math.round", "_round")
+    py = py.replace("Math.min", "min").replace("Math.max", "max")
+    py = py.replace("Math.sqrt", "_m.sqrt").replace("Math.abs", "abs")
+    py = py.replace("Math.hypot", "_m.hypot").replace("Math.PI", "_m.pi")
+    if "Math." in py or "assistOn" in py:
+        return None
+    py = _ternary(py)
+    if py is None or "?" in py or ":" in py:
+        return None
+    def _clamp(v, lo, hi): return lo if v < lo else hi if v > hi else v
+    def _round(v):         return _m.floor(v + 0.5)
+    try:
+        v = eval(py, {"__builtins__": {}},
+                 {"_m": _m, "clamp": _clamp, "_round": _round, "min": min, "max": max, "abs": abs})
+        return float(v) if isinstance(v, (int, float)) else None
+    except Exception:
+        return None
+
+modes_src = html[html.index("const MODES = {"):html.index("\nconst CATS = [")]
+_starts = [(m.start(), m.group(1)) for m in re.finditer(r"\n  ([a-zA-Z0-9_]+): \{\n", modes_src)]
+frozen, scanned = [], 0
+for _i, (_off, _name) in enumerate(_starts):
+    _end = _starts[_i + 1][0] if _i + 1 < len(_starts) else len(modes_src)
+    last_move = 0
+    saw_knob = False
+    for line in modes_src[_off:_end].split("\n"):
+        if "ctx.level" not in line:
+            continue
+        m = re.match(r"\s*const\s+\w+\s*=\s*(.+?);\s*(/\*.*)?$", line.strip())
+        if not m:
+            continue
+        vals = [_js_number(m.group(1), L) for L in range(1, 61)]
+        if any(v is None for v in vals):
+            continue
+        saw_knob = True
+        for L in range(59, 0, -1):
+            if abs(vals[L] - vals[L - 1]) > 1e-12:
+                last_move = max(last_move, L + 1)
+                break
+    if saw_knob:
+        scanned += 1
+        if last_move < RAMP_FLOOR:
+            frozen.append(f"{_name} stops at L{last_move}")
+# Coverage is part of the result: a check that silently reads nothing passes.
+check(f"no mode stops getting harder before level {RAMP_FLOOR} "
+      f"({scanned}/{len(_starts)} modes read)",
+      not frozen and scanned >= len(_starts) * 0.75, "; ".join(frozen[:5]) or "too few modes read")
+
 check("page links the manifest", 'rel="manifest"' in html)
 check("page registers the worker", "serviceWorker" in html)
 
