@@ -349,6 +349,16 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .ribbon i.todo{background:var(--ink-3);box-shadow:inset 0 0 0 1.5px var(--edge)}
 .hudribbon{margin:0;gap:3px;justify-content:flex-start}
 .hudribbon i{width:8px;height:8px;border-radius:2px}
+
+/* Sits under the prompt and reads as an aside, never as the instruction —
+   the prompt is still the thing that tells you what to do right now. */
+.howto{
+  flex:none;margin:-4px 0 10px;padding:0 var(--gut);
+  text-align:center;font-size:11.5px;line-height:1.45;color:var(--haze);
+}
+.howto.go{animation:howin 320ms cubic-bezier(.2,.8,.3,1) 1}
+@keyframes howin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){ .howto.go{animation:none} }
 .lifestrip{margin:0 0 14px;padding:11px 13px;border-radius:var(--r-md);
   background:var(--ink-2);border:1px solid var(--edge-soft)}
 .lifestrip .row{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
@@ -2361,6 +2371,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
       </div>
       <div class="roundbar" id="roundBar" hidden><i id="roundFill"></i></div>
       <p class="prompt" id="prompt">Get ready</p>
+      <p class="howto" id="howto" hidden></p>
       <div id="surface"><div id="count"><b>3</b></div></div>
     </section>
 
@@ -2578,7 +2589,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.26.0';
+const VERSION_TAG = 'v0.27.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -2589,7 +2600,7 @@ const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
        would tell the next migration to redo steps already applied.        */
 const KEY = 'dd.v1';
 const QUARANTINE = 'dd.v1.unreadable';
-const SCHEMA = 9;
+const SCHEMA = 10;
 const defaults = {
   pbBlitz:0, pbStreak:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false,
@@ -2597,7 +2608,10 @@ const defaults = {
   lifetime:0, perks:[], perkLv:{}, tokens:0,
   dailyStreak:0, dailyLast:null, dailyBestStreak:0,
   lastMode:null, onboarded:false,
-  tapes:[], tapeId:null
+  tapes:[], tapeId:null,
+  /* Which modes the player has ever met, so a first look can be taught
+     once and then never mentioned again. */
+  seen:{}
 };
 
 function migrate(data){
@@ -2681,6 +2695,15 @@ function migrate(data){
     if (data.tapeId === undefined || data.tapeId === null)
       data.tapeId = data.tapes.length ? data.tapes[0].id : null;
     from = 9;
+  }
+  if (from < 10){
+    /* Schema 10 records which modes have been played. An existing save has
+       met plenty of them and cannot say which, so rather than teach a
+       veteran sixty-two lessons, anything with a Marathon score counts as
+       met and the rest are treated as new. */
+    if (!data.seen || typeof data.seen !== 'object') data.seen = {};
+    Object.keys(data.marathon || {}).forEach(id => { data.seen[id] = 1; });
+    from = 10;
   }
   if (from <= SCHEMA) data.schema = SCHEMA;
   return data;
@@ -3073,6 +3096,7 @@ const STRINGS = {
     'p.seek':'Find {w} — first letter, then last', 'seek.cell':'{l}, row {r} column {c}', 'm.seek':'Seek|Find the word hidden in the grid', 'p.thaw':'The frost melts wider where it is warmer', 'thaw.pane':'A frosted pane — drag a finger across it to melt it', 'm.thaw':'Thaw|Follow the warmth under the frost',
     'set.vibNone':'This phone has no vibration for a web app to use',
     'hud.rounds':'{a} of {b} solved so far',
+    'how.drag':'drag a finger across the board', 'how.tapdrag':'tap first, then drag to aim',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3210,6 +3234,7 @@ const STRINGS = {
     'p.seek':'Trouvez {w} — première lettre, puis dernière', 'seek.cell':'{l}, ligne {r} colonne {c}', 'm.seek':'Cherche|Trouvez le mot caché dans la grille', 'p.thaw':'Le givre fond plus large là où c’est plus chaud', 'thaw.pane':'Une vitre givrée — glissez un doigt dessus pour la faire fondre', 'm.thaw':'Dégel|Suivez la chaleur sous le givre',
     'set.vibNone':'Ce téléphone n’offre pas de vibration à une application web',
     'hud.rounds':'{a} sur {b} réussis pour l’instant',
+    'how.drag':'glissez un doigt sur le plateau', 'how.tapdrag':'touchez d’abord, puis glissez pour viser',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3347,6 +3372,7 @@ const STRINGS = {
     'p.seek':'Encuentra {w} — primera letra, luego la última', 'seek.cell':'{l}, fila {r} columna {c}', 'm.seek':'Busca|Encuentra la palabra escondida en la cuadrícula', 'p.thaw':'La escarcha se derrite más donde hace más calor', 'thaw.pane':'Un cristal escarchado — desliza un dedo para derretirlo', 'm.thaw':'Deshielo|Sigue el calor bajo la escarcha',
     'set.vibNone':'Este teléfono no ofrece vibración a una aplicación web',
     'hud.rounds':'{a} de {b} resueltos hasta ahora',
+    'how.drag':'desliza un dedo por el tablero', 'how.tapdrag':'toca primero y luego desliza para apuntar',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3484,6 +3510,7 @@ const STRINGS = {
     'p.seek':'Finde {w} — erster Buchstabe, dann der letzte', 'seek.cell':'{l}, Zeile {r} Spalte {c}', 'm.seek':'Suche|Finde das Wort im Buchstabenfeld', 'p.thaw':'Der Reif schmilzt weiter, wo es wärmer ist', 'thaw.pane':'Eine bereifte Scheibe — zieh einen Finger darüber, um sie zu schmelzen', 'm.thaw':'Tauwetter|Folge der Wärme unter dem Reif',
     'set.vibNone':'Dieses Telefon bietet Web-Apps keine Vibration',
     'hud.rounds':'Bisher {a} von {b} gelöst',
+    'how.drag':'zieh einen Finger über das Feld', 'how.tapdrag':'erst tippen, dann zum Zielen ziehen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3627,6 +3654,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.27.0', date:'2026-09-17', items:[
+    'A mode you have never played now introduces itself. The welcome screen covers the app; nothing covered the sixty-two games inside it, and a board you have never seen plus a one-line goal is not always enough to know what to do with your finger. One quiet line under the prompt says what the mode is \u2014 and, on the fifteen that want a drag and look exactly like the forty-seven that want a tap, that it wants a drag.',
+    'It goes the moment you touch the board, or after six seconds, and it never comes back for that mode. It costs the board nothing: measured at five screen sizes in the language with the longest words, the playing area is exactly the same size with the line up as without it.',
+    'An existing save is not made to sit through sixty-two lessons \u2014 anything you already have a Marathon score for counts as a mode you have met.',
+    'Holding a mode card now shows the same thing, permanently: what the mode is, and how you play it.',
+  ] },
   { v:'0.26.0', date:'2026-09-17', items:[
     'The Daily Drop is now twelve rounds everybody actually finishes. It had a 90-second clock AND a promise of twelve rounds, and the two were in conflict: twelve rounds at the median mode\u2019s par is 126 seconds of play, and twelve perfect solves earn back at most 35. Nobody was reaching round ten, so \u201cthe same twelve puzzles for everyone\u201d was only ever the same seed \u2014 the set you actually played depended on how fast you are. The shared clock is gone; a per-round clock keeps it moving without cutting it short.',
     'The Daily draws one mode from every family, then two more. Twelve pulled at random out of sixty-two is a lottery, and because everyone gets the same draw it is the same lottery for everyone \u2014 a day could be four reflex modes and no calm at all. Checked over four hundred days: every family on every day, no repeats inside a day, no two days alike, and no mode left out.',
@@ -5605,7 +5638,7 @@ const MODES = {
      the count of remaining crossings is shown live, which turns flailing into
      a gradient you can actually descend. */
   slack: {
-    name:'Slack', blurb:'Drag the nodes until no rope crosses', cat:'logic', par:11000, bonus:3000,
+    name:'Slack', blurb:'Drag the nodes until no rope crosses', input:'drag', cat:'logic', par:11000, bonus:3000,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 6c6 4 10 8 16 12M20 6C14 10 10 14 4 18"/></svg>',
     build(ctx){
       const n = clamp(5 + Math.floor(ctx.level/4), 5, 9);
@@ -5707,7 +5740,7 @@ const MODES = {
      asks you to sit in drifts, so it is tracking rather than counting — and it
      is the only mode whose difficulty is being too fast. */
   tide: {
-    name:'Tide Breath', blurb:'Hold to swell, release to ebb — stay in the band', cat:'calm', par:12000, bonus:3000,
+    name:'Tide Breath', blurb:'Hold to swell, release to ebb — stay in the band', input:'drag', cat:'calm', par:12000, bonus:3000,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#7BE38A" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9" opacity=".45"/></svg>',
     build(ctx){
       const need = clamp(2 + Math.floor(ctx.level/6), 2, 5);
@@ -5751,7 +5784,7 @@ const MODES = {
      to remove first, which turns a pure chance toy into a short read of the
      board — the bounce is still random, but you get to load the dice. */
   plink: {
-    name:'Drop Odds', blurb:'Pull one peg, then drop into the lit bin', cat:'physics', par:8000, bonus:2400,
+    name:'Drop Odds', blurb:'Pull one peg, then drop into the lit bin', input:'tapdrag', cat:'physics', par:8000, bonus:2400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2.4" fill="#FF9A3D"/><circle cx="7" cy="11" r="1.6" fill="#6C6191"/><circle cx="17" cy="11" r="1.6" fill="#6C6191"/><circle cx="12" cy="16" r="1.6" fill="#6C6191"/><rect x="3" y="19" width="18" height="3" rx="1.4" fill="#33E6C8"/></svg>',
     build(ctx){
       const rows = clamp(3 + Math.floor(ctx.level/5), 3, 6);
@@ -6504,7 +6537,7 @@ const MODES = {
      short is free and returns the item; only putting something in the wrong
      place is a mistake, because a drag that missed by ten pixels is not one. */
   tidy: {
-    name:'Tidy', blurb:'Drag the mess into the right bins', cat:'focus', par:11000, bonus:3000,
+    name:'Tidy', blurb:'Drag the mess into the right bins', input:'drag', cat:'focus', par:11000, bonus:3000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2.6" fill="#FF5B39"/><circle cx="15" cy="7" r="2.6" fill="#33E6C8"/><circle cx="9" cy="11" r="2.6" fill="#33E6C8"/><rect x="2" y="16" width="8" height="6" rx="2" fill="#FF5B39" opacity=".5"/><rect x="14" y="16" width="8" height="6" rx="2" fill="#33E6C8" opacity=".5"/></svg>',
     build(ctx){
       const kinds = clamp(2 + Math.floor(ctx.level/8), 2, 4);
@@ -6614,7 +6647,7 @@ const MODES = {
      and widens your own glow a little, so the board opens up as you go instead
      of tightening. That arc is the mode: it gets easier, and it is meant to. */
   glimmer: {
-    name:'Glimmer', blurb:'Carry the light until every lamp is lit', cat:'calm', par:13000, bonus:3200,
+    name:'Glimmer', blurb:'Carry the light until every lamp is lit', input:'drag', cat:'calm', par:13000, bonus:3200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="#FFC53D"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="#FFC53D" stroke-width="1.4" opacity=".45"/><circle cx="19" cy="6" r="1.6" fill="#7BE38A"/><circle cx="5" cy="18" r="1.6" fill="#7BE38A"/></svg>',
     build(ctx){
       const lamps = clamp(3 + Math.floor(ctx.level/4), 3, 9);
@@ -6881,7 +6914,7 @@ const MODES = {
      being a scribble — a stroke that takes four good ones and one bad one is
      worse than a careful two. */
   slice: {
-    name:'Slice', blurb:'One stroke cuts all it crosses — miss the rotten', cat:'reflex', par:7000, bonus:2400,
+    name:'Slice', blurb:'One stroke cuts all it crosses — miss the rotten', input:'drag', cat:'reflex', par:7000, bonus:2400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="15" r="4" fill="#7BE38A"/><circle cx="16" cy="9" r="4.5" fill="#FF9A3D"/><path d="M3 20 21 4" stroke="#FFF3E6" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>',
     build(ctx){
       const need  = clamp(4 + Math.floor(ctx.level/2), 4, 14);
@@ -7062,7 +7095,7 @@ const MODES = {
      never the line you can see, and the star's sideways speed has weight to it
      so a late correction cannot save a bad one. */
   descent: {
-    name:'Descent', blurb:'Steer the falling star through every gap', cat:'reflex', par:9000, bonus:2800,
+    name:'Descent', blurb:'Steer the falling star through every gap', input:'drag', cat:'reflex', par:9000, bonus:2800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 5.2L20 8l-4 4 1 6-5-2.8L7 18l1-6-4-4 5.8-.8z" fill="#FFC53D"/></svg>',
     build(ctx){
       const gates = clamp(3 + Math.floor(ctx.level/3), 3, 9);
@@ -7148,7 +7181,7 @@ const MODES = {
      only accepts what it is asking for, so the puzzle is matching sources to
      targets before you start rather than correcting as you go. */
   siphon: {
-    name:'Siphon', blurb:'Pour each colour into the jar that wants it', cat:'focus', par:10000, bonus:2800,
+    name:'Siphon', blurb:'Pour each colour into the jar that wants it', input:'drag', cat:'focus', par:10000, bonus:2800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h5v6l-3 10H6z" fill="#FF5B39"/><path d="M13 8h5v11h-5z" fill="#33E6C8" opacity=".55"/></svg>',
     build(ctx){
       const n = clamp(2 + Math.floor(ctx.level/6), 2, 5);
@@ -7242,7 +7275,7 @@ const MODES = {
      anticipated rather than reacted to. Overfilling is the loss, which makes it
      the only mode where doing more of the right thing is how you fail. */
   pour: {
-    name:'Pour', blurb:'Fill to the line — the sand keeps falling', cat:'calm', par:11000, bonus:3000,
+    name:'Pour', blurb:'Fill to the line — the sand keeps falling', input:'drag', cat:'calm', par:11000, bonus:3000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h6l-2 7 2 11H5z" fill="#FFC53D" opacity=".55"/><rect x="13" y="12" width="7" height="9" rx="1.5" fill="none" stroke="#FFC53D" stroke-width="1.8"/><rect x="13" y="16" width="7" height="5" rx="1.5" fill="#FFC53D"/></svg>',
     build(ctx){
       const target = 0.52 + ctx.rnd()*0.30;
@@ -7547,7 +7580,7 @@ const MODES = {
      margin, and the blockers are re-rolled until that straight line is clear,
      so one stroke always exists that solves the board. */
   chalk: {
-    name:'Chalk', blurb:'Draw the ramp, then watch — no second chances', cat:'physics', par:14000, bonus:3600,
+    name:'Chalk', blurb:'Draw the ramp, then watch — no second chances', input:'drag', cat:'physics', par:14000, bonus:3600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="4.5" r="2.6" fill="#4BC0FF"/><path d="M3 11c4.5 0 9 2.4 11 7" stroke="#4BC0FF" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-dasharray="3 2.4"/><path d="M16 20h5v-3h-5z" fill="#4BC0FF" opacity=".55"/></svg>',
     build(ctx){
       const R  = 3.4;                                   /* ball radius, % of field */
@@ -7716,7 +7749,7 @@ const MODES = {
      same moment. The schedule is rejected and re-rolled until no such pair
      exists, which makes every round catchable by someone quick enough. */
   gather: {
-    name:'Gather', blurb:'Catch the ripe ones, let the rest fall', cat:'reflex', par:13000, bonus:3400,
+    name:'Gather', blurb:'Catch the ripe ones, let the rest fall', input:'drag', cat:'reflex', par:13000, bonus:3400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="4" r="2" fill="#FF3D6E"/><circle cx="15" cy="8" r="2" fill="#FF3D6E" opacity=".4"/><circle cx="10" cy="11" r="2" fill="#FF3D6E"/><path d="M4 16h16l-2 5H6z" fill="none" stroke="#FF3D6E" stroke-width="1.8" stroke-linejoin="round"/></svg>',
     build(ctx){
       const EGG   = 8;                                      /* egg width, % of field */
@@ -8406,7 +8439,7 @@ const MODES = {
      A pointer can move anywhere instantly, so the moth is never outrunning you;
      it is making you commit to where it will be, over and over, without pause. */
   leash: {
-    name:'Leash', blurb:'Keep your finger on it — it does not want you to', cat:'reflex', par:13000, bonus:3400,
+    name:'Leash', blurb:'Keep your finger on it — it does not want you to', input:'drag', cat:'reflex', par:13000, bonus:3400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="15" cy="9" r="4" fill="#FF3D6E"/><path d="M4 20c2.5-4 5.5-6.5 8-7.6" stroke="#FF3D6E" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-dasharray="2.6 2.4"/><circle cx="4" cy="20" r="2" fill="#FF3D6E" opacity=".5"/></svg>',
     build(ctx){
       const R     = 7.5;                                        /* moth radius, % */
@@ -9327,7 +9360,7 @@ const MODES = {
 
   /* ── Trace ────────────────────────────────────────────────────────────── */
   trace: {
-    name:'Trace', blurb:'Follow the line to the end — no hurry', cat:'calm', par:15000, bonus:3600,
+    name:'Trace', blurb:'Follow the line to the end — no hurry', input:'drag', cat:'calm', par:15000, bonus:3600,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#7BE38A" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M3 17c3 0 3-10 6-10s3 10 6 10 3-7 6-7"/><circle cx="3" cy="17" r="1.6" fill="#7BE38A"/><circle cx="21" cy="10" r="1.6" fill="#7BE38A"/></svg>',
     build(ctx){
       /* Calm had three modes and all three are about holding something steady.
@@ -9458,7 +9491,7 @@ const MODES = {
 
   /* ── Lever ────────────────────────────────────────────────────────────── */
   lever: {
-    name:'Lever', blurb:'Find the balance point by eye, then test it', cat:'physics', par:14000, bonus:3800,
+    name:'Lever', blurb:'Find the balance point by eye, then test it', input:'drag', cat:'physics', par:14000, bonus:3800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 11h19" stroke="#FF9A3D" stroke-width="2" stroke-linecap="round"/><path d="M12 12.5l3.2 5.5H8.8z" fill="none" stroke="#FF9A3D" stroke-width="1.5" stroke-linejoin="round"/><rect x="4" y="6.5" width="4" height="4" rx="1" fill="#FF9A3D" opacity=".75"/><rect x="17" y="8" width="2.6" height="2.6" rx=".8" fill="#FF9A3D" opacity=".75"/></svg>',
     build(ctx){
       /* Cairn is about where a stone will sit, Chalk about where one will roll.
@@ -9692,7 +9725,7 @@ const MODES = {
 
   /* ── Thaw ─────────────────────────────────────────────────────────────── */
   thaw: {
-    name:'Thaw', blurb:'Follow the warmth under the frost', cat:'calm', par:15000, bonus:3600,
+    name:'Thaw', blurb:'Follow the warmth under the frost', input:'drag', cat:'calm', par:15000, bonus:3600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#7BE38A" stroke-width="1.5" opacity=".3"/><circle cx="12" cy="12" r="5.6" fill="none" stroke="#7BE38A" stroke-width="1.5" opacity=".55"/><circle cx="12" cy="12" r="2.3" fill="#7BE38A"/><path d="M12 1.5v2.4M12 20.1v2.4M1.5 12h2.4M20.1 12h2.4" stroke="#7BE38A" stroke-width="1.5" stroke-linecap="round" opacity=".45"/></svg>',
     build(ctx){
       /* Tide is holding steady, Pour is stopping in time, Trace is going
@@ -10066,6 +10099,7 @@ function clearBoard(){
   el.roundBar.hidden = true;
   el.surface.innerHTML = '';
   Array.from(el.surface.parentNode.querySelectorAll('.budget')).forEach(n => n.remove());
+  clearHow();                       /* quitting mid-round leaves nothing armed */
 }
 function later(ms, fn){ const t = setTimeout(fn, ms); timers.push(t); return t; }
 
@@ -10318,6 +10352,40 @@ function pickMode(){
    said what it was. Name it for a moment, in the family's colour, over the top
    of the board it belongs to. Only when the mode actually changed — in a
    Marathon it never does, and a plate every round would be noise. */
+/* A mode you have never played gets one look at what it is. The welcome screen
+   covers the app; nothing covered the sixty-two games inside it, and a board
+   you have never seen plus a one-line goal is not always enough to know what to
+   do with your finger — especially on the fifteen that want a drag and look
+   exactly like the forty-seven that want a tap.
+
+   It is the blurb, which every mode already has in every language and which
+   says what the mode IS, plus a gesture line where the gesture is not obvious.
+   It goes the moment you touch the board, or after six seconds, and it never
+   comes back for that mode. */
+function showHow(id){
+  const el2 = $('howto');
+  if (!el2) return;
+  const seen = save.seen || (save.seen = {});
+  if (seen[id]){ el2.hidden = true; return; }
+  const gesture = MODES[id] && MODES[id].input;
+  el2.textContent = modeBlurb(id) + (gesture ? ' — ' + t('how.' + gesture) : '');
+  el2.hidden = false;
+  el2.classList.remove('go'); void el2.offsetWidth; el2.classList.add('go');
+  seen[id] = 1;
+  persist();
+  /* The surface outlives the round, so a listener left on it would still be
+     armed when the next mode's line goes up. Held in one place and cleared as
+     the next round opens. */
+  howDrop = () => { el2.hidden = true; el.surface.removeEventListener('pointerdown', howDrop); };
+  el.surface.addEventListener('pointerdown', howDrop);
+  later(6000, () => { if (howDrop) howDrop(); });
+}
+let howDrop = null;
+function clearHow(){
+  if (howDrop){ el.surface.removeEventListener('pointerdown', howDrop); howDrop = null; }
+  const el2 = $('howto'); if (el2) el2.hidden = true;
+}
+
 function announceMode(id){
   /* Built fresh each time rather than kept in the markup: clearBoard empties
      the surface between rounds, so a plate that lived there was destroyed the
@@ -10348,6 +10416,8 @@ function nextRound(){
   run.curMode = mode;
   setFamily(id);
   if (changed) announceMode(id);
+  clearHow();
+  showHow(id);
   roundLive = true;
   roundStart = performance.now();
   /* Generous on purpose: par is how long the mode expects to take, and this is
@@ -11377,7 +11447,8 @@ function openModePreview(id){
   const fam = $('mpvFam');
   fam.style.setProperty('--mpv', CAT_INK[cat] || 'var(--flare)');
   fam.querySelector('span').textContent = t('cat.' + cat);
-  $('mpvBlurb').textContent = modeBlurb(id);
+  const gesture = MODES[id].input;
+  $('mpvBlurb').textContent = modeBlurb(id) + (gesture ? ' — ' + t('how.' + gesture) : '');
   const best = save.marathon[id] || 0;
   $('mpvBest').textContent = best ? fmt(best) : '—';
   const stars = starsFor(id);
