@@ -1236,6 +1236,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Stats ───────────────────────────────────────────────────────────────── */
 .statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex:none}
+#over .stat{padding:11px 6px}
+#over .stat b{font-size:20px}
+/* "Modes mastered" is the only one of six that wraps, which left its row a
+   line taller than the other and the numbers on two different baselines. */
+.stat small{hyphens:auto}
 .stat{
   border:1px solid var(--edge-soft);border-radius:var(--r-md);background:#ffffff05;
   padding:11px 10px;display:flex;flex-direction:column;gap:1px;align-items:center;
@@ -1271,11 +1276,22 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 #play::before{
   content:"";position:absolute;inset:0 0 auto;height:44%;pointer-events:none;z-index:0;
   background:radial-gradient(120% 78% at 50% 0%, var(--fam,transparent) 0%, transparent 72%);
-  opacity:.16;transition:opacity var(--t-med), background var(--t-med);
+  opacity:.2;transition:opacity var(--t-med), background var(--t-med);
 }
 #play > *{position:relative;z-index:1}
 .hud{flex:none;display:flex;flex-direction:column;gap:8px;padding-top:8px}
 .hudtop{display:flex;align-items:center;gap:10px}
+/* The board is square and already the full width of the phone, so it cannot
+   grow into the band of empty above it — and a band of empty is what it read
+   as. It carries the score now: the one number a player is actually watching,
+   at a size you can read without looking away from the board. It grows into
+   whatever is spare and collapses to nothing on a short screen. */
+.scoreband{
+  flex:1 1 auto;min-height:0;max-height:30vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:9px;padding:4px 0;
+}
+.scoreband .score{font-size:clamp(30px,9.5vh,62px)}
+.scoreband .streak{transform-origin:center}
 .icobtn{
   width:34px;height:34px;flex:none;display:grid;place-items:center;
   border-radius:11px;border:1px solid var(--edge-soft);color:var(--haze);background:#ffffff06;
@@ -1284,9 +1300,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .kind{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--haze);font-weight:600}
 .score{
   font-family:var(--f-data);font-weight:700;font-size:25px;letter-spacing:-.05em;
-  font-variant-numeric:tabular-nums;line-height:1;transition:transform var(--t-fast),color var(--t-fast);
+  font-variant-numeric:tabular-nums;line-height:1;color:var(--cream);
+  transition:transform var(--t-fast),color var(--t-fast);
 }
-.score.pop{transform:scale(1.16);color:var(--zap)}
+.score.pop{transform:scale(1.1);color:var(--zap)}
 .streak{
   display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;
   border:1px solid var(--edge);background:#ffffff06;
@@ -1296,8 +1313,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .streak.hot{color:#2A1200;background:var(--zap);border-color:var(--zap);transform:scale(1.08)}
 .streak.pop{animation:stpop .28s cubic-bezier(.2,.8,.3,1)}
 @keyframes stpop{0%{transform:scale(1)}45%{transform:scale(1.22)}100%{transform:scale(1)}}
-.hudrow{display:flex;align-items:center;gap:10px}
-.hudrow .lives{flex:1;min-width:0}
+/* Lives and perks moved up beside the mode name; the row that held them is
+   gone, so the width they were given there goes with it. */
+.hudtop .lives,.hudtop .perkbar{flex:none;min-width:0}
 .perkbar{display:flex;gap:5px;flex:none}
 .perkbar i{display:block;width:15px;height:15px;color:var(--pk);opacity:.85}
 .perkbar i svg{width:100%;height:100%;display:block}
@@ -1316,13 +1334,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    screen of nothing in between. Both autos together centre the PAIR instead, so
    the line that tells you what to do sits directly above where you do it. */
 .prompt{
-  flex:none;text-align:center;min-height:18px;margin:auto 0 10px;
+  flex:none;text-align:center;min-height:18px;margin:0 0 10px;
   font-size:12px;letter-spacing:.07em;text-transform:uppercase;font-weight:600;color:var(--haze);
 }
 .prompt.won{color:var(--cool)}
 .prompt.lost{color:var(--bad)}
 #surface{
-  flex:0 1 auto;margin:0 auto auto;width:min(100%,62vh);aspect-ratio:1;
+  flex:0 1 auto;margin:0 auto;width:min(100%,62vh);aspect-ratio:1;
   min-height:0;display:grid;place-items:center;position:relative;overflow:hidden;
   border-radius:var(--r-lg);border:1px solid var(--edge-soft);
   background:#ffffff05;padding:14px;contain:layout paint;
@@ -1402,10 +1420,29 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 #levelup p{margin:8px 0 0;color:var(--haze);font-size:13px}
 
 /* ── Game over ───────────────────────────────────────────────────────────── */
-#over{justify-content:center;gap:14px}
-.overhead{display:flex;flex-direction:column;align-items:center;gap:1px}
+/* The payoff screen was the flattest in the app: a small number floating in
+   the middle of a lot of nothing. The score is the reward, so it gets the room
+   — a ring of the run's own colour behind it, and the empty above it spent on
+   making it big rather than on centring it. */
+/* Centred as one stack rather than one item grown to fill: letting the head
+   take all the slack left the score floating alone in the top half. */
+#over{justify-content:center;gap:12px;padding-top:6px}
+.overhead{
+  position:relative;flex:0 0 auto;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  padding:6px 0 2px;
+}
+.overhead::before{
+  content:"";position:absolute;left:50%;top:50%;width:min(74vw,290px);aspect-ratio:1;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, #ff5b3921 0%, transparent 64%);
+}
+.overhead > *{position:relative}
 .overhead .eyebrow{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--haze);font-weight:600}
-.overhead .big{font-family:var(--f-data);font-weight:800;font-size:clamp(48px,16vw,66px);letter-spacing:-.06em;line-height:1}
+.overhead .big{
+  font-family:var(--f-data);font-weight:800;font-size:clamp(56px,22vh,132px);
+  letter-spacing:-.06em;line-height:.92;color:var(--cream);
+}
 .newbest{
   align-self:center;padding:4px 11px;border-radius:999px;background:var(--zap);color:#2A1200;
   font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
@@ -2068,7 +2105,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.22.1</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.23.0</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -2101,14 +2138,14 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           </button>
           <span class="kind" id="hudKind">Shuffle</span>
           <span class="sp" style="flex:1"></span>
-          <span class="streak" id="hudStreak">&times;1</span>
-          <span class="score" id="hudScore">0</span>
-        </div>
-        <div class="meter" id="hudMeter"><i id="hudMeterFill"></i></div>
-        <div class="hudrow">
           <div class="lives" id="hudLives" hidden></div>
           <div class="perkbar" id="hudPerks" aria-live="off"></div>
         </div>
+        <div class="meter" id="hudMeter"><i id="hudMeterFill"></i></div>
+      </div>
+      <div class="scoreband">
+        <span class="score" id="hudScore">0</span>
+        <span class="streak" id="hudStreak">&times;1</span>
       </div>
       <div class="roundbar" id="roundBar" hidden><i id="roundFill"></i></div>
       <p class="prompt" id="prompt">Get ready</p>
@@ -2191,7 +2228,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 <div class="welcome" id="welcome" hidden>
   <div class="panel" role="dialog" aria-modal="true" aria-labelledby="wcTitle">
     <h2 class="wordmark big" id="wcTitle">Dopamine<span>&nbsp;Drop</span></h2>
-    <p class="lead" data-i18n="wc.lead">Fifty-two small puzzles. The one in front of you changes every round.</p>
+    <p class="lead" id="wcLead">Small puzzles. The one in front of you changes every round.</p>
     <ul class="wcpoints">
       <li>
         <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg></span>
@@ -2317,7 +2354,7 @@ function dailyStreak(){
 const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.22.1 (58)';
+const VERSION = 'v0.23.0 (58)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2750,7 +2787,7 @@ const STRINGS = {
     'stats.filter':'Filter the mode list', 'stats.fAll':'All', 'stats.fPlayed':'Played', 'stats.fNew':'Not tried', 'stats.allPlayed':'You have played every mode at least once.', 'stats.noneYet':'Nothing here yet — play a Marathon and a score appears.',
     'p.bbListen':'Listen — two bars, then the gaps are yours', 'p.bbPlay':'Tap between the beats — {n} to go', 'bb.pad':'Tap between the beats', 'm.backbeat':'Backbeat|Tap between the beats, never on one', 'p.chorus':'One of these is not holding its tempo', 'chorus.lane':'Row {n}', 'm.chorus':'Chorus|Steady tempos, and one that is not staying steady', 'p.bridge':'{n} planks laid — reach the far bank', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Open water, column {x} row {y}, tap to lay a plank', 'bridge.plank':'A plank, column {x} row {y}, tap to lift it', 'm.bridge':'Bridge|Lay planks bank to bank — you have only so many', 'p.weave':'{n} squares still wrong', 'weave.want':'The pattern to match', 'weave.over':'Over, column {x} row {y}', 'weave.under':'Under, column {x} row {y}', 'm.weave':'Weave|Each tap pulls a whole row and column — match the cloth',
     'play.carryOn':'Carry on', 'play.carryBest':'Your best {n}', 'why.new':'Untried', 'why.star':'Near a star', 'why.rare':'Neglected', 'why.wild':'Wildcard',
-    'wc.lead':'Fifty-two small puzzles. The one in front of you changes every round.', 'wc.p1':'Sixty seconds a run', 'wc.p2':'A different puzzle every round', 'wc.p3':'A miss costs time — a streak pays', 'wc.change':'Change', 'wc.start':'Start your first run', 'wc.look':'Look around first',
+    'wc.lead':'{n} small puzzles. The one in front of you changes every round.', 'wc.p1':'Sixty seconds a run', 'wc.p2':'A different puzzle every round', 'wc.p3':'A miss costs time — a streak pays', 'wc.change':'Change', 'wc.start':'Start your first run', 'wc.look':'Look around first',
     'mix.tapes':'Your mixtapes', 'mix.name':'Name this mixtape', 'mix.share':'Share this mixtape', 'mix.delete':'Delete this mixtape', 'mix.untitled':'Mixtape {n}', 'mix.newTape':'+ New', 'mix.paste':'Paste a code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Delete “{name}”?', 'mix.keep':'Keep', 'mix.deleteIt':'Delete', 'mix.shareText':'My Dopamine Drop mixtape “{name}” — {n} modes. Paste this code into the Mix tab: {code}', 'mix.importTitle':'Add a mixtape', 'mix.importSub':'Paste a code someone sent you. It carries a name and a list of modes, nothing else.', 'mix.importAdd':'Add it', 'mix.importBad':'No mixtape code in that. Paste the whole message — the code starts with DD1.', 'mix.importOk':'Added “{name}”.', 'mix.importN':'{n} modes.', 'mix.importN1':'One mode.', 'mix.importDropped':'{n} of its modes are not in this version and were left out.', 'mix.importDropped1':'One of its modes is not in this version and was left out.',
     'p.rampFast':'Listen — it is speeding up', 'p.rampSlow':'Listen — it is slowing down', 'p.rampGo':'Stay on the beat — {n} to go', 'ramp.pad':'Tap on each beat', 'm.ramp':'Ramp|The tempo is moving — stay on it',
     'p.keepListen':'Four beats — then it is only you', 'p.keepGo':'Keep the beat — {n} to go', 'keep.pad':'Keep tapping the beat after the sound stops', 'm.keep':'Keep|The pulse stops — keep it going anyway',
@@ -2880,7 +2917,7 @@ const STRINGS = {
     'stats.filter':'Filtrer la liste des modes', 'stats.fAll':'Tout', 'stats.fPlayed':'Joués', 'stats.fNew':'Jamais essayés', 'stats.allPlayed':'Vous avez joué à tous les modes au moins une fois.', 'stats.noneYet':'Rien ici — jouez un Marathon et un score apparaîtra.',
     'p.bbListen':'Écoutez — deux mesures, puis les silences sont à vous', 'p.bbPlay':'Touchez entre les temps — encore {n}', 'bb.pad':'Touchez entre les temps', 'm.backbeat':'Contretemps|Touchez entre les temps, jamais sur un temps', 'p.chorus':'L’une d’elles ne tient pas son tempo', 'chorus.lane':'Ligne {n}', 'm.chorus':'Chœur|Des tempos réguliers, et un qui ne l’est pas', 'p.bridge':'{n} planches posées — atteignez l’autre rive', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Eau libre, colonne {x} ligne {y}, touchez pour poser une planche', 'bridge.plank':'Une planche, colonne {x} ligne {y}, touchez pour la retirer', 'm.bridge':'Pont|Posez des planches d’une rive à l’autre — elles sont comptées', 'p.weave':'Encore {n} cases fausses', 'weave.want':'Le motif à reproduire', 'weave.over':'Dessus, colonne {x} ligne {y}', 'weave.under':'Dessous, colonne {x} ligne {y}', 'm.weave':'Tissage|Chaque touche tire toute une ligne et une colonne — reproduisez le tissu',
     'play.carryOn':'Reprendre', 'play.carryBest':'Votre record {n}', 'why.new':'Jamais joué', 'why.star':'Presque une étoile', 'why.rare':'Délaissé', 'why.wild':'Au hasard',
-    'wc.lead':'Cinquante-deux petits casse-têtes. Celui qui est devant vous change à chaque manche.', 'wc.p1':'Soixante secondes par partie', 'wc.p2':'Un casse-tête différent à chaque manche', 'wc.p3':'Une erreur coûte du temps — une série rapporte', 'wc.change':'Changer', 'wc.start':'Lancer votre première partie', 'wc.look':'Jeter un œil d’abord',
+    'wc.lead':'{n} petits casse-têtes. Celui qui est devant vous change à chaque manche.', 'wc.p1':'Soixante secondes par partie', 'wc.p2':'Un casse-tête différent à chaque manche', 'wc.p3':'Une erreur coûte du temps — une série rapporte', 'wc.change':'Changer', 'wc.start':'Lancer votre première partie', 'wc.look':'Jeter un œil d’abord',
     'mix.tapes':'Vos playlists', 'mix.name':'Nommer cette playlist', 'mix.share':'Partager cette playlist', 'mix.delete':'Supprimer cette playlist', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Nouvelle', 'mix.paste':'Coller un code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Supprimer « {name} » ?', 'mix.keep':'Garder', 'mix.deleteIt':'Supprimer', 'mix.shareText':'Ma playlist Dopamine Drop « {name} » — {n} modes. Collez ce code dans l’onglet Mix : {code}', 'mix.importTitle':'Ajouter une playlist', 'mix.importSub':'Collez un code qu’on vous a envoyé. Il contient un nom et une liste de modes, rien d’autre.', 'mix.importAdd':'Ajouter', 'mix.importBad':'Aucun code de playlist là-dedans. Collez tout le message — le code commence par DD1.', 'mix.importOk':'« {name} » ajoutée.', 'mix.importN':'{n} modes.', 'mix.importN1':'Un mode.', 'mix.importDropped':'{n} de ses modes n’existent pas dans cette version et ont été écartés.', 'mix.importDropped1':'Un de ses modes n’existe pas dans cette version et a été écarté.',
     'p.rampFast':'Écoutez — ça accélère', 'p.rampSlow':'Écoutez — ça ralentit', 'p.rampGo':'Restez sur le temps — encore {n}', 'ramp.pad':'Touchez sur chaque temps', 'm.ramp':'Accélération|Le tempo bouge — restez dessus',
     'p.keepListen':'Quatre temps — ensuite il n’y a plus que vous', 'p.keepGo':'Tenez le tempo — encore {n}', 'keep.pad':'Continuez à marquer le temps après le silence', 'm.keep':'Tenir|Le pouls s’arrête — continuez quand même',
@@ -3010,7 +3047,7 @@ const STRINGS = {
     'stats.filter':'Filtrar la lista de modos', 'stats.fAll':'Todos', 'stats.fPlayed':'Jugados', 'stats.fNew':'Sin probar', 'stats.allPlayed':'Has jugado todos los modos al menos una vez.', 'stats.noneYet':'Aquí no hay nada — juega un Maratón y aparecerá una puntuación.',
     'p.bbListen':'Escucha — dos compases y los huecos son tuyos', 'p.bbPlay':'Toca entre los golpes — quedan {n}', 'bb.pad':'Toca entre los golpes', 'm.backbeat':'Contratiempo|Toca entre los golpes, nunca sobre uno', 'p.chorus':'Una de ellas no mantiene su tempo', 'chorus.lane':'Fila {n}', 'm.chorus':'Coro|Tempos estables, y uno que no lo es', 'p.bridge':'{n} tablones puestos — llega a la otra orilla', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Agua abierta, columna {x} fila {y}, toca para poner un tablón', 'bridge.plank':'Un tablón, columna {x} fila {y}, toca para quitarlo', 'm.bridge':'Puente|Pon tablones de orilla a orilla — están contados', 'p.weave':'Quedan {n} casillas mal', 'weave.want':'El patrón que hay que igualar', 'weave.over':'Encima, columna {x} fila {y}', 'weave.under':'Debajo, columna {x} fila {y}', 'm.weave':'Telar|Cada toque tira de toda una fila y columna — iguala la tela',
     'play.carryOn':'Continuar', 'play.carryBest':'Tu récord {n}', 'why.new':'Sin probar', 'why.star':'Cerca de una estrella', 'why.rare':'Olvidado', 'why.wild':'Al azar',
-    'wc.lead':'Cincuenta y dos pequeños rompecabezas. El que tienes delante cambia en cada ronda.', 'wc.p1':'Sesenta segundos por partida', 'wc.p2':'Un rompecabezas distinto cada ronda', 'wc.p3':'Un fallo cuesta tiempo — una racha paga', 'wc.change':'Cambiar', 'wc.start':'Empieza tu primera partida', 'wc.look':'Echar un vistazo primero',
+    'wc.lead':'{n} pequeños rompecabezas. El que tienes delante cambia en cada ronda.', 'wc.p1':'Sesenta segundos por partida', 'wc.p2':'Un rompecabezas distinto cada ronda', 'wc.p3':'Un fallo cuesta tiempo — una racha paga', 'wc.change':'Cambiar', 'wc.start':'Empieza tu primera partida', 'wc.look':'Echar un vistazo primero',
     'mix.tapes':'Tus listas', 'mix.name':'Nombra esta lista', 'mix.share':'Compartir esta lista', 'mix.delete':'Borrar esta lista', 'mix.untitled':'Lista {n}', 'mix.newTape':'+ Nueva', 'mix.paste':'Pegar un código', 'mix.metaTape':'{name} · {n} modos', 'mix.delConfirm':'¿Borrar «{name}»?', 'mix.keep':'Conservar', 'mix.deleteIt':'Borrar', 'mix.shareText':'Mi lista de Dopamine Drop «{name}» — {n} modos. Pega este código en la pestaña Mix: {code}', 'mix.importTitle':'Añadir una lista', 'mix.importSub':'Pega un código que te hayan enviado. Lleva un nombre y una lista de modos, nada más.', 'mix.importAdd':'Añadirla', 'mix.importBad':'Ahí no hay ningún código de lista. Pega el mensaje entero — el código empieza por DD1.', 'mix.importOk':'Añadida «{name}».', 'mix.importN':'{n} modos.', 'mix.importN1':'Un modo.', 'mix.importDropped':'{n} de sus modos no están en esta versión y se han dejado fuera.', 'mix.importDropped1':'Uno de sus modos no está en esta versión y se ha dejado fuera.',
     'p.rampFast':'Escucha — está acelerando', 'p.rampSlow':'Escucha — está frenando', 'p.rampGo':'Sigue el pulso — quedan {n}', 'ramp.pad':'Toca en cada pulso', 'm.ramp':'Rampa|El tempo se mueve — sigue con él',
     'p.keepListen':'Cuatro pulsos — después solo quedas tú', 'p.keepGo':'Mantén el pulso — quedan {n}', 'keep.pad':'Sigue marcando el pulso cuando pare el sonido', 'm.keep':'Mantener|El pulso se detiene — mantenlo tú',
@@ -3140,7 +3177,7 @@ const STRINGS = {
     'stats.filter':'Modusliste filtern', 'stats.fAll':'Alle', 'stats.fPlayed':'Gespielt', 'stats.fNew':'Ungespielt', 'stats.allPlayed':'Du hast jeden Modus mindestens einmal gespielt.', 'stats.noneYet':'Hier ist noch nichts — spiel einen Marathon und ein Wert erscheint.',
     'p.bbListen':'Hör zu — zwei Takte, dann gehören dir die Lücken', 'p.bbPlay':'Zwischen die Schläge tippen — noch {n}', 'bb.pad':'Zwischen die Schläge tippen', 'm.backbeat':'Nachschlag|Tippe zwischen die Schläge, nie auf einen', 'p.chorus':'Eine davon hält ihr Tempo nicht', 'chorus.lane':'Zeile {n}', 'm.chorus':'Chor|Gleichmäßige Tempi, und eines, das keines hält', 'p.bridge':'{n} Planken gelegt — erreiche das andere Ufer', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Offenes Wasser, Spalte {x} Zeile {y}, tippen zum Planken legen', 'bridge.plank':'Eine Planke, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Brücke|Lege Planken von Ufer zu Ufer — sie sind gezählt', 'p.weave':'Noch {n} Felder falsch', 'weave.want':'Das Muster, das passen muss', 'weave.over':'Oben, Spalte {x} Zeile {y}', 'weave.under':'Unten, Spalte {x} Zeile {y}', 'm.weave':'Weben|Jeder Tipp zieht eine ganze Zeile und Spalte — triff das Tuch',
     'play.carryOn':'Weiter', 'play.carryBest':'Dein Bestwert {n}', 'why.new':'Ungespielt', 'why.star':'Fast ein Stern', 'why.rare':'Vergessen', 'why.wild':'Zufall',
-    'wc.lead':'Zweiundfünfzig kleine Rätsel. Das vor dir wechselt jede Runde.', 'wc.p1':'Sechzig Sekunden pro Runde', 'wc.p2':'Jede Runde ein anderes Rätsel', 'wc.p3':'Ein Fehler kostet Zeit — eine Serie zahlt sich aus', 'wc.change':'Ändern', 'wc.start':'Starte deine erste Runde', 'wc.look':'Erst mal umsehen',
+    'wc.lead':'{n} kleine Rätsel. Das vor dir wechselt jede Runde.', 'wc.p1':'Sechzig Sekunden pro Runde', 'wc.p2':'Jede Runde ein anderes Rätsel', 'wc.p3':'Ein Fehler kostet Zeit — eine Serie zahlt sich aus', 'wc.change':'Ändern', 'wc.start':'Starte deine erste Runde', 'wc.look':'Erst mal umsehen',
     'mix.tapes':'Deine Playlists', 'mix.name':'Diese Playlist benennen', 'mix.share':'Diese Playlist teilen', 'mix.delete':'Diese Playlist löschen', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Neu', 'mix.paste':'Code einfügen', 'mix.metaTape':'{name} · {n} Modi', 'mix.delConfirm':'„{name}“ löschen?', 'mix.keep':'Behalten', 'mix.deleteIt':'Löschen', 'mix.shareText':'Meine Dopamine-Drop-Playlist „{name}“ — {n} Modi. Füge diesen Code im Mix-Tab ein: {code}', 'mix.importTitle':'Playlist hinzufügen', 'mix.importSub':'Füge einen Code ein, den dir jemand geschickt hat. Er enthält einen Namen und eine Modusliste, sonst nichts.', 'mix.importAdd':'Hinzufügen', 'mix.importBad':'Darin steckt kein Playlist-Code. Füge die ganze Nachricht ein — der Code beginnt mit DD1.', 'mix.importOk':'„{name}“ hinzugefügt.', 'mix.importN':'{n} Modi.', 'mix.importN1':'Ein Modus.', 'mix.importDropped':'{n} ihrer Modi gibt es in dieser Version nicht und wurden weggelassen.', 'mix.importDropped1':'Einen ihrer Modi gibt es in dieser Version nicht, er wurde weggelassen.',
     'p.rampFast':'Hör zu — es wird schneller', 'p.rampSlow':'Hör zu — es wird langsamer', 'p.rampGo':'Bleib im Takt — noch {n}', 'ramp.pad':'Auf jeden Schlag tippen', 'm.ramp':'Rampe|Das Tempo bewegt sich — bleib drauf',
     'p.keepListen':'Vier Schläge — danach nur noch du', 'p.keepGo':'Halte den Takt — noch {n}', 'keep.pad':'Weiter im Takt tippen, wenn der Ton aufhört', 'm.keep':'Halten|Der Puls hört auf — halte ihn trotzdem',
@@ -3291,6 +3328,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.23.0', date:'2026-09-17', items:[
+    'The score is where you can see it. The top third of the play screen was empty \u2014 the board is square and already the full width of the phone, so it could never grow into it \u2014 and the one number you actually watch was 25 pixels in a corner. It lives in that band now, big enough to read without looking away from the board.',
+    'Lives and perks moved up beside the mode name, so the top of the screen is one row and a meter rather than three stacked strips.',
+    'The results screen was the flattest in the app: a small number floating in a lot of nothing. The score is the reward, so it takes the room \u2014 with a ring of the run\u2019s own colour behind it.',
+    'Fixed \u2014 the welcome screen said \u201cfifty-two small puzzles\u201d. There are fifty-eight. The number was written into the sentence in all four languages; it is counted now.',
+  ] },
   { v:'0.22.1', date:'2026-09-16', items:[
     'New mode \u2014 Trace. Calm had three modes and all three are about holding something steady; this one is about going somewhere. Follow the line with a finger, no clock on the finger. Lifting costs nothing and you carry on from where you are \u2014 what costs is wandering off, and even that fills a meter rather than ending it on one slip.',
   ] },
@@ -10594,6 +10637,9 @@ function boot(){
   paintAll();
   watchForUpdates();
 
+  /* Counted, not spelled out: the copy said "Fifty-two" for as long as there
+     were fifty-two, and then for a while after there were not. */
+  $('wcLead').textContent = t('wc.lead', { n: MODE_IDS.length });
   if (!save.onboarded) $('welcome').hidden = false;
 
   /* Shown once after an update, never on a first install: a brand new player
