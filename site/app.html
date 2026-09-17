@@ -2594,7 +2594,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.27.1';
+const VERSION_TAG = 'v0.27.2';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3667,6 +3667,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.27.2', date:'2026-09-17', items:[
+    'Fixed \u2014 resetting your progress left every mode marked as already met, so a level-one account never saw a single introduction again. A reset gives them back, the same way it now gives back the perk ladder.',
+    'Seek \u2014 tapping any letter you have already taken cuts the run back to it. Only the one before last did anything before, so correcting a run meant starting it over.',
+  ] },
   { v:'0.27.1', date:'2026-09-17', items:[
     'Seek \u2014 you take the word a letter at a time now, and you can see the letters you have taken. Tapping the first letter and then the last was two taps and a verdict: nothing showed the run you were claiming, so a wrong guess told you nothing about where you had gone wrong. Every letter you take stays lit, the one you are on is brighter, and the prompt reads back what you have spelled so far.',
     'Dragging a finger through the letters works as well, which is how most people reach for a word search. A square only counts once the finger is properly inside it \u2014 the line between two diagonal neighbours clips the corners of the squares either side, and taking those as picks sent the run off in a direction nobody chose.',
@@ -9750,7 +9754,12 @@ const MODES = {
         if (pick.length > 1 && i === pick[pick.length - 2]){
           pick.pop(); paint(); sfx.tap(); buzz('tap'); return;   /* step back */
         }
-        if (pick.length && pick.indexOf(i) >= 0) return;         /* no crossing itself */
+        const back = pick.indexOf(i);
+        if (back >= 0){
+          /* Tapping any letter you already took cuts the run back to it, rather
+             than doing nothing because it was not the one before last. */
+          pick = pick.slice(0, back + 1); paint(); sfx.tap(); buzz('tap'); return;
+        }
         if (pick.length && !canFollow(i)){
           /* A finger crossing a diagonal clips the squares either side of the
              one it is heading for. Mid-drag those are passed over; only a fresh
@@ -10447,6 +10456,7 @@ function pickMode(){
    says what the mode IS, plus a gesture line where the gesture is not obvious.
    It goes the moment you touch the board, or after six seconds, and it never
    comes back for that mode. */
+let howDrop = null;
 function showHow(id){
   const el2 = $('howto');
   if (!el2) return;
@@ -10465,7 +10475,6 @@ function showHow(id){
   el.surface.addEventListener('pointerdown', howDrop);
   later(6000, () => { if (howDrop) howDrop(); });
 }
-let howDrop = null;
 function clearHow(){
   if (howDrop){ el.surface.removeEventListener('pointerdown', howDrop); howDrop = null; }
   const el2 = $('howto'); if (el2) el2.hidden = true;
@@ -11802,6 +11811,10 @@ $('resetBtn').addEventListener('click', () => {
   ['pbBlitz','pbStreak','runs','xp','solved','lifetime','tokens'].forEach(k => { save[k] = defaults[k]; });
   save.marathon = {}; save.daily = {};
   save.perks = []; save.perkLv = {};
+  /* Which modes you have met is progress through the roster, so a reset gives
+     the introductions back rather than leaving a level-one account that has
+     apparently already seen everything. */
+  save.seen = {};
   persist(); paintAll();
 });
 
