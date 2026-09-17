@@ -771,8 +771,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   box-shadow:0 2px 10px -4px #ff9a3d;
   transform:translateY(-50%);will-change:transform;
   transition:transform var(--t-med) cubic-bezier(.34,1.3,.5,1)}
+/* Width in the beam's own units, so what the generator spaces them by and what
+   the eye sees are the same measurement at every screen size. */
 .lvrload{position:absolute;display:block;bottom:100%;
-  width:calc(13px + var(--w)*5px);height:calc(13px + var(--w)*8px);
+  width:calc(6% + var(--w)*1.2%);height:calc(13px + var(--w)*8px);
   transform:translateX(-50%);border-radius:4px 4px 2px 2px;
   background:linear-gradient(160deg,#c9b6ff,#7a5fd6);
   box-shadow:inset 0 -3px 0 #00000033,0 3px 8px -5px #000}
@@ -1249,18 +1251,19 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   contain:layout paint;
 }
 .mcard:active{transform:scale(.97);border-color:var(--cink,var(--flare))}
-.mcard .top{display:flex;align-items:center;gap:8px;min-width:0}
+.mcard .top{display:flex;align-items:flex-start;gap:8px;min-width:0}
 /* The corner badges sit over the title's row now that the glyph shares it, so
    the title gives the corner back rather than running underneath it. */
 .mcard.inmix .top{padding-right:24px}
 .mcard.why-on .top{padding-right:62px}
-.mcard .glyph{width:22px;height:22px;flex:none}
+.mcard .glyph{width:22px;height:22px;flex:none;margin-top:-1px}
 .mcard .glyph svg{width:100%;height:100%;display:block}
+/* Names wrap rather than truncate. A clipped name is unreadable, and at 320px
+   in French thirteen of sixty were being clipped — the saving from one line was
+   never worth not being able to tell two modes apart. */
 .mcard b{font-size:13px;font-weight:650;line-height:1.2;min-width:0;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mcard small{font-size:10px;color:var(--haze);line-height:1.32;flex:1;
-  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
-  line-clamp:2;overflow:hidden}
+  overflow-wrap:anywhere}
+.mcard small{font-size:10px;color:var(--haze);line-height:1.32;flex:1}
 /* A card with a score has a 10px line in this row and a card without has only
    9px stars, so the row was 3px taller on played modes and the stars sat at two
    different heights across a pair. Fix the row's height so the floor is level. */
@@ -2512,7 +2515,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.24.0';
+const VERSION_TAG = 'v0.24.1';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3503,6 +3506,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.24.1', date:'2026-09-17', items:[
+    'Fixed \u2014 mode names were being truncated on the roster. Putting the glyph on the title\u2019s line left the title a shorter line, and at 320px in French thirteen of sixty names were clipped mid-word. Names wrap now; nothing is cut at any of the four languages on any phone width.',
+    'Fixed \u2014 Lever could stack two weights on top of each other on a narrow phone. The generator spaced them by a number that happened to suit a 400px screen while the blocks themselves were drawn in pixels, so the gap it checked and the width it had to clear were different measurements. Both are the beam\u2019s own units now, and one block per slot makes the spacing a property of the layout rather than something rejection-sampling has to find.',
+  ] },
   { v:'0.24.0', date:'2026-09-17', items:[
     'New mode \u2014 Halve. Numbers had four modes and three of them are about one number or two; this is about the whole set. Pieces sit in two trays and you move them until both trays total the same. Every board is built from a split that already balances, so the answer is always there \u2014 and the move allowance is the fewest moves of EVERY balanced split, not just the one the board was made from.',
     'New mode \u2014 Lever. Cairn is about where a stone will sit and Chalk about where one will roll; this one is about the thing neither asks \u2014 that a small weight far out and a heavy one close in weigh the same to a beam. Slide the wedge, let go, and the beam tells you which way you were wrong. Nothing moves while your finger is down, so it is read-then-test rather than a slider you nudge until it stops complaining.',
@@ -9327,24 +9334,20 @@ const MODES = {
       const tol  = clamp(7 - ctx.level*0.22, 2.6, 7);        /* how close counts as level */
       const MAXD = 13;                                       /* degrees at the hard stop */
 
-      /* Positions are drawn apart so no two blocks overlap, and the balance
-         point is checked to sit somewhere the wedge can actually reach. */
+      /* One block per slot with a jitter small enough that neighbours can never
+         close to less than a block's width. Drawing positions at random and
+         rejecting the overlaps looked fine on a wide phone and stacked blocks
+         on a narrow one, because the gap it rejected on was in beam units and
+         the block it had to clear is drawn from those same units — the check
+         has to be the width, not a number that happened to suit 400px. */
+      const GAP  = 12;                                      /* widest block, in beam units */
+      const slot = (END*2) / n;
+      const jit  = Math.max(0, slot - GAP);
       let loads = null;
       for (let attempt = 0; attempt < 200 && !loads; attempt++){
-        const list = [];
-        let ok = true;
-        for (let i = 0; i < n && ok; i++){
-          let placed = false;
-          for (let pick = 0; pick < 40 && !placed; pick++){
-            const x = -END + ctx.rnd()*END*2;
-            if (list.every(o => Math.abs(o.x - x) > 13)){
-              list.push({ x, w: 1 + Math.floor(ctx.rnd()*5) });
-              placed = true;
-            }
-          }
-          if (!placed) ok = false;
-        }
-        if (!ok) continue;
+        const list = Array.from({ length: n }, (_, i) => ({
+          x: -END + slot*(i + 0.5) + (ctx.rnd() - 0.5)*jit,
+          w: 1 + Math.floor(ctx.rnd()*5) }));
         const W = list.reduce((a, o) => a + o.w, 0);
         const star = list.reduce((a, o) => a + o.w*o.x, 0) / W;
         /* Reachable, and not so near the middle that doing nothing wins. */
