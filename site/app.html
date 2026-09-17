@@ -748,6 +748,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .skgrid{
   display:grid;grid-template-columns:repeat(var(--n),1fr);gap:5px;
   width:100%;max-width:380px;aspect-ratio:1;margin:0 auto;
+  touch-action:none;                 /* the grid takes the drag, not the page */
 }
 .skcell{
   min-width:0;min-height:0;border-radius:var(--r-sm);cursor:pointer;
@@ -758,9 +759,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
              color var(--t-fast),transform var(--t-fast);
 }
 .skcell:active{transform:scale(.92)}
-.skcell.pick{border-color:#4BC0FF;background:#4bc0ff26;color:#DCEFFF}
+/* Every letter you have taken stays lit, and the one you are on is brighter —
+   picking a word is a thing you build up and can see, not two taps and a
+   verdict. */
+.skcell.pick{border-color:#4BC0FF;background:#4bc0ff2e;color:#DCEFFF}
+.skcell.head{background:#4bc0ff52;box-shadow:0 0 0 1px #4BC0FF,0 0 12px -4px #4BC0FF;color:#F2FAFF}
 .skcell.lit{border-color:var(--cool);background:#33e6c833;color:#EAFFFA}
-.skcell.miss{border-color:var(--bad);background:#ff3d6e26}
+.skcell.miss{border-color:var(--bad);background:#ff3d6e26;color:#FFD9E3}
 
 /* ── Thaw ─────────────────────────────────────────────────────────────── */
 .thpane{
@@ -2589,7 +2594,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.27.0';
+const VERSION_TAG = 'v0.27.1';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3093,10 +3098,12 @@ const STRINGS = {
     'p.halve':'{n} apart', 'halve.chip':'{v}, in tray {s}', 'm.halve':'Halve|Move pieces until both trays total the same',
     'p.lever':'Slide the wedge, let go to test', 'lever.wedge':'The wedge — drag it along the beam', 'lever.loadL':'Weight {w}, {d} to the left', 'lever.loadR':'Weight {w}, {d} to the right', 'm.lever':'Lever|Find the balance point by eye, then test it',
     'perk.callSlot1':'A slot is free — pick a perk', 'perk.callSlot':'{n} slots free — pick a perk', 'perk.callToken1':'A token to spend — make a perk stronger', 'perk.callToken':'{n} tokens to spend — make a perk stronger',
-    'p.seek':'Find {w} — first letter, then last', 'seek.cell':'{l}, row {r} column {c}', 'm.seek':'Seek|Find the word hidden in the grid', 'p.thaw':'The frost melts wider where it is warmer', 'thaw.pane':'A frosted pane — drag a finger across it to melt it', 'm.thaw':'Thaw|Follow the warmth under the frost',
+    'p.seek':'Find {w} — tap or drag the letters in order', 'seek.cell':'{l}, row {r} column {c}', 'm.seek':'Seek|Find the word hidden in the grid', 'p.thaw':'The frost melts wider where it is warmer', 'thaw.pane':'A frosted pane — drag a finger across it to melt it', 'm.thaw':'Thaw|Follow the warmth under the frost',
     'set.vibNone':'This phone has no vibration for a web app to use',
     'hud.rounds':'{a} of {b} solved so far',
     'how.drag':'drag a finger across the board', 'how.tapdrag':'tap first, then drag to aim',
+    'p.seekAt':'Find {w} — you have {s}',
+    'how.seek':'tap the letters in order, or drag through them',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3231,10 +3238,12 @@ const STRINGS = {
     'p.halve':'Écart de {n}', 'halve.chip':'{v}, dans le plateau {s}', 'm.halve':'Partage|Déplacez des pièces jusqu’à égaliser les deux plateaux',
     'p.lever':'Glissez le coin, lâchez pour tester', 'lever.wedge':'Le coin — glissez-le le long de la barre', 'lever.loadL':'Poids {w}, {d} à gauche', 'lever.loadR':'Poids {w}, {d} à droite', 'm.lever':'Levier|Trouvez le point d’équilibre à l’œil, puis testez',
     'perk.callSlot1':'Un emplacement libre — choisissez un atout', 'perk.callSlot':'{n} emplacements libres — choisissez un atout', 'perk.callToken1':'Un jeton à dépenser — renforcez un atout', 'perk.callToken':'{n} jetons à dépenser — renforcez un atout',
-    'p.seek':'Trouvez {w} — première lettre, puis dernière', 'seek.cell':'{l}, ligne {r} colonne {c}', 'm.seek':'Cherche|Trouvez le mot caché dans la grille', 'p.thaw':'Le givre fond plus large là où c’est plus chaud', 'thaw.pane':'Une vitre givrée — glissez un doigt dessus pour la faire fondre', 'm.thaw':'Dégel|Suivez la chaleur sous le givre',
+    'p.seek':'Trouvez {w} — les lettres dans l’ordre', 'seek.cell':'{l}, ligne {r} colonne {c}', 'm.seek':'Cherche|Trouvez le mot caché dans la grille', 'p.thaw':'Le givre fond plus large là où c’est plus chaud', 'thaw.pane':'Une vitre givrée — glissez un doigt dessus pour la faire fondre', 'm.thaw':'Dégel|Suivez la chaleur sous le givre',
     'set.vibNone':'Ce téléphone n’offre pas de vibration à une application web',
     'hud.rounds':'{a} sur {b} réussis pour l’instant',
     'how.drag':'glissez un doigt sur le plateau', 'how.tapdrag':'touchez d’abord, puis glissez pour viser',
+    'p.seekAt':'Trouvez {w} — vous avez {s}',
+    'how.seek':'touchez les lettres dans l’ordre, ou glissez dessus',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3369,10 +3378,12 @@ const STRINGS = {
     'p.halve':'{n} de diferencia', 'halve.chip':'{v}, en la bandeja {s}', 'm.halve':'Mitades|Mueve piezas hasta que las dos bandejas sumen igual',
     'p.lever':'Desliza la cuña y suelta para probar', 'lever.wedge':'La cuña — deslízala por la barra', 'lever.loadL':'Peso {w}, {d} a la izquierda', 'lever.loadR':'Peso {w}, {d} a la derecha', 'm.lever':'Palanca|Encuentra el punto de equilibrio a ojo y pruébalo',
     'perk.callSlot1':'Una ranura libre — elige una ventaja', 'perk.callSlot':'{n} ranuras libres — elige una ventaja', 'perk.callToken1':'Una ficha por gastar — mejora una ventaja', 'perk.callToken':'{n} fichas por gastar — mejora una ventaja',
-    'p.seek':'Encuentra {w} — primera letra, luego la última', 'seek.cell':'{l}, fila {r} columna {c}', 'm.seek':'Busca|Encuentra la palabra escondida en la cuadrícula', 'p.thaw':'La escarcha se derrite más donde hace más calor', 'thaw.pane':'Un cristal escarchado — desliza un dedo para derretirlo', 'm.thaw':'Deshielo|Sigue el calor bajo la escarcha',
+    'p.seek':'Encuentra {w} — las letras en orden', 'seek.cell':'{l}, fila {r} columna {c}', 'm.seek':'Busca|Encuentra la palabra escondida en la cuadrícula', 'p.thaw':'La escarcha se derrite más donde hace más calor', 'thaw.pane':'Un cristal escarchado — desliza un dedo para derretirlo', 'm.thaw':'Deshielo|Sigue el calor bajo la escarcha',
     'set.vibNone':'Este teléfono no ofrece vibración a una aplicación web',
     'hud.rounds':'{a} de {b} resueltos hasta ahora',
     'how.drag':'desliza un dedo por el tablero', 'how.tapdrag':'toca primero y luego desliza para apuntar',
+    'p.seekAt':'Encuentra {w} — llevas {s}',
+    'how.seek':'toca las letras en orden o deslízate por ellas',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3507,10 +3518,12 @@ const STRINGS = {
     'p.halve':'{n} Unterschied', 'halve.chip':'{v}, in Schale {s}', 'm.halve':'Hälften|Verschiebe Stücke, bis beide Schalen gleich viel ergeben',
     'p.lever':'Keil schieben, loslassen zum Prüfen', 'lever.wedge':'Der Keil — schieb ihn über den Balken', 'lever.loadL':'Gewicht {w}, {d} nach links', 'lever.loadR':'Gewicht {w}, {d} nach rechts', 'm.lever':'Hebel|Finde den Gleichgewichtspunkt mit dem Auge und prüfe ihn',
     'perk.callSlot1':'Ein Platz ist frei — wähl einen Vorteil', 'perk.callSlot':'{n} Plätze frei — wähl einen Vorteil', 'perk.callToken1':'Eine Marke übrig — mach einen Vorteil stärker', 'perk.callToken':'{n} Marken übrig — mach einen Vorteil stärker',
-    'p.seek':'Finde {w} — erster Buchstabe, dann der letzte', 'seek.cell':'{l}, Zeile {r} Spalte {c}', 'm.seek':'Suche|Finde das Wort im Buchstabenfeld', 'p.thaw':'Der Reif schmilzt weiter, wo es wärmer ist', 'thaw.pane':'Eine bereifte Scheibe — zieh einen Finger darüber, um sie zu schmelzen', 'm.thaw':'Tauwetter|Folge der Wärme unter dem Reif',
+    'p.seek':'Finde {w} — die Buchstaben der Reihe nach', 'seek.cell':'{l}, Zeile {r} Spalte {c}', 'm.seek':'Suche|Finde das Wort im Buchstabenfeld', 'p.thaw':'Der Reif schmilzt weiter, wo es wärmer ist', 'thaw.pane':'Eine bereifte Scheibe — zieh einen Finger darüber, um sie zu schmelzen', 'm.thaw':'Tauwetter|Folge der Wärme unter dem Reif',
     'set.vibNone':'Dieses Telefon bietet Web-Apps keine Vibration',
     'hud.rounds':'Bisher {a} von {b} gelöst',
     'how.drag':'zieh einen Finger über das Feld', 'how.tapdrag':'erst tippen, dann zum Zielen ziehen',
+    'p.seekAt':'Finde {w} — bisher {s}',
+    'how.seek':'tippe die Buchstaben der Reihe nach an oder zieh darüber',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3654,6 +3667,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.27.1', date:'2026-09-17', items:[
+    'Seek \u2014 you take the word a letter at a time now, and you can see the letters you have taken. Tapping the first letter and then the last was two taps and a verdict: nothing showed the run you were claiming, so a wrong guess told you nothing about where you had gone wrong. Every letter you take stays lit, the one you are on is brighter, and the prompt reads back what you have spelled so far.',
+    'Dragging a finger through the letters works as well, which is how most people reach for a word search. A square only counts once the finger is properly inside it \u2014 the line between two diagonal neighbours clips the corners of the squares either side, and taking those as picks sent the run off in a direction nobody chose.',
+    'Tapping back one letter steps the run back rather than starting it over, and a tap that cannot continue the run starts a new one there for free. Only a full-length run that spells the wrong thing costs a move, because only that is a real guess.',
+  ] },
   { v:'0.27.0', date:'2026-09-17', items:[
     'A mode you have never played now introduces itself. The welcome screen covers the app; nothing covered the sixty-two games inside it, and a board you have never seen plus a one-line goal is not always enough to know what to do with your finger. One quiet line under the prompt says what the mode is \u2014 and, on the fifteen that want a drag and look exactly like the forty-seven that want a tap, that it wants a drag.',
     'It goes the moment you touch the board, or after six seconds, and it never comes back for that mode. It costs the board nothing: measured at five screen sizes in the language with the longest words, the playing area is exactly the same size with the line up as without it.',
@@ -9594,7 +9612,7 @@ const MODES = {
 
   /* ── Seek ─────────────────────────────────────────────────────────────── */
   seek: {
-    name:'Seek', blurb:'Find the word hidden in the grid', cat:'words', par:12000, bonus:3400,
+    name:'Seek', blurb:'Find the word hidden in the grid', input:'seek', cat:'words', par:12000, bonus:3400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="#4BC0FF" stroke-width="1.6"/><path d="M6 8.5h3M6 12h3M6 15.5h3" stroke="#4BC0FF" stroke-width="1.5" stroke-linecap="round" opacity=".38"/><path d="M12.5 7.5l5 9" stroke="#4BC0FF" stroke-width="3.4" stroke-linecap="round" opacity=".28"/><path d="M12.5 7.5l5 9" stroke="#4BC0FF" stroke-width="1.5" stroke-linecap="round"/></svg>',
     build(ctx){
       /* The other four word modes all hand you one broken word to put back
@@ -9686,40 +9704,107 @@ const MODES = {
       ctx.prompt(t('p.seek', { w: word }));
 
       const budget = moveBudget(ctx, 1);
-      let first = -1, done = false;
-      const clearMark = () => cells.forEach(b => b.classList.remove('pick','lit'));
+      let pick = [], done = false;
 
-      const line = (a, b) => {
-        const ra = Math.floor(a/N), ca = a % N, rb = Math.floor(b/N), cb = b % N;
-        const vr = rb - ra, vc = cb - ca;
-        const steps = Math.max(Math.abs(vr), Math.abs(vc));
-        if (steps !== len - 1) return null;
-        if (vr !== 0 && vc !== 0 && Math.abs(vr) !== Math.abs(vc)) return null;
-        const sr = Math.sign(vr), sc = Math.sign(vc);
-        const out = [];
-        for (let i = 0; i < len; i++) out.push((ra + sr*i)*N + (ca + sc*i));
-        return out;
+      const rc = i => [Math.floor(i/N), i % N];
+      const paint = () => {
+        cells.forEach((b, i) => {
+          const at = pick.indexOf(i);
+          b.classList.toggle('pick', at >= 0);
+          b.classList.toggle('head', at >= 0 && at === pick.length - 1);
+          if (at >= 0) b.dataset.at = String(at + 1); else delete b.dataset.at;
+        });
+        /* The letters you have taken, in the order you took them, so the guess
+           is readable without counting squares. */
+        ctx.prompt(pick.length
+          ? t('p.seekAt', { w: word, s: pick.map(x => grid[x]).join('') })
+          : t('p.seek', { w: word }));
       };
 
-      cells.forEach((b, i) => onTap(b, () => {
+      /* Where the run may go next: any neighbour while it is one letter long,
+         and after that only the way it is already heading. */
+      const nextCell = () => {
+        if (pick.length === 0) return null;
+        const [r, c] = rc(pick[pick.length - 1]);
+        if (pick.length === 1) return null;              /* any neighbour will do */
+        const [pr, pc] = rc(pick[pick.length - 2]);
+        return [r + (r - pr), c + (c - pc)];
+      };
+      const canFollow = i => {
+        const [r, c] = rc(i);
+        if (pick.length === 1){
+          const [lr, lc] = rc(pick[0]);
+          return Math.max(Math.abs(r - lr), Math.abs(c - lc)) === 1;
+        }
+        const n = nextCell();
+        return !!n && n[0] === r && n[1] === c;
+      };
+
+      /* One entry point for both ways of doing it: tapping the letters one at a
+         time, and dragging a finger through them. A tap fires this twice —
+         pointerdown and click — and the second call lands on the letter that is
+         already the head, which does nothing. */
+      const hit = (i, sliding) => {
         if (done) return;
-        if (first < 0){ first = i; clearMark(); b.classList.add('pick'); return; }
-        const run2 = line(first, i);
-        if (!run2){ first = i; clearMark(); b.classList.add('pick'); return; }
-        const said = run2.map(x => grid[x]).join('');
+        if (pick.length && i === pick[pick.length - 1]) return;
+        if (pick.length > 1 && i === pick[pick.length - 2]){
+          pick.pop(); paint(); sfx.tap(); buzz('tap'); return;   /* step back */
+        }
+        if (pick.length && pick.indexOf(i) >= 0) return;         /* no crossing itself */
+        if (pick.length && !canFollow(i)){
+          /* A finger crossing a diagonal clips the squares either side of the
+             one it is heading for. Mid-drag those are passed over; only a fresh
+             press starts the run somewhere else. */
+          if (sliding) return;
+          pick = [i]; paint(); sfx.tap(); buzz('tap'); return;
+        }
+        pick.push(i);
+        paint();
+        if (pick.length < len){ sfx.tap(); buzz('tap'); return; }
+        const said = pick.map(x => grid[x]).join('');
         if (said === word){
           done = true;
-          run2.forEach(x => cells[x].classList.add('lit'));
-          return ctx.win(b);
+          pick.forEach(x => { cells[x].classList.remove('pick','head'); cells[x].classList.add('lit'); });
+          return ctx.win(cells[i]);
         }
-        /* A line of the right length that spells something else is a real
-           guess, so it costs one. Anything that is not a line is a reach for
-           the other end and costs nothing. */
-        clearMark(); first = -1;
-        b.classList.add('miss');
-        ctx.after(320, () => b.classList.remove('miss'));
-        budget.spend(b);
-      }));
+        /* A full-length run that spells something else is a real guess and
+           costs one. Anything shorter is still being built. */
+        const wrong = pick.slice();
+        pick = [];
+        wrong.forEach(x => { cells[x].classList.add('miss'); });
+        ctx.after(340, () => wrong.forEach(x => cells[x].classList.remove('miss')));
+        paint();
+        budget.spend(cells[i]);
+      };
+
+      cells.forEach((b, i) => onTap(b, () => hit(i)));
+
+      /* Dragging through the letters is the other half of how anyone reaches
+         for a word search. Pointer capture sends every move to the grid, so the
+         cell under the finger is found by position rather than by target. */
+      const cellAt = (ev, inner) => {
+        if (!ev) return -1;
+        const el2 = document.elementFromPoint(ev.clientX, ev.clientY);
+        const c = el2 && el2.closest ? el2.closest('.skcell') : null;
+        if (!c) return -1;
+        /* Mid-drag a square only counts once the finger is properly inside it.
+           The straight line between two diagonal neighbours' centres crosses the
+           corners of the two squares either side, and taking those as picks set
+           the run off in a direction the player never chose — so a diagonal word
+           could not be dragged at all. Clipping a corner is not a choice. */
+        if (inner){
+          const r = c.getBoundingClientRect(), m = 0.24;
+          if (ev.clientX < r.left + r.width*m  || ev.clientX > r.right - r.width*m ||
+              ev.clientY < r.top  + r.height*m || ev.clientY > r.bottom - r.height*m) return -1;
+        }
+        return cells.indexOf(c);
+      };
+      onDrag(box, {
+        start: q => { const i = cellAt(q.ev, false); if (i >= 0) hit(i, false); },
+        move:  q => { const i = cellAt(q.ev, true);  if (i >= 0) hit(i, true); }
+      });
+
+      paint();
     }
   },
 
