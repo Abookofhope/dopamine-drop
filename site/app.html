@@ -2105,7 +2105,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.23.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.23.1</span></button>
+        </div>
+        <div class="setrow">
+          <span class="txt"><b data-i18n="set.version">Version</b><small id="setVerSub"></small></span>
+          <button class="ghost" id="updCheck" type="button" data-i18n="set.checkUpd">Check</button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -2354,7 +2358,7 @@ function dailyStreak(){
 const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.23.0 (58)';
+const VERSION = 'v0.23.1 (58)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2795,6 +2799,7 @@ const STRINGS = {
     'p.latch':'{n} rows still off the line', 'latch.row':'Row {n}, notch at position {c}', 'latch.left':'Turn row {n} left', 'latch.right':'Turn row {n} right', 'm.latch':'Latch|Turn the rows until every notch lines up',
     'p.splice':'{n} words still in pieces', 'splice.head':'Beginning: {s}', 'splice.tail':'Ending: {s}', 'm.splice':'Splice|Put the beginnings back on the right endings',
     'p.trace':'{n} more to reach — stay on the line', 'trace.box':'Drag along the line from the bright dot to the ring', 'm.trace':'Trace|Follow the line to the end — no hurry',
+    'set.version':'Version', 'set.checkUpd':'Check', 'set.checking':'Checking…', 'set.upToDate':'Up to date', 'set.updating':'Updating…',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -2925,6 +2930,7 @@ const STRINGS = {
     'p.latch':'Encore {n} rangées hors de l’axe', 'latch.row':'Rangée {n}, encoche en position {c}', 'latch.left':'Tourner la rangée {n} vers la gauche', 'latch.right':'Tourner la rangée {n} vers la droite', 'm.latch':'Loquet|Tournez les rangées jusqu’à aligner toutes les encoches',
     'p.splice':'Encore {n} mots en morceaux', 'splice.head':'Début : {s}', 'splice.tail':'Fin : {s}', 'm.splice':'Recoller|Remettez chaque début sur la bonne fin',
     'p.trace':'Encore {n} à atteindre — restez sur la ligne', 'trace.box':'Glissez le long de la ligne, du point lumineux jusqu’à l’anneau', 'm.trace':'Tracer|Suivez la ligne jusqu’au bout — rien ne presse',
+    'set.version':'Version', 'set.checkUpd':'Vérifier', 'set.checking':'Vérification…', 'set.upToDate':'À jour', 'set.updating':'Mise à jour…',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3055,6 +3061,7 @@ const STRINGS = {
     'p.latch':'Quedan {n} filas fuera de la línea', 'latch.row':'Fila {n}, muesca en la posición {c}', 'latch.left':'Girar la fila {n} a la izquierda', 'latch.right':'Girar la fila {n} a la derecha', 'm.latch':'Pestillo|Gira las filas hasta alinear todas las muescas',
     'p.splice':'Quedan {n} palabras partidas', 'splice.head':'Principio: {s}', 'splice.tail':'Final: {s}', 'm.splice':'Empalme|Vuelve a unir cada principio con su final',
     'p.trace':'Quedan {n} por alcanzar — no te salgas de la línea', 'trace.box':'Arrastra por la línea desde el punto brillante hasta el anillo', 'm.trace':'Trazo|Sigue la línea hasta el final — sin prisa',
+    'set.version':'Versión', 'set.checkUpd':'Comprobar', 'set.checking':'Comprobando…', 'set.upToDate':'Actualizado', 'set.updating':'Actualizando…',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3185,6 +3192,7 @@ const STRINGS = {
     'p.latch':'Noch {n} Reihen neben der Linie', 'latch.row':'Reihe {n}, Kerbe an Position {c}', 'latch.left':'Reihe {n} nach links drehen', 'latch.right':'Reihe {n} nach rechts drehen', 'm.latch':'Riegel|Dreh die Reihen, bis jede Kerbe auf einer Linie steht',
     'p.splice':'Noch {n} Wörter in Teilen', 'splice.head':'Anfang: {s}', 'splice.tail':'Ende: {s}', 'm.splice':'Fügen|Setz jeden Anfang wieder auf sein richtiges Ende',
     'p.trace':'Noch {n} zu erreichen — bleib auf der Linie', 'trace.box':'Zieh entlang der Linie vom hellen Punkt bis zum Ring', 'm.trace':'Nachziehen|Folge der Linie bis zum Ende — ganz in Ruhe',
+    'set.version':'Version', 'set.checkUpd':'Prüfen', 'set.checking':'Prüfe…', 'set.upToDate':'Aktuell', 'set.updating':'Aktualisiere…',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3328,6 +3336,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.23.1', date:'2026-09-17', items:[
+    'Fixed \u2014 updates only arrived if you noticed a banner and tapped it. Miss it once and the app stayed on that build forever, however many new ones were published. A new build now installs itself the moment it is safe to \u2014 on a menu, between runs \u2014 and you will simply find the app newer next time you look.',
+    'The banner is kept for the one case a silent reload would be rude: mid-run. It waits there, and the update lands by itself when the run ends.',
+    'The app asks for a new build on launch, whenever it comes back to the foreground, and every fifteen minutes it is open. It used to ask only on a navigation, which an installed app can go days without doing.',
+    'Settings shows which version you are on, with a Check button \u2014 so a suspicion that you are on an old build can be settled without reinstalling and losing your progress.',
+  ] },
   { v:'0.23.0', date:'2026-09-17', items:[
     'The score is where you can see it. The top third of the play screen was empty \u2014 the board is square and already the full width of the phone, so it could never grow into it \u2014 and the one number you actually watch was 25 pixels in a corner. It lives in that band now, big enough to read without looking away from the board.',
     'Lives and perks moved up beside the mode name, so the top of the screen is one row and a meter rather than three stacked strips.',
@@ -9706,6 +9720,10 @@ function endRun(){
   if (r.bestStreak > save.pbStreak) save.pbStreak = r.bestStreak;
   persist();
 
+  /* A run that held an update back is over; take it now rather than leaving
+     the banner to be noticed. */
+  if (swWaiting) setTimeout(applyUpdate, 600);
+
   const gained = save.xp - r.xpAtStart;
   const lvlAfter = Prog.levelForXp(save.xp);
   const up = lvlAfter > r.playerLevel;
@@ -9857,6 +9875,7 @@ function paintChrome(){
   const wcName = $('wcLangName'); if (wcName) wcName.textContent = lang.label;
   const logV = $('logBtnV'); if (logV) logV.textContent = 'v' + CHANGELOG[0].v;
   $('verLine').textContent = VERSION;
+  const vs = $('setVerSub'); if (vs) vs.textContent = VERSION;
 }
 
 function paintPlay(){
@@ -10232,41 +10251,76 @@ function goTab(name){
    The worker installs a new build but does not take over on its own, so an
    update never reloads the page mid-run. The banner offers it; the tap does
    it. Dismissing only hides the banner — the update still applies next launch. */
+/* An update that only lands if you notice a banner and tap it does not land.
+   A phone that misses the banner once sits on that build forever, which is
+   exactly what happened: every deploy green, every push live, and the app on
+   the phone unchanged for a day.
+
+   So the banner is now the exception rather than the mechanism. A waiting
+   worker is taken immediately when taking it is free — on a menu, with no run
+   in progress — and the page reloads itself before anybody has looked away.
+   The banner is kept for the one case where a silent reload would be rude:
+   mid-run, where it waits until the run is over or the player taps it. */
+let swReg = null, swWaiting = null, swPoll = 0;
+
+function applyUpdate(){
+  if (!swWaiting) return;
+  const w = swWaiting;
+  swWaiting = null;
+  $('updateBar').hidden = true;
+  w.postMessage({ type:'SKIP_WAITING' });
+  /* If the worker never answers, reload anyway rather than leave somebody
+     staring at a button that did nothing. */
+  setTimeout(() => window.location.reload(), 900);
+}
+
+/* Mid-run is the only time an update has to wait. */
+const updateIsRude = () => !!(run && run.started) || !$('play').hidden;
+
+function offerUpdate(worker){
+  if (!worker || swWaiting === worker) return;
+  swWaiting = worker;
+  if (updateIsRude()) $('updateBar').hidden = false;
+  else applyUpdate();
+}
+
+function checkForUpdate(){
+  if (!swReg) return Promise.resolve(false);
+  return swReg.update()
+    .then(() => { if (swReg.waiting) offerUpdate(swReg.waiting); return !!swReg.waiting; })
+    .catch(() => false);
+}
+
 function watchForUpdates(){
   if (!('serviceWorker' in navigator)) return;
-  const bar = $('updateBar');
-  let waiting = null;
 
-  function offer(worker){
-    if (!worker) return;
-    waiting = worker;
-    bar.hidden = false;
-  }
-
-  $('updateNow').addEventListener('click', () => {
-    bar.hidden = true;
-    if (waiting) waiting.postMessage({ type:'SKIP_WAITING' });
-    /* If the worker never answers, reload anyway rather than leave the player
-       staring at a button that did nothing. */
-    setTimeout(() => window.location.reload(), 900);
-  });
-  $('updateLater').addEventListener('click', () => { bar.hidden = true; });
+  $('updateNow').addEventListener('click', applyUpdate);
+  $('updateLater').addEventListener('click', () => { $('updateBar').hidden = true; });
 
   navigator.serviceWorker.getRegistration().then(reg => {
     if (!reg) return;
-    if (reg.waiting) offer(reg.waiting);
+    swReg = reg;
+    if (reg.waiting) offerUpdate(reg.waiting);
     reg.addEventListener('updatefound', () => {
       const sw = reg.installing;
       if (!sw) return;
       sw.addEventListener('statechange', () => {
-        if (sw.state === 'installed' && navigator.serviceWorker.controller) offer(sw);
+        if (sw.state === 'installed' && navigator.serviceWorker.controller) offerUpdate(sw);
       });
     });
-    /* Check again when the app comes back to the foreground: an installed PWA
-       can stay open for days without a navigation. */
+    /* Ask on load, not only when something happens to trigger it. An installed
+       app can be resumed for days without ever performing a navigation, and a
+       navigation is the only thing that checks the worker on its own. */
+    checkForUpdate();
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') reg.update().catch(() => {});
+      if (document.visibilityState === 'visible') checkForUpdate();
     });
+    /* And keep asking, quietly, so a session left open overnight still finds
+       this morning's build. */
+    if (swPoll) clearInterval(swPoll);
+    swPoll = setInterval(() => {
+      if (document.visibilityState === 'visible') checkForUpdate();
+    }, 15 * 60 * 1000);
   }).catch(() => {});
 
   let reloading = false;
@@ -10322,6 +10376,20 @@ function paintLog(){
 }
 function openLog(){ paintLog(); $('logSheet').hidden = false; }
 $('logBtn').addEventListener('click', openLog);
+
+/* A player who suspects they are on an old build should be able to settle it
+   themselves rather than reinstalling and losing their save. */
+$('updCheck').addEventListener('click', () => {
+  const btn = $('updCheck');
+  btn.textContent = t('set.checking');
+  btn.disabled = true;
+  checkForUpdate().then(found => {
+    btn.disabled = false;
+    if (found){ btn.textContent = t('set.updating'); return; }
+    btn.textContent = t('set.upToDate');
+    setTimeout(() => { btn.textContent = t('set.checkUpd'); }, 2200);
+  });
+});
 $('logClose').addEventListener('click', () => {
   $('logSheet').hidden = true;
   save.seenVersion = CHANGELOG[0].v;
