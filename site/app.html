@@ -678,6 +678,38 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .spltile.nudge{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
 .splwrap.good .spltile{border-color:var(--cool)}
 
+/* ── Trace ────────────────────────────────────────────────────────────── */
+.trcbox{
+  position:relative;width:100%;aspect-ratio:1;max-height:100%;touch-action:none;overflow:hidden;
+  border-radius:var(--r-lg);background:#07100b;border:2px solid var(--edge-soft);
+  transition:border-color var(--t-fast),background var(--t-fast);
+}
+.trcbox.astray{border-color:var(--haze)}
+.trcbox.won{border-color:var(--cool);background:#33e6c80f}
+.trcbox.lost{border-color:var(--bad);background:#ff3d6e0f}
+.trcbox svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.trcband{fill:none;stroke:#7be38a1f;stroke-linecap:round;stroke-linejoin:round;vector-effect:none}
+.trcline{fill:none;stroke:#7BE38A;stroke-width:.7;stroke-linecap:round;stroke-linejoin:round;opacity:.65}
+.trcmark{
+  position:absolute;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;border-radius:50%;display:block;
+  background:#0d1a12;border:2px solid #7be38a6b;
+  transition:background var(--t-fast),border-color var(--t-fast),transform var(--t-med);
+}
+.trcmark.start{background:#7BE38A;border-color:#7BE38A}
+.trcmark.end{width:17px;height:17px;margin:-8.5px 0 0 -8.5px;border-width:3px}
+.trcmark.got{background:var(--cool);border-color:var(--cool);transform:scale(1.15)}
+.trcdot{
+  position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;display:block;
+  background:radial-gradient(circle at 34% 30%,#d6ffe4,#7BE38A);box-shadow:0 0 16px #7be38a88;
+  opacity:0;pointer-events:none;transition:opacity var(--t-fast);
+}
+.trcdot.show{opacity:1}
+.trcslip{
+  position:absolute;left:0;bottom:0;display:block;height:5px;width:0;
+  background:var(--haze);opacity:.65;pointer-events:none;border-radius:0 3px 0 0;
+}
+.trcslip.low{background:var(--bad);opacity:1}
+
 /* ── Chorus ───────────────────────────────────────────────────────────── */
 .chwrap{display:flex;flex-direction:column;gap:12px;width:100%;height:100%;
   min-height:0;min-width:0;max-width:100%;justify-content:center}
@@ -2036,7 +2068,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.22.0</span></button>
+          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.22.1</span></button>
         </div>
 
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
@@ -2285,7 +2317,7 @@ function dailyStreak(){
 const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.22.0 (57)';
+const VERSION = 'v0.22.1 (58)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -2725,6 +2757,7 @@ const STRINGS = {
     'p.braid':'{n} strands still out of place', 'braid.want':'The braid to match', 'braid.wantIs':'The braid to match, left to right: {list}', 'braid.strand':'Strand {n}, {c}', 'braid.cross':'Cross {a} and {b}', 'm.braid':'Braid|Cross the strands until they match the pattern',
     'p.latch':'{n} rows still off the line', 'latch.row':'Row {n}, notch at position {c}', 'latch.left':'Turn row {n} left', 'latch.right':'Turn row {n} right', 'm.latch':'Latch|Turn the rows until every notch lines up',
     'p.splice':'{n} words still in pieces', 'splice.head':'Beginning: {s}', 'splice.tail':'Ending: {s}', 'm.splice':'Splice|Put the beginnings back on the right endings',
+    'p.trace':'{n} more to reach — stay on the line', 'trace.box':'Drag along the line from the bright dot to the ring', 'm.trace':'Trace|Follow the line to the end — no hurry',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -2854,6 +2887,7 @@ const STRINGS = {
     'p.braid':'Encore {n} brins mal placés', 'braid.want':'La tresse à reproduire', 'braid.wantIs':'La tresse à reproduire, de gauche à droite : {list}', 'braid.strand':'Brin {n}, {c}', 'braid.cross':'Croiser {a} et {b}', 'm.braid':'Tresse|Croisez les brins jusqu’à reproduire le motif',
     'p.latch':'Encore {n} rangées hors de l’axe', 'latch.row':'Rangée {n}, encoche en position {c}', 'latch.left':'Tourner la rangée {n} vers la gauche', 'latch.right':'Tourner la rangée {n} vers la droite', 'm.latch':'Loquet|Tournez les rangées jusqu’à aligner toutes les encoches',
     'p.splice':'Encore {n} mots en morceaux', 'splice.head':'Début : {s}', 'splice.tail':'Fin : {s}', 'm.splice':'Recoller|Remettez chaque début sur la bonne fin',
+    'p.trace':'Encore {n} à atteindre — restez sur la ligne', 'trace.box':'Glissez le long de la ligne, du point lumineux jusqu’à l’anneau', 'm.trace':'Tracer|Suivez la ligne jusqu’au bout — rien ne presse',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -2983,6 +3017,7 @@ const STRINGS = {
     'p.braid':'Quedan {n} hebras fuera de sitio', 'braid.want':'La trenza que hay que igualar', 'braid.wantIs':'La trenza que hay que igualar, de izquierda a derecha: {list}', 'braid.strand':'Hebra {n}, {c}', 'braid.cross':'Cruzar {a} y {b}', 'm.braid':'Trenza|Cruza las hebras hasta igualar el patrón',
     'p.latch':'Quedan {n} filas fuera de la línea', 'latch.row':'Fila {n}, muesca en la posición {c}', 'latch.left':'Girar la fila {n} a la izquierda', 'latch.right':'Girar la fila {n} a la derecha', 'm.latch':'Pestillo|Gira las filas hasta alinear todas las muescas',
     'p.splice':'Quedan {n} palabras partidas', 'splice.head':'Principio: {s}', 'splice.tail':'Final: {s}', 'm.splice':'Empalme|Vuelve a unir cada principio con su final',
+    'p.trace':'Quedan {n} por alcanzar — no te salgas de la línea', 'trace.box':'Arrastra por la línea desde el punto brillante hasta el anillo', 'm.trace':'Trazo|Sigue la línea hasta el final — sin prisa',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3112,6 +3147,7 @@ const STRINGS = {
     'p.braid':'Noch {n} Stränge falsch', 'braid.want':'Der Zopf, der passen muss', 'braid.wantIs':'Der Zopf, der passen muss, von links nach rechts: {list}', 'braid.strand':'Strang {n}, {c}', 'braid.cross':'{a} und {b} kreuzen', 'm.braid':'Zopf|Kreuze die Stränge, bis das Muster passt',
     'p.latch':'Noch {n} Reihen neben der Linie', 'latch.row':'Reihe {n}, Kerbe an Position {c}', 'latch.left':'Reihe {n} nach links drehen', 'latch.right':'Reihe {n} nach rechts drehen', 'm.latch':'Riegel|Dreh die Reihen, bis jede Kerbe auf einer Linie steht',
     'p.splice':'Noch {n} Wörter in Teilen', 'splice.head':'Anfang: {s}', 'splice.tail':'Ende: {s}', 'm.splice':'Fügen|Setz jeden Anfang wieder auf sein richtiges Ende',
+    'p.trace':'Noch {n} zu erreichen — bleib auf der Linie', 'trace.box':'Zieh entlang der Linie vom hellen Punkt bis zum Ring', 'm.trace':'Nachziehen|Folge der Linie bis zum Ende — ganz in Ruhe',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3255,6 +3291,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.22.1', date:'2026-09-16', items:[
+    'New mode \u2014 Trace. Calm had three modes and all three are about holding something steady; this one is about going somewhere. Follow the line with a finger, no clock on the finger. Lifting costs nothing and you carry on from where you are \u2014 what costs is wandering off, and even that fills a meter rather than ending it on one slip.',
+  ] },
   { v:'0.22.0', date:'2026-09-16', items:[
     'New mode \u2014 Splice. The other three word modes work on one word at a time; this one is about the set. Four words cut in half with the endings shuffled, and no beginning fits any ending but its own \u2014 which is checked when the board is built, not hoped for.',
   ] },
@@ -8852,6 +8891,137 @@ const MODES = {
         }
       }));
       say();
+    }
+  },
+
+  /* ── Trace ────────────────────────────────────────────────────────────── */
+  trace: {
+    name:'Trace', blurb:'Follow the line to the end — no hurry', cat:'calm', par:15000, bonus:3600,
+    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#7BE38A" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M3 17c3 0 3-10 6-10s3 10 6 10 3-7 6-7"/><circle cx="3" cy="17" r="1.6" fill="#7BE38A"/><circle cx="21" cy="10" r="1.6" fill="#7BE38A"/></svg>',
+    build(ctx){
+      /* Calm had three modes and all three are about holding something steady.
+         This one is about going somewhere: a line, a finger, and no clock on
+         the finger. Lifting costs nothing and you carry on from where you are —
+         what costs is wandering off, and even that is a meter rather than an
+         instant loss, because a calm mode that ends on one slip is not calm. */
+      const steps = 5;
+      const tol   = clamp(13 - ctx.level*0.22, 6.5, 13);      /* half the band, in % */
+      const slack = clamp(1500 - ctx.level*22, 700, 1500);     /* ms off the line     */
+
+      /* Waypoints walk left to right and never climb more than they can be
+         followed, so the line is always a line rather than a staircase. */
+      const pts = [];
+      let y = 22 + ctx.rnd()*56;
+      for (let i = 0; i < steps + 1; i++){
+        pts.push({ x: 10 + (80 * i / steps), y });
+        y = clamp(y + (ctx.rnd() - 0.5) * 56, 16, 84);
+      }
+
+      const box = mk('div','trcbox');
+      const ns = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('viewBox', '0 0 100 100');
+      svg.setAttribute('preserveAspectRatio', 'none');
+      svg.setAttribute('aria-hidden', 'true');
+      const d = 'M ' + pts.map(p => p.x + ' ' + p.y).join(' L ');
+      const band = document.createElementNS(ns, 'path');
+      band.setAttribute('d', d); band.setAttribute('class', 'trcband');
+      band.setAttribute('stroke-width', String(tol * 2));
+      const line = document.createElementNS(ns, 'path');
+      line.setAttribute('d', d); line.setAttribute('class', 'trcline');
+      svg.appendChild(band); svg.appendChild(line);
+      box.appendChild(svg);
+
+      const marks = pts.map((p, i) => {
+        const e = mk('i','trcmark' + (i === 0 ? ' start' : i === pts.length-1 ? ' end' : ''));
+        e.style.left = p.x + '%'; e.style.top = p.y + '%';
+        box.appendChild(e); return e;
+      });
+      const dot = mk('i','trcdot');
+      box.appendChild(dot);
+      const slip = mk('i','trcslip');
+      box.appendChild(slip);
+      box.setAttribute('role','application');
+      box.setAttribute('aria-label', t('trace.box'));
+      ctx.surface.appendChild(box);
+
+      let done = false, next = 1, off = 0, holding = false, raf2 = 0;
+      let px = pts[0].x, py = pts[0].y;
+      const say = () => ctx.prompt(t('p.trace', { n: pts.length - next }));
+      say();
+
+      /* Distance from the finger to the nearest point of the line, so the band
+         drawn on screen and the band being judged are the same band. */
+      const away = (px, py) => {
+        let best = 1e9;
+        for (let i = 0; i < pts.length - 1; i++){
+          const a = pts[i], b = pts[i+1];
+          const vx = b.x - a.x, vy = b.y - a.y;
+          const len = vx*vx + vy*vy;
+          let u = len ? ((px - a.x)*vx + (py - a.y)*vy) / len : 0;
+          u = clamp(u, 0, 1);
+          const dx = px - (a.x + vx*u), dy = py - (a.y + vy*u);
+          best = Math.min(best, Math.sqrt(dx*dx + dy*dy));
+        }
+        return best;
+      };
+
+      const at = (x, y) => {
+        if (done) return;
+        px = x; py = y;
+        dot.style.left = x + '%'; dot.style.top = y + '%';
+        dot.classList.add('show');
+        box.classList.toggle('astray', away(x, y) > tol);
+        /* Waypoints have to be collected in order, so the line cannot be cut
+           across — and the last one is the finish. */
+        const w = pts[next];
+        if (Math.hypot(x - w.x, y - w.y) <= tol * 1.25){
+          marks[next].classList.add('got');
+          next++;
+          sfx.tap();
+          if (next >= pts.length){
+            done = true;
+            cancelAnimationFrame(raf2);
+            box.classList.add('won');
+            return ctx.win(dot);
+          }
+          say();
+        }
+      };
+
+      /* The meter fills on the clock, not on movement. Charging it per pointer
+         event meant a finger held perfectly still off the line cost nothing —
+         the one way to be astray that the mode did not notice. */
+      let prev = performance.now();
+      const frame = () => {
+        if (done) return;
+        const now = performance.now();
+        const ms = Math.min(120, now - prev);
+        prev = now;
+        if (holding && away(px, py) > tol){
+          off += ms;
+          slip.style.width = Math.min(100, off / slack * 100) + '%';
+          slip.classList.toggle('low', off > slack * 0.7);
+          if (off >= slack){
+            done = true;
+            box.classList.add('lost');
+            return ctx.miss(dot);
+          }
+        }
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
+
+      onDrag(box, {
+        start(p){ holding = true; prev = performance.now(); at(p.x, p.y); },
+        move(p){ if (holding) at(p.x, p.y); },
+        end(){
+          holding = false;
+          /* Lifting is free: a calm mode should not punish a phone call. */
+          dot.classList.remove('show');
+          box.classList.remove('astray');
+        }
+      });
     }
   },
 };
