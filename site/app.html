@@ -420,13 +420,34 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .gdrop{position:absolute;display:block;width:8%;height:8%;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
   transform:translateX(-50%);
   background:radial-gradient(circle at 36% 30%,#ffb3c6,#ff3d6e);box-shadow:0 0 8px #ff3d6e55}
-.gdrop.dud{background:radial-gradient(circle at 36% 30%,#4a4270,#2a2448);box-shadow:none}
+/* A dud is told apart by shape first, colour second — a blunt pebble, not an egg. */
+.gdrop.dud{border-radius:30% 30% 34% 34%/32% 32% 30% 30%;
+  transform:translateX(-50%) rotate(-11deg);
+  background:linear-gradient(148deg,#7a719f,#39325a);
+  box-shadow:inset 0 0 0 2px #0e0b2199,0 0 6px #00000055}
+.gdrop.landed{transform:translateX(-50%) scale(.68);opacity:0;
+  transition:top var(--t-fast),left var(--t-fast),transform var(--t-fast),opacity var(--t-fast)}
+.gdrop.fell{opacity:0;transition:top .28s linear,opacity .28s linear}
 .gdrop.splat{transform:translateX(-50%) scaleY(.4) scaleX(1.5);opacity:.3;
   transition:transform var(--t-fast),opacity var(--t-fast)}
-.gpail{position:absolute;display:block;bottom:5%;height:11%;border-radius:0 0 10px 10px;box-sizing:border-box;
-  border:3px solid var(--cool);border-top:none;background:#33e6c81a;
+/* The pail's width IS the catch window, so the bowl is drawn to the rule rather
+   than the rule guessed from the bowl: rim across the full mouth, body tapering
+   under it. The trailing line keeps the column readable under a thumb. */
+.gpail{position:absolute;display:block;bottom:5%;height:13%}
+.gpail::before{content:'';position:absolute;left:0;right:0;bottom:88%;height:340%;
+  border-radius:6px 6px 0 0;pointer-events:none;
+  background:linear-gradient(180deg,transparent,#33e6c809 66%,#33e6c817)}
+.grim{position:absolute;display:block;left:0;right:0;top:0;height:5px;border-radius:5px;
+  background:linear-gradient(180deg,#a7f7ea,var(--cool));box-shadow:0 0 10px #33e6c866;
   transition:background var(--t-fast),box-shadow var(--t-fast)}
-.gpail.got{background:#33e6c855;box-shadow:0 0 14px #33e6c877}
+.gbowl{position:absolute;display:block;left:3%;right:3%;top:4px;bottom:0;box-sizing:border-box;
+  border:3px solid var(--cool);border-top:none;
+  border-radius:0 0 50% 50%/0 0 94% 94%;
+  background:linear-gradient(180deg,#33e6c81f,#33e6c808);
+  box-shadow:inset 0 -9px 15px -11px var(--cool);
+  transition:background var(--t-fast),box-shadow var(--t-fast)}
+.gpail.got .grim{background:linear-gradient(180deg,#fff,#a7f7ea);box-shadow:0 0 16px #33e6c8aa}
+.gpail.got .gbowl{background:#33e6c847;box-shadow:0 0 14px #33e6c877,inset 0 -9px 15px -11px var(--cool)}
 
 /* ── Forge ────────────────────────────────────────────────────────────── */
 .forgewrap{display:flex;flex-direction:column;gap:12px;width:100%;height:100%;
@@ -2358,7 +2379,7 @@ function dailyStreak(){
 const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 
 /* Bumped by hand with each published build. */
-const VERSION = 'v0.23.1 (58)';
+const VERSION = 'v0.23.2 (58)';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
    Two rules keep a save alive across updates:
@@ -3336,6 +3357,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.23.2', date:'2026-09-17', items:[
+    'Gather \u2014 the pail is a bowl now. It was an open-bottomed bracket with a flat base; it has a rim, tapered sides and a rounded bottom, and a faint column above it so you can still see where it is lined up when your thumb is on top of it.',
+    'Fixed \u2014 catching was harder than it looked, for a reason you could not see. An egg was judged by the position of its centre against the rim, so an egg that visibly landed on the bowl \u2014 overlapping it by almost half its width \u2014 was ruled a miss. An egg now counts the moment it overlaps the rim, and the rim is drawn to that rule rather than the rule guessed from the drawing.',
+    'A caught egg settles into the bowl and a dud you dodged carries on falling past it, instead of both blinking out of existence at the rim. A dud is also a blunt pebble rather than a dark egg, so you can tell it from a keeper by shape and not only by colour.',
+    'The schedule of what falls when is built against a thumb, not a stopwatch. It used to reject two landings only if they were within a fixed 280ms of each other; it now works out whether a hand could actually get from one to the other, and checks the whole round rather than pairs of landings \u2014 a dud between two keepers can force a detour that no pair of landings shows.',
+  ] },
   { v:'0.23.1', date:'2026-09-17', items:[
     'Fixed \u2014 updates only arrived if you noticed a banner and tapped it. Miss it once and the app stayed on that build forever, however many new ones were published. A new build now installs itself the moment it is safe to \u2014 on a menu, between runs \u2014 and you will simply find the app newer next time you look.',
     'The banner is kept for the one case a silent reload would be rude: mid-run. It waits there, and the update lands by itself when the run ends.',
@@ -7393,27 +7420,59 @@ const MODES = {
     name:'Gather', blurb:'Catch the ripe ones, let the rest fall', cat:'reflex', par:13000, bonus:3400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="4" r="2" fill="#FF3D6E"/><circle cx="15" cy="8" r="2" fill="#FF3D6E" opacity=".4"/><circle cx="10" cy="11" r="2" fill="#FF3D6E"/><path d="M4 16h16l-2 5H6z" fill="none" stroke="#FF3D6E" stroke-width="1.8" stroke-linejoin="round"/></svg>',
     build(ctx){
-      const CW   = clamp(24 - ctx.level*0.55, 14, 24);    /* pail mouth, % of field */
-      const need = 4 + Math.min(5, Math.floor(ctx.level/4));
-      const bad  = Math.min(6, Math.floor(ctx.level/3));
-      const fall = clamp(2600 - ctx.level*72, 1200, 2600); /* ms from top to pail */
-      const gap  = clamp(820 - ctx.level*16, 430, 820);    /* ms between landings */
-      const RIM  = 84;                                     /* where the pail catches */
-      const SAFE = 280;                                    /* ms that counts as "at once" */
+      const EGG   = 8;                                      /* egg width, % of field */
+      const MOUTH = clamp(26 - ctx.level*0.5, 17, 26);      /* the rim the player sees */
+      /* An egg counts once it overlaps the rim. Judging its centre against the
+         rim alone throws out eggs that visibly land on the bowl, which is the
+         one thing a catching game must never do. */
+      const CATCH = MOUTH + EGG*0.6;
+      const need  = 4 + Math.min(5, Math.floor(ctx.level/4));
+      const bad   = Math.min(6, Math.floor(ctx.level/3));
+      const fall  = clamp(2600 - ctx.level*72, 1200, 2600); /* ms from top to rim */
+      const gap   = clamp(820 - ctx.level*16, 430, 820);    /* ms between landings */
+      const RIM   = 84;                                     /* egg's top edge when it sits in the bowl */
+      const SPEED = 0.17;                                   /* %-of-field per ms a thumb can drag */
 
-      /* Two drops conflict when they land close enough in time that the pail
-         cannot be in both places — or, for a keeper and a dud, close enough
-         that catching one means catching the other. */
+      /* Reachability rather than a fixed time window: two landings conflict when
+         the pail would have to outrun a thumb to serve both. Distance and time
+         both count, and the width it measures against is the real catch window. */
       const conflict = (a, b) => {
-        if (Math.abs(a.t - b.t) >= SAFE) return false;
-        const dx = Math.abs(a.x - b.x);
-        if (a.good && b.good) return dx > CW*0.72;   /* too far apart to cover both */
-        if (a.good !== b.good) return dx < CW*1.05;  /* too close to take one only */
-        return false;                                 /* two duds never conflict */
+        const dt = Math.abs(a.t - b.t), dx = Math.abs(a.x - b.x);
+        if (a.good && b.good)  return Math.max(0, dx - CATCH)        > SPEED * dt;
+        if (a.good !== b.good) return Math.max(0, CATCH*1.05 - dx)   > SPEED * dt;
+        return false;                                       /* two duds never conflict */
+      };
+
+      /* Pairwise reach is necessary but not sufficient: a dud sitting between two
+         keepers can force a detour no thumb can make, and no pair of landings shows
+         it. So carry the pail's feasible positions forward as intervals and ship a
+         schedule only if that set never empties. */
+      const LO = MOUTH/2, HI = 100 - MOUTH/2;
+      const catchable = list => {
+        let set = [[50, 50]], prev = 0;           /* the pail starts centred */
+        for (const d of list.slice().sort((a, b) => a.t - b.t)){
+          const r = SPEED * (d.t - prev); prev = d.t;
+          const grown = [];
+          for (const [a, b] of set){
+            const lo = Math.max(LO, a - r), hi = Math.min(HI, b + r);
+            const last = grown[grown.length - 1];
+            if (last && lo <= last[1]) last[1] = Math.max(last[1], hi);
+            else grown.push([lo, hi]);
+          }
+          const want = d.good ? [[d.x - CATCH/2, d.x + CATCH/2]]
+                              : [[LO, d.x - CATCH/2], [d.x + CATCH/2, HI]];
+          set = [];
+          for (const [a, b] of grown) for (const [c, e] of want){
+            const lo = Math.max(a, c), hi = Math.min(b, e);
+            if (hi > lo) set.push([lo, hi]);
+          }
+          if (!set.length) return false;
+        }
+        return true;
       };
 
       let drops = null;
-      for (let attempt = 0; attempt < 500 && !drops; attempt++){
+      for (let attempt = 0; attempt < 240 && !drops; attempt++){
         const total = need + bad;
         /* Which slots hold keepers is drawn separately from when the slots are.
            Deciding both from the same index would put every keeper first and
@@ -7421,29 +7480,37 @@ const MODES = {
         const keepers = new Set(shuffle(Array.from({length: total}, (_, i) => i), ctx.rnd).slice(0, need));
         const list = [];
         let ok = true;
-        for (let i = 0; i < total; i++)
-          list.push({ good: keepers.has(i),
-                      t: fall + 420 + i*gap + ctx.rnd()*gap*0.5,
-                      x: 8 + ctx.rnd()*84 });
-        for (let i = 0; i < list.length && ok; i++)
-          for (let j = i+1; j < list.length && ok; j++)
-            if (conflict(list[i], list[j])) ok = false;
-        if (ok) drops = list;
+        /* Place one landing at a time against the ones already placed — rolling a
+           whole schedule and throwing it away almost never lands a legal one. */
+        for (let i = 0; i < total && ok; i++){
+          const d = { good: keepers.has(i), t: fall + 420 + i*gap + ctx.rnd()*gap*0.5, x: 50 };
+          ok = false;
+          for (let pick = 0; pick < 60 && !ok; pick++){
+            d.x = 8 + ctx.rnd()*84;
+            ok = !list.some(o => conflict(o, d));
+          }
+          if (ok) list.push(d);
+        }
+        if (ok && catchable(list)) drops = list;
       }
-      /* A schedule with only the keepers in it is always catchable. */
+      /* A schedule with only the keepers in it, spread out, is always catchable. */
       if (!drops) drops = Array.from({length: need}, (_, i) =>
         ({ good:true, t: fall + 420 + i*gap*1.4, x: 8 + ctx.rnd()*84 }));
 
       const field = mk('div','gatherbox');
       const pail = mk('i','gpail');
-      pail.style.width = CW + '%';
+      pail.style.width = MOUTH + '%';
       pail.setAttribute('role','img');
       pail.setAttribute('aria-label', t('gather.pail'));
+      const rim = mk('i','grim'), bowl = mk('i','gbowl');
+      rim.setAttribute('aria-hidden','true');
+      bowl.setAttribute('aria-hidden','true');
+      pail.appendChild(rim); pail.appendChild(bowl);
       field.appendChild(pail);
       ctx.surface.appendChild(field);
 
       let px = 50, done = false, raf2 = 0, got = 0;
-      const movePail = () => { pail.style.left = (px - CW/2) + '%'; };
+      const movePail = () => { pail.style.left = (px - MOUTH/2) + '%'; };
       movePail();
       const say = () => ctx.prompt(t('p.gather', { n: need - got }));
       say();
@@ -7459,8 +7526,8 @@ const MODES = {
       });
 
       onDrag(field, {
-        start: q => { if (!done){ px = clamp(q.x, CW/2, 100 - CW/2); movePail(); } },
-        move:  q => { if (!done){ px = clamp(q.x, CW/2, 100 - CW/2); movePail(); } }
+        start: q => { if (!done){ px = clamp(q.x, MOUTH/2, 100 - MOUTH/2); movePail(); } },
+        move:  q => { if (!done){ px = clamp(q.x, MOUTH/2, 100 - MOUTH/2); movePail(); } }
       });
 
       const t0 = performance.now();
@@ -7476,20 +7543,28 @@ const MODES = {
           if (!d.live){ d.live = true; d.e.classList.add('falling'); }
           if (y >= RIM){
             d.gone = true;
-            const caught = Math.abs(d.x - px) < CW/2;
-            if (caught && !d.good){
+            const caught = Math.abs(d.x - px) < CATCH/2;
+            if (caught !== d.good){
               done = true; cancelAnimationFrame(raf2);
               d.e.classList.add('splat'); return ctx.miss(d.e);
             }
-            if (!caught && d.good){
-              done = true; cancelAnimationFrame(raf2);
-              d.e.classList.add('splat'); return ctx.miss(d.e);
-            }
-            if (caught){ got++; d.e.remove(); pail.classList.add('got');
-              ctx.after(140, () => pail.classList.remove('got'));
+            if (caught){
+              got++;
+              /* Settle it into the bowl instead of blinking it out of existence —
+                 a catch you cannot see is a catch you cannot learn from. */
+              d.e.classList.add('landed');
+              d.e.style.left = px + '%';
+              d.e.style.top = (RIM + 3) + '%';
+              ctx.after(280, () => d.e.remove());
+              pail.classList.add('got');
+              ctx.after(160, () => pail.classList.remove('got'));
               if (got >= need){ done = true; cancelAnimationFrame(raf2); return ctx.win(pail); }
               say();
-            } else { d.e.remove(); }
+            } else {
+              d.e.classList.add('fell');          /* a dud you dodged keeps going */
+              d.e.style.top = '104%';
+              ctx.after(320, () => d.e.remove());
+            }
           }
         }
         raf2 = requestAnimationFrame(frame);
