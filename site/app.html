@@ -731,6 +731,65 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 .trcslip.low{background:var(--bad);opacity:1}
 
+/* ── Seek ─────────────────────────────────────────────────────────────── */
+.skgrid{
+  display:grid;grid-template-columns:repeat(var(--n),1fr);gap:5px;
+  width:100%;max-width:380px;aspect-ratio:1;margin:0 auto;
+}
+.skcell{
+  min-width:0;min-height:0;border-radius:var(--r-sm);cursor:pointer;
+  border:1px solid var(--edge-soft);background:#ffffff06;color:var(--cream);
+  font-family:var(--f-data);font-weight:700;
+  font-size:clamp(12px,3.4vh,19px);line-height:1;
+  transition:background var(--t-fast),border-color var(--t-fast),
+             color var(--t-fast),transform var(--t-fast);
+}
+.skcell:active{transform:scale(.92)}
+.skcell.pick{border-color:#4BC0FF;background:#4bc0ff26;color:#DCEFFF}
+.skcell.lit{border-color:var(--cool);background:#33e6c833;color:#EAFFFA}
+.skcell.miss{border-color:var(--bad);background:#ff3d6e26}
+
+/* ── Thaw ─────────────────────────────────────────────────────────────── */
+.thpane{
+  position:relative;width:100%;aspect-ratio:1;max-height:100%;
+  touch-action:none;overflow:hidden;border-radius:var(--r-lg);
+  border:2px solid var(--edge-soft);
+  /* Frost, not an empty box: two crossed hatchings under the bloom so the pane
+     has a surface to melt off rather than a colour to reveal. */
+  background:
+    repeating-linear-gradient(56deg, #ffffff0a 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(-34deg, #ffffff07 0 1px, transparent 1px 11px),
+    radial-gradient(70% 55% at 22% 18%, #33456380, transparent 62%),
+    radial-gradient(60% 60% at 82% 76%, #2a3c5980, transparent 60%),
+    linear-gradient(160deg,#16243a,#0d1524);
+  transition:border-color var(--t-med),background var(--t-med);
+}
+.thpane.found{border-color:var(--calm,#7BE38A)}
+.thpane.cold{border-color:var(--bad)}
+.thmelts{position:absolute;inset:0;display:block;pointer-events:none}
+/* Size AND brightness both carry the signal, so it never rests on colour. */
+.thmelt{
+  position:absolute;display:block;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,#eafbf0 0%,#7be38a66 46%,transparent 70%);
+  pointer-events:none;
+}
+.thhold{
+  position:absolute;display:block;pointer-events:none;
+  width:calc(86px - var(--p,0)*52px);height:calc(86px - var(--p,0)*52px);
+  transform:translate(-50%,-50%);border-radius:50%;
+  border:3px solid #7BE38A;opacity:calc(.35 + var(--p,0)*.65);
+  box-shadow:0 0 calc(6px + var(--p,0)*18px) #7be38a66;
+}
+.thheat{
+  position:absolute;left:0;bottom:0;display:block;height:5px;width:100%;
+  background:#7BE38A;opacity:.6;pointer-events:none;border-radius:0 3px 0 0;
+  transition:width 90ms linear;
+}
+.thheat.low{background:var(--bad);opacity:1}
+
+.setrow.off{opacity:.5}
+.setrow.off .sw{pointer-events:none}
+
 /* ── Perk callouts ────────────────────────────────────────────────────── */
 .perkcall{
   display:flex;align-items:center;gap:12px;width:100%;
@@ -2225,8 +2284,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <span class="txt"><b data-i18n="set.sound">Sound</b><small data-i18n="set.soundSub">Taps and streak chimes — each family in its own key</small></span>
           <button class="sw" id="swSound" role="switch" aria-checked="true" aria-label="Sound"></button>
         </div>
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.vib">Vibration</b><small data-i18n="set.vibSub">A short pulse on every answer</small></span>
+        <div class="setrow" id="vibRow">
+          <span class="txt"><b data-i18n="set.vib">Vibration</b><small id="vibSub" data-i18n="set.vibSub">A short pulse on every answer</small></span>
           <button class="sw" id="swHaptics" role="switch" aria-checked="true" aria-label="Vibration"></button>
         </div>
         <div class="setrow">
@@ -2515,7 +2574,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.24.1';
+const VERSION_TAG = 'v0.25.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -2674,20 +2733,48 @@ window.addEventListener('beforeunload', persist);
 
 /* ═══ Feedback ════════════════════════════════════════════════════════════ */
 let actx = null;
-function tone(freq, dur, type, gain){
+/* An audio context made outside a gesture is born suspended, and on iOS a
+   resume() that is not itself inside a gesture is ignored. The first sound the
+   app plays is usually the "go" chime after a countdown — a timer, not a tap —
+   so the context never woke and the whole app was silent on an iPhone with the
+   sound switch on. The context is built and resumed on the first touch the
+   page ever sees, before anything needs to make a noise. */
+let master = null;
+function audio(){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  if (!actx){
+    try { actx = new AC(); } catch(e){ return null; }
+    master = actx.createGain();
+    master.gain.setValueAtTime(0.9, actx.currentTime);
+    master.connect(actx.destination);
+  }
+  if (actx.state === 'suspended') { try { actx.resume(); } catch(e){} }
+  return actx;
+}
+['pointerdown','touchstart','keydown'].forEach(ev =>
+  window.addEventListener(ev, () => { if (save.sound) audio(); },
+    { capture:true, passive:true }));
+
+function tone(freq, dur, type, gain, slide){
   if (!save.sound) return;
   try {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-    actx = actx || new AC();
-    if (actx.state === 'suspended') actx.resume();
-    const o = actx.createOscillator(), g = actx.createGain();
+    const ac = audio();
+    if (!ac) return;
+    const t0 = ac.currentTime, d = dur || 0.09, peak = gain || 0.05;
+    const o = ac.createOscillator(), g = ac.createGain();
     o.type = type || 'triangle';
-    o.frequency.setValueAtTime(freq, actx.currentTime);
-    g.gain.setValueAtTime(gain || 0.05, actx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + (dur || 0.09));
-    o.connect(g); g.connect(actx.destination);
-    o.start(); o.stop(actx.currentTime + (dur || 0.09) + 0.02);
+    o.frequency.setValueAtTime(freq, t0);
+    /* A square wave switched on at full gain starts with a step, and a step is
+       a click. Six milliseconds of attack is inaudible as a fade and removes
+       it completely. */
+    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, freq*slide), t0 + d);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(peak, t0 + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+    o.connect(g); g.connect(master || ac.destination);
+    o.start(t0); o.stop(t0 + d + 0.02);
+    o.onended = () => { try { g.disconnect(); } catch(e){} };
   } catch(e){}
 }
 /* Every family plays in its own key. The sound design was one chirp for a tap
@@ -2708,18 +2795,36 @@ function setFamilyTone(modeId){
 }
 
 const sfx = {
-  tap:  () => tone(520 * toneShift, 0.045, 'square', 0.028),
+  /* A tap is the most repeated sound in the app by an order of magnitude, and
+     thirty identical blips in ten seconds is a machine, not an instrument. A
+     couple of percent of detune per tap is under the threshold for hearing a
+     wrong note and over the threshold for hearing a human. */
+  tap:  () => tone(520 * toneShift * (0.985 + Math.random()*0.03), 0.05, 'square', 0.026),
   good: n => { const s = toneShift;
     tone((600 + Math.min(n,10)*42) * s, 0.085, 'triangle', 0.05);
     setTimeout(()=>tone((900 + Math.min(n,10)*52) * s, 0.075, 'triangle', 0.035), 55); },
-  bad:  () => tone(150, 0.2, 'sawtooth', 0.05),
-  over: () => { [420,340,260].forEach((f,i)=>setTimeout(()=>tone(f,0.2,'triangle',0.045), i*130)); },
+  /* A flat buzz says "noise"; a fall says "no". Same length, same loudness,
+     and it stops out of the family's key on purpose. */
+  bad:  () => tone(196, 0.24, 'sawtooth', 0.045, 0.55),
+  over: () => { [420,340,260].forEach((f,i)=>setTimeout(()=>tone(f,0.22,'triangle',0.045,0.92), i*130)); },
   level:() => { [520,660,880].forEach((f,i)=>setTimeout(()=>tone(f,0.26,'triangle',0.05), i*110)); },
   go:   () => tone(760 * toneShift, 0.14, 'triangle', 0.05)
 };
-function buzz(ms){
-  if (!save.haptics) return;
-  try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e){}
+/* Twenty-odd call sites had each picked their own number — 6, 8, 10, 12, 14,
+   20, [20,30,20] — so the same event buzzed differently depending on which
+   mode you were in. These five are the whole vocabulary; the numbers behind
+   them are one decision in one place. */
+const HAPTIC = { tap:7, step:11, good:16, bad:[22,34,22],
+                 win:[30,50,30,50,80], done:[30,60,30,60,60],
+                 /* Two modes clear several things in one tap and want the pulse
+                    to say how many. That is a real distinction, so it lives in
+                    the vocabulary rather than as arithmetic at the call site. */
+                 grow: n => 7 + Math.min(n, 4)*3 };
+const canBuzz = (() => { try { return typeof navigator.vibrate === 'function'; }
+                         catch(e){ return false; } })();
+function buzz(pattern){
+  if (!save.haptics || !canBuzz) return;
+  try { navigator.vibrate(typeof pattern === 'string' ? HAPTIC[pattern] : pattern); } catch(e){}
 }
 const prefersLessMotion = () => {
   try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; }
@@ -2961,6 +3066,8 @@ const STRINGS = {
     'p.halve':'{n} apart', 'halve.chip':'{v}, in tray {s}', 'm.halve':'Halve|Move pieces until both trays total the same',
     'p.lever':'Slide the wedge, let go to test', 'lever.wedge':'The wedge — drag it along the beam', 'lever.loadL':'Weight {w}, {d} to the left', 'lever.loadR':'Weight {w}, {d} to the right', 'm.lever':'Lever|Find the balance point by eye, then test it',
     'perk.callSlot1':'A slot is free — pick a perk', 'perk.callSlot':'{n} slots free — pick a perk', 'perk.callToken1':'A token to spend — make a perk stronger', 'perk.callToken':'{n} tokens to spend — make a perk stronger',
+    'p.seek':'Find {w} — first letter, then last', 'seek.cell':'{l}, row {r} column {c}', 'm.seek':'Seek|Find the word hidden in the grid', 'p.thaw':'The frost melts wider where it is warmer', 'thaw.pane':'A frosted pane — drag a finger across it to melt it', 'm.thaw':'Thaw|Follow the warmth under the frost',
+    'set.vibNone':'This phone has no vibration for a web app to use',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3095,6 +3202,8 @@ const STRINGS = {
     'p.halve':'Écart de {n}', 'halve.chip':'{v}, dans le plateau {s}', 'm.halve':'Partage|Déplacez des pièces jusqu’à égaliser les deux plateaux',
     'p.lever':'Glissez le coin, lâchez pour tester', 'lever.wedge':'Le coin — glissez-le le long de la barre', 'lever.loadL':'Poids {w}, {d} à gauche', 'lever.loadR':'Poids {w}, {d} à droite', 'm.lever':'Levier|Trouvez le point d’équilibre à l’œil, puis testez',
     'perk.callSlot1':'Un emplacement libre — choisissez un atout', 'perk.callSlot':'{n} emplacements libres — choisissez un atout', 'perk.callToken1':'Un jeton à dépenser — renforcez un atout', 'perk.callToken':'{n} jetons à dépenser — renforcez un atout',
+    'p.seek':'Trouvez {w} — première lettre, puis dernière', 'seek.cell':'{l}, ligne {r} colonne {c}', 'm.seek':'Cherche|Trouvez le mot caché dans la grille', 'p.thaw':'Le givre fond plus large là où c’est plus chaud', 'thaw.pane':'Une vitre givrée — glissez un doigt dessus pour la faire fondre', 'm.thaw':'Dégel|Suivez la chaleur sous le givre',
+    'set.vibNone':'Ce téléphone n’offre pas de vibration à une application web',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3229,6 +3338,8 @@ const STRINGS = {
     'p.halve':'{n} de diferencia', 'halve.chip':'{v}, en la bandeja {s}', 'm.halve':'Mitades|Mueve piezas hasta que las dos bandejas sumen igual',
     'p.lever':'Desliza la cuña y suelta para probar', 'lever.wedge':'La cuña — deslízala por la barra', 'lever.loadL':'Peso {w}, {d} a la izquierda', 'lever.loadR':'Peso {w}, {d} a la derecha', 'm.lever':'Palanca|Encuentra el punto de equilibrio a ojo y pruébalo',
     'perk.callSlot1':'Una ranura libre — elige una ventaja', 'perk.callSlot':'{n} ranuras libres — elige una ventaja', 'perk.callToken1':'Una ficha por gastar — mejora una ventaja', 'perk.callToken':'{n} fichas por gastar — mejora una ventaja',
+    'p.seek':'Encuentra {w} — primera letra, luego la última', 'seek.cell':'{l}, fila {r} columna {c}', 'm.seek':'Busca|Encuentra la palabra escondida en la cuadrícula', 'p.thaw':'La escarcha se derrite más donde hace más calor', 'thaw.pane':'Un cristal escarchado — desliza un dedo para derretirlo', 'm.thaw':'Deshielo|Sigue el calor bajo la escarcha',
+    'set.vibNone':'Este teléfono no ofrece vibración a una aplicación web',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3363,6 +3474,8 @@ const STRINGS = {
     'p.halve':'{n} Unterschied', 'halve.chip':'{v}, in Schale {s}', 'm.halve':'Hälften|Verschiebe Stücke, bis beide Schalen gleich viel ergeben',
     'p.lever':'Keil schieben, loslassen zum Prüfen', 'lever.wedge':'Der Keil — schieb ihn über den Balken', 'lever.loadL':'Gewicht {w}, {d} nach links', 'lever.loadR':'Gewicht {w}, {d} nach rechts', 'm.lever':'Hebel|Finde den Gleichgewichtspunkt mit dem Auge und prüfe ihn',
     'perk.callSlot1':'Ein Platz ist frei — wähl einen Vorteil', 'perk.callSlot':'{n} Plätze frei — wähl einen Vorteil', 'perk.callToken1':'Eine Marke übrig — mach einen Vorteil stärker', 'perk.callToken':'{n} Marken übrig — mach einen Vorteil stärker',
+    'p.seek':'Finde {w} — erster Buchstabe, dann der letzte', 'seek.cell':'{l}, Zeile {r} Spalte {c}', 'm.seek':'Suche|Finde das Wort im Buchstabenfeld', 'p.thaw':'Der Reif schmilzt weiter, wo es wärmer ist', 'thaw.pane':'Eine bereifte Scheibe — zieh einen Finger darüber, um sie zu schmelzen', 'm.thaw':'Tauwetter|Folge der Wärme unter dem Reif',
+    'set.vibNone':'Dieses Telefon bietet Web-Apps keine Vibration',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3506,6 +3619,15 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.25.0', date:'2026-09-17', items:[
+    'New mode \u2014 Seek. The other four word modes all hand you one broken word to put back together; this one hands you a finished word and hides it in a grid of letters. The filler is drawn from the language\u2019s own words so the grid reads as that language rather than as noise, and the word is checked to appear exactly once in all eight directions \u2014 not just the direction it was placed in.',
+    'New mode \u2014 Thaw. Calm could hold steady, stop in time and follow a line, but nothing in it was about looking for something, which is the calmest thing there is when nothing is chasing you. Drag across a frosted pane and the frost melts wider the closer you are. The picture is the whole signal \u2014 there is no number anywhere \u2014 and warm ground costs almost nothing, so a good look around is free and aimless scrubbing is not.',
+    'Sound \u2014 fixed the reason an iPhone could be silent with the sound switch on. The audio context was built the first time something needed a noise, which was usually a countdown chime rather than a tap, and a context woken outside a real gesture stays asleep on iOS. It is now built and woken on the first touch the page ever sees, before anything asks it for a sound.',
+    'Sound \u2014 every note now has a six-millisecond attack. A square wave switched on at full volume starts with a step, and a step is a click; that click was on every one of the app\u2019s most repeated sounds. Taps also carry a couple of percent of detune, which is under the threshold for hearing a wrong note and over the threshold for hearing something other than a machine.',
+    'Sound \u2014 a miss falls rather than buzzes flat, and everything runs through one master gain instead of straight at the speakers.',
+    'Vibration \u2014 five named patterns instead of twenty-odd call sites each picking their own number, so the same kind of event feels the same in every mode. Levelling up and finishing a run had celebratory patterns; those are back where they belong.',
+    'Vibration \u2014 Safari on iOS has no vibration for a web app at all, so the switch was a promise the phone could not keep: on, doing nothing, with no way to tell. The row now says so and cannot be flipped.',
+  ] },
   { v:'0.24.1', date:'2026-09-17', items:[
     'Fixed \u2014 mode names were being truncated on the roster. Putting the glyph on the title\u2019s line left the title a shorter line, and at 320px in French thirteen of sixty names were clipped mid-word. Names wrap now; nothing is cut at any of the four languages on any phone width.',
     'Fixed \u2014 Lever could stack two weights on top of each other on a narrow phone. The generator spaced them by a number that happened to suit a 400px screen while the blocks themselves were drawn in pixels, so the gap it checked and the width it had to clear were different measurements. Both are the beam\u2019s own units now, and one block per slot makes the spacing a property of the layout rather than something rejection-sampling has to find.',
@@ -4090,7 +4212,7 @@ function onHold(node, fn){
     if (ev.button) return;
     held = false; sx = ev.clientX; sy = ev.clientY;
     stop();
-    timer = setTimeout(() => { timer = 0; held = true; buzz(14); fn(); }, 460);
+    timer = setTimeout(() => { timer = 0; held = true; buzz('step'); fn(); }, 460);
   });
   node.addEventListener('pointermove', ev => {
     if (timer && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 12) stop();
@@ -4252,7 +4374,7 @@ const MODES = {
           b.classList.add('done');
           b.style.transform = 'translate(-50%,-50%) scale(.82)';
           next++;
-          if (next > n) ctx.win(b); else { sfx.tap(); buzz(8); }
+          if (next > n) ctx.win(b); else { sfx.tap(); buzz('tap'); }
         });
         box.appendChild(b);
       });
@@ -4343,7 +4465,7 @@ const MODES = {
         if (!live) return;
         if (seq[at] !== i) return ctx.miss(b);
         b.classList.add('ok');
-        tone(420 + i*90, 0.09, 'sine', 0.045); buzz(8);
+        tone(420 + i*90, 0.09, 'sine', 0.045); buzz('tap');
         ctx.after(140, () => b.classList.remove('ok'));
         at++;
         if (at >= seq.length){ live = false; ctx.win(b); }
@@ -4454,7 +4576,7 @@ const MODES = {
         onTap(b, () => {
           c.turn++;
           svg.style.transform = 'rotate(' + (c.turn*90) + 'deg)';
-          sfx.tap(); buzz(6);
+          sfx.tap(); buzz('tap');
           if (solved()){ paint(); return ctx.win(b); }
           paint();
           budget.spend(b);
@@ -4510,7 +4632,7 @@ const MODES = {
         btn.setAttribute('aria-label', String(v));
         onTap(btn, () => {
           if (pick === btn){ pick = null; btn.classList.remove('sel'); sfx.tap(); return; }
-          if (!pick){ pick = btn; btn.classList.add('sel'); sfx.tap(); buzz(8); return; }
+          if (!pick){ pick = btn; btn.classList.add('sel'); sfx.tap(); buzz('tap'); return; }
           const total = Number(pick.textContent) + v;
           if (total === target){ btn.classList.add('sel'); ctx.win(btn); }
           else { pick.classList.remove('sel'); pick = null; ctx.miss(btn); }
@@ -4637,7 +4759,7 @@ const MODES = {
         onTap(b, () => {
           if (placed.has(idx)){ placed.delete(idx); b.classList.remove('on'); }
           else { placed.add(idx); b.classList.add('on'); }
-          sfx.tap(); buzz(6);
+          sfx.tap(); buzz('tap');
           if (placed.size === wanted.size && Array.from(wanted).every(i => placed.has(i))) return ctx.win(b);
           budget.spend(b);
         });
@@ -4682,7 +4804,7 @@ const MODES = {
           if (done) return;
           const i = live.indexOf(target); if (i < 0) return;
           live.splice(i,1); e.remove(); caught++;
-          sfx.tap(); buzz(8);
+          sfx.tap(); buzz('tap');
           ctx.prompt(t('p.rising', { n: need, m: need-caught }));
           if (caught >= need){ done = true; cancelAnimationFrame(raf); ctx.win(e); }
         });
@@ -4730,7 +4852,7 @@ const MODES = {
         onTap(b, () => {
           if (showing || found.has(i)) return;
           if (!pattern.has(i)) return ctx.miss(b);
-          found.add(i); b.classList.add('ok'); sfx.tap(); buzz(8);
+          found.add(i); b.classList.add('ok'); sfx.tap(); buzz('tap');
           if (found.size === pattern.size) ctx.win(b);
         });
         cells.push(b); g.appendChild(b);
@@ -4911,7 +5033,7 @@ const MODES = {
             onTap(b, () => {
               if (solved || d === 0 || !canMove(bar, d)) return;
               if (bar.o === 'v') bar.r += d; else bar.c += d;
-              sfx.tap(); buzz(6);
+              sfx.tap(); buzz('tap');
               if (!blocks(bars)){ solved = true; render(); return ctx.win(b); }
               render();
               budget.spend(b);
@@ -4984,7 +5106,7 @@ const MODES = {
           b.classList.add('used');
           slotEls[at].textContent = ch;
           slotEls[at].classList.add('on');
-          at++; sfx.tap(); buzz(8);
+          at++; sfx.tap(); buzz('tap');
           if (at >= w.length) ctx.win(b);
         });
         rack.appendChild(b);
@@ -5055,11 +5177,11 @@ const MODES = {
           if (b.classList.contains('used')) return;
           b.classList.add('used');
           if (letters.has(ch)){
-            found.add(ch); sfx.tap(); buzz(10); paint();
+            found.add(ch); sfx.tap(); buzz('step'); paint();
             if (Array.from(letters).every(c => found.has(c))) ctx.win(b);
           } else {
             wrong++; b.classList.add('miss'); paint();
-            if (wrong >= allowed) ctx.miss(b); else { sfx.bad(); buzz(20); }
+            if (wrong >= allowed) ctx.miss(b); else { sfx.bad(); buzz('bad'); }
           }
         });
         keys.appendChild(b);
@@ -5112,7 +5234,7 @@ const MODES = {
           b.classList.add('used');
           const el = slotEls[idx[at]];
           el.textContent = ch; el.classList.remove('hole'); el.classList.add('on');
-          at++; sfx.tap(); buzz(8);
+          at++; sfx.tap(); buzz('tap');
           if (at >= answer.length) ctx.win(b);
         });
         rack.appendChild(b);
@@ -5226,7 +5348,7 @@ const MODES = {
         if (!item) return;
         const correct = rule === 'colour' ? (item.ink === pal[1]) : rule === 'size' ? item.big : item.solid;
         if (isRight !== correct) return ctx.miss(isRight ? right : left);
-        done++; sfx.tap(); buzz(8);
+        done++; sfx.tap(); buzz('tap');
         if (done >= rounds) return ctx.win(isRight ? right : left);
         ctx.prompt(t('p.sort', { a: done, b: rounds }));
         next();
@@ -5329,7 +5451,7 @@ const MODES = {
         svg.appendChild(ln);
         d.classList.add('lit'); order.push(i); live = i;
         reach *= decay;
-        sfx.tap(); buzz(8);
+        sfx.tap(); buzz('tap');
         if (order.length >= n) return ctx.win(d);
         paintReach();
         ctx.prompt(t('p.arc', { n: n - order.length }));
@@ -5453,7 +5575,7 @@ const MODES = {
            with no undo is a restart button with extra steps. */
         if (trail.length > 1 && i === trail[trail.length-2]){ trail.pop(); repaint(); sfx.tap(); return; }
         if (trail.includes(i) || !adj(head, i)) return ctx.miss(b);
-        trail.push(i); sfx.tap(); buzz(6);
+        trail.push(i); sfx.tap(); buzz('tap');
         if (trail.length === cells) { repaint(); return ctx.win(b); }
         repaint();
       }));
@@ -5596,7 +5718,7 @@ const MODES = {
         hint.textContent = held ? '↑' : '↓';
         if (ok){
           inBand += 16;
-          if (inBand > 1500){ inBand = 0; done++; sfx.good(done); buzz(12);
+          if (inBand > 1500){ inBand = 0; done++; sfx.good(done); buzz('good');
             if (done >= need){ cancelAnimationFrame(raf2); return ctx.win(bub); }
             ctx.prompt(t('p.tide', { n: need - done })); }
         } else if (inBand > 0) inBand = Math.max(0, inBand - 26);
@@ -5648,7 +5770,7 @@ const MODES = {
       pegs.forEach(p => onTap(p.el, () => {
         if (phase !== 'peg') return;
         p.gone = true; p.el.classList.add('pulled');
-        phase = 'drop'; sfx.tap(); buzz(8);
+        phase = 'drop'; sfx.tap(); buzz('tap');
         ctx.prompt(t('p.plinkDrop'));
       }));
 
@@ -5764,12 +5886,12 @@ const MODES = {
         const right = mv && TELLS[tell].beats === mv;
         if (right){
           foe -= (tell === 'charge' ? 2 : 1);
-          sfx.good(1); buzz(14);
+          sfx.good(1); buzz('good');
           node.classList.add('hit');
           ctx.after(260, () => node.classList.remove('hit'));
         } else {
           you -= (tell === 'charge' ? 2 : 1);
-          sfx.bad(); buzz([20,30,20]);
+          sfx.bad(); buzz('bad');
           wrap.classList.add('hurt');
           ctx.after(300, () => wrap.classList.remove('hurt'));
         }
@@ -5865,7 +5987,7 @@ const MODES = {
           slots[was] = null; slots[i] = null;
           paint(was); paint(i);
           sel = -1;
-          sfx.good(1); buzz(10);
+          sfx.good(1); buzz('good');
           if (left() === 0){ done = true; return ctx.win(e); }
           say();
         } else {
@@ -5878,7 +6000,7 @@ const MODES = {
             ctx.after(760, () => els[k].classList.remove('tangled'));
           });
           tangles++;
-          sfx.bad(); buzz([16,24]);
+          sfx.bad(); buzz('bad');
         }
       }));
       say();
@@ -5950,7 +6072,7 @@ const MODES = {
         if (Math.abs(pos - zone) > width/2){ stop(); return ctx.miss(hit); }
         hits++;
         drawPips();
-        sfx.good(hits); buzz(12);
+        sfx.good(hits); buzz('good');
         if (hits >= need){ stop(); return ctx.win(hit); }
         width = Math.max(7, width * 0.84);
         speed *= 1.12;
@@ -6009,7 +6131,7 @@ const MODES = {
         if (!h.blob || done) return;
         h.blob = null; dress(h);
         escaped++;
-        sfx.bad(); buzz(14);
+        sfx.bad(); buzz('step');
         say();
         if (escaped >= allowed){ done = true; ctx.miss(h.el); }
       };
@@ -6027,7 +6149,7 @@ const MODES = {
       holes.forEach(h => onTap(h.el, () => {
         if (done || !h.blob) return;
         h.blob.hp--;
-        sfx.tap(); buzz(6);
+        sfx.tap(); buzz('tap');
         if (h.blob.hp <= 0){
           clearTimeout(h.blob.timer);
           h.blob = null; dress(h);
@@ -6186,7 +6308,7 @@ const MODES = {
       els.forEach((b,i) => onTap(b, () => {
         if (done) return;
         tap(i);
-        sfx.tap(); buzz(6);
+        sfx.tap(); buzz('tap');
         [i, partner(i)].forEach(k => {
           els[k].classList.remove('spin'); void els[k].offsetWidth; els[k].classList.add('spin');
         });
@@ -6267,7 +6389,7 @@ const MODES = {
         if (done || cells[i]) return;
         cells[i] = next;
         const grew = settle(i);
-        sfx[grew ? 'good' : 'tap'](cells[i]); buzz(grew ? 12 : 6);
+        sfx[grew ? 'good' : 'tap'](cells[i]); buzz(grew ? 'step' : 'tap');
         if (cells[i] >= goal){ done = true; paint(); return ctx.win(b); }
         next = 1 + Math.floor(ctx.rnd()*topDrop);
         drawNext();
@@ -6352,7 +6474,7 @@ const MODES = {
           return ctx.miss(b);
         }
         b.classList.add('open','found');
-        sfx.good(picked.size); buzz(10);
+        sfx.good(picked.size); buzz('good');
         if (where.every(w => picked.has(w))) return ctx.win(b);
         ctx.prompt(t('p.hauntPick', { n: ghosts - picked.size }));
       }));
@@ -6452,7 +6574,7 @@ const MODES = {
           it.gone = true;
           it.el.classList.add('binned');
           bn.el.classList.remove('thud'); void bn.el.offsetWidth; bn.el.classList.add('thud');
-          sfx.good(count-left+1); buzz(10);
+          sfx.good(count-left+1); buzz('good');
           left--;
           if (left <= 0){ done = true; return ctx.win(bn.el); }
           say();
@@ -6527,7 +6649,7 @@ const MODES = {
             els[i].style.opacity = 1;
             els[i].setAttribute('aria-label', t('a.lampOn', { n: i+1 }));
             reach = Math.min(46, reach + 3.5);
-            sfx.good(lit); buzz(12);
+            sfx.good(lit); buzz('good');
             if (lit >= lamps){ done = true; return ctx.win(bug); }
             say();
           }
@@ -6595,7 +6717,7 @@ const MODES = {
         b.classList.add('up');
         b.setAttribute('aria-label', inkName(faces[i].ink) + ' card');
         open.push(i);
-        sfx.tap(); buzz(6);
+        sfx.tap(); buzz('tap');
         if (open.length < 2){ say(); return; }
         busy = true;
         const [a, c] = open;
@@ -6604,7 +6726,7 @@ const MODES = {
           ctx.after(240, () => {
             [a,c].forEach(k => { els[k].classList.add('gone'); els[k].setAttribute('aria-label', t('a.matched')); });
             open = []; busy = false;
-            sfx.good(matched); buzz(12);
+            sfx.good(matched); buzz('good');
             if (matched >= pairs){ done = true; return ctx.win(b); }
             say();
             if (flipsLeft <= 0){ done = true; ctx.miss(b); }
@@ -6727,7 +6849,7 @@ const MODES = {
         if (done) return;
         if (!nbs(here).includes(i) || !open.has(key(here,i))) return ctx.miss(b);
         here = i;
-        sfx.tap(); buzz(6);
+        sfx.tap(); buzz('tap');
         if (here === goal){ done = true; paint(); return ctx.win(b); }
         paint();
       }));
@@ -6800,7 +6922,7 @@ const MODES = {
           if (p.bad){ hitBad = p; return; }
           p.gone = true; p.e.classList.add('cut'); cut++; got++;
         });
-        if (got){ sfx.good(cut); buzz(8 + got*3); say(); }
+        if (got){ sfx.good(cut); buzz(HAPTIC.grow(got)); say(); }
         if (hitBad){
           hitBad.e.classList.add('hitrot');
           done = true;
@@ -6895,7 +7017,7 @@ const MODES = {
         const next = rings[hit];
         if (next && Math.hypot(lx-next.x, ly-next.y) < 9){
           next.e.classList.add('passed');
-          hit++; sfx.good(hit); buzz(12);
+          hit++; sfx.good(hit); buzz('good');
           if (hit >= gates){ done = true; cancelAnimationFrame(raf2); return ctx.win(leaf); }
           say();
         }
@@ -6912,7 +7034,7 @@ const MODES = {
         e.style.left = x+'%'; e.style.top = y+'%';
         pool.insertBefore(e, leaf);
         waves.push({ x, y, r: 1, el: e });
-        sfx.tap(); buzz(5);
+        sfx.tap(); buzz('tap');
       });
     }
   },
@@ -6985,7 +7107,7 @@ const MODES = {
               return ctx.miss(star);
             }
             b.passed = true; b.e.classList.add('cleared');
-            through++; sfx.good(through); buzz(10);
+            through++; sfx.good(through); buzz('good');
             if (through >= gates){ done = true; cancelAnimationFrame(raf2); return ctx.win(star); }
             say();
           }
@@ -7089,7 +7211,7 @@ const MODES = {
           j.e.setAttribute('aria-label', inkName(j.ink) + ' ' + t('sip.done'));
           src.e.classList.add('empty');
           src.e.setAttribute('aria-label', inkName(src.ink) + ' ' + t('sip.empty'));
-          filled++; sfx.good(filled); buzz(12);
+          filled++; sfx.good(filled); buzz('good');
           if (filled >= n){ done = true; return ctx.win(j.e); }
           say();
         }
@@ -8253,7 +8375,7 @@ const MODES = {
         marks[beats.indexOf(best)].classList.add('done');
         pad.classList.add('tapped');
         ctx.after(110, () => pad.classList.remove('tapped'));
-        tone(880, 0.05, 'triangle', 0.04); buzz(8);
+        tone(880, 0.05, 'triangle', 0.04); buzz('tap');
         say();
       });
     }
@@ -9422,6 +9544,255 @@ const MODES = {
     }
   },
 
+  /* ── Seek ─────────────────────────────────────────────────────────────── */
+  seek: {
+    name:'Seek', blurb:'Find the word hidden in the grid', cat:'words', par:12000, bonus:3400,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="#4BC0FF" stroke-width="1.6"/><path d="M6 8.5h3M6 12h3M6 15.5h3" stroke="#4BC0FF" stroke-width="1.5" stroke-linecap="round" opacity=".38"/><path d="M12.5 7.5l5 9" stroke="#4BC0FF" stroke-width="3.4" stroke-linecap="round" opacity=".28"/><path d="M12.5 7.5l5 9" stroke="#4BC0FF" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    build(ctx){
+      /* The other four word modes all hand you one broken word to put back
+         together. This one hands you a finished word and hides it — the work is
+         reading a field rather than repairing a string, which is the one thing
+         a set of letters can ask that the others do not. */
+      const N    = 5 + Math.min(2, Math.floor(ctx.level/7));
+      const len  = Math.min(N, 4 + Math.min(2, Math.floor(ctx.level/6)));
+      const bank = wordBank()[len] || wordBank()[4];
+      const word = ctx.deal(bank, 'seek:' + save.lang + ':' + len);
+
+      /* Straight on first, then the diagonals, then backwards. */
+      const DIRS = [[1,0],[0,1],[1,1],[1,-1],[-1,0],[0,-1],[-1,-1],[-1,1]];
+      const open = ctx.level < 5 ? 2 : ctx.level < 11 ? 4 : 8;
+
+      /* Filler is drawn from the language's own letters, so the grid reads as
+         that language rather than as noise with a word buried in it. */
+      const pool = [];
+      [4,5,6].forEach(L => (wordBank()[L] || []).forEach(w => {
+        for (const ch of w) pool.push(ch);
+      }));
+      const fill = () => pool.length ? pool[Math.floor(ctx.rnd()*pool.length)]
+                                     : word[Math.floor(ctx.rnd()*word.length)];
+
+      const at = (g, r, c) => (r >= 0 && r < N && c >= 0 && c < N) ? g[r*N + c] : null;
+      /* Counted over all eight directions whatever the level allows, so a
+         second copy cannot exist for someone scanning a direction the
+         generator was not using. */
+      const copies = g => {
+        let n = 0;
+        for (let r = 0; r < N; r++) for (let c = 0; c < N; c++)
+          for (const [dr, dc] of DIRS){
+            let ok = true;
+            for (let i = 0; i < len && ok; i++) if (at(g, r + dr*i, c + dc*i) !== word[i]) ok = false;
+            if (ok) n++;
+          }
+        return n;
+      };
+
+      const grid = new Array(N*N).fill('');
+      const [dr, dc] = DIRS[Math.floor(ctx.rnd()*open)];
+      const r0 = dr > 0 ? Math.floor(ctx.rnd()*(N - (len-1)*dr))
+               : dr < 0 ? (len-1) + Math.floor(ctx.rnd()*(N - (len-1)))
+               : Math.floor(ctx.rnd()*N);
+      const c0 = dc > 0 ? Math.floor(ctx.rnd()*(N - (len-1)*dc))
+               : dc < 0 ? (len-1) + Math.floor(ctx.rnd()*(N - (len-1)))
+               : Math.floor(ctx.rnd()*N);
+      const path = [];
+      for (let i = 0; i < len; i++){
+        const r = r0 + dr*i, c = c0 + dc*i;
+        path.push(r*N + c);
+        grid[r*N + c] = word[i];
+      }
+      const mine = new Set(path);
+      for (let i = 0; i < N*N; i++) if (!grid[i]) grid[i] = fill();
+
+      /* Two placements of the same word always differ in at least one cell, so
+         there is always a cell outside the real one to change. Redrawing it
+         can make a third copy somewhere else, so this re-counts until it is
+         alone rather than assuming one pass did it. */
+      for (let guard = 0; guard < 400 && copies(grid) > 1; guard++){
+        let hit = null;
+        for (let r = 0; r < N && !hit; r++) for (let c = 0; c < N && !hit; c++)
+          for (const [er, ec] of DIRS){
+            const cells = [];
+            let ok = true;
+            for (let i = 0; i < len && ok; i++){
+              const rr = r + er*i, cc = c + ec*i;
+              if (at(grid, rr, cc) !== word[i]) ok = false; else cells.push(rr*N + cc);
+            }
+            if (ok && cells.some(x => !mine.has(x))){ hit = cells.filter(x => !mine.has(x)); break; }
+          }
+        if (!hit) break;
+        grid[hit[Math.floor(ctx.rnd()*hit.length)]] = fill();
+      }
+
+      const box = mk('div','skgrid');
+      box.style.setProperty('--n', N);
+      const cells = grid.map((ch, i) => {
+        const b = mk('button','skcell');
+        b.type = 'button';
+        b.textContent = ch;
+        b.setAttribute('aria-label', t('seek.cell',
+          { l: ch, r: Math.floor(i/N) + 1, c: (i % N) + 1 }));
+        box.appendChild(b);
+        return b;
+      });
+      ctx.surface.appendChild(box);
+      ctx.prompt(t('p.seek', { w: word }));
+
+      const budget = moveBudget(ctx, 1);
+      let first = -1, done = false;
+      const clearMark = () => cells.forEach(b => b.classList.remove('pick','lit'));
+
+      const line = (a, b) => {
+        const ra = Math.floor(a/N), ca = a % N, rb = Math.floor(b/N), cb = b % N;
+        const vr = rb - ra, vc = cb - ca;
+        const steps = Math.max(Math.abs(vr), Math.abs(vc));
+        if (steps !== len - 1) return null;
+        if (vr !== 0 && vc !== 0 && Math.abs(vr) !== Math.abs(vc)) return null;
+        const sr = Math.sign(vr), sc = Math.sign(vc);
+        const out = [];
+        for (let i = 0; i < len; i++) out.push((ra + sr*i)*N + (ca + sc*i));
+        return out;
+      };
+
+      cells.forEach((b, i) => onTap(b, () => {
+        if (done) return;
+        if (first < 0){ first = i; clearMark(); b.classList.add('pick'); return; }
+        const run2 = line(first, i);
+        if (!run2){ first = i; clearMark(); b.classList.add('pick'); return; }
+        const said = run2.map(x => grid[x]).join('');
+        if (said === word){
+          done = true;
+          run2.forEach(x => cells[x].classList.add('lit'));
+          return ctx.win(b);
+        }
+        /* A line of the right length that spells something else is a real
+           guess, so it costs one. Anything that is not a line is a reach for
+           the other end and costs nothing. */
+        clearMark(); first = -1;
+        b.classList.add('miss');
+        ctx.after(320, () => b.classList.remove('miss'));
+        budget.spend(b);
+      }));
+    }
+  },
+
+  /* ── Thaw ─────────────────────────────────────────────────────────────── */
+  thaw: {
+    name:'Thaw', blurb:'Follow the warmth under the frost', cat:'calm', par:15000, bonus:3600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#7BE38A" stroke-width="1.5" opacity=".3"/><circle cx="12" cy="12" r="5.6" fill="none" stroke="#7BE38A" stroke-width="1.5" opacity=".55"/><circle cx="12" cy="12" r="2.3" fill="#7BE38A"/><path d="M12 1.5v2.4M12 20.1v2.4M1.5 12h2.4M20.1 12h2.4" stroke="#7BE38A" stroke-width="1.5" stroke-linecap="round" opacity=".45"/></svg>',
+    build(ctx){
+      /* Tide is holding steady, Pour is stopping in time, Trace is going
+         somewhere you can already see. Nothing in calm is about looking for
+         something, and looking is the calmest thing there is when nothing is
+         chasing you. The frost melts wider the closer your finger is, so the
+         signal IS the picture — there is no reading of a number anywhere. */
+      const DIAG = Math.hypot(100, 100);
+      const K    = 1.6;                                    /* gradient curve */
+      const tol  = clamp(9 - ctx.level*0.22, 5, 9);        /* what counts as on it */
+      const HOLD = 620;                                    /* ms to settle on it */
+      /* Small enough that a sweep does not wipe the pane, and a wide enough
+         range that the difference between cold and warm is obvious at a
+         glance: the radius is the entire signal, so it has to read. */
+      const RMIN = 2.6, RMAX = 11;                         /* melt radius, % of pane */
+      /* Sized against a full look around, not against a straight walk to the
+         answer. A bot that sweeps the pane in four lanes and then homes in —
+         which is what a hand does — spends roughly half of this; scrubbing in
+         the cold with no regard for the signal spends it all in about two
+         sweeps. Warm ground is nearly free, which is the whole bargain. */
+      let heat = clamp(700 - ctx.level*7, 480, 700) + Perk.step('steady')*30;
+      const heat0 = heat;
+
+      const sx = 12 + ctx.rnd()*76, sy = 12 + ctx.rnd()*76;
+      const warmth = (x, y) => Math.pow(Math.max(0, 1 - Math.hypot(x - sx, y - sy)/DIAG), K);
+
+      const pane = mk('div','thpane');
+      const melts = mk('i','thmelts');
+      const ring  = mk('i','thhold');
+      const bar   = mk('i','thheat');
+      pane.appendChild(melts); pane.appendChild(ring); pane.appendChild(bar);
+      pane.setAttribute('role','application');
+      pane.setAttribute('aria-label', t('thaw.pane'));
+      ctx.surface.appendChild(pane);
+      ctx.prompt(t('p.thaw'));
+
+      let done = false, held = 0, last = null, raf2 = 0, lastAt = 0;
+      const MAXMELT = 170;
+
+      const paintHeat = () => {
+        bar.style.width = clamp(heat/heat0, 0, 1) * 100 + '%';
+        bar.classList.toggle('low', heat < heat0*0.25);
+      };
+      paintHeat();
+
+      const melt = (x, y) => {
+        const w = warmth(x, y);
+        const r = RMIN + (RMAX - RMIN)*w;
+        const e = mk('i','thmelt');
+        e.style.left = x + '%'; e.style.top = y + '%';
+        e.style.width = r*2 + '%'; e.style.height = r*2 + '%';
+        e.style.opacity = (0.10 + 0.34*w).toFixed(3);
+        melts.appendChild(e);
+        while (melts.childNodes.length > MAXMELT) melts.removeChild(melts.firstChild);
+      };
+
+      const spend = (x, y, px, py) => {
+        const d = Math.hypot(x - px, y - py);
+        heat -= d * Math.max(0, 0.9 - warmth(px, py)*1.05);
+        paintHeat();
+        if (heat <= 0){
+          done = true; cancelAnimationFrame(raf2);
+          pane.classList.add('cold');
+          return ctx.miss(pane);
+        }
+      };
+
+      const frame = () => {
+        if (done) return;
+        const now = performance.now();
+        if (last){
+          const on = Math.hypot(last.x - sx, last.y - sy) <= tol;
+          held = on ? held + (now - lastAt) : 0;
+          ring.hidden = !on;
+          if (on){
+            const p = clamp(held/HOLD, 0, 1);
+            ring.style.left = last.x + '%'; ring.style.top = last.y + '%';
+            ring.style.setProperty('--p', p.toFixed(3));
+            if (p >= 1){
+              done = true; cancelAnimationFrame(raf2);
+              pane.classList.add('found');
+              return ctx.win(ring);
+            }
+          }
+        } else { held = 0; ring.hidden = true; }
+        lastAt = now;
+        raf2 = requestAnimationFrame(frame);
+      };
+      lastAt = performance.now();
+      raf2 = requestAnimationFrame(frame);
+
+      onDrag(pane, {
+        start(q){
+          if (done) return;
+          last = { x: clamp(q.x, 0, 100), y: clamp(q.y, 0, 100) };
+          lastAt = performance.now(); held = 0;
+          melt(last.x, last.y);
+        },
+        move(q){
+          if (done || !last) return;
+          const x = clamp(q.x, 0, 100), y = clamp(q.y, 0, 100);
+          spend(x, y, last.x, last.y);
+          if (done) return;
+          /* One blob every couple of percent rather than one a frame: the same
+             trail, a fraction of the nodes. */
+          if (Math.hypot(x - last.x, y - last.y) > 1.1) melt(x, y);
+          last = { x, y };
+        },
+        /* Lifting costs nothing and loses nothing but the settle you were in
+           the middle of — the same bargain Trace makes. */
+        end(){ if (!done){ last = null; held = 0; ring.hidden = true; } }
+      });
+    }
+  },
+
   /* ── Halve ────────────────────────────────────────────────────────────── */
   halve: {
     name:'Halve', blurb:'Move pieces until both trays total the same', cat:'numbers', par:15000, bonus:4200,
@@ -9741,7 +10112,7 @@ function celebrateLevel(level){
     ? stars + (stars === 1 ? ' star earned so far' : ' stars earned so far')
     : 'Every mode is already yours to play.';
   host.hidden = false;
-  sfx.level(); buzz([30,50,30,50,80]);
+  sfx.level(); buzz('win');
 
   if (!motionOff()){
     for (let i=0;i<26;i++){
@@ -9986,7 +10357,7 @@ function resolve(ok, node){
     if (after > before) pendingLevel = after;
 
     burst(node, '#33E6C8'); flash('flash-win');
-    sfx.good(run.streak); buzz(18);
+    sfx.good(run.streak); buzz('good');
     el.prompt.textContent = run.streak >= 4 ? t('p.streak', { n: multiplier() }) : t('p.nice');
     el.prompt.className = 'prompt won';
     $('hudScore').classList.add('pop');
@@ -10010,7 +10381,7 @@ function resolve(ok, node){
       el.surface.classList.add('shake');
       setTimeout(() => el.surface.classList.remove('shake'), 360);
     }
-    sfx.bad(); buzz([26,40,26]);
+    sfx.bad(); buzz('bad');
     el.prompt.textContent = saved ? t('p.saved')
       : r.timedOut ? t('p.tooSlow')
       : k.timed ? t('p.minusSec', { n: k.penalty/1000 }) : t('p.missed');
@@ -10157,7 +10528,7 @@ function endRun(){
      open. Nothing else clears it, because nextRound never runs again. */
   clearBoard();
   toneShift = 1;                       /* the menu always sounds the same */
-  sfx.over(); buzz([30,60,30,60,60]);
+  sfx.over(); buzz('done');
 
   let best = false;
   if (k.scored){
@@ -10564,7 +10935,7 @@ function paintMix(){
   $('mixNote').innerHTML = t('mix.note', { n: chosen.length });
   fillGrid($('mixGrid'), MODE_IDS, { mode:'mix', onTap:null });
   Array.from($('mixGrid').children).forEach((c,i) => {
-    c.onclick = () => { toggleMix(MODE_IDS[i]); sfx.tap(); buzz(8); paintMix(); paintPlay(); };
+    c.onclick = () => { toggleMix(MODE_IDS[i]); sfx.tap(); buzz('tap'); paintMix(); paintPlay(); };
   });
 }
 
@@ -10705,6 +11076,15 @@ function paintSettings(){
   levelSettingButtons();
   [['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist']]
     .forEach(([id,key]) => $(id).setAttribute('aria-checked', String(!!save[key])));
+  /* Safari on iOS has no vibrate() at all, so this switch was a promise the
+     phone could not keep — on and doing nothing, with no way to tell. Say so
+     rather than leave it flippable. */
+  const vib = $('swHaptics'), vrow = $('vibRow');
+  if (vrow){
+    vrow.classList.toggle('off', !canBuzz);
+    vib.disabled = !canBuzz;
+    $('vibSub').textContent = t(canBuzz ? 'set.vibSub' : 'set.vibNone');
+  }
   const prev = $('assistPrev');
   prev.hidden = !save.colorAssist;
   if (save.colorAssist && !prev.dataset.built){
@@ -10848,7 +11228,7 @@ function paintLangs(){
     row.querySelector('b').textContent = l.label;
     row.addEventListener('click', () => {
       setLang(l.id);
-      sfx.tap(); buzz(10);
+      sfx.tap(); buzz('step');
       paintLangs();
       setTimeout(() => { $('langSheet').hidden = true; }, 220);
     });
@@ -11128,7 +11508,7 @@ $('quitBtn').addEventListener('click', () => {
       save[key] = !save[key];
       persist(); paintSettings();
       if (key === 'sound' && save.sound) sfx.tap();
-      if (key === 'haptics' && save.haptics) buzz(14);
+      if (key === 'haptics' && save.haptics) buzz('good');
     });
   });
 
