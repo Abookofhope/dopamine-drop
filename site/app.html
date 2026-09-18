@@ -1264,6 +1264,35 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.berry.full{background:#33e6c847;border-color:var(--cool);color:#EAFFFA;box-shadow:none}
 .cell.berry.nope{background:#ff3d6e33;border-color:var(--bad)}
 
+/* ── Meld ─────────────────────────────────────────────────────────────── */
+.meldgrid{display:grid;gap:9px;width:100%;max-width:380px;margin:0 auto;touch-action:none;
+  transition:transform var(--t-fast)}
+.meldgrid.stuck{animation:meldstuck 520ms ease-out 1}
+@keyframes meldstuck{0%,100%{transform:none}25%{transform:translateX(-5px)}60%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){ .meldgrid.stuck{animation:none} }
+.jel{
+  min-width:0;min-height:0;cursor:pointer;
+  /* Bigger and warmer as the value climbs, so the board reads before it is
+     read: two jellies that can merge are the same size AND the same colour. */
+  border-radius:44% 56% 52% 48%/52% 46% 54% 48%;
+  border:1px solid #ffffff14;
+  background:hsl(calc(272 - var(--v,1)*17) 62% calc(26% + var(--v,1)*5%));
+  color:#1A0A2E;font-family:var(--f-data);font-weight:800;
+  font-size:clamp(13px,3.4vh,20px);line-height:1;
+  transform:scale(calc(0.6 + var(--v,1)*0.06));
+  box-shadow:inset 0 -4px 0 #00000026;
+  transition:transform var(--t-med) cubic-bezier(.34,1.35,.5,1),
+             background var(--t-med),box-shadow var(--t-fast),border-color var(--t-fast);
+}
+.jel.empty{background:#ffffff05;border:1px dashed var(--edge-soft);
+  border-radius:var(--r-md);transform:scale(.82);box-shadow:none;cursor:default}
+.jel.sel{border-color:#fff;box-shadow:0 0 0 2px #fff,inset 0 -4px 0 #00000026}
+.jel.mate{border-color:var(--cool);box-shadow:0 0 0 2px var(--cool),0 0 16px -4px var(--cool),
+  inset 0 -4px 0 #00000026}
+.jel.ghost{border-style:solid;border-color:#ffffff6b;background:#ffffff0f;
+  box-shadow:inset 0 0 0 1px #ffffff26}
+.jel.one{box-shadow:0 0 0 3px var(--cool),0 0 28px -4px var(--cool),inset 0 -4px 0 #00000026}
+
 /* ── Tide Breath ──────────────────────────────────────────────────────── */
 .tidebox{position:relative;width:100%;aspect-ratio:1;display:grid;place-items:center;touch-action:none;
   border-radius:50%;transition:background var(--t-med)}
@@ -2613,7 +2642,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.28.0';
+const VERSION_TAG = 'v0.29.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3124,6 +3153,7 @@ const STRINGS = {
     'p.seekAt':'Find {w} — you have {s}',
     'how.seek':'tap the letters in order, or drag through them',
     'p.forage':'Eat exactly {b} — {n} to go', 'forage.cell':'{v}, row {r} column {c}', 'm.forage':'Forage|Eat your way along the patch until it comes to exactly enough',
+    'p.meld':'{n} jellies — squash them into one', 'meld.cell':'Jelly {v}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'm.meld':'Meld|Squash equal jellies together until one is left', 'how.meld':'tap one jelly then its twin, or drag one onto the other; tap the hole one left behind to split it back',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3265,6 +3295,7 @@ const STRINGS = {
     'p.seekAt':'Trouvez {w} — vous avez {s}',
     'how.seek':'touchez les lettres dans l’ordre, ou glissez dessus',
     'p.forage':'Mangez exactement {b} — encore {n}', 'forage.cell':'{v}, ligne {r} colonne {c}', 'm.forage':'Cueillette|Mangez de proche en proche jusqu’au compte exact',
+    'p.meld':'{n} gelées — n’en faites qu’une', 'meld.cell':'Gelée {v}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'm.meld':'Fusion|Écrasez les gelées identiques jusqu’à n’en garder qu’une', 'how.meld':'touchez une gelée puis sa jumelle, ou glissez l’une sur l’autre ; touchez le trou laissé derrière pour la redéfaire',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3406,6 +3437,7 @@ const STRINGS = {
     'p.seekAt':'Encuentra {w} — llevas {s}',
     'how.seek':'toca las letras en orden o deslízate por ellas',
     'p.forage':'Come exactamente {b} — faltan {n}', 'forage.cell':'{v}, fila {r} columna {c}', 'm.forage':'Recolecta|Come de una a otra hasta llegar a la cuenta exacta',
+    'p.meld':'{n} gelatinas — hazlas una', 'meld.cell':'Gelatina {v}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'm.meld':'Fusión|Aplasta gelatinas iguales hasta que quede una', 'how.meld':'toca una gelatina y luego su gemela, o arrastra una sobre la otra; toca el hueco que dejó para deshacerla',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3547,6 +3579,7 @@ const STRINGS = {
     'p.seekAt':'Finde {w} — bisher {s}',
     'how.seek':'tippe die Buchstaben der Reihe nach an oder zieh darüber',
     'p.forage':'Iss genau {b} — noch {n}', 'forage.cell':'{v}, Zeile {r} Spalte {c}', 'm.forage':'Sammeln|Iss dich weiter, bis es genau aufgeht',
+    'p.meld':'{n} Gelees — mach eins daraus', 'meld.cell':'Gelee {v}, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'm.meld':'Verschmelzen|Drück gleiche Gelees zusammen, bis eins übrig ist', 'how.meld':'tippe ein Gelee und dann sein Gegenstück, oder zieh eins auf das andere; tippe auf die Lücke, um es wieder zu trennen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3690,6 +3723,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.29.0', date:'2026-09-18', items:[
+    'New mode \u2014 Meld. A merge game usually runs forever; this one is a finished puzzle. The board came from ONE jelly being split apart, so squashing it back to one is always possible \u2014 and merging into the wrong square strands the rest, which is the whole puzzle.',
+    'Every board is measured before it ships. The generator solves its own board and counts how many times it has to wind back; a board is thrown away unless that number is inside the level\u2019s allowance. That count IS the difficulty, so it is a thing that was checked rather than a thing that was hoped.',
+    'Tap a jelly and then its twin, or drag one onto the other. Tapping the hole a merge left behind splits it back apart, and keeps going back one at a time.',
+  ] },
   { v:'0.28.0', date:'2026-09-18', items:[
     'New mode \u2014 Forage. Sum Snap is two numbers hitting a target and Halve is a set split in two; neither cares where a number sits. Here the numbers you may add next are only the ones you can walk to, so the arithmetic and the route are the same problem \u2014 which is the one thing a grid of numbers can ask that a row of them cannot.',
     'The route is walked first and the target is whatever it came to, so an answer always exists. Then every route the board allows is enumerated to check the shortest one is at least three berries long: a target you can reach without thinking is not a puzzle.',
@@ -9986,6 +10024,176 @@ const MODES = {
         }
         sfx.tap(); buzz('tap');
       }));
+
+      paint();
+    }
+  },
+
+  /* ── Meld ─────────────────────────────────────────────────────────────── */
+  meld: {
+    name:'Meld', blurb:'Squash equal jellies together until one is left', input:'meld', cat:'make', par:15000, bonus:4000,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="#C08BFF" opacity=".45"/><circle cx="16" cy="15" r="5" fill="#C08BFF" opacity=".45"/><circle cx="12" cy="7" r="4" fill="#C08BFF"/><path d="M9.5 10.5L8 12M14.5 10.5L16 12" stroke="#C08BFF" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    build(ctx){
+      /* A merge game usually runs forever. This one is a finished puzzle: a
+         board that came from ONE jelly being split apart, so squashing it back
+         to one is always possible. Merging into the wrong square strands the
+         rest, which is the whole puzzle — and why the board is measured before
+         it ships rather than hoped about. */
+      const COLS = ctx.level < 9 ? 4 : 3, ROWS = 3;
+      const CELLS = COLS*ROWS;
+      const n    = clamp(4 + Math.floor(ctx.level/11), 4, 5);
+      /* How much searching the board is allowed to need, in wind-backs. This is
+         the difficulty: a board that is nearly forced, up to one that has to be
+         planned. Measured by solving it here, not guessed. */
+      const cap  = clamp(1 + Math.floor(ctx.level/6), 1, 4);
+
+      const nbrs = i => { const r = Math.floor(i/COLS), c = i % COLS, out = [];
+        [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc]) => {
+          const nr = r+dr, nc = c+dc;
+          if (nr >= 0 && nc >= 0 && nr < ROWS && nc < COLS) out.push(nr*COLS + nc);
+        });
+        return out; };
+      const pairsOf = g => { const out = [];
+        for (let i = 0; i < CELLS; i++){ if (!g[i]) continue;
+          for (const j of nbrs(i)) if (g[j] === g[i]) out.push([i, j]); }
+        return out; };
+      const alive = g => g.reduce((a, v) => a + (v ? 1 : 0), 0);
+      /* Depth-first, biggest jelly first, counting how often it has to undo. */
+      const windBacks = (g, limit) => {
+        const seen = new Set();
+        let backs = 0;
+        const go = cur => {
+          if (backs > limit) return false;
+          if (alive(cur) <= 1) return true;
+          const k = cur.join(',');
+          if (seen.has(k)) return false;
+          seen.add(k);
+          for (const [i, j] of pairsOf(cur).sort((a, b) => cur[b[0]] - cur[a[0]])){
+            const h = cur.slice(); h[j] = h[i] + 1; h[i] = 0;
+            if (go(h)) return true;
+            backs++;
+          }
+          return false;
+        };
+        return go(g.slice()) ? backs : null;
+      };
+
+      let board = null;
+      for (let attempt = 0; attempt < 200 && !board; attempt++){
+        const g = new Array(CELLS).fill(0);
+        g[Math.floor(ctx.rnd()*CELLS)] = n + 2;
+        let live = 1;
+        for (let guard = 0; guard < 300 && live < n; guard++){
+          const from = [];
+          for (let i = 0; i < CELLS; i++)
+            if (g[i] > 1 && nbrs(i).some(j => !g[j])) from.push(i);
+          if (!from.length) break;
+          const i = from[Math.floor(ctx.rnd()*from.length)];
+          const empt = nbrs(i).filter(j => !g[j]);
+          const j = empt[Math.floor(ctx.rnd()*empt.length)];
+          g[i]--; g[j] = g[i]; live++;
+        }
+        if (live !== n) continue;
+        const b = windBacks(g, cap);
+        if (b === null || b > cap) continue;
+        board = g;
+      }
+      if (!board){
+        board = new Array(CELLS).fill(0);
+        board[0] = 1; board[1] = 1; board[COLS] = 2; board[COLS+1] = 3;
+      }
+
+      const grid = mk('div','meldgrid');
+      grid.style.gridTemplateColumns = 'repeat(' + COLS + ',1fr)';
+      grid.style.gridTemplateRows    = 'repeat(' + ROWS + ',1fr)';
+      grid.style.aspectRatio = COLS + ' / ' + ROWS;
+      const cells = board.map((v, i) => {
+        const b = mk('button','jel');
+        b.type = 'button';
+        grid.appendChild(b);
+        return b;
+      });
+      ctx.surface.appendChild(grid);
+
+      const budget = moveBudget(ctx, cap);
+      let g = board.slice(), sel = -1, done = false;
+      const hist = [];
+      const undoAt = () => hist.length ? hist[hist.length - 1].from : -1;
+
+      const paint = () => {
+        cells.forEach((b, i) => {
+          const v = g[i];
+          b.textContent = v ? String(v) : '';
+          b.style.setProperty('--v', v);
+          b.classList.toggle('empty', !v);
+          b.classList.toggle('sel', i === sel);
+          b.classList.toggle('mate', sel >= 0 && i !== sel && g[i] && g[i] === g[sel] && nbrs(sel).indexOf(i) >= 0);
+          /* The hole a merge left behind is where the other half used to be, so
+             that is where you tap to pull it back. Undo lived on the jelly you
+             had just made, which is the one square you most want to tap next —
+             merging A into B and then B into C was impossible, because the tap
+             that should have picked B up undid it instead. */
+          b.classList.toggle('ghost', i === undoAt());
+          b.setAttribute('aria-label', v
+            ? t('meld.cell', { v, r: Math.floor(i/COLS) + 1, c: (i % COLS) + 1 })
+            : t('meld.empty', { r: Math.floor(i/COLS) + 1, c: (i % COLS) + 1 }));
+        });
+        ctx.prompt(t('p.meld', { n: alive(g) }));
+      };
+
+      const merge = (from, to) => {
+        hist.push({ from, to, val: g[from] });
+        g[to] = g[from] + 1; g[from] = 0; sel = -1;
+        paint();
+        sfx.good(g[to]); buzz('good');
+        if (alive(g) === 1){
+          done = true;
+          cells[to].classList.add('one');
+          return ctx.win(cells[to]);
+        }
+        if (!pairsOf(g).length){
+          /* Nothing can merge with anything: the board is finished and wrong.
+             Winding back is the way out, so say so rather than end the round. */
+          grid.classList.add('stuck');
+          ctx.after(600, () => grid.classList.remove('stuck'));
+        }
+      };
+
+      cells.forEach((b, i) => onTap(b, () => {
+        if (done) return;
+        /* Tapping the hole splits the last merge back apart, and keeps going
+           back through them one at a time. */
+        if (i === undoAt()){
+          const { from, to, val } = hist.pop();
+          g[from] = val; g[to] = val; sel = -1;
+          paint(); sfx.tap();
+          return budget.spend(b);
+        }
+        if (!g[i]){ sel = -1; paint(); return; }
+        if (sel === i){ sel = -1; paint(); return; }
+        if (sel >= 0 && g[i] === g[sel] && nbrs(sel).indexOf(i) >= 0) return merge(sel, i);
+        sel = i; paint(); sfx.tap(); buzz('tap');
+      }));
+
+      /* Dragging one jelly onto its twin is the other way to say it, and the
+         more obvious one when the two are side by side. */
+      const cellAt = ev => {
+        if (!ev) return -1;
+        const el2 = document.elementFromPoint(ev.clientX, ev.clientY);
+        const c = el2 && el2.closest ? el2.closest('.jel') : null;
+        return c ? cells.indexOf(c) : -1;
+      };
+      let dragFrom = -1;
+      onDrag(grid, {
+        start: q => { if (done) return; const i = cellAt(q.ev);
+                      dragFrom = (i >= 0 && g[i]) ? i : -1; },
+        end:   q => {
+          if (done || dragFrom < 0) return;
+          const i = cellAt(q && q.ev);
+          const from = dragFrom; dragFrom = -1;
+          if (i >= 0 && i !== from && g[i] && g[i] === g[from] && nbrs(from).indexOf(i) >= 0) merge(from, i);
+        }
+      });
 
       paint();
     }
