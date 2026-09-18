@@ -1292,8 +1292,23 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 @media (prefers-reduced-motion:reduce){ .swarmrail.full{animation:none} }
 
 /* ── Meld ─────────────────────────────────────────────────────────────── */
-.meldgrid{display:grid;gap:9px;width:100%;max-width:380px;margin:0 auto;touch-action:none;
-  position:relative;transition:transform var(--t-fast)}
+/* The till, the day's best price and the board are one thing, and the till is
+   the half that must never be the half that falls off the top. */
+.shopwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;width:100%;position:relative}
+.till{display:flex;align-items:baseline;gap:7px;font-family:var(--f-data);line-height:1;
+  transition:color var(--t-med)}
+.till b{font-size:clamp(20px,5.2vh,30px);font-weight:800;color:var(--cream)}
+.till i{font-size:clamp(12px,2.6vh,15px);font-style:normal;color:var(--haze)}
+.till.made b{color:var(--cool)}
+.till.short b{color:var(--bad)}
+/* One level pays triple today, and triple beats the next level up — so this is
+   a peak, and merging past it is money thrown away. It has to be said out loud
+   on the board, every round, because it changes every round. */
+.bestprice{font-family:var(--f-body);font-size:clamp(10px,2.2vh,12px);letter-spacing:.04em;
+  color:var(--zap);border:1px solid #ffc53d47;border-radius:999px;padding:3px 10px}
+.meldgrid{display:grid;gap:9px;width:100%;max-width:min(380px,calc(100% - 20px));
+  margin:0 auto;touch-action:none;position:relative;transition:transform var(--t-fast)}
 .meldgrid.stuck{animation:meldstuck 520ms ease-out 1}
 @keyframes meldstuck{0%,100%{transform:none}25%{transform:translateX(-5px)}60%{transform:translateX(5px)}}
 @media (prefers-reduced-motion:reduce){ .meldgrid.stuck{animation:none} }
@@ -1336,9 +1351,14 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .jel.sel{border-color:#fff;box-shadow:0 0 0 2px #fff,inset 0 -4px 0 #00000026}
 .jel.mate{border-color:var(--cool);box-shadow:0 0 0 2px var(--cool),0 0 16px -4px var(--cool),
   inset 0 -4px 0 #00000026}
-.jel.ghost{border-style:solid;border-color:#ffffff6b;background:#ffffff0f;
-  box-shadow:inset 0 0 0 1px #ffffff26;cursor:pointer}
-.jel.one{box-shadow:0 0 0 3px var(--cool),0 0 28px -4px var(--cool),inset 0 -4px 0 #00000026}
+/* A jelly sitting on today's best price wears it. */
+.jel.prime{border-color:var(--zap);box-shadow:0 0 0 2px var(--zap),0 0 18px -5px var(--zap),
+  inset 0 -4px 0 #00000026}
+.jel.sold{--lift:.2;opacity:0}
+.coinfly{position:absolute;pointer-events:none;z-index:6;
+  font-family:var(--f-data);font-weight:800;font-size:15px;color:var(--zap);
+  text-shadow:0 0 10px #ffc53d7a;transform:translate(-50%,-50%);
+  transition:transform 440ms cubic-bezier(.3,0,.5,1),opacity 440ms ease-in}
 /* The half that got absorbed, drawn for as long as it takes to arrive. The
    board itself has already moved on — this is only the picture of it. */
 .jelfly{position:absolute;pointer-events:none;display:grid;place-items:center;
@@ -2789,7 +2809,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.33.0';
+const VERSION_TAG = 'v0.34.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3300,7 +3320,7 @@ const STRINGS = {
     'p.seekAt':'Find {w} — you have {s}',
     'how.seek':'tap the letters in order, or drag through them',
     'p.forage':'{n} berries left', 'forage.cell':'{k}, row {r} column {c}', 'forage.gone':'Eaten, row {r} column {c}', 'forage.slot':'Swarm waiting on {k}, {n} left', 'forage.free':'Empty basket slot', 'forage.full':'Basket full — call a swarm home, or open the way for one', 'm.forage':'Forage|Send a swarm at a colour — only so many can be out at once',
-    'p.meld':'{n} jellies — squash them into one', 'meld.cell':'Jelly {v}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'm.meld':'Meld|Squash equal jellies together until one is left', 'how.meld':'drag a jelly onto its twin and feel it squash in, or tap one then the other; tap the hole one left behind to split it back',
+    'p.meld':'{n} more to take', 'meld.cell':'Jelly {v}, worth {p}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'meld.band':'Level {v} pays {p} today', 'meld.selling':'Tap again to sell the {v} for {p}', 'm.meld':'Meld|Merge jellies up, sell them off, reach the day’s takings', 'how.meld':'drag a jelly onto its twin to squash them into one; tap a jelly, then tap it again to sell it. One level pays triple today, and merging past it loses money',
     'p.volley':'{n} to land — fire on its colour', 'volley.box':'A turning wheel of colours, with a barrel below it', 'volley.swap':'Swap to {c}', 'volley.last':'Last ball — nothing to swap', 'volley.ball':'Loaded: {c}', 'm.volley':'Volley|Two balls in hand — fire each when its colour comes round', 'how.volley':'tap the wheel to fire; the swap pill takes the other ball instead, but the barrel needs a moment to reload',
     'p.sift':'Gems to the bottom row — {n} to go', 'sift.empty':'Air, row {r} column {c}', 'sift.grain':'Sand, row {r} column {c}', 'sift.rock':'Rock, row {r} column {c}', 'sift.gem':'Gem, row {r} column {c}', 'm.sift':'Sift|Dig around the rocks and let the gems slide down',
     'sift.stuckRock':'Rock will not budge — dig beside it and let the gem slide', 'how.forage':'tap a berry to send a swarm at its colour; it comes in through the bare gaps and eats only what it can reach, then waits in the basket until you send it again. Tap a waiting swarm to call it home', 'how.sift':'only sand can be dug — rocks never move. Open a slope and the gems slide down it',
@@ -3445,7 +3465,7 @@ const STRINGS = {
     'p.seekAt':'Trouvez {w} — vous avez {s}',
     'how.seek':'touchez les lettres dans l’ordre, ou glissez dessus',
     'p.forage':'{n} baies restantes', 'forage.cell':'{k}, ligne {r} colonne {c}', 'forage.gone':'Mangée, ligne {r} colonne {c}', 'forage.slot':'Essaim en attente de {k}, {n} restantes', 'forage.free':'Emplacement libre', 'forage.full':'Panier plein — rappelez un essaim, ou dégagez-lui le passage', 'm.forage':'Cueillette|Lancez un essaim sur une couleur — peu peuvent sortir à la fois',
-    'p.meld':'{n} gelées — n’en faites qu’une', 'meld.cell':'Gelée {v}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'm.meld':'Fusion|Écrasez les gelées identiques jusqu’à n’en garder qu’une', 'how.meld':'glissez une gelée sur sa jumelle et sentez-la s’écraser dedans, ou touchez l’une puis l’autre ; touchez le trou laissé derrière pour la redéfaire',
+    'p.meld':'Encore {n} à encaisser', 'meld.cell':'Gelée {v}, valant {p}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'meld.band':'Le niveau {v} rapporte {p} aujourd’hui', 'meld.selling':'Touchez encore pour vendre la {v} à {p}', 'm.meld':'Fusion|Fusionnez, revendez, atteignez la recette du jour', 'how.meld':'glissez une gelée sur sa jumelle pour n’en faire qu’une ; touchez une gelée, puis touchez-la encore pour la vendre. Un niveau rapporte triple aujourd’hui, et fusionner au-delà fait perdre de l’argent',
     'p.volley':'Encore {n} — tirez sur sa couleur', 'volley.box':'Une roue de couleurs qui tourne, avec un canon en dessous', 'volley.swap':'Échanger : {c}', 'volley.last':'Dernière bille — rien à échanger', 'volley.ball':'Chargé : {c}', 'm.volley':'Volée|Deux billes en main — tirez chacune quand sa couleur revient', 'how.volley':'touchez la roue pour tirer ; la pastille d’échange prend l’autre bille, mais le canon met un instant à se recharger',
     'p.sift':'Les gemmes tout en bas — encore {n}', 'sift.empty':'Vide, ligne {r} colonne {c}', 'sift.grain':'Sable, ligne {r} colonne {c}', 'sift.rock':'Roche, ligne {r} colonne {c}', 'sift.gem':'Gemme, ligne {r} colonne {c}', 'm.sift':'Tamis|Creusez autour des roches et laissez glisser les gemmes',
     'sift.stuckRock':'La roche ne bouge pas — creusez à côté et laissez glisser la gemme', 'how.forage':'touchez une baie pour lancer un essaim sur sa couleur ; il entre par les trous, ne mange que ce qu’il atteint, puis attend dans le panier que vous le relanciez. Touchez un essaim en attente pour le rappeler', 'how.sift':'seul le sable se creuse — les roches ne bougent jamais. Dégagez une pente et les gemmes y glissent',
@@ -3590,7 +3610,7 @@ const STRINGS = {
     'p.seekAt':'Encuentra {w} — llevas {s}',
     'how.seek':'toca las letras en orden o deslízate por ellas',
     'p.forage':'Quedan {n} bayas', 'forage.cell':'{k}, fila {r} columna {c}', 'forage.gone':'Comida, fila {r} columna {c}', 'forage.slot':'Enjambre esperando {k}, quedan {n}', 'forage.free':'Hueco libre en la cesta', 'forage.full':'Cesta llena — llama a un enjambre, o ábrele el paso', 'm.forage':'Recolecta|Lanza un enjambre a un color — pocos pueden estar fuera a la vez',
-    'p.meld':'{n} gelatinas — hazlas una', 'meld.cell':'Gelatina {v}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'm.meld':'Fusión|Aplasta gelatinas iguales hasta que quede una', 'how.meld':'arrastra una gelatina sobre su gemela y siente cómo se aplasta dentro, o toca una y luego la otra; toca el hueco que dejó para deshacerla',
+    'p.meld':'Faltan {n} para la caja', 'meld.cell':'Gelatina {v}, vale {p}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'meld.band':'El nivel {v} paga {p} hoy', 'meld.selling':'Toca otra vez para vender la {v} por {p}', 'm.meld':'Fusión|Fusiona, vende y llega a la caja del día', 'how.meld':'arrastra una gelatina sobre su gemela para hacerlas una; toca una gelatina y tócala otra vez para venderla. Un nivel paga el triple hoy, y fusionar más allá pierde dinero',
     'p.volley':'Faltan {n} — dispara en su color', 'volley.box':'Una rueda de colores que gira, con un cañón debajo', 'volley.swap':'Cambiar: {c}', 'volley.last':'Última bola — nada que cambiar', 'volley.ball':'Cargado: {c}', 'm.volley':'Volea|Dos bolas en mano — dispara cada una cuando pase su color', 'how.volley':'toca la rueda para disparar; la pastilla de cambio coge la otra bola, pero el cañón tarda un momento en recargar',
     'p.sift':'Gemas a la fila de abajo — faltan {n}', 'sift.empty':'Aire, fila {r} columna {c}', 'sift.grain':'Arena, fila {r} columna {c}', 'sift.rock':'Roca, fila {r} columna {c}', 'sift.gem':'Gema, fila {r} columna {c}', 'm.sift':'Criba|Excava alrededor de las rocas y deja resbalar las gemas',
     'sift.stuckRock':'La roca no se mueve — excava al lado y deja resbalar la gema', 'how.forage':'toca una baya para lanzar un enjambre a su color; entra por los huecos, come solo lo que alcanza y luego espera en la cesta a que lo vuelvas a lanzar. Toca un enjambre en espera para llamarlo', 'how.sift':'solo la arena se excava: las rocas nunca se mueven. Abre una pendiente y las gemas resbalan por ella',
@@ -3735,7 +3755,7 @@ const STRINGS = {
     'p.seekAt':'Finde {w} — bisher {s}',
     'how.seek':'tippe die Buchstaben der Reihe nach an oder zieh darüber',
     'p.forage':'Noch {n} Beeren', 'forage.cell':'{k}, Zeile {r} Spalte {c}', 'forage.gone':'Gefressen, Zeile {r} Spalte {c}', 'forage.slot':'Schwarm wartet auf {k}, noch {n}', 'forage.free':'Freier Korbplatz', 'forage.full':'Korb voll — ruf einen Schwarm zurück, oder mach ihm den Weg frei', 'm.forage':'Sammeln|Schick einen Schwarm auf eine Farbe — nur wenige dürfen draußen sein',
-    'p.meld':'{n} Gelees — mach eins daraus', 'meld.cell':'Gelee {v}, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'm.meld':'Verschmelzen|Drück gleiche Gelees zusammen, bis eins übrig ist', 'how.meld':'zieh ein Gelee auf sein Gegenstück und spür, wie es hineinplatscht, oder tippe erst das eine, dann das andere; tippe auf die Lücke, um es wieder zu trennen',
+    'p.meld':'Noch {n} bis zur Tageskasse', 'meld.cell':'Gelee {v}, {p} wert, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'meld.band':'Stufe {v} zahlt heute {p}', 'meld.selling':'Nochmal tippen, um die {v} für {p} zu verkaufen', 'm.meld':'Verschmelzen|Zusammendrücken, verkaufen, die Tageskasse erreichen', 'how.meld':'zieh ein Gelee auf sein Gegenstück, damit eins daraus wird; tippe ein Gelee an und dann nochmal, um es zu verkaufen. Eine Stufe zahlt heute das Dreifache, und darüber hinaus zu verschmelzen kostet Geld',
     'p.volley':'Noch {n} — schieß auf seine Farbe', 'volley.box':'Ein sich drehendes Farbrad mit einem Lauf darunter', 'volley.swap':'Wechseln: {c}', 'volley.last':'Letzte Kugel — nichts zu tauschen', 'volley.ball':'Geladen: {c}', 'm.volley':'Salve|Zwei Kugeln in der Hand — schieß jede, wenn ihre Farbe kommt', 'how.volley':'tippe aufs Rad zum Schießen; der Tausch-Knopf nimmt die andere Kugel, aber der Lauf braucht einen Moment zum Nachladen',
     'p.sift':'Edelsteine in die unterste Reihe — noch {n}', 'sift.empty':'Luft, Zeile {r} Spalte {c}', 'sift.grain':'Sand, Zeile {r} Spalte {c}', 'sift.rock':'Fels, Zeile {r} Spalte {c}', 'sift.gem':'Edelstein, Zeile {r} Spalte {c}', 'm.sift':'Sieben|Grab um die Felsen herum und lass die Edelsteine rutschen',
     'sift.stuckRock':'Der Fels rührt sich nicht — grab daneben und lass den Stein rutschen', 'how.forage':'tippe eine Beere an, um einen Schwarm auf ihre Farbe zu schicken; er kommt durch die Lücken herein, frisst nur, was er erreicht, und wartet dann im Korb, bis du ihn erneut schickst. Tippe einen wartenden Schwarm an, um ihn zurückzurufen', 'how.sift':'nur Sand lässt sich graben – Felsen bewegen sich nie. Grab eine Schräge frei, dann rutschen die Edelsteine hinunter',
@@ -3882,6 +3902,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.34.0', date:'2026-09-18', items:[
+    'Meld rebuilt around the till. A merge game is only a merge game for about a minute; what keeps one going is that a bigger jelly is worth more than the two it came from, but making it spends a jelly — so every one on the board is the same question: cash it now, or grow it first?',
+    'And the answer is not always grow it, because ONE level pays triple today, and triple beats the next level up. That level is a peak: stopping there is right and merging past it is money thrown away. It is worked out from the board itself, one short of the highest level the board could ever reach, because a price nobody here could reach is decoration rather than a price.',
+    'Both halves are measured before the board ships. A board is thrown back unless merging beats simply cashing out by a clear margin, and thrown back again unless the whole day, re-solved with the triple switched off, comes out meaningfully worse. Twelve probed days: merging beat cashing out by between 1.4 and 3.6 times.',
+    'Every action — merge or sell — takes one jelly off the board, so the board is the length of the day and this mode carries no move counter. Two limits on the same thing would have meant one of them was a lie. Drag a jelly onto its twin to squash them together; tap one, then tap it again to sell it.',
+  ] },
   { v:'0.33.0', date:'2026-09-18', items:[
     'Forage rebuilt. It is a patch of berries in colour blocks with a gap or two of bare ground, and a swarm you send at a colour — which comes in through the gaps, eats everything of that colour it can reach right now, and then sits in one of your few basket slots waiting, because nothing here finishes on its own. Send them outside-in and each one comes away whole and never costs you a slot. Send one at a colour still walled in and you have parked it, and the next one after that, until the basket jams.',
     'What a careless order costs is measured before the patch ships, not guessed: every order of the colours is played out, the patch is thrown back unless one of them clears it in a single send each, and thrown back again unless the average order costs meaningfully more than that. Twelve probed patches: a careless order costs between two and nine extra sends.',
@@ -10396,21 +10422,48 @@ const MODES = {
 
   /* ── Meld ─────────────────────────────────────────────────────────────── */
   meld: {
-    name:'Meld', blurb:'Squash equal jellies together until one is left', input:'meld', cat:'make', par:15000, bonus:4000,
+    name:'Meld', blurb:'Merge jellies up, sell them off, reach the day’s takings', input:'meld', cat:'make', par:17000, bonus:4400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="#C08BFF" opacity=".45"/><circle cx="16" cy="15" r="5" fill="#C08BFF" opacity=".45"/><circle cx="12" cy="7" r="4" fill="#C08BFF"/><path d="M9.5 10.5L8 12M14.5 10.5L16 12" stroke="#C08BFF" stroke-width="1.4" stroke-linecap="round"/></svg>',
     build(ctx){
-      /* A merge game usually runs forever. This one is a finished puzzle: a
-         board that came from ONE jelly being split apart, so squashing it back
-         to one is always possible. Merging into the wrong square strands the
-         rest, which is the whole puzzle — and why the board is measured before
-         it ships rather than hoped about. */
-      const COLS = ctx.level < 9 ? 4 : 3, ROWS = 3;
+      /* A merge game is only a merge game for about a minute. What keeps one
+         going is the till: a bigger jelly is worth more than the two it came
+         from, but making it costs a move, and the move is the thing you have
+         least of. So every jelly is the same question — cash it now, or spend
+         a move growing it first?
+
+         And the answer is not always "grow it", because ONE level pays triple
+         today. Merging up to that level is worth far more than merging past it,
+         so the board has a best price somewhere in the middle and going beyond
+         it is throwing money away. That is the whole mode. */
+      const COLS = ctx.level < 9 ? 3 : 4, ROWS = 3;
       const CELLS = COLS*ROWS;
-      const n    = clamp(4 + Math.floor(ctx.level/11), 4, 5);
-      /* How much searching the board is allowed to need, in wind-backs. This is
-         the difficulty: a board that is nearly forced, up to one that has to be
-         planned. Measured by solving it here, not guessed. */
-      const cap  = clamp(1 + Math.floor(ctx.level/6), 1, 4);
+      const n    = clamp(4 + Math.floor(ctx.level/8), 4, 6);
+      /* What a jelly is worth, level by level. Each step is a bit more than
+         twice the last, so two jellies are always worth less than the one they
+         make — merging pays, and the only question is whether it pays for the
+         move it costs. */
+      const VAL  = [0, 2, 5, 12, 28, 65, 150, 345];
+      const TOP  = VAL.length - 1;
+      /* What the jellies start at. Small ones early, bigger ones later — which
+         is also what lets the day's best price climb, because a price nobody on
+         this board could ever reach is not a price, it is decoration. */
+      const lo   = clamp(1 + Math.floor(ctx.level/16), 1, 3);
+      /* Today's best price, worked out FROM the board: one short of the highest
+         level it could possibly reach. Pays triple, and triple beats the next
+         level up, so it is a peak — stopping there is right and merging past it
+         is money thrown away. The triple can be switched off, which is how the
+         generator finds out whether it is doing any work. */
+      let band = 3, bandOn = true;
+      const price = v => VAL[Math.min(v, TOP)] * (v === band && bandOn ? 3 : 1);
+      const peakOf = g => { const ones = g.reduce((a, v) => a + (v ? Math.pow(2, v-1) : 0), 0);
+        return 1 + Math.floor(Math.log2(Math.max(1, ones))); };
+      /* Every action here — merge or sell — takes one jelly off the board, so
+         a board of n jellies is exactly n actions long and then it is over.
+         The board IS the limit, which is why this mode carries no move counter:
+         two limits on the same thing would mean one of them was a lie.
+         The difficulty is how close to the best possible day you have to come. */
+      const DAY   = n;
+      const share = clamp(0.76 + ctx.level*0.005, 0.76, 0.95);
 
       const nbrs = i => { const r = Math.floor(i/COLS), c = i % COLS, out = [];
         [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc]) => {
@@ -10418,72 +10471,88 @@ const MODES = {
           if (nr >= 0 && nc >= 0 && nr < ROWS && nc < COLS) out.push(nr*COLS + nc);
         });
         return out; };
-      const pairsOf = g => { const out = [];
-        for (let i = 0; i < CELLS; i++){ if (!g[i]) continue;
-          for (const j of nbrs(i)) if (g[j] === g[i]) out.push([i, j]); }
-        return out; };
-      const alive = g => g.reduce((a, v) => a + (v ? 1 : 0), 0);
-      /* Depth-first, biggest jelly first, counting how often it has to undo. */
-      const windBacks = (g, limit) => {
-        const seen = new Set();
-        let backs = 0;
-        const go = cur => {
-          if (backs > limit) return false;
-          if (alive(cur) <= 1) return true;
-          const k = cur.join(',');
-          if (seen.has(k)) return false;
-          seen.add(k);
-          for (const [i, j] of pairsOf(cur).sort((a, b) => cur[b[0]] - cur[a[0]])){
-            const h = cur.slice(); h[j] = h[i] + 1; h[i] = 0;
-            if (go(h)) return true;
-            backs++;
-          }
-          return false;
-        };
-        return go(g.slice()) ? backs : null;
-      };
 
-      let board = null;
-      for (let attempt = 0; attempt < 200 && !board; attempt++){
-        const g = new Array(CELLS).fill(0);
-        g[Math.floor(ctx.rnd()*CELLS)] = n + 2;
-        let live = 1;
-        for (let guard = 0; guard < 300 && live < n; guard++){
-          const from = [];
-          for (let i = 0; i < CELLS; i++)
-            if (g[i] > 1 && nbrs(i).some(j => !g[j])) from.push(i);
-          if (!from.length) break;
-          const i = from[Math.floor(ctx.rnd()*from.length)];
-          const empt = nbrs(i).filter(j => !g[j]);
-          const j = empt[Math.floor(ctx.rnd()*empt.length)];
-          g[i]--; g[j] = g[i]; live++;
+      /* The most money a board can make in a given number of moves. Merging and
+         selling both cost one, and both shrink the board, so this bottoms out
+         fast. Memoised because the same board turns up by many routes. */
+      const memo = new Map();
+      const best = (g, moves) => {
+        if (moves <= 0) return 0;
+        const key = g.join(',') + '|' + moves;
+        const hit = memo.get(key);
+        if (hit !== undefined) return hit;
+        let top = 0;
+        for (let i = 0; i < CELLS; i++){
+          if (!g[i]) continue;
+          /* sell it */
+          const sold = g.slice(); sold[i] = 0;
+          top = Math.max(top, price(g[i]) + best(sold, moves - 1));
+          /* or merge it into an equal neighbour */
+          for (const j of nbrs(i)){
+            if (g[j] !== g[i]) continue;
+            const m = g.slice(); m[j] = Math.min(g[i] + 1, TOP); m[i] = 0;
+            top = Math.max(top, best(m, moves - 1));
+          }
         }
-        if (live !== n) continue;
-        const b = windBacks(g, cap);
-        if (b === null || b > cap) continue;
-        board = g;
+        memo.set(key, top);
+        return top;
+      };
+      /* Cashing out and nothing else: sell the dearest jellies you have time
+         for. It is what the board is worth to somebody who never merges, and
+         the takings have to be well clear of it or there is no decision here. */
+      const lazy = g => g.filter(v => v).map(price).sort((a, b) => b - a)
+                         .slice(0, DAY).reduce((a, v) => a + v, 0);
+
+      /* A board ships on two measured facts: merging has to beat cashing out by
+         a clear margin, and today's best price has to be worth going for — which
+         is checked by working the whole board out a second time with the triple
+         switched off and seeing whether the answer drops. */
+      let board = null, take = 0, ceiling = 0;
+      for (let attempt = 0; attempt < 90 && !board; attempt++){
+        const g = new Array(CELLS).fill(0);
+        const spots = shuffle(Array.from({ length: CELLS }, (_, i) => i), ctx.rnd).slice(0, n);
+        spots.forEach(i => { g[i] = lo + Math.floor(ctx.rnd()*2); });
+        band = clamp(peakOf(g) - 1, 3, 5);
+        bandOn = true; memo.clear();
+        const full = best(g, DAY);
+        if (!full) continue;
+        const cashed = lazy(g);
+        if (full < cashed * 1.25) continue;              /* merging must beat cashing out */
+        bandOn = false; memo.clear();
+        const flat = best(g, DAY);
+        bandOn = true; memo.clear();
+        if (full < flat * 1.2) continue;                 /* the best price must matter */
+        const want = Math.max(cashed + 1, Math.round(full * share));
+        if (want > full) continue;
+        board = g; take = want; ceiling = full;
       }
       if (!board){
         board = new Array(CELLS).fill(0);
-        board[0] = 1; board[1] = 1; board[COLS] = 2; board[COLS+1] = 3;
+        board[0] = lo; board[1] = lo; board[COLS] = lo; board[COLS+1] = lo;
+        band = clamp(peakOf(board) - 1, 3, 5);
+        bandOn = true; memo.clear();
+        ceiling = best(board, DAY);
+        take = Math.max(lazy(board) + 1, Math.round(ceiling * share));
       }
+
+      /* ── the shop ────────────────────────────────────────────────────── */
+      const wrap = mk('div','shopwrap');
+      const till = mk('div','till');
+      const tillNow = mk('b'), tillGoal = mk('i');
+      till.appendChild(tillNow); till.appendChild(tillGoal);
+      const tag = mk('div','bestprice');
+      wrap.appendChild(till); wrap.appendChild(tag);
 
       const grid = mk('div','meldgrid');
       grid.style.gridTemplateColumns = 'repeat(' + COLS + ',1fr)';
       grid.style.gridTemplateRows    = 'repeat(' + ROWS + ',1fr)';
       grid.style.aspectRatio = COLS + ' / ' + ROWS;
-      const cells = board.map((v, i) => {
-        const b = mk('button','jel');
-        b.type = 'button';
-        grid.appendChild(b);
-        return b;
-      });
-      ctx.surface.appendChild(grid);
+      const cells = board.map(() => { const b = mk('button','jel');
+        b.type = 'button'; grid.appendChild(b); return b; });
+      wrap.appendChild(grid);
+      ctx.surface.appendChild(wrap);
 
-      const budget = moveBudget(ctx, cap);
-      let g = board.slice(), sel = -1, done = false;
-      const hist = [];
-      const undoAt = () => hist.length ? hist[hist.length - 1].from : -1;
+      let g = board.slice(), coins = 0, sel = -1, done = false;
 
       const paint = () => {
         cells.forEach((b, i) => {
@@ -10492,24 +10561,38 @@ const MODES = {
           b.style.setProperty('--v', v);
           b.classList.toggle('empty', !v);
           b.classList.toggle('sel', i === sel);
-          b.classList.toggle('mate', sel >= 0 && i !== sel && g[i] && g[i] === g[sel] && nbrs(sel).indexOf(i) >= 0);
-          /* The hole a merge left behind is where the other half used to be, so
-             that is where you tap to pull it back. Undo lived on the jelly you
-             had just made, which is the one square you most want to tap next —
-             merging A into B and then B into C was impossible, because the tap
-             that should have picked B up undid it instead. */
-          b.classList.toggle('ghost', i === undoAt());
+          b.classList.toggle('prime', !!v && v === band);
+          b.classList.toggle('mate', sel >= 0 && i !== sel && !!g[i]
+            && g[i] === g[sel] && nbrs(sel).indexOf(i) >= 0);
           b.setAttribute('aria-label', v
-            ? t('meld.cell', { v, r: Math.floor(i/COLS) + 1, c: (i % COLS) + 1 })
+            ? t('meld.cell', { v, p: price(v), r: Math.floor(i/COLS) + 1, c: (i % COLS) + 1 })
             : t('meld.empty', { r: Math.floor(i/COLS) + 1, c: (i % COLS) + 1 }));
         });
-        ctx.prompt(t('p.meld', { n: alive(g) }));
+        tillNow.textContent = fmt(coins);
+        tillGoal.textContent = '/ ' + fmt(take);
+        till.classList.toggle('made', coins >= take);
+        tag.textContent = t('meld.band', { v: band, p: price(band) });
+        ctx.prompt(sel >= 0 ? t('meld.selling', { v: g[sel], p: price(g[sel]) })
+                            : t('p.meld', { n: fmt(take - coins) }));
       };
 
-      /* The board commits the instant you let go — the picture of the half
-         arriving is drawn over the top of a move that has already happened, so
-         nothing about winning, the move count or the undo stack waits on an
-         animation that a slow phone might not finish. */
+      const cash = () => {
+        if (coins >= take){
+          done = true;
+          till.classList.add('made');
+          return ctx.win(till);
+        }
+        /* Sold the shop and still short. Saying so is kinder than letting the
+           move counter run down on a board with nothing left on it. */
+        if (g.every(v => !v)){
+          done = true;
+          till.classList.add('short');
+          return ctx.miss(till);
+        }
+      };
+
+      /* The half that got absorbed, drawn for as long as it takes to arrive.
+         The board has already moved on — this is only the picture of it. */
       const flyIn = (from, to, val) => {
         if (motionOff()) return;
         const ra = cells[from].getBoundingClientRect();
@@ -10535,47 +10618,62 @@ const MODES = {
           ctx.after(180, () => b.classList.remove('pop')); });
       };
 
-      const merge = (from, to) => {
-        const val = g[from];
-        hist.push({ from, to, val });
-        g[to] = g[from] + 1; g[from] = 0; sel = -1;
-        paint();
-        flyIn(from, to, val);
-        sfx.good(g[to]); buzz('good');
-        if (alive(g) === 1){
-          done = true;
-          cells[to].classList.add('one');
-          return ctx.win(cells[to]);
-        }
-        if (!pairsOf(g).length){
-          /* Nothing can merge with anything: the board is finished and wrong.
-             Winding back is the way out, so say so rather than end the round. */
-          grid.classList.add('stuck');
-          ctx.after(600, () => grid.classList.remove('stuck'));
+      /* Coins leave the jelly and arrive at the till, because a number that
+         just changes is not a sale. */
+      const ring = (from, amount) => {
+        coins += amount;
+        if (!motionOff()){
+          const ra = cells[from].getBoundingClientRect();
+          const wr = wrap.getBoundingClientRect();
+          const c = mk('i','coinfly');
+          c.textContent = '+' + fmt(amount);
+          c.style.left = (ra.left + ra.width/2 - wr.left) + 'px';
+          c.style.top  = (ra.top  + ra.height/2 - wr.top) + 'px';
+          wrap.appendChild(c);
+          requestAnimationFrame(() => {
+            const tr = till.getBoundingClientRect();
+            c.style.transform = 'translate(' + (tr.left + tr.width/2 - ra.left - ra.width/2) + 'px,'
+              + (tr.top + tr.height/2 - ra.top - ra.height/2) + 'px) scale(.7)';
+            c.style.opacity = '0';
+          });
+          ctx.after(460, () => c.remove());
         }
       };
 
+      const sell = i => {
+        const val = g[i], amount = price(val);
+        g[i] = 0; sel = -1;
+        ring(i, amount);
+        cells[i].classList.add('sold');
+        ctx.after(300, () => cells[i].classList.remove('sold'));
+        paint();
+        sfx.good(Math.min(6, val + (val === band ? 2 : 0))); buzz('good');
+        cash();
+      };
+
+      const merge = (from, to) => {
+        const val = g[from];
+        g[to] = Math.min(val + 1, TOP); g[from] = 0; sel = -1;
+        paint();
+        flyIn(from, to, val);
+        sfx.good(g[to]); buzz('good');
+        cash();
+      };
+
+      /* One tap picks a jelly up, and the next says what to do with it: the same
+         jelly again sells it, its twin merges into it. It is the whole verb set
+         on one gesture, and it is what a keyboard has instead of a drag. */
       cells.forEach((b, i) => onTap(b, () => {
         if (done) return;
-        /* Tapping the hole splits the last merge back apart, and keeps going
-           back through them one at a time. */
-        if (i === undoAt()){
-          const { from, to, val } = hist.pop();
-          g[from] = val; g[to] = val; sel = -1;
-          paint(); sfx.tap();
-          return budget.spend(b);
-        }
         if (!g[i]){ sel = -1; paint(); return; }
-        if (sel === i){ sel = -1; paint(); return; }
+        if (sel === i) return sell(i);
         if (sel >= 0 && g[i] === g[sel] && nbrs(sel).indexOf(i) >= 0) return merge(sel, i);
         sel = i; paint(); sfx.tap(); buzz('tap');
       }));
 
-      /* Dragging is the way this mode is meant to be played: the jelly comes
-         up off the board, follows the finger, and the one underneath flattens
-         under it before you let go. Tapping two squares does the same thing and
-         is what a switch or a keyboard has, but nobody should have to find that
-         out — pick one up and it moves. */
+      /* Dragging is the way this is meant to be played: the jelly comes up off
+         the board, follows the finger, and the one underneath flattens under it
+         before you let go. */
       const cellAt = ev => {
         if (!ev) return -1;
         const el2 = document.elementFromPoint(ev.clientX, ev.clientY);
