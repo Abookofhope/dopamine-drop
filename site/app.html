@@ -1248,32 +1248,48 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.node.nope{background:#ff3d6e33;border-color:var(--bad)}
 
 /* ── Forage ───────────────────────────────────────────────────────────── */
-.cell.berry{
-  background:var(--ink-3);border:1px solid var(--edge);border-radius:50%;
-  color:var(--cream);font-family:var(--f-data);font-weight:700;
-  font-size:clamp(13px,3.6vh,20px);line-height:1;
-  transition:background var(--t-fast),border-color var(--t-fast),
-             color var(--t-fast),transform var(--t-fast);
+/* ── Forage ───────────────────────────────────────────────────────────── */
+/* The surface is square, so the patch has to give back exactly the height the
+   basket takes: shrink its width by that much and the square does the rest. */
+.patchwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:11px;width:100%}
+.grid.patch{gap:4px;max-width:min(380px,calc(100% - 54px))}
+.grid.patch.clear{opacity:.55}
+.cell.bug{
+  border:1px solid #00000038;border-radius:4px;padding:0;
+  box-shadow:inset 0 -3px 0 #00000026;
+  transition:opacity var(--t-med),transform var(--t-med),box-shadow var(--t-fast);
 }
-/* Where you may go next is a ring, not a fill: a hint has to look different
-   from the thing it is hinting at, and two tints of the same gold do not. */
-.cell.berry.can{border-color:#ffc53d8f;border-style:dashed;background:none}
-.cell.berry.ate{background:#ffc53d3d;border-color:#ffc53d59;color:#FFE6A8;opacity:.72}
-.cell.berry.head{background:var(--zap);border-color:var(--zap);color:#241A05;
-  box-shadow:0 0 14px #ffc53d88}
-.cell.berry.full{background:#33e6c847;border-color:var(--cool);color:#EAFFFA;box-shadow:none}
-.cell.berry.nope{background:#ff3d6e33;border-color:var(--bad)}
-/* Bitter takes away instead of giving, so it is not a gold berry with a minus
-   in front: it is the wrong colour and the wrong shape for food. */
-.cell.berry.bitter{background:#2a1430;border-color:#7a3f8e;color:#E9C7F5;
-  border-radius:44% 56% 40% 60%/58% 42% 58% 42%}
-.cell.berry.bitter.ate{background:#7a3f8e40;border-color:#7a3f8e;opacity:.72}
-/* Where the walk has to end. Two rings, because the one square you must arrive
-   at cannot be told apart by a tint. */
-.cell.berry.basket{border-style:double;border-width:4px;border-color:#FFC53D;
-  box-shadow:0 0 0 2px #ffc53d3d}
-.cell.berry.basket.head{box-shadow:0 0 0 2px #ffc53d3d,0 0 14px #ffc53d88}
-.cell.berry.basket.full{border-color:var(--cool);box-shadow:0 0 0 2px #33e6c847}
+.cell.bug .shp{width:66%;height:66%;display:block;margin:auto}
+/* An eaten square is bare ground, not a paler berry: what is gone has to look
+   like nothing rather than like a dimmer something. */
+.cell.bug.gone{background:#ffffff05!important;border:1px dashed var(--edge-soft);
+  box-shadow:none;cursor:default;transform:scale(.86)}
+/* Its swarm is already out there, waiting on exactly this. */
+.cell.bug.near{box-shadow:inset 0 0 0 2px #ffffff4d,inset 0 -3px 0 #00000026}
+.cell.bug.waited{box-shadow:inset 0 0 0 2px #ffffffab,inset 0 -3px 0 #00000026}
+.cell.bug.munch{animation:munch 260ms ease-out 1}
+@keyframes munch{0%{transform:scale(1)}45%{transform:scale(1.18)}100%{transform:scale(.86)}}
+@media (prefers-reduced-motion:reduce){ .cell.bug.munch{animation:none} }
+.cell.bug.nope{box-shadow:inset 0 0 0 2px var(--bad),inset 0 -3px 0 #00000026}
+/* The basket: every filled slot is a colour you committed to before its way
+   was clear, which is the only thing this mode charges you for. */
+.swarmrail{display:flex;gap:9px;justify-content:center}
+/* NOT .slot: another mode already owns that name in this one stylesheet, and
+   its rule is further down, so it was quietly winning. */
+.antslot{width:38px;height:38px;border-radius:50% 50% 46% 54%/54% 46% 50% 50%;
+  border:1px dashed var(--edge);background:#ffffff05;padding:0;
+  transition:transform var(--t-med),border-color var(--t-fast),box-shadow var(--t-fast)}
+.antslot .shp{width:64%;height:64%;display:block;margin:auto}
+.antslot.free{cursor:default}
+.antslot.held{border:1px solid #00000038;cursor:pointer;
+  box-shadow:inset 0 -3px 0 #00000026;animation:strain 1400ms ease-in-out infinite}
+@keyframes strain{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.06)}}
+@media (prefers-reduced-motion:reduce){ .antslot.held{animation:none} }
+.antslot.ping{transform:scale(1.22);box-shadow:0 0 0 3px #ffffff5c}
+.swarmrail.full{animation:railfull 480ms ease-out 1}
+@keyframes railfull{0%,100%{transform:none}30%{transform:translateX(-6px)}65%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){ .swarmrail.full{animation:none} }
 
 /* ── Meld ─────────────────────────────────────────────────────────────── */
 .meldgrid{display:grid;gap:9px;width:100%;max-width:380px;margin:0 auto;touch-action:none;
@@ -2773,7 +2789,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.32.0';
+const VERSION_TAG = 'v0.33.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3283,11 +3299,11 @@ const STRINGS = {
     'how.drag':'drag a finger across the board', 'how.tapdrag':'tap first, then drag to aim',
     'p.seekAt':'Find {w} — you have {s}',
     'how.seek':'tap the letters in order, or drag through them',
-    'p.forage':'Basket wants exactly {b} — {n} to go', 'forage.over':'{n} over — back up or eat bitter', 'forage.home':'{b} exactly — now reach the basket', 'forage.cell':'{v}, row {r} column {c}', 'forage.basket':'Basket, {v}, row {r} column {c}', 'forage.bitter':'Bitter, minus {v}, row {r} column {c}', 'm.forage':'Forage|Walk the patch to the basket, arriving with exactly enough',
+    'p.forage':'{n} berries left', 'forage.cell':'{k}, row {r} column {c}', 'forage.gone':'Eaten, row {r} column {c}', 'forage.slot':'Swarm waiting on {k}, {n} left', 'forage.free':'Empty basket slot', 'forage.full':'Basket full — call a swarm home, or open the way for one', 'm.forage':'Forage|Send a swarm at a colour — only so many can be out at once',
     'p.meld':'{n} jellies — squash them into one', 'meld.cell':'Jelly {v}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'm.meld':'Meld|Squash equal jellies together until one is left', 'how.meld':'drag a jelly onto its twin and feel it squash in, or tap one then the other; tap the hole one left behind to split it back',
     'p.volley':'{n} to land — fire on its colour', 'volley.box':'A turning wheel of colours, with a barrel below it', 'volley.swap':'Swap to {c}', 'volley.last':'Last ball — nothing to swap', 'volley.ball':'Loaded: {c}', 'm.volley':'Volley|Two balls in hand — fire each when its colour comes round', 'how.volley':'tap the wheel to fire; the swap pill takes the other ball instead, but the barrel needs a moment to reload',
     'p.sift':'Gems to the bottom row — {n} to go', 'sift.empty':'Air, row {r} column {c}', 'sift.grain':'Sand, row {r} column {c}', 'sift.rock':'Rock, row {r} column {c}', 'sift.gem':'Gem, row {r} column {c}', 'm.sift':'Sift|Dig around the rocks and let the gems slide down',
-    'sift.stuckRock':'Rock will not budge — dig beside it and let the gem slide', 'how.sift':'only sand can be dug — rocks never move. Open a slope and the gems slide down it',
+    'sift.stuckRock':'Rock will not budge — dig beside it and let the gem slide', 'how.forage':'tap a berry to send a swarm at its colour; it comes in through the bare gaps and eats only what it can reach, then waits in the basket until you send it again. Tap a waiting swarm to call it home', 'how.sift':'only sand can be dug — rocks never move. Open a slope and the gems slide down it',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3428,11 +3444,11 @@ const STRINGS = {
     'how.drag':'glissez un doigt sur le plateau', 'how.tapdrag':'touchez d’abord, puis glissez pour viser',
     'p.seekAt':'Trouvez {w} — vous avez {s}',
     'how.seek':'touchez les lettres dans l’ordre, ou glissez dessus',
-    'p.forage':'Le panier veut exactement {b} — encore {n}', 'forage.over':'{n} de trop — reculez ou mangez amer', 'forage.home':'{b} pile — rejoignez le panier', 'forage.cell':'{v}, ligne {r} colonne {c}', 'forage.basket':'Panier, {v}, ligne {r} colonne {c}', 'forage.bitter':'Amère, moins {v}, ligne {r} colonne {c}', 'm.forage':'Cueillette|Rejoignez le panier avec le compte exact',
+    'p.forage':'{n} baies restantes', 'forage.cell':'{k}, ligne {r} colonne {c}', 'forage.gone':'Mangée, ligne {r} colonne {c}', 'forage.slot':'Essaim en attente de {k}, {n} restantes', 'forage.free':'Emplacement libre', 'forage.full':'Panier plein — rappelez un essaim, ou dégagez-lui le passage', 'm.forage':'Cueillette|Lancez un essaim sur une couleur — peu peuvent sortir à la fois',
     'p.meld':'{n} gelées — n’en faites qu’une', 'meld.cell':'Gelée {v}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'm.meld':'Fusion|Écrasez les gelées identiques jusqu’à n’en garder qu’une', 'how.meld':'glissez une gelée sur sa jumelle et sentez-la s’écraser dedans, ou touchez l’une puis l’autre ; touchez le trou laissé derrière pour la redéfaire',
     'p.volley':'Encore {n} — tirez sur sa couleur', 'volley.box':'Une roue de couleurs qui tourne, avec un canon en dessous', 'volley.swap':'Échanger : {c}', 'volley.last':'Dernière bille — rien à échanger', 'volley.ball':'Chargé : {c}', 'm.volley':'Volée|Deux billes en main — tirez chacune quand sa couleur revient', 'how.volley':'touchez la roue pour tirer ; la pastille d’échange prend l’autre bille, mais le canon met un instant à se recharger',
     'p.sift':'Les gemmes tout en bas — encore {n}', 'sift.empty':'Vide, ligne {r} colonne {c}', 'sift.grain':'Sable, ligne {r} colonne {c}', 'sift.rock':'Roche, ligne {r} colonne {c}', 'sift.gem':'Gemme, ligne {r} colonne {c}', 'm.sift':'Tamis|Creusez autour des roches et laissez glisser les gemmes',
-    'sift.stuckRock':'La roche ne bouge pas — creusez à côté et laissez glisser la gemme', 'how.sift':'seul le sable se creuse — les roches ne bougent jamais. Dégagez une pente et les gemmes y glissent',
+    'sift.stuckRock':'La roche ne bouge pas — creusez à côté et laissez glisser la gemme', 'how.forage':'touchez une baie pour lancer un essaim sur sa couleur ; il entre par les trous, ne mange que ce qu’il atteint, puis attend dans le panier que vous le relanciez. Touchez un essaim en attente pour le rappeler', 'how.sift':'seul le sable se creuse — les roches ne bougent jamais. Dégagez une pente et les gemmes y glissent',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3573,11 +3589,11 @@ const STRINGS = {
     'how.drag':'desliza un dedo por el tablero', 'how.tapdrag':'toca primero y luego desliza para apuntar',
     'p.seekAt':'Encuentra {w} — llevas {s}',
     'how.seek':'toca las letras en orden o deslízate por ellas',
-    'p.forage':'La cesta quiere exactamente {b} — faltan {n}', 'forage.over':'{n} de más — retrocede o come amargo', 'forage.home':'{b} exacto — ahora llega a la cesta', 'forage.cell':'{v}, fila {r} columna {c}', 'forage.basket':'Cesta, {v}, fila {r} columna {c}', 'forage.bitter':'Amarga, menos {v}, fila {r} columna {c}', 'm.forage':'Recolecta|Llega a la cesta con la cuenta exacta',
+    'p.forage':'Quedan {n} bayas', 'forage.cell':'{k}, fila {r} columna {c}', 'forage.gone':'Comida, fila {r} columna {c}', 'forage.slot':'Enjambre esperando {k}, quedan {n}', 'forage.free':'Hueco libre en la cesta', 'forage.full':'Cesta llena — llama a un enjambre, o ábrele el paso', 'm.forage':'Recolecta|Lanza un enjambre a un color — pocos pueden estar fuera a la vez',
     'p.meld':'{n} gelatinas — hazlas una', 'meld.cell':'Gelatina {v}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'm.meld':'Fusión|Aplasta gelatinas iguales hasta que quede una', 'how.meld':'arrastra una gelatina sobre su gemela y siente cómo se aplasta dentro, o toca una y luego la otra; toca el hueco que dejó para deshacerla',
     'p.volley':'Faltan {n} — dispara en su color', 'volley.box':'Una rueda de colores que gira, con un cañón debajo', 'volley.swap':'Cambiar: {c}', 'volley.last':'Última bola — nada que cambiar', 'volley.ball':'Cargado: {c}', 'm.volley':'Volea|Dos bolas en mano — dispara cada una cuando pase su color', 'how.volley':'toca la rueda para disparar; la pastilla de cambio coge la otra bola, pero el cañón tarda un momento en recargar',
     'p.sift':'Gemas a la fila de abajo — faltan {n}', 'sift.empty':'Aire, fila {r} columna {c}', 'sift.grain':'Arena, fila {r} columna {c}', 'sift.rock':'Roca, fila {r} columna {c}', 'sift.gem':'Gema, fila {r} columna {c}', 'm.sift':'Criba|Excava alrededor de las rocas y deja resbalar las gemas',
-    'sift.stuckRock':'La roca no se mueve — excava al lado y deja resbalar la gema', 'how.sift':'solo la arena se excava: las rocas nunca se mueven. Abre una pendiente y las gemas resbalan por ella',
+    'sift.stuckRock':'La roca no se mueve — excava al lado y deja resbalar la gema', 'how.forage':'toca una baya para lanzar un enjambre a su color; entra por los huecos, come solo lo que alcanza y luego espera en la cesta a que lo vuelvas a lanzar. Toca un enjambre en espera para llamarlo', 'how.sift':'solo la arena se excava: las rocas nunca se mueven. Abre una pendiente y las gemas resbalan por ella',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3718,11 +3734,11 @@ const STRINGS = {
     'how.drag':'zieh einen Finger über das Feld', 'how.tapdrag':'erst tippen, dann zum Zielen ziehen',
     'p.seekAt':'Finde {w} — bisher {s}',
     'how.seek':'tippe die Buchstaben der Reihe nach an oder zieh darüber',
-    'p.forage':'Der Korb will genau {b} — noch {n}', 'forage.over':'{n} zu viel — zurück oder bitter essen', 'forage.home':'Genau {b} — jetzt zum Korb', 'forage.cell':'{v}, Zeile {r} Spalte {c}', 'forage.basket':'Korb, {v}, Zeile {r} Spalte {c}', 'forage.bitter':'Bitter, minus {v}, Zeile {r} Spalte {c}', 'm.forage':'Sammeln|Erreiche den Korb mit genau der richtigen Menge',
+    'p.forage':'Noch {n} Beeren', 'forage.cell':'{k}, Zeile {r} Spalte {c}', 'forage.gone':'Gefressen, Zeile {r} Spalte {c}', 'forage.slot':'Schwarm wartet auf {k}, noch {n}', 'forage.free':'Freier Korbplatz', 'forage.full':'Korb voll — ruf einen Schwarm zurück, oder mach ihm den Weg frei', 'm.forage':'Sammeln|Schick einen Schwarm auf eine Farbe — nur wenige dürfen draußen sein',
     'p.meld':'{n} Gelees — mach eins daraus', 'meld.cell':'Gelee {v}, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'm.meld':'Verschmelzen|Drück gleiche Gelees zusammen, bis eins übrig ist', 'how.meld':'zieh ein Gelee auf sein Gegenstück und spür, wie es hineinplatscht, oder tippe erst das eine, dann das andere; tippe auf die Lücke, um es wieder zu trennen',
     'p.volley':'Noch {n} — schieß auf seine Farbe', 'volley.box':'Ein sich drehendes Farbrad mit einem Lauf darunter', 'volley.swap':'Wechseln: {c}', 'volley.last':'Letzte Kugel — nichts zu tauschen', 'volley.ball':'Geladen: {c}', 'm.volley':'Salve|Zwei Kugeln in der Hand — schieß jede, wenn ihre Farbe kommt', 'how.volley':'tippe aufs Rad zum Schießen; der Tausch-Knopf nimmt die andere Kugel, aber der Lauf braucht einen Moment zum Nachladen',
     'p.sift':'Edelsteine in die unterste Reihe — noch {n}', 'sift.empty':'Luft, Zeile {r} Spalte {c}', 'sift.grain':'Sand, Zeile {r} Spalte {c}', 'sift.rock':'Fels, Zeile {r} Spalte {c}', 'sift.gem':'Edelstein, Zeile {r} Spalte {c}', 'm.sift':'Sieben|Grab um die Felsen herum und lass die Edelsteine rutschen',
-    'sift.stuckRock':'Der Fels rührt sich nicht — grab daneben und lass den Stein rutschen', 'how.sift':'nur Sand lässt sich graben – Felsen bewegen sich nie. Grab eine Schräge frei, dann rutschen die Edelsteine hinunter',
+    'sift.stuckRock':'Der Fels rührt sich nicht — grab daneben und lass den Stein rutschen', 'how.forage':'tippe eine Beere an, um einen Schwarm auf ihre Farbe zu schicken; er kommt durch die Lücken herein, frisst nur, was er erreicht, und wartet dann im Korb, bis du ihn erneut schickst. Tippe einen wartenden Schwarm an, um ihn zurückzurufen', 'how.sift':'nur Sand lässt sich graben – Felsen bewegen sich nie. Grab eine Schräge frei, dann rutschen die Edelsteine hinunter',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3866,6 +3882,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.33.0', date:'2026-09-18', items:[
+    'Forage rebuilt. It is a patch of berries in colour blocks with a gap or two of bare ground, and a swarm you send at a colour — which comes in through the gaps, eats everything of that colour it can reach right now, and then sits in one of your few basket slots waiting, because nothing here finishes on its own. Send them outside-in and each one comes away whole and never costs you a slot. Send one at a colour still walled in and you have parked it, and the next one after that, until the basket jams.',
+    'What a careless order costs is measured before the patch ships, not guessed: every order of the colours is played out, the patch is thrown back unless one of them clears it in a single send each, and thrown back again unless the average order costs meaningfully more than that. Twelve probed patches: a careless order costs between two and nine extra sends.',
+    'Calling a swarm home frees its slot and costs a move, because committing to the wrong colour cost one. The board marks every berry touching bare ground, which is the rule; which whole COLOURS come away in one go is the part worth working out.',
+  ] },
   { v:'0.32.0', date:'2026-09-18', items:[
     'Volley was a queue rather than a decision: one ball, one colour, wait for it. Now two are in hand and the swap pill takes the other one — but the barrel has to reload, so the choice has to be made a window early rather than at the last instant. Three landed without a bounce and the queue gives one back, which is the only thing here that pays for taking the tighter window instead of waiting a whole turn for an easy one.',
     'Forage was arithmetic with a longer sum. The walk now has to END at the basket, so a total that is right in the wrong place is no use, and bitter berries take away rather than give — an overshoot is something to walk out of rather than only back out of. Every board is still walked before it ships and thrown back unless the shortest route to the basket is at least four berries long.',
@@ -10078,161 +10099,300 @@ const MODES = {
 
   /* ── Forage ───────────────────────────────────────────────────────────── */
   forage: {
-    name:'Forage', blurb:'Walk the patch to the basket, arriving with exactly enough', cat:'numbers', par:14000, bonus:3600,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="17" r="3" fill="#FFC53D"/><circle cx="12" cy="11" r="3" fill="#FFC53D" opacity=".55"/><path d="M6 17l6-6" stroke="#FFC53D" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".7"/><path d="M15 6h6l-1 5h-4z" fill="none" stroke="#FFC53D" stroke-width="1.5" stroke-linejoin="round"/><path d="M16 6a2 2 0 0 1 4 0" fill="none" stroke="#FFC53D" stroke-width="1.3"/></svg>',
+    name:'Forage', blurb:'Send a swarm at a colour — only so many can be out at once', input:'forage', cat:'logic', par:16000, bonus:4200,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="#33E6C8" opacity=".85"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="#33E6C8" opacity=".35"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="#33E6C8" opacity=".35"/><circle cx="17.5" cy="17.5" r="1.3" fill="#33E6C8"/><circle cx="20.5" cy="19.5" r="1.1" fill="#33E6C8"/><circle cx="15" cy="20" r="1.1" fill="#33E6C8"/></svg>',
     build(ctx){
-      /* Sum Snap is two numbers hitting a target and Halve is a set split in
-         two. Neither cares where a number sits. Here the numbers you may add
-         next are only the ones you can walk to, so the arithmetic and the route
-         are the same problem — which is the one thing a grid of numbers can ask
-         that a row of them cannot.
+      /* A patch of berries in colour blocks, and a swarm you send at a colour.
+         The swarm comes in from the OUTSIDE, so it can only reach what the edge
+         can reach — and anything it cannot get to yet, it waits for, sitting in
+         one of your few basket slots until the way opens. Send a swarm at a
+         colour buried in the middle and you have parked it for most of the
+         round; send them outside-in and each one finishes on the spot and
+         never costs you a slot at all. The order IS the puzzle. */
+      const N     = ctx.level < 10 ? 4 : 5;
+      const CELLS = N*N;
+      const GONE  = -1;
+      const k     = clamp(3 + Math.floor(ctx.level/8), 3, 5);
+      /* How many swarms can be out waiting. Every one of them is a colour you
+         committed to before its way was clear. */
+      const cap   = clamp(k - 2 - Math.floor(ctx.level/20), 1, 3);
+      /* How forgiving the board is allowed to be: the share of tap orders that
+         happen to work. A board where most orders work is not a puzzle. */
+      /* What a careless order has to cost, in extra sends, averaged over every
+         order there is. Under a number here the patch is not a puzzle. */
+      const want  = clamp(1 + ctx.level/18, 1, 3);
 
-         Adding up to a target and stopping is arithmetic with a longer sum. It
-         becomes a puzzle when the route has to END somewhere: the basket is a
-         fixed square, so a total that is right in the wrong place is no use,
-         and bitter berries take away rather than give, so overshooting is
-         something you can walk out of instead of only back out of. */
-      const N    = ctx.level < 9 ? 4 : 5;
-      const cells = N*N;
-      const want  = clamp(4 + Math.floor(ctx.level/5), 4, 8);   /* berries on the route */
-      const sour  = clamp(Math.floor((ctx.level - 5)/6), 0, 3); /* bitter berries */
-
-      const rc  = i => [Math.floor(i/N), i % N];
-      const adj = (a, b) => { const [ar,ac] = rc(a), [br,bc] = rc(b);
-                              return Math.abs(ar-br) + Math.abs(ac-bc) === 1; };
+      const rc   = i => [Math.floor(i/N), i % N];
       const nbrs = i => { const [r, c] = rc(i); const out = [];
         [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc]) => {
           const nr = r+dr, nc = c+dc;
           if (nr >= 0 && nc >= 0 && nr < N && nc < N) out.push(nr*N + nc);
         });
         return out; };
+      const onEdge = i => { const [r, c] = rc(i);
+        return r === 0 || c === 0 || r === N-1 || c === N-1; };
+      /* How many ways in the patch has. A swarm can only start from bare ground,
+         so these gaps are the whole reason one colour can be behind another:
+         with the rim itself counting as a way in, nothing is ever buried. */
+      const gaps = clamp(2 - Math.floor(ctx.level/18), 1, 2);
 
-      /* The route is walked first and the basket is wherever it ended, so a
-         solution exists by construction. Then every route the board allows
-         between those two squares is enumerated, shortest first, to make sure
-         the answer is not two steps long — a walk you can do without thinking
-         is not a puzzle. Deepening rather than one deep search, because the
-         cheap rejections are the common case and they want to be cheap. */
-      let vals = null, start = 0, basket = 0, target = 0;
-      for (let attempt = 0; attempt < 150 && !vals; attempt++){
-        const v = Array.from({ length: cells }, () => 1 + Math.floor(ctx.rnd()*9));
-        shuffle(Array.from({ length: cells }, (_, i) => i), ctx.rnd)
-          .slice(0, sour).forEach(i => { v[i] = -(1 + Math.floor(ctx.rnd()*4)); });
-        const seen = new Set();
-        let cur = Math.floor(ctx.rnd()*cells), sum = v[cur], ok = true;
-        const seed = cur;
-        seen.add(cur);
-        for (let k = 1; k < want && ok; k++){
-          const opts = nbrs(cur).filter(x => !seen.has(x));
-          if (!opts.length){ ok = false; break; }
-          cur = opts[Math.floor(ctx.rnd()*opts.length)];
-          seen.add(cur); sum += v[cur];
+      /* One pass of a swarm: everything of this colour the outside can currently
+         touch. Returns the cells eaten, newest wave last, so the board can be
+         shown being eaten inward rather than blinking out all at once. */
+      const chew = (g, colour) => {
+        const waves = [];
+        for (;;){
+          const wave = [];
+          for (let i = 0; i < CELLS; i++){
+            if (g[i] !== colour) continue;
+            if (nbrs(i).some(j => g[j] === GONE)) wave.push(i);
+          }
+          if (!wave.length) break;
+          wave.forEach(i => { g[i] = GONE; });
+          waves.push(wave);
         }
-        if (!ok || seen.size !== want || sum < 4) continue;
-        const end = cur;
-        if (v[seed] < 0 || v[end] < 0) continue;      /* both ends are food */
-        const reach = depth => {
-          const used = new Set([seed]);
-          const go = (at, total, left) => {
-            if (at === end && total === sum && left === 0) return true;
-            if (left === 0) return false;
-            for (const nx of nbrs(at)){
-              if (used.has(nx)) continue;
-              used.add(nx);
-              if (go(nx, total + v[nx], left - 1)) return true;
-              used.delete(nx);
+        return waves;
+      };
+      const has = (g, colour) => g.some(v => v === colour);
+
+      /* Send a swarm at a colour: it eats everything it can reach right now and
+         nothing more. Anything left keeps it out there, holding a slot, until
+         you send it again — nothing finishes on its own, which is the only
+         reason the order of the sends is worth anything. */
+      const send1 = (g, out, colour) => {
+        if (out.indexOf(colour) < 0 && out.length >= cap) return false;
+        chew(g, colour);
+        const still = has(g, colour), at = out.indexOf(colour);
+        if (still && at < 0) out.push(colour);
+        if (!still && at >= 0) out.splice(at, 1);
+        return true;
+      };
+      /* One fixed order, played through as someone would who had picked it and
+         stuck to it: send each colour in turn, come back round for whatever is
+         still out, and call a swarm home when the basket jams. */
+      const cost = (g0, order) => {
+        const g = g0.slice(), out = [];
+        let taps = 0;
+        for (let round = 0; round < 3; round++){
+          for (const colour of order){
+            if (!has(g, colour)) continue;
+            if (!send1(g, out, colour)){
+              out.shift(); taps++;                  /* called one home */
+              if (!send1(g, out, colour)) return { done:false, taps };
             }
-            return false;
-          };
-          return go(seed, v[seed], depth - 1);
-        };
-        let best = 0;
-        for (let d = 2; d <= want && !best; d++) if (reach(d)) best = d;
-        if (best < 4) continue;
-        vals = v; start = seed; basket = end; target = sum;
+            taps++;
+          }
+          if (g.every(v => v === GONE)) break;
+        }
+        return { done: g.every(v => v === GONE), taps };
+      };
+
+      /* Two ways to draw a patch. Blobs grown from scattered seeds give a board
+         where a colour may or may not be buried; bands laid down in the order a
+         flood reaches them give one where it certainly is. Neither is used on
+         its own, because a patch that is always an onion is a patch you solve
+         once and then never read again. */
+      const cutGaps = () => {
+        const rim = [];
+        for (let i = 0; i < CELLS; i++) if (onEdge(i)) rim.push(i);
+        return shuffle(rim, ctx.rnd).slice(0, gaps);
+      };
+      /* Flood out from the gaps, so the order cells come up in IS the order a
+         swarm can reach them. */
+      const flood = holes => {
+        const order = holes.slice(), seen = new Set(holes);
+        for (let x = 0; x < order.length; x++)
+          for (const j of shuffle(nbrs(order[x]), ctx.rnd))
+            if (!seen.has(j)){ seen.add(j); order.push(j); }
+        return order.length === CELLS ? order.slice(holes.length) : null;
+      };
+      const blobs = () => {
+        const holes = cutGaps();
+        const g = new Array(CELLS).fill(GONE);
+        const free = [];
+        for (let i = 0; i < CELLS; i++) if (holes.indexOf(i) < 0) free.push(i);
+        const seeds = shuffle(free.slice(), ctx.rnd).slice(0, k);
+        seeds.forEach((i, c) => { g[i] = c; });
+        let room = free.length - k;
+        for (let guard = 0; guard < 4000 && room > 0; guard++){
+          const c = guard % k, edge = [];
+          for (let i = 0; i < CELLS; i++) if (g[i] === c)
+            for (const j of nbrs(i))
+              if (g[j] === GONE && holes.indexOf(j) < 0 && edge.indexOf(j) < 0) edge.push(j);
+          if (!edge.length) continue;
+          g[edge[Math.floor(ctx.rnd()*edge.length)]] = c;
+          room--;
+        }
+        return free.every(i => g[i] !== GONE) ? g : null;
+      };
+      const bands = () => {
+        const holes = cutGaps();
+        const order = flood(holes);
+        if (!order) return null;
+        /* jittered band sizes, so the layers are not k even rings */
+        const cuts = [];
+        let room = order.length;
+        for (let c = 0; c < k - 1; c++){
+          const rest = k - c - 1;
+          const size = clamp(Math.round(order.length/k + (ctx.rnd()-0.5)*order.length/k),
+                             2, room - rest*2);
+          cuts.push(size); room -= size;
+        }
+        cuts.push(room);
+        const g = new Array(CELLS).fill(GONE);
+        let at = 0;
+        cuts.forEach((n, c) => { for (let x = 0; x < n; x++) g[order[at++]] = c; });
+        return order.every(i => g[i] !== GONE) ? g : null;
+      };
+
+      /* Every order of the colours, played out. A patch ships only when one of
+         them clears it in a single send each — so a perfect line exists — and
+         when the average order costs meaningfully more than that. Both numbers
+         are measured here rather than hoped for. */
+      const perms = arr => arr.length <= 1 ? [arr]
+        : arr.flatMap((x, i) => perms(arr.filter((_, j) => j !== i)).map(p => [x, ...p]));
+      const orders = perms(Array.from({ length: k }, (_, i) => i));
+
+      let board = null, answer = k, bestSeen = null, bestPen = -1;
+      for (let attempt = 0; attempt < 90 && !board; attempt++){
+        const g = (attempt % 2 ? blobs() : bands());
+        if (!g) continue;
+        let low = 99, sum = 0, n = 0;
+        for (const o of orders){
+          const r = cost(g, o);
+          if (!r.done) continue;
+          low = Math.min(low, r.taps); sum += r.taps; n++;
+        }
+        if (!n || low !== k) continue;                 /* no perfect line */
+        const pen = sum/n - k;
+        if (pen > bestPen){ bestPen = pen; bestSeen = g; }
+        if (pen >= want) board = g;
       }
-      if (!vals){
-        vals = Array.from({ length: cells }, (_, i) => 1 + (i % 9));
-        start = 0; basket = N + 2;
-        target = vals[0] + vals[1] + vals[2] + vals[N+2];
+      if (!board && bestSeen && bestPen > 0) board = bestSeen;
+      if (!board){
+        board = new Array(CELLS).fill(0);
+        for (let i = 0; i < CELLS; i++) board[i] = Math.min(k-1, Math.floor(i / Math.ceil(CELLS/k)));
+        board[0] = GONE;
       }
 
-      const show = v => (v < 0 ? '\u2212' + (-v) : String(v));
+      const inks = shuffle(INKS.slice(), ctx.rnd).slice(0, k);
+      let g = board.slice(), done = false, busy = false;
+      const out = [];                                /* colours waiting in the basket */
+
+      /* The patch and the basket are one thing, and the basket is the half that
+         must never be the half that falls off the bottom of the board. */
+      const wrap = mk('div','patchwrap');
       const grid = gridEl(N);
-      const cellEls = vals.map((v, i) => {
-        const b = mk('button','cell berry' + (v < 0 ? ' bitter' : '')
-          + (i === basket ? ' basket' : ''));
+      grid.classList.add('patch');
+      const cells = board.map((v, i) => {
+        const b = mk('button','cell bug');
         b.type = 'button';
-        b.textContent = show(v);
-        b.setAttribute('aria-label', t(i === basket ? 'forage.basket'
-          : v < 0 ? 'forage.bitter' : 'forage.cell',
-          { v: Math.abs(v), r: Math.floor(i/N) + 1, c: (i % N) + 1 }));
         grid.appendChild(b);
         return b;
       });
-      ctx.surface.appendChild(grid);
+      wrap.appendChild(grid);
 
-      /* One more than the old patch allowed. A wrong turn used to cost a move
-         and nothing else; now the walk has to end on the basket too, so there
-         is one more way to be wrong and one more move to be wrong with. */
-      const budget = moveBudget(ctx, 1);
-      let path = [start], done = false;
-      const total = () => path.reduce((a, i) => a + vals[i], 0);
+      /* The basket. A slot is a swarm you have already committed, so it shows
+         whose colour it is waiting on and how much of it is left. */
+      const rail = mk('div','swarmrail');
+      const slots = Array.from({ length: cap }, () => { const d = mk('button','antslot');
+        d.type = 'button'; rail.appendChild(d); return d; });
+      wrap.appendChild(rail);
+      ctx.surface.appendChild(wrap);
+
+      const budget = moveBudget(ctx, answer);
+      const left = colour => g.reduce((a, v) => a + (v === colour ? 1 : 0), 0);
 
       const paint = () => {
-        const head = path[path.length - 1];
-        cellEls.forEach((b, i) => {
-          const on = path.indexOf(i) >= 0;
-          b.classList.toggle('ate', on);
-          b.classList.toggle('head', i === head);
-          b.classList.toggle('can', !on && adj(head, i));
+        cells.forEach((b, i) => {
+          const v = g[i];
+          /* Touching bare ground is the whole rule, so the board says which
+             berries do. It does not say which COLOURS come away whole, which
+             is the part worth working out. */
+          b.className = 'cell bug' + (v === GONE ? ' gone' : '')
+            + (v !== GONE && nbrs(i).some(j => g[j] === GONE) ? ' near' : '')
+            + (v !== GONE && out.indexOf(v) >= 0 ? ' waited' : '');
+          b.style.background = v === GONE ? '' : inks[v].hex;
+          b.innerHTML = v !== GONE && assistOn() ? shapeSvg(inks[v].shape, '#0D0918') : '';
+          b.setAttribute('aria-label', v === GONE
+            ? t('forage.gone', { r: Math.floor(i/N) + 1, c: (i % N) + 1 })
+            : t('forage.cell', { k: inkName(inks[v]), r: Math.floor(i/N) + 1, c: (i % N) + 1 }));
         });
-        const now = total();
-        ctx.prompt(now > target ? t('forage.over', { n: now - target, b: target })
-          : now === target ? t('forage.home', { b: target })
-          : t('p.forage', { n: target - now, b: target }));
+        slots.forEach((d, x) => {
+          const colour = out[x];
+          d.className = 'antslot' + (colour === undefined ? ' free' : ' held');
+          d.style.background = colour === undefined ? '' : inks[colour].hex;
+          d.innerHTML = colour !== undefined && assistOn() ? shapeSvg(inks[colour].shape, '#0D0918') : '';
+          d.setAttribute('aria-label', colour === undefined ? t('forage.free')
+            : t('forage.slot', { k: inkName(inks[colour]), n: left(colour) }));
+        });
+        ctx.prompt(t('p.forage', { n: g.reduce((a, v) => a + (v !== GONE ? 1 : 0), 0) }));
       };
 
-      cellEls.forEach((b, i) => onTap(b, () => {
-        if (done) return;
-        const back = path.indexOf(i);
-        /* Walking back over your own trail is how you undo a wrong turn, and
-           the same tap does it everywhere else in the app. */
-        if (back >= 0){
-          if (back === path.length - 1) return;
-          path.length = back + 1;
-          paint(); sfx.tap(); buzz('tap');
-          return budget.spend(b);
-        }
-        if (!adj(path[path.length - 1], i)){
-          b.classList.add('nope');
-          ctx.after(300, () => b.classList.remove('nope'));
-          return;
-        }
-        path.push(i);
-        paint();
-        const now = total();
-        if (i === basket){
-          if (now === target){
-            done = true;
-            path.forEach(x => cellEls[x].classList.add('full'));
-            return ctx.win(b);
-          }
-          /* Reaching the basket with the wrong total is not the end of it —
-             step back out and keep going. Saying so costs nothing; the step
-             back costs a move like every other one. */
-          b.classList.add('nope');
-          ctx.after(320, () => b.classList.remove('nope'));
+      /* Eating, drawn one wave at a time out from the gaps. The board is already
+         decided; this is only the picture of it arriving. */
+      const show = (waves, then) => {
+        if (!waves.length) return then();
+        busy = true;
+        const step = x => {
+          if (x >= waves.length){ busy = false; return then(); }
+          waves[x].forEach(i => { g[i] = GONE; cells[i].classList.add('munch'); });
+          paint();
+          sfx.tap();
+          ctx.after(motionOff() ? 0 : 85, () => step(x + 1));
+        };
+        step(0);
+      };
+
+      const send = colour => {
+        const parked = out.indexOf(colour) >= 0;
+        if (!parked && out.length >= cap){
+          /* Nothing can be committed to while every slot is already committed,
+             and saying so on the basket is where anyone will look. */
+          rail.classList.add('full');
+          ctx.after(520, () => rail.classList.remove('full'));
+          ctx.prompt(t('forage.full'));
           sfx.bad(); buzz('bad');
-          return;
+          return;                                 /* refused, and it costs nothing */
         }
-        sfx.tap(); buzz('tap');
+        const probe = g.slice();
+        const waves = chew(probe, colour);
+        const finishes = !has(probe, colour);
+        if (!parked && !finishes) out.push(colour);
+        budget.spend(cells[g.indexOf(colour)] || grid);
+        paint();
+        show(waves, () => {
+          if (finishes && out.indexOf(colour) >= 0) out.splice(out.indexOf(colour), 1);
+          if (waves.length){ sfx.good(2 + waves.length); buzz('good'); }
+          paint();
+          if (g.every(v => v === GONE)){
+            done = true;
+            grid.classList.add('clear');
+            return ctx.win(grid);
+          }
+        });
+      };
+
+      cells.forEach((b, i) => onTap(b, () => {
+        if (done || busy) return;
+        const colour = g[i];
+        if (colour === GONE) return;
+        send(colour);
+      }));
+
+      /* Calling a swarm home is the way out of a basket filled with the wrong
+         commitments. It costs a move, because the wrong commitment cost one. */
+      slots.forEach((d, x) => onTap(d, () => {
+        if (done || busy) return;
+        if (out[x] === undefined) return;
+        out.splice(x, 1);
+        paint(); sfx.tap(); buzz('tap');
+        budget.spend(d);
       }));
 
       paint();
     }
   },
-
 
   /* ── Meld ─────────────────────────────────────────────────────────────── */
   meld: {

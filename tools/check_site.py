@@ -298,6 +298,20 @@ def _js_number(expr, level):
 
 modes_src = html[html.index("const MODES = {"):html.index("\nconst CATS = [")]
 _starts = [(m.start(), m.group(1)) for m in re.finditer(r"\n  ([a-zA-Z0-9_]+): \{\n", modes_src)]
+# A mode block can be deleted by an edit that meant to touch only its neighbour,
+# and nothing downstream notices: MODE_IDS is derived from MODES, so the count
+# quietly drops and every other check still passes. The floor is the only thing
+# that can catch it. RAISE IT when a mode is added, never lower it.
+MODE_FLOOR = 66
+check(f"the game still has at least {MODE_FLOOR} modes",
+      len(_starts) >= MODE_FLOOR,
+      f"found {len(_starts)}" + ("" if len(_starts) >= MODE_FLOOR else
+        " — a mode block was deleted, or the floor needs raising"))
+# Every mode must carry a name+blurb string, or it is a card with no words on it.
+_missing = [n for _, n in _starts if f"'m.{n}':" not in html]
+check("every mode has a name and blurb string",
+      not _missing, "missing: " + ", ".join(_missing[:5]) if _missing else "")
+
 frozen, scanned = [], 0
 for _i, (_off, _name) in enumerate(_starts):
     _end = _starts[_i + 1][0] if _i + 1 < len(_starts) else len(modes_src)
