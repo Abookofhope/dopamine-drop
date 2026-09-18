@@ -1339,13 +1339,26 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .sand.k1:active{transform:scale(.9)}
 /* A rock is darker AND squarer AND has a hard edge; a gem is brighter AND
    pointed. Neither rests on its colour alone. */
-.sand.k2{background:linear-gradient(180deg,#5c5566,#33303d);border-color:#00000059;
-  border-radius:2px;box-shadow:inset 0 2px 0 #ffffff14}
+/* Cross-hatched and hard-cornered: it has to look like the one thing on the
+   board that will not move, because that is the rule nobody is told. */
+.sand.k2{background:
+    repeating-linear-gradient(45deg,#ffffff0f 0 2px,transparent 2px 5px),
+    linear-gradient(180deg,#6a6275,#2e2b38);
+  border-color:#00000073;border-radius:1px;
+  box-shadow:inset 0 2px 0 #ffffff1a,inset 0 0 0 1px #ffffff12;cursor:not-allowed}
 .sand.k3{background:linear-gradient(150deg,#b6fff2,#33E6C8);
   border-radius:50% 4px 50% 4px;box-shadow:0 0 12px -3px var(--cool)}
-.sand.floor{border-bottom:2px solid #ffffff1a}
+/* The bottom row is where the gems are going, so it is drawn as somewhere
+   things arrive rather than as four more cells that happen to be lowest. */
+.sand.floor{box-shadow:inset 0 -3px 0 #33E6C83d,inset 0 -1px 0 #33E6C866}
+.sand.k1.floor{box-shadow:inset 0 -2px 0 #00000026,inset 0 -4px 0 #33E6C84d}
 .sand.k3.got{box-shadow:0 0 18px -2px var(--cool),0 0 0 2px var(--cool)}
 .sand.nope{background:var(--bad);border-color:var(--bad)}
+.sifttally{display:flex;gap:7px;justify-content:center;margin-top:9px}
+.siftpip{width:13px;height:13px;border-radius:50% 3px 50% 3px;
+  border:1.5px solid #33E6C866;transition:background var(--t-med),box-shadow var(--t-med)}
+.siftpip.on{background:linear-gradient(150deg,#b6fff2,#33E6C8);border-color:transparent;
+  box-shadow:0 0 10px -2px var(--cool)}
 
 /* ── Tide Breath ──────────────────────────────────────────────────────── */
 .tidebox{position:relative;width:100%;aspect-ratio:1;display:grid;place-items:center;touch-action:none;
@@ -2696,7 +2709,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.31.0';
+const VERSION_TAG = 'v0.31.1';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3209,7 +3222,8 @@ const STRINGS = {
     'p.forage':'Eat exactly {b} — {n} to go', 'forage.cell':'{v}, row {r} column {c}', 'm.forage':'Forage|Eat your way along the patch until it comes to exactly enough',
     'p.meld':'{n} jellies — squash them into one', 'meld.cell':'Jelly {v}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'm.meld':'Meld|Squash equal jellies together until one is left', 'how.meld':'tap one jelly then its twin, or drag one onto the other; tap the hole one left behind to split it back',
     'p.volley':'{n} to land — fire when its colour comes round', 'volley.box':'A turning wheel of colours, with a barrel below it', 'volley.ball':'Loaded: {c}', 'm.volley':'Volley|Fire each ball when its own colour comes round', 'how.volley':'tap anywhere to fire — the shot takes a moment to arrive',
-    'p.sift':'{n} still up there', 'sift.empty':'Air, row {r} column {c}', 'sift.grain':'Sand, row {r} column {c}', 'sift.rock':'Rock, row {r} column {c}', 'sift.gem':'Gem, row {r} column {c}', 'm.sift':'Sift|Dig the sand away and let the gems fall through',
+    'p.sift':'Gems to the bottom row — {n} to go', 'sift.empty':'Air, row {r} column {c}', 'sift.grain':'Sand, row {r} column {c}', 'sift.rock':'Rock, row {r} column {c}', 'sift.gem':'Gem, row {r} column {c}', 'm.sift':'Sift|Dig around the rocks and let the gems slide down',
+    'sift.stuckRock':'Rock will not budge — dig beside it and let the gem slide', 'how.sift':'only sand can be dug — rocks never move. Open a slope and the gems slide down it',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3353,7 +3367,8 @@ const STRINGS = {
     'p.forage':'Mangez exactement {b} — encore {n}', 'forage.cell':'{v}, ligne {r} colonne {c}', 'm.forage':'Cueillette|Mangez de proche en proche jusqu’au compte exact',
     'p.meld':'{n} gelées — n’en faites qu’une', 'meld.cell':'Gelée {v}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'm.meld':'Fusion|Écrasez les gelées identiques jusqu’à n’en garder qu’une', 'how.meld':'touchez une gelée puis sa jumelle, ou glissez l’une sur l’autre ; touchez le trou laissé derrière pour la redéfaire',
     'p.volley':'Encore {n} — tirez quand sa couleur arrive', 'volley.box':'Une roue de couleurs qui tourne, avec un canon en dessous', 'volley.ball':'Chargé : {c}', 'm.volley':'Volée|Tirez chaque bille quand sa couleur revient', 'how.volley':'touchez n’importe où pour tirer — le tir met un instant à arriver',
-    'p.sift':'Encore {n} là-haut', 'sift.empty':'Vide, ligne {r} colonne {c}', 'sift.grain':'Sable, ligne {r} colonne {c}', 'sift.rock':'Roche, ligne {r} colonne {c}', 'sift.gem':'Gemme, ligne {r} colonne {c}', 'm.sift':'Tamis|Creusez le sable et laissez tomber les gemmes',
+    'p.sift':'Les gemmes tout en bas — encore {n}', 'sift.empty':'Vide, ligne {r} colonne {c}', 'sift.grain':'Sable, ligne {r} colonne {c}', 'sift.rock':'Roche, ligne {r} colonne {c}', 'sift.gem':'Gemme, ligne {r} colonne {c}', 'm.sift':'Tamis|Creusez autour des roches et laissez glisser les gemmes',
+    'sift.stuckRock':'La roche ne bouge pas — creusez à côté et laissez glisser la gemme', 'how.sift':'seul le sable se creuse — les roches ne bougent jamais. Dégagez une pente et les gemmes y glissent',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3497,7 +3512,8 @@ const STRINGS = {
     'p.forage':'Come exactamente {b} — faltan {n}', 'forage.cell':'{v}, fila {r} columna {c}', 'm.forage':'Recolecta|Come de una a otra hasta llegar a la cuenta exacta',
     'p.meld':'{n} gelatinas — hazlas una', 'meld.cell':'Gelatina {v}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'm.meld':'Fusión|Aplasta gelatinas iguales hasta que quede una', 'how.meld':'toca una gelatina y luego su gemela, o arrastra una sobre la otra; toca el hueco que dejó para deshacerla',
     'p.volley':'Faltan {n} — dispara cuando pase su color', 'volley.box':'Una rueda de colores que gira, con un cañón debajo', 'volley.ball':'Cargado: {c}', 'm.volley':'Volea|Dispara cada bola cuando pase su color', 'how.volley':'toca donde sea para disparar — el tiro tarda un momento en llegar',
-    'p.sift':'Quedan {n} arriba', 'sift.empty':'Aire, fila {r} columna {c}', 'sift.grain':'Arena, fila {r} columna {c}', 'sift.rock':'Roca, fila {r} columna {c}', 'sift.gem':'Gema, fila {r} columna {c}', 'm.sift':'Criba|Excava la arena y deja caer las gemas',
+    'p.sift':'Gemas a la fila de abajo — faltan {n}', 'sift.empty':'Aire, fila {r} columna {c}', 'sift.grain':'Arena, fila {r} columna {c}', 'sift.rock':'Roca, fila {r} columna {c}', 'sift.gem':'Gema, fila {r} columna {c}', 'm.sift':'Criba|Excava alrededor de las rocas y deja resbalar las gemas',
+    'sift.stuckRock':'La roca no se mueve — excava al lado y deja resbalar la gema', 'how.sift':'solo la arena se excava: las rocas nunca se mueven. Abre una pendiente y las gemas resbalan por ella',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3641,7 +3657,8 @@ const STRINGS = {
     'p.forage':'Iss genau {b} — noch {n}', 'forage.cell':'{v}, Zeile {r} Spalte {c}', 'm.forage':'Sammeln|Iss dich weiter, bis es genau aufgeht',
     'p.meld':'{n} Gelees — mach eins daraus', 'meld.cell':'Gelee {v}, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'm.meld':'Verschmelzen|Drück gleiche Gelees zusammen, bis eins übrig ist', 'how.meld':'tippe ein Gelee und dann sein Gegenstück, oder zieh eins auf das andere; tippe auf die Lücke, um es wieder zu trennen',
     'p.volley':'Noch {n} — schieß, wenn seine Farbe kommt', 'volley.box':'Ein sich drehendes Farbrad mit einem Lauf darunter', 'volley.ball':'Geladen: {c}', 'm.volley':'Salve|Schieß jede Kugel, wenn ihre Farbe vorbeikommt', 'how.volley':'tippe irgendwo zum Schießen — der Schuss braucht einen Moment',
-    'p.sift':'Noch {n} da oben', 'sift.empty':'Luft, Zeile {r} Spalte {c}', 'sift.grain':'Sand, Zeile {r} Spalte {c}', 'sift.rock':'Fels, Zeile {r} Spalte {c}', 'sift.gem':'Edelstein, Zeile {r} Spalte {c}', 'm.sift':'Sieben|Grab den Sand weg und lass die Steine durchfallen',
+    'p.sift':'Edelsteine in die unterste Reihe — noch {n}', 'sift.empty':'Luft, Zeile {r} Spalte {c}', 'sift.grain':'Sand, Zeile {r} Spalte {c}', 'sift.rock':'Fels, Zeile {r} Spalte {c}', 'sift.gem':'Edelstein, Zeile {r} Spalte {c}', 'm.sift':'Sieben|Grab um die Felsen herum und lass die Edelsteine rutschen',
+    'sift.stuckRock':'Der Fels rührt sich nicht — grab daneben und lass den Stein rutschen', 'how.sift':'nur Sand lässt sich graben – Felsen bewegen sich nie. Grab eine Schräge frei, dann rutschen die Edelsteine hinunter',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3785,6 +3802,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.31.1', date:'2026-09-18', items:[
+    'Sift said nothing about what it wanted, so the first thing anybody tried was to get rid of the rocks — the one thing on the board that never moves. The bottom row is now drawn as somewhere gems arrive rather than as five more cells that happen to be lowest, the gems still owed sit under the board as pips, and the line above it names the goal instead of counting something unnamed.',
+    'Rocks are cross-hatched, hard-cornered and refuse the touch: tapping one says why it will not budge and costs nothing. Only sand was ever diggable; now it is the only thing that looks it.',
+    'One dig of headroom over the shortest answer, every board. An undo was tried here and thrown out — it would cost a move on top of the move it undid, which is worse than the mistake it fixes.',
+  ] },
   { v:'0.31.0', date:'2026-09-18', items:[
     'New mode \u2014 Sift. The other five physics modes are about one object: where a stone will sit, where a drop will roll, what a beam balances on. Sand is the opposite \u2014 nothing in it moves alone. Take one grain out and the whole pile rearranges itself, which is the only reason digging under a rock is a different idea from digging beside it.',
     'Grains fall, and slide off a pile when they cannot fall straight. Rocks fall but never slide, so they have to be dug around rather than through. Every board is solved before it ships \u2014 breadth-first over digs, so the answer found is the shortest one \u2014 and thrown back unless that answer is at least as long as the level asks for.',
@@ -10387,7 +10409,7 @@ const MODES = {
 
   /* ── Sift ─────────────────────────────────────────────────────────────── */
   sift: {
-    name:'Sift', blurb:'Dig the sand away and let the gems fall through', cat:'physics', par:16000, bonus:4200,
+    name:'Sift', blurb:'Dig around the rocks and let the gems slide down', input:'sift', cat:'physics', par:16000, bonus:4200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-3 7H7z" fill="none" stroke="#FF9A3D" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 14.5l2 2 2-2-2-2z" fill="#33E6C8"/><circle cx="8" cy="20" r="1.2" fill="#FF9A3D"/><circle cx="12" cy="21" r="1.2" fill="#FF9A3D"/><circle cx="16" cy="20" r="1.2" fill="#FF9A3D"/></svg>',
     build(ctx){
       /* The other five physics modes are about one object: where a stone will
@@ -10484,11 +10506,29 @@ const MODES = {
       }
       ctx.surface.appendChild(grid);
 
-      const budget = moveBudget(ctx, answer);
+      /* "How do I get rid of the black squares" is what you ask when the board
+         never told you what it wants. It wants gems on the bottom row, so the
+         bottom row is drawn as a tray and the gems still owed are drawn under
+         it — the goal is on the board, not in a line of text that left after
+         six seconds. */
+      const tally = mk('div','sifttally');
+      const pips  = [];
+      for (let i = 0; i < gems; i++){
+        const d = mk('span','siftpip');
+        tally.appendChild(d); pips.push(d);
+      }
+      tally.setAttribute('aria-hidden','true');
+      ctx.surface.appendChild(tally);
+
+      /* One dig of headroom over the shortest answer. Nothing here can be taken
+         back — an undo would cost a move on top of the one it undoes, which is
+         worse than the mistake — so the slack is where the forgiveness lives. */
+      const budget = moveBudget(ctx, answer + 1);
       let g = board.slice(), busy = false, done = false;
       const KIND = { 0:'empty', 1:'grain', 2:'rock', 3:'gem' };
 
       const paint = () => {
+        const landed = home(g);
         cells.forEach((b, i) => {
           const v = g[i], onFloor = Math.floor(i/W) === H-1;
           b.className = 'sand k' + v + (onFloor ? ' floor' : '')
@@ -10496,7 +10536,8 @@ const MODES = {
           b.setAttribute('aria-label', t('sift.' + KIND[v],
             { r: Math.floor(i/W) + 1, c: (i % W) + 1 }));
         });
-        ctx.prompt(t('p.sift', { n: gems - home(g) }));
+        pips.forEach((d, i) => d.classList.toggle('on', i < landed));
+        ctx.prompt(t('p.sift', { n: gems - landed }));
       };
 
       /* Settled one pass at a time rather than all at once: watching the pile
@@ -10509,6 +10550,7 @@ const MODES = {
         }
         busy = false;
         grid.classList.remove('settling');
+        paint();
         if (home(g) === gems){
           done = true;
           grid.classList.add('won');
@@ -10519,8 +10561,11 @@ const MODES = {
       cells.forEach((b, i) => onTap(b, () => {
         if (done || busy) return;
         if (g[i] !== SAND){
+          /* A rock is not going anywhere, and saying so on the rock is the only
+             place anybody will read it. */
           b.classList.add('nope');
           ctx.after(280, () => b.classList.remove('nope'));
+          if (g[i] === ROCK) ctx.prompt(t('sift.stuckRock'));
           return;
         }
         g[i] = EMPTY;
