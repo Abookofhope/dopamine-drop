@@ -1293,6 +1293,36 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   box-shadow:inset 0 0 0 1px #ffffff26}
 .jel.one{box-shadow:0 0 0 3px var(--cool),0 0 28px -4px var(--cool),inset 0 -4px 0 #00000026}
 
+/* ── Volley ───────────────────────────────────────────────────────────── */
+.vlybox{position:relative;width:100%;aspect-ratio:1;max-height:100%;overflow:hidden;
+  touch-action:manipulation;border-radius:var(--r-lg);
+  background:linear-gradient(180deg,#140b23,#0b0716);border:1px solid var(--edge-soft);
+  transition:border-color var(--t-fast),background var(--t-fast)}
+.vlybox.off{border-color:var(--bad);background:linear-gradient(180deg,#2a0f1d,#0b0716)}
+.vlybox.won{border-color:var(--cool)}
+.vlywheel{position:absolute;display:block;left:16%;top:6%;width:68%;height:68%;
+  border-radius:50%;box-shadow:0 0 0 3px #ffffff14,0 14px 34px -22px #000;
+  transition:filter var(--t-fast)}
+.vlywheel.hit{filter:brightness(1.35)}
+.vlymarks{position:absolute;display:block;inset:0;pointer-events:none}
+.vlymarks span{position:absolute;left:50%;top:50%;width:19%;height:19%;
+  transform:rotate(var(--a)) translateY(-160%) translateX(-50%)}
+.vlymarks .shp{width:100%;height:100%;display:block}
+.vlyhub{position:absolute;display:block;left:41%;top:31%;width:18%;height:18%;
+  border-radius:50%;background:var(--ink);box-shadow:inset 0 0 0 2px #ffffff1f}
+/* The barrel points at six o'clock, which is the wedge a shot arrives at. */
+.vlybarrel{position:absolute;display:block;left:calc(50% - 9px);bottom:5%;width:18px;height:11%;
+  border-radius:4px 4px 2px 2px;background:linear-gradient(180deg,#3a2c5e,#241a40);
+  box-shadow:inset 0 2px 0 #ffffff1a}
+.vlyball{position:absolute;display:block;left:calc(50% - 13px);bottom:8%;width:26px;height:26px;
+  border-radius:50%;box-shadow:0 0 12px -2px #ffffff5c,inset 0 -3px 0 #00000033}
+.vlyball .shp{width:100%;height:100%;display:block}
+.vlyqueue{position:absolute;display:flex;gap:6px;left:0;right:0;bottom:1.5%;
+  justify-content:center;align-items:center}
+.vlyqueue span{display:block;width:13px;height:13px;border-radius:50%;opacity:.45}
+.vlyqueue span.now{width:19px;height:19px;opacity:1;box-shadow:0 0 0 2px #ffffff40}
+.vlyqueue .shp{width:100%;height:100%;display:block}
+
 /* ── Tide Breath ──────────────────────────────────────────────────────── */
 .tidebox{position:relative;width:100%;aspect-ratio:1;display:grid;place-items:center;touch-action:none;
   border-radius:50%;transition:background var(--t-med)}
@@ -2642,7 +2672,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.29.0';
+const VERSION_TAG = 'v0.30.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3154,6 +3184,7 @@ const STRINGS = {
     'how.seek':'tap the letters in order, or drag through them',
     'p.forage':'Eat exactly {b} — {n} to go', 'forage.cell':'{v}, row {r} column {c}', 'm.forage':'Forage|Eat your way along the patch until it comes to exactly enough',
     'p.meld':'{n} jellies — squash them into one', 'meld.cell':'Jelly {v}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'm.meld':'Meld|Squash equal jellies together until one is left', 'how.meld':'tap one jelly then its twin, or drag one onto the other; tap the hole one left behind to split it back',
+    'p.volley':'{n} to land — fire when its colour comes round', 'volley.box':'A turning wheel of colours, with a barrel below it', 'volley.ball':'Loaded: {c}', 'm.volley':'Volley|Fire each ball when its own colour comes round', 'how.volley':'tap anywhere to fire — the shot takes a moment to arrive',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3296,6 +3327,7 @@ const STRINGS = {
     'how.seek':'touchez les lettres dans l’ordre, ou glissez dessus',
     'p.forage':'Mangez exactement {b} — encore {n}', 'forage.cell':'{v}, ligne {r} colonne {c}', 'm.forage':'Cueillette|Mangez de proche en proche jusqu’au compte exact',
     'p.meld':'{n} gelées — n’en faites qu’une', 'meld.cell':'Gelée {v}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'm.meld':'Fusion|Écrasez les gelées identiques jusqu’à n’en garder qu’une', 'how.meld':'touchez une gelée puis sa jumelle, ou glissez l’une sur l’autre ; touchez le trou laissé derrière pour la redéfaire',
+    'p.volley':'Encore {n} — tirez quand sa couleur arrive', 'volley.box':'Une roue de couleurs qui tourne, avec un canon en dessous', 'volley.ball':'Chargé : {c}', 'm.volley':'Volée|Tirez chaque bille quand sa couleur revient', 'how.volley':'touchez n’importe où pour tirer — le tir met un instant à arriver',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3438,6 +3470,7 @@ const STRINGS = {
     'how.seek':'toca las letras en orden o deslízate por ellas',
     'p.forage':'Come exactamente {b} — faltan {n}', 'forage.cell':'{v}, fila {r} columna {c}', 'm.forage':'Recolecta|Come de una a otra hasta llegar a la cuenta exacta',
     'p.meld':'{n} gelatinas — hazlas una', 'meld.cell':'Gelatina {v}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'm.meld':'Fusión|Aplasta gelatinas iguales hasta que quede una', 'how.meld':'toca una gelatina y luego su gemela, o arrastra una sobre la otra; toca el hueco que dejó para deshacerla',
+    'p.volley':'Faltan {n} — dispara cuando pase su color', 'volley.box':'Una rueda de colores que gira, con un cañón debajo', 'volley.ball':'Cargado: {c}', 'm.volley':'Volea|Dispara cada bola cuando pase su color', 'how.volley':'toca donde sea para disparar — el tiro tarda un momento en llegar',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3580,6 +3613,7 @@ const STRINGS = {
     'how.seek':'tippe die Buchstaben der Reihe nach an oder zieh darüber',
     'p.forage':'Iss genau {b} — noch {n}', 'forage.cell':'{v}, Zeile {r} Spalte {c}', 'm.forage':'Sammeln|Iss dich weiter, bis es genau aufgeht',
     'p.meld':'{n} Gelees — mach eins daraus', 'meld.cell':'Gelee {v}, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'm.meld':'Verschmelzen|Drück gleiche Gelees zusammen, bis eins übrig ist', 'how.meld':'tippe ein Gelee und dann sein Gegenstück, oder zieh eins auf das andere; tippe auf die Lücke, um es wieder zu trennen',
+    'p.volley':'Noch {n} — schieß, wenn seine Farbe kommt', 'volley.box':'Ein sich drehendes Farbrad mit einem Lauf darunter', 'volley.ball':'Geladen: {c}', 'm.volley':'Salve|Schieß jede Kugel, wenn ihre Farbe vorbeikommt', 'how.volley':'tippe irgendwo zum Schießen — der Schuss braucht einen Moment',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3723,6 +3757,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.30.0', date:'2026-09-18', items:[
+    'New mode \u2014 Volley. The six rhythm modes are all about tempo: when to tap against a beat. This is the same clock seen from the side \u2014 a wheel of colours turning at a fixed rate, and a shot that has to leave early enough to arrive while the right colour is still over the barrel. The beat is a place rather than a sound.',
+    'How long the right wedge sits over the barrel is worked out from the wheel\u2019s speed and the number of colours, and at the hardest setting it is a quarter of a second: a shot, not a coin toss.',
+    'A ball that hits the wrong colour bounces back and is reloaded rather than ending the round. Every colour on the wheel also carries its shape when colour assist is on, so nothing here rests on telling two colours apart.',
+  ] },
   { v:'0.29.0', date:'2026-09-18', items:[
     'New mode \u2014 Meld. A merge game usually runs forever; this one is a finished puzzle. The board came from ONE jelly being split apart, so squashing it back to one is always possible \u2014 and merging into the wrong square strands the rest, which is the whole puzzle.',
     'Every board is measured before it ships. The generator solves its own board and counts how many times it has to wind back; a board is thrown away unless that number is inside the level\u2019s allowance. That count IS the difficulty, so it is a thing that was checked rather than a thing that was hoped.',
@@ -10196,6 +10235,120 @@ const MODES = {
       });
 
       paint();
+    }
+  },
+
+  /* ── Volley ───────────────────────────────────────────────────────────── */
+  volley: {
+    name:'Volley', blurb:'Fire each ball when its own colour comes round', input:'volley', cat:'rhythm', par:13000, bonus:3400,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6.5" fill="none" stroke="#FF8AD8" stroke-width="1.6"/><path d="M12 2.5A6.5 6.5 0 0 1 18.5 9L12 9z" fill="#FF8AD8" opacity=".55"/><circle cx="12" cy="20" r="2.4" fill="#FF8AD8"/><path d="M12 17.4V15.5" stroke="#FF8AD8" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    build(ctx){
+      /* The six rhythm modes are all about tempo — when to tap against a beat.
+         This one is the same clock seen from the side: a wheel turning at a
+         fixed rate, and a shot that has to leave early enough to arrive while
+         the right colour is still there. The beat is a place rather than a
+         sound. */
+      const k      = clamp(3 + Math.floor(ctx.level/6), 3, 6);       /* wedges */
+      const period = clamp(2600 - ctx.level*50, 1500, 2600);         /* ms per turn */
+      const need   = clamp(4 + Math.floor(ctx.level/6), 4, 8);       /* balls to land */
+      const FLIGHT = 300;                                            /* ms to the rim */
+      const arc    = 360/k;
+      /* How long the right wedge sits over the barrel. Stated here because it
+         is the whole of whether this is fair: at the hardest setting it is a
+         quarter of a second, which is a shot, not a coin toss. */
+      const windowMs = period/k;
+
+      const inks = shuffle(INKS.slice(), ctx.rnd).slice(0, k);
+      const queue = Array.from({ length: need }, () => Math.floor(ctx.rnd()*k));
+
+      const box = mk('div','vlybox');
+      const wheel = mk('i','vlywheel');
+      wheel.style.background = 'conic-gradient(' + inks.map((c, i) =>
+        c.hex + ' ' + (i*arc) + 'deg ' + ((i+1)*arc) + 'deg').join(',') + ')';
+      const hub = mk('i','vlyhub');
+      const marks = mk('i','vlymarks');
+      if (assistOn()) marks.innerHTML = inks.map((c, i) =>
+        '<span style="--a:' + (i*arc + arc/2) + 'deg">' + shapeSvg(c.shape, '#0D0918') + '</span>').join('');
+      wheel.appendChild(marks);
+      const barrel = mk('i','vlybarrel');
+      const ball   = mk('i','vlyball');
+      const queueEl = mk('i','vlyqueue');
+      box.appendChild(wheel); box.appendChild(hub); box.appendChild(barrel);
+      box.appendChild(ball); box.appendChild(queueEl);
+      box.setAttribute('role','application');
+      box.setAttribute('aria-label', t('volley.box'));
+      ctx.surface.appendChild(box);
+
+      const budget = moveBudget(ctx, 0);
+      let at = 0, flying = null, done = false, raf2 = 0;
+      const t0 = performance.now();
+      const angleAt = ms => ((ms - t0) / period * 360) % 360;
+      /* Which wedge is over the barrel — the barrel fires straight up, so the
+         wedge at six o'clock is the one that gets hit. */
+      const wedgeAt = ms => Math.floor((((180 - angleAt(ms)) % 360) + 360) % 360 / arc);
+
+      const paintQueue = () => {
+        queueEl.innerHTML = '';
+        for (let i = at; i < Math.min(queue.length, at + 4); i++){
+          const c = inks[queue[i]];
+          const d = mk('span', i === at ? 'now' : '');
+          d.style.background = c.hex;
+          if (assistOn()) d.innerHTML = shapeSvg(c.shape, '#0D0918');
+          queueEl.appendChild(d);
+        }
+        ctx.prompt(t('p.volley', { n: need - at }));
+      };
+      const dress = () => {
+        const c = inks[queue[at]];
+        ball.style.background = c.hex;
+        ball.innerHTML = assistOn() ? shapeSvg(c.shape, '#0D0918') : '';
+        ball.setAttribute('aria-label', t('volley.ball', { c: inkName(c) }));
+      };
+      dress(); paintQueue();
+
+      const frame = () => {
+        if (done) return;
+        const now = performance.now();
+        wheel.style.transform = 'rotate(' + angleAt(now).toFixed(2) + 'deg)';
+        if (flying){
+          const p = clamp((now - flying.left) / FLIGHT, 0, 1);
+          ball.style.bottom = (8 + p*32) + '%';
+          if (p >= 1){
+            const hitIdx = wedgeAt(now);
+            const good = hitIdx === queue[at];
+            ball.style.bottom = '8%';
+            flying = null;
+            if (good){
+              at++;
+              wheel.classList.add('hit');
+              ctx.after(160, () => wheel.classList.remove('hit'));
+              sfx.good(at); buzz('good');
+              if (at >= need){
+                done = true; cancelAnimationFrame(raf2);
+                box.classList.add('won');
+                return ctx.win(wheel);
+              }
+              dress(); paintQueue();
+            } else {
+              /* The ball comes back rather than the round ending: a shot that
+                 hit the wrong colour is a miss, not a death. */
+              box.classList.add('off');
+              ctx.after(260, () => box.classList.remove('off'));
+              sfx.bad(); buzz('bad');
+              budget.spend(ball);
+            }
+          }
+        }
+        raf2 = requestAnimationFrame(frame);
+      };
+      raf2 = requestAnimationFrame(frame);
+
+      onTap(box, () => {
+        if (done || flying) return;
+        flying = { left: performance.now() };
+        ball.classList.add('up');
+        sfx.tap();
+      });
     }
   },
 
