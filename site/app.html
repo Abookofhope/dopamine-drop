@@ -1323,6 +1323,30 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .vlyqueue span.now{width:19px;height:19px;opacity:1;box-shadow:0 0 0 2px #ffffff40}
 .vlyqueue .shp{width:100%;height:100%;display:block}
 
+/* ── Sift ─────────────────────────────────────────────────────────────── */
+.siftgrid{display:grid;gap:3px;width:100%;max-width:380px;margin:0 auto;
+  padding:4px;border-radius:var(--r-lg);
+  background:linear-gradient(180deg,#120c1f,#0a0714);border:1px solid var(--edge-soft);
+  transition:border-color var(--t-med)}
+.siftgrid.won{border-color:var(--cool)}
+.siftgrid.settling{border-color:#ff9a3d7a}
+.siftgrid.settling .sand.k1{cursor:default}
+.sand{min-width:0;min-height:0;border-radius:4px;border:1px solid transparent;
+  transition:background var(--t-fast),border-color var(--t-fast),transform var(--t-fast)}
+.sand.k0{background:#ffffff07}
+.sand.k1{background:linear-gradient(180deg,#c99a5e,#9c7440);cursor:pointer;
+  box-shadow:inset 0 -2px 0 #00000026}
+.sand.k1:active{transform:scale(.9)}
+/* A rock is darker AND squarer AND has a hard edge; a gem is brighter AND
+   pointed. Neither rests on its colour alone. */
+.sand.k2{background:linear-gradient(180deg,#5c5566,#33303d);border-color:#00000059;
+  border-radius:2px;box-shadow:inset 0 2px 0 #ffffff14}
+.sand.k3{background:linear-gradient(150deg,#b6fff2,#33E6C8);
+  border-radius:50% 4px 50% 4px;box-shadow:0 0 12px -3px var(--cool)}
+.sand.floor{border-bottom:2px solid #ffffff1a}
+.sand.k3.got{box-shadow:0 0 18px -2px var(--cool),0 0 0 2px var(--cool)}
+.sand.nope{background:var(--bad);border-color:var(--bad)}
+
 /* ── Tide Breath ──────────────────────────────────────────────────────── */
 .tidebox{position:relative;width:100%;aspect-ratio:1;display:grid;place-items:center;touch-action:none;
   border-radius:50%;transition:background var(--t-med)}
@@ -2672,7 +2696,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.30.0';
+const VERSION_TAG = 'v0.31.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3185,6 +3209,7 @@ const STRINGS = {
     'p.forage':'Eat exactly {b} — {n} to go', 'forage.cell':'{v}, row {r} column {c}', 'm.forage':'Forage|Eat your way along the patch until it comes to exactly enough',
     'p.meld':'{n} jellies — squash them into one', 'meld.cell':'Jelly {v}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'm.meld':'Meld|Squash equal jellies together until one is left', 'how.meld':'tap one jelly then its twin, or drag one onto the other; tap the hole one left behind to split it back',
     'p.volley':'{n} to land — fire when its colour comes round', 'volley.box':'A turning wheel of colours, with a barrel below it', 'volley.ball':'Loaded: {c}', 'm.volley':'Volley|Fire each ball when its own colour comes round', 'how.volley':'tap anywhere to fire — the shot takes a moment to arrive',
+    'p.sift':'{n} still up there', 'sift.empty':'Air, row {r} column {c}', 'sift.grain':'Sand, row {r} column {c}', 'sift.rock':'Rock, row {r} column {c}', 'sift.gem':'Gem, row {r} column {c}', 'm.sift':'Sift|Dig the sand away and let the gems fall through',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3328,6 +3353,7 @@ const STRINGS = {
     'p.forage':'Mangez exactement {b} — encore {n}', 'forage.cell':'{v}, ligne {r} colonne {c}', 'm.forage':'Cueillette|Mangez de proche en proche jusqu’au compte exact',
     'p.meld':'{n} gelées — n’en faites qu’une', 'meld.cell':'Gelée {v}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'm.meld':'Fusion|Écrasez les gelées identiques jusqu’à n’en garder qu’une', 'how.meld':'touchez une gelée puis sa jumelle, ou glissez l’une sur l’autre ; touchez le trou laissé derrière pour la redéfaire',
     'p.volley':'Encore {n} — tirez quand sa couleur arrive', 'volley.box':'Une roue de couleurs qui tourne, avec un canon en dessous', 'volley.ball':'Chargé : {c}', 'm.volley':'Volée|Tirez chaque bille quand sa couleur revient', 'how.volley':'touchez n’importe où pour tirer — le tir met un instant à arriver',
+    'p.sift':'Encore {n} là-haut', 'sift.empty':'Vide, ligne {r} colonne {c}', 'sift.grain':'Sable, ligne {r} colonne {c}', 'sift.rock':'Roche, ligne {r} colonne {c}', 'sift.gem':'Gemme, ligne {r} colonne {c}', 'm.sift':'Tamis|Creusez le sable et laissez tomber les gemmes',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3471,6 +3497,7 @@ const STRINGS = {
     'p.forage':'Come exactamente {b} — faltan {n}', 'forage.cell':'{v}, fila {r} columna {c}', 'm.forage':'Recolecta|Come de una a otra hasta llegar a la cuenta exacta',
     'p.meld':'{n} gelatinas — hazlas una', 'meld.cell':'Gelatina {v}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'm.meld':'Fusión|Aplasta gelatinas iguales hasta que quede una', 'how.meld':'toca una gelatina y luego su gemela, o arrastra una sobre la otra; toca el hueco que dejó para deshacerla',
     'p.volley':'Faltan {n} — dispara cuando pase su color', 'volley.box':'Una rueda de colores que gira, con un cañón debajo', 'volley.ball':'Cargado: {c}', 'm.volley':'Volea|Dispara cada bola cuando pase su color', 'how.volley':'toca donde sea para disparar — el tiro tarda un momento en llegar',
+    'p.sift':'Quedan {n} arriba', 'sift.empty':'Aire, fila {r} columna {c}', 'sift.grain':'Arena, fila {r} columna {c}', 'sift.rock':'Roca, fila {r} columna {c}', 'sift.gem':'Gema, fila {r} columna {c}', 'm.sift':'Criba|Excava la arena y deja caer las gemas',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3614,6 +3641,7 @@ const STRINGS = {
     'p.forage':'Iss genau {b} — noch {n}', 'forage.cell':'{v}, Zeile {r} Spalte {c}', 'm.forage':'Sammeln|Iss dich weiter, bis es genau aufgeht',
     'p.meld':'{n} Gelees — mach eins daraus', 'meld.cell':'Gelee {v}, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'm.meld':'Verschmelzen|Drück gleiche Gelees zusammen, bis eins übrig ist', 'how.meld':'tippe ein Gelee und dann sein Gegenstück, oder zieh eins auf das andere; tippe auf die Lücke, um es wieder zu trennen',
     'p.volley':'Noch {n} — schieß, wenn seine Farbe kommt', 'volley.box':'Ein sich drehendes Farbrad mit einem Lauf darunter', 'volley.ball':'Geladen: {c}', 'm.volley':'Salve|Schieß jede Kugel, wenn ihre Farbe vorbeikommt', 'how.volley':'tippe irgendwo zum Schießen — der Schuss braucht einen Moment',
+    'p.sift':'Noch {n} da oben', 'sift.empty':'Luft, Zeile {r} Spalte {c}', 'sift.grain':'Sand, Zeile {r} Spalte {c}', 'sift.rock':'Fels, Zeile {r} Spalte {c}', 'sift.gem':'Edelstein, Zeile {r} Spalte {c}', 'm.sift':'Sieben|Grab den Sand weg und lass die Steine durchfallen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3757,6 +3785,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.31.0', date:'2026-09-18', items:[
+    'New mode \u2014 Sift. The other five physics modes are about one object: where a stone will sit, where a drop will roll, what a beam balances on. Sand is the opposite \u2014 nothing in it moves alone. Take one grain out and the whole pile rearranges itself, which is the only reason digging under a rock is a different idea from digging beside it.',
+    'Grains fall, and slide off a pile when they cannot fall straight. Rocks fall but never slide, so they have to be dug around rather than through. Every board is solved before it ships \u2014 breadth-first over digs, so the answer found is the shortest one \u2014 and thrown back unless that answer is at least as long as the level asks for.',
+    'The pile comes down a pass at a time rather than snapping into place, because watching it collapse is most of why a sand game is a sand game. Taps are ignored while it is still moving, and the board says so rather than swallowing them.',
+  ] },
   { v:'0.30.0', date:'2026-09-18', items:[
     'New mode \u2014 Volley. The six rhythm modes are all about tempo: when to tap against a beat. This is the same clock seen from the side \u2014 a wheel of colours turning at a fixed rate, and a shot that has to leave early enough to arrive while the right colour is still over the barrel. The beat is a place rather than a sound.',
     'How long the right wedge sits over the barrel is worked out from the wheel\u2019s speed and the number of colours, and at the hardest setting it is a quarter of a second: a shot, not a coin toss.',
@@ -10349,6 +10382,159 @@ const MODES = {
         ball.classList.add('up');
         sfx.tap();
       });
+    }
+  },
+
+  /* ── Sift ─────────────────────────────────────────────────────────────── */
+  sift: {
+    name:'Sift', blurb:'Dig the sand away and let the gems fall through', cat:'physics', par:16000, bonus:4200,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-3 7H7z" fill="none" stroke="#FF9A3D" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 14.5l2 2 2-2-2-2z" fill="#33E6C8"/><circle cx="8" cy="20" r="1.2" fill="#FF9A3D"/><circle cx="12" cy="21" r="1.2" fill="#FF9A3D"/><circle cx="16" cy="20" r="1.2" fill="#FF9A3D"/></svg>',
+    build(ctx){
+      /* The other five physics modes are about one object: where a stone will
+         sit, where a drop will roll, what a beam balances on. Sand is the
+         opposite — nothing in it moves alone. Take one grain out and the whole
+         pile rearranges itself, which is the only reason digging under a rock
+         is a different idea from digging beside it. */
+      const W = ctx.level < 10 ? 5 : 6, H = 5;
+      const CELLS = W*H;
+      const EMPTY = 0, SAND = 1, ROCK = 2, GEM = 3;
+      const gems  = clamp(1 + Math.floor(ctx.level/8), 1, 2);
+      const rocks = clamp(2 + Math.floor(ctx.level/7), 2, 4);
+      /* The fewest digs the board can be cleared in. It is the difficulty and
+         it is measured, not guessed — a board is thrown back unless its answer
+         is at least this long. */
+      const minDig = clamp(1 + Math.floor(ctx.level/6), 1, 4);
+
+      /* One pass of sand physics: fall if you can, else slide off the pile.
+         Rocks fall but never slide, which is what makes them worth digging
+         around rather than through. */
+      const step = g => {
+        let moved = false;
+        for (let y = H-2; y >= 0; y--) for (let x = 0; x < W; x++){
+          const v = g[y*W+x];
+          if (v === EMPTY) continue;
+          if (g[(y+1)*W+x] === EMPTY){ g[(y+1)*W+x] = v; g[y*W+x] = EMPTY; moved = true; continue; }
+          if (v === ROCK) continue;
+          const order = ((x+y) % 2) ? [-1, 1] : [1, -1];
+          for (const dx of order){
+            const nx = x + dx;
+            if (nx < 0 || nx >= W) continue;
+            if (g[(y+1)*W+nx] === EMPTY && g[y*W+nx] === EMPTY){
+              g[(y+1)*W+nx] = v; g[y*W+x] = EMPTY; moved = true; break;
+            }
+          }
+        }
+        return moved;
+      };
+      const settle = g => { const h = g.slice(); let n = 0; while (step(h) && n++ < 60); return h; };
+      const home = g => { let n = 0;
+        for (let x = 0; x < W; x++) if (g[(H-1)*W+x] === GEM) n++;
+        return n; };
+
+      /* Breadth-first over digs, so the answer it finds is the shortest one. */
+      const shortest = (g0, total, cap) => {
+        const seen = new Set([g0.join('')]);
+        let front = [g0];
+        for (let d = 1; d <= cap; d++){
+          const next = [];
+          for (const cur of front) for (let i = 0; i < CELLS; i++){
+            if (cur[i] !== SAND) continue;
+            const h = cur.slice(); h[i] = EMPTY;
+            const sd = settle(h), key = sd.join('');
+            if (seen.has(key)) continue;
+            seen.add(key);
+            if (home(sd) === total) return d;
+            next.push(sd);
+          }
+          front = next;
+          if (!front.length) break;
+        }
+        return null;
+      };
+
+      let board = null, answer = minDig;
+      for (let attempt = 0; attempt < 90 && !board; attempt++){
+        const g0 = new Array(CELLS).fill(EMPTY);
+        for (let i = W; i < CELLS; i++) g0[i] = SAND;
+        const spots = shuffle(Array.from({ length: CELLS - W }, (_, i) => i + W), ctx.rnd);
+        for (let i = 0; i < gems; i++)  g0[spots[i]] = GEM;
+        for (let i = 0; i < rocks; i++) g0[spots[gems+i]] = ROCK;
+        const start = settle(g0);
+        if (home(start) === gems) continue;              /* already done */
+        const d = shortest(start, gems, 6);
+        if (d === null || d < minDig) continue;
+        board = start; answer = d;
+      }
+      if (!board){
+        const g0 = new Array(CELLS).fill(EMPTY);
+        for (let i = W; i < CELLS; i++) g0[i] = SAND;
+        g0[W*2+1] = GEM; g0[W*3+3] = ROCK;
+        board = settle(g0); answer = 1;
+      }
+
+      const grid = mk('div','siftgrid');
+      grid.style.gridTemplateColumns = 'repeat(' + W + ',1fr)';
+      grid.style.gridTemplateRows    = 'repeat(' + H + ',1fr)';
+      grid.style.aspectRatio = W + ' / ' + H;
+      const cells = [];
+      for (let i = 0; i < CELLS; i++){
+        const b = mk('button','sand');
+        b.type = 'button';
+        grid.appendChild(b); cells.push(b);
+      }
+      ctx.surface.appendChild(grid);
+
+      const budget = moveBudget(ctx, answer);
+      let g = board.slice(), busy = false, done = false;
+      const KIND = { 0:'empty', 1:'grain', 2:'rock', 3:'gem' };
+
+      const paint = () => {
+        cells.forEach((b, i) => {
+          const v = g[i], onFloor = Math.floor(i/W) === H-1;
+          b.className = 'sand k' + v + (onFloor ? ' floor' : '')
+            + (v === GEM && onFloor ? ' got' : '');
+          b.setAttribute('aria-label', t('sift.' + KIND[v],
+            { r: Math.floor(i/W) + 1, c: (i % W) + 1 }));
+        });
+        ctx.prompt(t('p.sift', { n: gems - home(g) }));
+      };
+
+      /* Settled one pass at a time rather than all at once: watching the pile
+         come down is most of why a sand game is a sand game. */
+      const run = () => {
+        const h = g.slice();
+        if (step(h)){
+          g = h; paint();
+          return ctx.after(38, run);
+        }
+        busy = false;
+        grid.classList.remove('settling');
+        if (home(g) === gems){
+          done = true;
+          grid.classList.add('won');
+          return ctx.win(grid);
+        }
+      };
+
+      cells.forEach((b, i) => onTap(b, () => {
+        if (done || busy) return;
+        if (g[i] !== SAND){
+          b.classList.add('nope');
+          ctx.after(280, () => b.classList.remove('nope'));
+          return;
+        }
+        g[i] = EMPTY;
+        paint(); sfx.tap(); buzz('tap');
+        busy = true;
+        /* Taps are ignored while the pile is still moving, so the board says so
+           rather than swallowing them silently. A deep collapse is a dozen
+           passes, which at this rate is under half a second. */
+        grid.classList.add('settling');
+        budget.spend(b);
+        ctx.after(40, run);
+      }));
+
+      paint();
     }
   },
 
