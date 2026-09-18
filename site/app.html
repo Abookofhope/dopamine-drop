@@ -1247,6 +1247,23 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.node.can{border-color:#33e6c877;background:#33e6c81f}
 .cell.node.nope{background:#ff3d6e33;border-color:var(--bad)}
 
+/* ── Forage ───────────────────────────────────────────────────────────── */
+.cell.berry{
+  background:var(--ink-3);border:1px solid var(--edge);border-radius:50%;
+  color:var(--cream);font-family:var(--f-data);font-weight:700;
+  font-size:clamp(13px,3.6vh,20px);line-height:1;
+  transition:background var(--t-fast),border-color var(--t-fast),
+             color var(--t-fast),transform var(--t-fast);
+}
+/* Where you may go next is a ring, not a fill: a hint has to look different
+   from the thing it is hinting at, and two tints of the same gold do not. */
+.cell.berry.can{border-color:#ffc53d8f;border-style:dashed;background:none}
+.cell.berry.ate{background:#ffc53d3d;border-color:#ffc53d59;color:#FFE6A8;opacity:.72}
+.cell.berry.head{background:var(--zap);border-color:var(--zap);color:#241A05;
+  box-shadow:0 0 14px #ffc53d88}
+.cell.berry.full{background:#33e6c847;border-color:var(--cool);color:#EAFFFA;box-shadow:none}
+.cell.berry.nope{background:#ff3d6e33;border-color:var(--bad)}
+
 /* ── Tide Breath ──────────────────────────────────────────────────────── */
 .tidebox{position:relative;width:100%;aspect-ratio:1;display:grid;place-items:center;touch-action:none;
   border-radius:50%;transition:background var(--t-med)}
@@ -2596,7 +2613,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.27.3';
+const VERSION_TAG = 'v0.28.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3106,6 +3123,7 @@ const STRINGS = {
     'how.drag':'drag a finger across the board', 'how.tapdrag':'tap first, then drag to aim',
     'p.seekAt':'Find {w} — you have {s}',
     'how.seek':'tap the letters in order, or drag through them',
+    'p.forage':'Eat exactly {b} — {n} to go', 'forage.cell':'{v}, row {r} column {c}', 'm.forage':'Forage|Eat your way along the patch until it comes to exactly enough',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3246,6 +3264,7 @@ const STRINGS = {
     'how.drag':'glissez un doigt sur le plateau', 'how.tapdrag':'touchez d’abord, puis glissez pour viser',
     'p.seekAt':'Trouvez {w} — vous avez {s}',
     'how.seek':'touchez les lettres dans l’ordre, ou glissez dessus',
+    'p.forage':'Mangez exactement {b} — encore {n}', 'forage.cell':'{v}, ligne {r} colonne {c}', 'm.forage':'Cueillette|Mangez de proche en proche jusqu’au compte exact',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3386,6 +3405,7 @@ const STRINGS = {
     'how.drag':'desliza un dedo por el tablero', 'how.tapdrag':'toca primero y luego desliza para apuntar',
     'p.seekAt':'Encuentra {w} — llevas {s}',
     'how.seek':'toca las letras en orden o deslízate por ellas',
+    'p.forage':'Come exactamente {b} — faltan {n}', 'forage.cell':'{v}, fila {r} columna {c}', 'm.forage':'Recolecta|Come de una a otra hasta llegar a la cuenta exacta',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3526,6 +3546,7 @@ const STRINGS = {
     'how.drag':'zieh einen Finger über das Feld', 'how.tapdrag':'erst tippen, dann zum Zielen ziehen',
     'p.seekAt':'Finde {w} — bisher {s}',
     'how.seek':'tippe die Buchstaben der Reihe nach an oder zieh darüber',
+    'p.forage':'Iss genau {b} — noch {n}', 'forage.cell':'{v}, Zeile {r} Spalte {c}', 'm.forage':'Sammeln|Iss dich weiter, bis es genau aufgeht',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3669,6 +3690,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.28.0', date:'2026-09-18', items:[
+    'New mode \u2014 Forage. Sum Snap is two numbers hitting a target and Halve is a set split in two; neither cares where a number sits. Here the numbers you may add next are only the ones you can walk to, so the arithmetic and the route are the same problem \u2014 which is the one thing a grid of numbers can ask that a row of them cannot.',
+    'The route is walked first and the target is whatever it came to, so an answer always exists. Then every route the board allows is enumerated to check the shortest one is at least three berries long: a target you can reach without thinking is not a puzzle.',
+    'Walking back over your own trail undoes a wrong turn and costs a move, the same tap that winds back a word in Seek and a line in Single Stroke.',
+  ] },
   { v:'0.27.3', date:'2026-09-18', items:[
     'Fixed \u2014 Single Stroke ended the round the instant you tapped a node that was not next to the one you were on. On the small board that is six of the nine circles, and the starting circle is wherever the puzzle put it, so a first tap almost anywhere lost immediately and nothing had said it would. An illegal tap is not a move: it costs nothing, it changes nothing, and the circle says no rather than the round ending.',
     'Every circle you may legally step to is now marked, so where the line can go is something you can see instead of something you find out by losing.',
@@ -9840,6 +9866,126 @@ const MODES = {
         start: q => { const i = cellAt(q.ev, false); if (i >= 0) hit(i, false); },
         move:  q => { const i = cellAt(q.ev, true);  if (i >= 0) hit(i, true); }
       });
+
+      paint();
+    }
+  },
+
+  /* ── Forage ───────────────────────────────────────────────────────────── */
+  forage: {
+    name:'Forage', blurb:'Eat your way along the patch until it comes to exactly enough', cat:'numbers', par:14000, bonus:3600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="17" r="3" fill="#FFC53D"/><circle cx="12" cy="11" r="3" fill="#FFC53D" opacity=".55"/><circle cx="18" cy="6" r="3" fill="#FFC53D" opacity=".3"/><path d="M6 17l6-6 6-5" stroke="#FFC53D" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".7"/></svg>',
+    build(ctx){
+      /* Sum Snap is two numbers hitting a target and Halve is a set split in
+         two. Neither cares where a number sits. Here the numbers you may add
+         next are only the ones you can walk to, so the arithmetic and the route
+         are the same problem — which is the one thing a grid of numbers can ask
+         that a row of them cannot. */
+      const N    = ctx.level < 9 ? 4 : 5;
+      const cells = N*N;
+      const want  = clamp(4 + Math.floor(ctx.level/5), 4, 8);   /* berries on the route */
+
+      const rc  = i => [Math.floor(i/N), i % N];
+      const adj = (a, b) => { const [ar,ac] = rc(a), [br,bc] = rc(b);
+                              return Math.abs(ar-br) + Math.abs(ac-bc) === 1; };
+      const nbrs = i => { const [r, c] = rc(i); const out = [];
+        [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc]) => {
+          const nr = r+dr, nc = c+dc;
+          if (nr >= 0 && nc >= 0 && nr < N && nc < N) out.push(nr*N + nc);
+        });
+        return out; };
+
+      /* The route is walked first and the target is whatever it came to, so a
+         solution exists by construction. Then every route the board allows is
+         enumerated to make sure the answer is not one or two steps long — a
+         target you can reach without thinking is not a puzzle. */
+      let vals = null, start = 0, target = 0;
+      for (let attempt = 0; attempt < 400 && !vals; attempt++){
+        const v = Array.from({ length: cells }, () => 1 + Math.floor(ctx.rnd()*9));
+        const seen = new Set();
+        let cur = Math.floor(ctx.rnd()*cells), sum = v[cur], ok = true;
+        seen.add(cur);
+        for (let k = 1; k < want && ok; k++){
+          const opts = nbrs(cur).filter(x => !seen.has(x));
+          if (!opts.length){ ok = false; break; }
+          cur = opts[Math.floor(ctx.rnd()*opts.length)];
+          seen.add(cur); sum += v[cur];
+        }
+        if (!ok || seen.size !== want) continue;
+        /* shortest route from the start that lands exactly on the sum */
+        let best = 99;
+        const walk = (at, total, used) => {
+          if (used.size > want || used.size >= best) return;
+          if (total === sum){ best = Math.min(best, used.size); return; }
+          if (total > sum) return;
+          for (const nx of nbrs(at)){
+            if (used.has(nx)) continue;
+            used.add(nx); walk(nx, total + v[nx], used); used.delete(nx);
+          }
+        };
+        const seed = Array.from(seen)[0];
+        walk(seed, v[seed], new Set([seed]));
+        if (best < 3 || best > want) continue;
+        vals = v; start = seed; target = sum;
+      }
+      if (!vals){
+        vals = Array.from({ length: cells }, (_, i) => 1 + (i % 9));
+        start = 0; target = vals[0] + vals[1] + vals[2] + vals[N+2];
+      }
+
+      const grid = gridEl(N);
+      const cellEls = vals.map((v, i) => {
+        const b = mk('button','cell berry');
+        b.type = 'button';
+        b.textContent = String(v);
+        b.setAttribute('aria-label', t('forage.cell',
+          { v, r: Math.floor(i/N) + 1, c: (i % N) + 1 }));
+        grid.appendChild(b);
+        return b;
+      });
+      ctx.surface.appendChild(grid);
+
+      const budget = moveBudget(ctx, 0);
+      let path = [start], done = false;
+      const total = () => path.reduce((a, i) => a + vals[i], 0);
+
+      const paint = () => {
+        const head = path[path.length - 1];
+        cellEls.forEach((b, i) => {
+          const on = path.indexOf(i) >= 0;
+          b.classList.toggle('ate', on);
+          b.classList.toggle('head', i === head);
+          b.classList.toggle('can', !on && adj(head, i));
+        });
+        ctx.prompt(t('p.forage', { n: target - total(), b: target }));
+      };
+
+      cellEls.forEach((b, i) => onTap(b, () => {
+        if (done) return;
+        const back = path.indexOf(i);
+        /* Walking back over your own trail is how you undo a wrong turn, and
+           the same tap does it everywhere else in the app. */
+        if (back >= 0){
+          if (back === path.length - 1) return;
+          path.length = back + 1;
+          paint(); sfx.tap(); buzz('tap');
+          return budget.spend(b);
+        }
+        if (!adj(path[path.length - 1], i)){
+          b.classList.add('nope');
+          ctx.after(300, () => b.classList.remove('nope'));
+          return;
+        }
+        path.push(i);
+        paint();
+        const now = total();
+        if (now === target){
+          done = true;
+          path.forEach(x => cellEls[x].classList.add('full'));
+          return ctx.win(b);
+        }
+        sfx.tap(); buzz('tap');
+      }));
 
       paint();
     }
