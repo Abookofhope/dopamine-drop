@@ -1244,6 +1244,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:background var(--t-fast),transform var(--t-fast)}
 .cell.node.on{background:#33e6c855;border-color:var(--cool)}
 .cell.node.head{background:var(--cool);box-shadow:0 0 14px #33e6c877}
+.cell.node.can{border-color:#33e6c877;background:#33e6c81f}
+.cell.node.nope{background:#ff3d6e33;border-color:var(--bad)}
 
 /* ── Tide Breath ──────────────────────────────────────────────────────── */
 .tidebox{position:relative;width:100%;aspect-ratio:1;display:grid;place-items:center;touch-action:none;
@@ -2594,7 +2596,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.27.2';
+const VERSION_TAG = 'v0.27.3';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3667,6 +3669,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.27.3', date:'2026-09-18', items:[
+    'Fixed \u2014 Single Stroke ended the round the instant you tapped a node that was not next to the one you were on. On the small board that is six of the nine circles, and the starting circle is wherever the puzzle put it, so a first tap almost anywhere lost immediately and nothing had said it would. An illegal tap is not a move: it costs nothing, it changes nothing, and the circle says no rather than the round ending.',
+    'Every circle you may legally step to is now marked, so where the line can go is something you can see instead of something you find out by losing.',
+    'Tapping anywhere on the line you have already drawn winds it back to there. Winding back is how a one-stroke puzzle is searched, so it is a move you are charged for \u2014 the round now ends when you run out of those, which is a thing you can watch coming.',
+  ] },
   { v:'0.27.2', date:'2026-09-17', items:[
     'Fixed \u2014 resetting your progress left every mode marked as already met, so a level-one account never saw a single introduction again. A reset gives them back, the same way it now gives back the perk ladder.',
     'Seek \u2014 tapping any letter you have already taken cuts the run back to it. Only the one before last did anything before, so correcting a run meant starting it over.',
@@ -5632,19 +5639,40 @@ const MODES = {
         const ax=a%g, ay=Math.floor(a/g), bx=b2%g, by=Math.floor(b2/g);
         return Math.abs(ax-bx) + Math.abs(ay-by) === 1;
       };
+      /* Every node you may legally step to is marked, because the alternative is
+         guessing. Tapping a node that is not one of them used to end the round
+         outright — on a three-by-three board that is six of the nine squares,
+         so a first tap anywhere but the one or two right ones lost instantly
+         and nothing had said why. An illegal tap is not a move; it costs
+         nothing and says so. */
+      const budget = moveBudget(ctx, 0);
       const repaint = () => {
+        const head = trail[trail.length-1];
         cellEls.forEach((e,i) => {
           e.classList.toggle('on', trail.includes(i));
-          e.classList.toggle('head', i === trail[trail.length-1]);
+          e.classList.toggle('head', i === head);
+          e.classList.toggle('can', !trail.includes(i) && adj(head, i));
         });
         ctx.prompt(t('p.stroke', { n: cells - trail.length }));
       };
+      const nudge = b => {
+        b.classList.add('nope');
+        ctx.after(300, () => b.classList.remove('nope'));
+      };
       cellEls.forEach((b,i) => onTap(b, () => {
         const head = trail[trail.length-1];
-        /* Stepping back onto the previous node undoes — a one-stroke puzzle
-           with no undo is a restart button with extra steps. */
-        if (trail.length > 1 && i === trail[trail.length-2]){ trail.pop(); repaint(); sfx.tap(); return; }
-        if (trail.includes(i) || !adj(head, i)) return ctx.miss(b);
+        const back = trail.indexOf(i);
+        /* Tapping anywhere on the line you have drawn winds it back to there.
+           A one-stroke puzzle with no undo is a restart button with extra
+           steps, and winding back is how you search it — so it is a move you
+           are charged for rather than a mistake that ends the round. */
+        if (back >= 0){
+          if (back === trail.length - 1) return;
+          trail.length = back + 1;
+          repaint(); sfx.tap(); buzz('tap');
+          return budget.spend(b);
+        }
+        if (!adj(head, i)){ nudge(b); return; }
         trail.push(i); sfx.tap(); buzz('tap');
         if (trail.length === cells) { repaint(); return ctx.win(b); }
         repaint();
