@@ -162,9 +162,12 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .tab[aria-current="page"] svg{filter:drop-shadow(0 0 7px #ff5b3966)}
 
 .seclbl{
-  display:flex;align-items:center;gap:9px;flex:none;margin:14px 0 8px;
+  display:flex;align-items:center;gap:9px;flex:none;margin:14px 0 8px;flex-wrap:wrap;
   font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--haze);font-weight:600;
 }
+/* The label keeps its own line rather than breaking into three words stacked:
+   anything riding beside it wraps under instead. */
+.seclbl > span{white-space:nowrap}
 .seclbl::after{content:"";flex:1;height:1px;background:var(--edge-soft)}
 .seclbl button{color:var(--flare);font-size:10px;letter-spacing:.1em;font-weight:700}
 
@@ -184,7 +187,12 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   background:
     radial-gradient(68% 95% at 100% 0%, #ff5b3921, transparent 58%),
     linear-gradient(168deg,#241a49,var(--ink-2));
-  border:1px solid #ff5b3933;
+  /* The primary action had the FAINTEST edge on the screen: 1px at 0.2 alpha,
+     against a 3px opaque bar on Carry on and solid borders on the four small
+     cards. It won on size and lost on contrast, which is the half the eye
+     reads first. */
+  border:1px solid #ff5b398c;
+
   color:var(--cream);text-align:left;width:100%;
   box-shadow:0 12px 28px -26px var(--flare);
   transition:transform var(--t-fast),border-color var(--t-fast);
@@ -248,6 +256,52 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
     color-mix(in srgb, var(--cink,var(--flare)) 11%, transparent), #ffffff05 45%);
   transition:border-color var(--t-fast),transform var(--t-fast);
 }
+/* ── The today row ─────────────────────────────────────────────────────── */
+/* Two slots, always both present, always the same height. Nothing below this
+   row moves between one session and the next. */
+.todayrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:none;margin-top:10px}
+.todaycard{
+  display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+  padding:11px 12px 12px;border-radius:var(--r-lg);text-align:left;min-height:96px;
+  border:1px solid var(--edge-soft);
+  border-left:3px solid color-mix(in srgb, var(--cink,var(--flare)) 70%, transparent);
+  background:linear-gradient(135deg,
+    color-mix(in srgb, var(--cink,var(--flare)) 10%, transparent), #ffffff05 60%);
+  transition:border-color var(--t-fast),transform var(--t-fast);
+}
+.todaycard:active{transform:scale(.97)}
+.todaycard .g{display:block;width:24px;height:24px;color:var(--cink,var(--flare));margin-bottom:3px}
+.todaycard .g svg{width:100%;height:100%;display:block}
+.todaycard .eyebrow{font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--haze);font-weight:700}
+.todaycard b{font-family:var(--f-disp);font-size:clamp(15px,4.4vw,18px);line-height:1.1;
+  color:var(--cream)}
+.todaycard small{font-size:11px;color:var(--haze);line-height:1.25}
+.todaycard.streaking{border-left-color:var(--cink,var(--cool))}
+/* ── The perk chip ─────────────────────────────────────────────────────── */
+/* It rides the section label, which exists whether or not a perk is waiting. */
+/* A chip is still a control: 23px high was under even the 24px floor, so it
+   gets the height a thumb needs without getting the weight of a card. */
+.perkchip{display:flex;align-items:center;gap:6px;flex:none;min-height:36px;
+  padding:6px 12px 6px 8px;border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--cink,var(--flare)) 40%, transparent);
+  background:color-mix(in srgb,var(--cink,var(--flare)) 14%, transparent);
+  color:var(--cream)}
+.perkchip .g{display:block;width:15px;height:15px;color:var(--cink,var(--flare))}
+.perkchip .g svg{width:100%;height:100%;display:block}
+.perkchip b{font-size:10px;letter-spacing:.04em;font-weight:700;text-transform:none}
+/* Three cards, not four: the odd one takes the whole row rather than leaving a
+   hole where a fourth used to be. */
+/* The odd one out lies down instead of standing up: a full-width card built
+   like a half-width one is mostly empty space. Icon beside the words rather
+   than above them, and the words kept together. */
+.quick > .qcard:nth-child(3):last-child{grid-column:1 / -1;min-height:0;
+  display:grid;grid-template-columns:auto 1fr;gap:1px 13px;align-items:center;
+  padding:11px 13px}
+.quick > .qcard:nth-child(3):last-child .ico{grid-row:1 / 3;margin:0}
+.quick > .qcard:nth-child(3):last-child b{align-self:end}
+.quick > .qcard:nth-child(3):last-child small{align-self:start}
+
 .carryon:active{transform:scale(.985)}
 .carryon .g{
   width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:11px;
@@ -2369,36 +2423,38 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <span class="go" aria-hidden="true">&rarr;</span>
         </button>
 
-        <button class="carryon" id="carryOn" type="button" hidden>
-          <span class="g" id="carryGlyph" aria-hidden="true"></span>
-          <span class="txt">
-            <span class="eyebrow" data-i18n="play.carryOn">Carry on</span>
+        <!-- The two things a returning player actually came for, in a row that is
+             ALWAYS here. When these were cards that appeared and vanished, every
+             thing below them moved by 85px between one session and the next. -->
+        <div class="todayrow">
+          <button class="todaycard" id="carryOn" type="button">
+            <span class="g" id="carryGlyph" aria-hidden="true"></span>
+            <span class="eyebrow" id="carryEyebrow" data-i18n="play.carryOn">Carry on</span>
             <b id="carryName"></b>
             <small id="carryMeta"></small>
-          </span>
-          <span class="arrow" aria-hidden="true">&rarr;</span>
-        </button>
+          </button>
+          <button class="todaycard" id="dailyBtn" type="button" style="--cink:#33E6C8">
+            <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+            <span class="eyebrow" data-i18n="daily.title">Daily Drop</span>
+            <b id="dailyLine"></b>
+            <small id="dailyMeta"></small>
+          </button>
+        </div>
 
-        <button class="perkcall" id="perkCall" type="button" hidden>
-          <span class="g" id="perkCallGlyph" aria-hidden="true"></span>
-          <span class="txt">
-            <span class="eyebrow" data-i18n="perk.title">Perks</span>
+        <div class="seclbl"><span data-i18n="play.other">Other ways to play</span>
+          <!-- A perk waiting is a notification, not a destination. As a card it
+               had the loudest border on the screen and pushed everything down;
+               as a chip on a row that exists anyway it costs no layout at all. -->
+          <button class="perkchip" id="perkCall" type="button" hidden>
+            <span class="g" id="perkCallGlyph" aria-hidden="true"></span>
             <b id="perkCallLine"></b>
-          </span>
-          <span class="arrow" aria-hidden="true">&rarr;</span>
-        </button>
-
-        <div class="seclbl"><span data-i18n="play.other">Other ways to play</span></div>
+          </button>
+        </div>
         <div class="quick">
           <button class="qcard" id="mixBtn" type="button" style="--acc:#FF5B39">
             <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M4 12h16M4 17h7"/><circle cx="18" cy="7" r="2.4" fill="currentColor" stroke="none"/><circle cx="15" cy="17" r="2.4" fill="currentColor" stroke="none"/></svg>
             <b data-i18n="mix.title">Mixtape</b>
             <small id="mixMeta">Your own rotation</small>
-          </button>
-          <button class="qcard" id="dailyBtn" type="button" style="--acc:#33E6C8">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
-            <b data-i18n="daily.title">Daily Drop</b>
-            <small id="dailyMeta">12 rounds, one from every family &middot; same for everyone</small>
           </button>
           <button class="qcard" id="zenBtn" type="button" style="--acc:#7BE38A">
             <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><circle cx="12" cy="12" r="3"/></svg>
@@ -2808,7 +2864,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.36.0';
+const VERSION_TAG = 'v0.37.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3299,7 +3355,7 @@ const STRINGS = {
     'daily.streak':'{n}-day streak', 'daily.streak1':'Streak started today', 'daily.share':'Dopamine Drop — Daily Drop {d}: {a}/{b} solved for {n} points, day {s} of my streak.', 'btn.share':'Share', 'daily.copied':'Copied',
     'stats.filter':'Filter the mode list', 'stats.fAll':'All', 'stats.fPlayed':'Played', 'stats.fNew':'Not tried', 'stats.allPlayed':'You have played every mode at least once.', 'stats.noneYet':'Nothing here yet — play a Marathon and a score appears.',
     'p.bbListen':'Listen — two bars, then the gaps are yours', 'p.bbPlay':'Tap between the beats — {n} to go', 'bb.pad':'Tap between the beats', 'm.backbeat':'Backbeat|Tap between the beats, never on one', 'p.chorus':'One of these is not holding its tempo', 'chorus.lane':'Row {n}', 'm.chorus':'Chorus|Steady tempos, and one that is not staying steady', 'p.bridge':'{n} planks laid — reach the far bank', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Open water, column {x} row {y}, tap to lay a plank', 'bridge.plank':'A plank, column {x} row {y}, tap to lift it', 'm.bridge':'Bridge|Lay planks bank to bank — you have only so many', 'p.weave':'{n} squares still wrong', 'weave.want':'The pattern to match', 'weave.over':'Over, column {x} row {y}', 'weave.under':'Under, column {x} row {y}', 'm.weave':'Weave|Each tap pulls a whole row and column — match the cloth',
-    'play.carryOn':'Carry on', 'play.carryBest':'Your best {n}', 'why.new':'Untried', 'why.star':'Near a star', 'why.rare':'Neglected', 'why.wild':'Wildcard',
+    'play.startHere':'Start here', 'play.pickMode':'Pick a mode', 'play.pickSub':'All {n}, by family', 'daily.subShort':'One from every family', 'daily.today':'Today’s twelve', 'daily.done':'Played today', 'daily.streakN':'{n}-day streak', 'play.carryOn':'Carry on', 'play.carryBest':'Your best {n}', 'why.new':'Untried', 'why.star':'Near a star', 'why.rare':'Neglected', 'why.wild':'Wildcard',
     'wc.lead':'{n} small puzzles. The one in front of you changes every round.', 'wc.p1':'Sixty seconds a run', 'wc.p2':'A different puzzle every round', 'wc.p3':'A miss costs time — a streak pays', 'wc.change':'Change', 'wc.start':'Start your first run', 'wc.look':'Look around first',
     'mix.tapes':'Your mixtapes', 'mix.name':'Name this mixtape', 'mix.share':'Share this mixtape', 'mix.delete':'Delete this mixtape', 'mix.untitled':'Mixtape {n}', 'mix.newTape':'+ New', 'mix.paste':'Paste a code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Delete “{name}”?', 'mix.keep':'Keep', 'mix.deleteIt':'Delete', 'mix.shareText':'My Dopamine Drop mixtape “{name}” — {n} modes. Paste this code into the Mix tab: {code}', 'mix.importTitle':'Add a mixtape', 'mix.importSub':'Paste a code someone sent you. It carries a name and a list of modes, nothing else.', 'mix.importAdd':'Add it', 'mix.importBad':'No mixtape code in that. Paste the whole message — the code starts with DD1.', 'mix.importOk':'Added “{name}”.', 'mix.importN':'{n} modes.', 'mix.importN1':'One mode.', 'mix.importDropped':'{n} of its modes are not in this version and were left out.', 'mix.importDropped1':'One of its modes is not in this version and was left out.',
     'p.rampFast':'Listen — it is speeding up', 'p.rampSlow':'Listen — it is slowing down', 'p.rampGo':'Stay on the beat — {n} to go', 'ramp.pad':'Tap on each beat', 'm.ramp':'Ramp|The tempo is moving — stay on it',
@@ -3444,7 +3500,7 @@ const STRINGS = {
     'daily.streak':'Série de {n} jours', 'daily.streak1':'Série commencée aujourd’hui', 'daily.share':'Dopamine Drop — Tirage du jour {d} : {a}/{b} réussis pour {n} points, {s}ᵉ jour de ma série.', 'btn.share':'Partager', 'daily.copied':'Copié',
     'stats.filter':'Filtrer la liste des modes', 'stats.fAll':'Tout', 'stats.fPlayed':'Joués', 'stats.fNew':'Jamais essayés', 'stats.allPlayed':'Vous avez joué à tous les modes au moins une fois.', 'stats.noneYet':'Rien ici — jouez un Marathon et un score apparaîtra.',
     'p.bbListen':'Écoutez — deux mesures, puis les silences sont à vous', 'p.bbPlay':'Touchez entre les temps — encore {n}', 'bb.pad':'Touchez entre les temps', 'm.backbeat':'Contretemps|Touchez entre les temps, jamais sur un temps', 'p.chorus':'L’une d’elles ne tient pas son tempo', 'chorus.lane':'Ligne {n}', 'm.chorus':'Chœur|Des tempos réguliers, et un qui ne l’est pas', 'p.bridge':'{n} planches posées — atteignez l’autre rive', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Eau libre, colonne {x} ligne {y}, touchez pour poser une planche', 'bridge.plank':'Une planche, colonne {x} ligne {y}, touchez pour la retirer', 'm.bridge':'Pont|Posez des planches d’une rive à l’autre — elles sont comptées', 'p.weave':'Encore {n} cases fausses', 'weave.want':'Le motif à reproduire', 'weave.over':'Dessus, colonne {x} ligne {y}', 'weave.under':'Dessous, colonne {x} ligne {y}', 'm.weave':'Tissage|Chaque touche tire toute une ligne et une colonne — reproduisez le tissu',
-    'play.carryOn':'Reprendre', 'play.carryBest':'Votre record {n}', 'why.new':'Jamais joué', 'why.star':'Presque une étoile', 'why.rare':'Délaissé', 'why.wild':'Au hasard',
+    'play.startHere':'Commencez ici', 'play.pickMode':'Choisir un mode', 'play.pickSub':'Les {n}, par famille', 'daily.subShort':'Une de chaque famille', 'daily.today':'Les douze du jour', 'daily.done':'Fait aujourd’hui', 'daily.streakN':'Série de {n} jours', 'play.carryOn':'Reprendre', 'play.carryBest':'Votre record {n}', 'why.new':'Jamais joué', 'why.star':'Presque une étoile', 'why.rare':'Délaissé', 'why.wild':'Au hasard',
     'wc.lead':'{n} petits casse-têtes. Celui qui est devant vous change à chaque manche.', 'wc.p1':'Soixante secondes par partie', 'wc.p2':'Un casse-tête différent à chaque manche', 'wc.p3':'Une erreur coûte du temps — une série rapporte', 'wc.change':'Changer', 'wc.start':'Lancer votre première partie', 'wc.look':'Jeter un œil d’abord',
     'mix.tapes':'Vos playlists', 'mix.name':'Nommer cette playlist', 'mix.share':'Partager cette playlist', 'mix.delete':'Supprimer cette playlist', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Nouvelle', 'mix.paste':'Coller un code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Supprimer « {name} » ?', 'mix.keep':'Garder', 'mix.deleteIt':'Supprimer', 'mix.shareText':'Ma playlist Dopamine Drop « {name} » — {n} modes. Collez ce code dans l’onglet Mix : {code}', 'mix.importTitle':'Ajouter une playlist', 'mix.importSub':'Collez un code qu’on vous a envoyé. Il contient un nom et une liste de modes, rien d’autre.', 'mix.importAdd':'Ajouter', 'mix.importBad':'Aucun code de playlist là-dedans. Collez tout le message — le code commence par DD1.', 'mix.importOk':'« {name} » ajoutée.', 'mix.importN':'{n} modes.', 'mix.importN1':'Un mode.', 'mix.importDropped':'{n} de ses modes n’existent pas dans cette version et ont été écartés.', 'mix.importDropped1':'Un de ses modes n’existe pas dans cette version et a été écarté.',
     'p.rampFast':'Écoutez — ça accélère', 'p.rampSlow':'Écoutez — ça ralentit', 'p.rampGo':'Restez sur le temps — encore {n}', 'ramp.pad':'Touchez sur chaque temps', 'm.ramp':'Accélération|Le tempo bouge — restez dessus',
@@ -3589,7 +3645,7 @@ const STRINGS = {
     'daily.streak':'Racha de {n} días', 'daily.streak1':'Racha empezada hoy', 'daily.share':'Dopamine Drop — Reto diario {d}: {a}/{b} resueltos por {n} puntos, día {s} de mi racha.', 'btn.share':'Compartir', 'daily.copied':'Copiado',
     'stats.filter':'Filtrar la lista de modos', 'stats.fAll':'Todos', 'stats.fPlayed':'Jugados', 'stats.fNew':'Sin probar', 'stats.allPlayed':'Has jugado todos los modos al menos una vez.', 'stats.noneYet':'Aquí no hay nada — juega un Maratón y aparecerá una puntuación.',
     'p.bbListen':'Escucha — dos compases y los huecos son tuyos', 'p.bbPlay':'Toca entre los golpes — quedan {n}', 'bb.pad':'Toca entre los golpes', 'm.backbeat':'Contratiempo|Toca entre los golpes, nunca sobre uno', 'p.chorus':'Una de ellas no mantiene su tempo', 'chorus.lane':'Fila {n}', 'm.chorus':'Coro|Tempos estables, y uno que no lo es', 'p.bridge':'{n} tablones puestos — llega a la otra orilla', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Agua abierta, columna {x} fila {y}, toca para poner un tablón', 'bridge.plank':'Un tablón, columna {x} fila {y}, toca para quitarlo', 'm.bridge':'Puente|Pon tablones de orilla a orilla — están contados', 'p.weave':'Quedan {n} casillas mal', 'weave.want':'El patrón que hay que igualar', 'weave.over':'Encima, columna {x} fila {y}', 'weave.under':'Debajo, columna {x} fila {y}', 'm.weave':'Telar|Cada toque tira de toda una fila y columna — iguala la tela',
-    'play.carryOn':'Continuar', 'play.carryBest':'Tu récord {n}', 'why.new':'Sin probar', 'why.star':'Cerca de una estrella', 'why.rare':'Olvidado', 'why.wild':'Al azar',
+    'play.startHere':'Empieza aquí', 'play.pickMode':'Elige un modo', 'play.pickSub':'Los {n}, por familia', 'daily.subShort':'Uno de cada familia', 'daily.today':'Los doce de hoy', 'daily.done':'Jugado hoy', 'daily.streakN':'Racha de {n} días', 'play.carryOn':'Continuar', 'play.carryBest':'Tu récord {n}', 'why.new':'Sin probar', 'why.star':'Cerca de una estrella', 'why.rare':'Olvidado', 'why.wild':'Al azar',
     'wc.lead':'{n} pequeños rompecabezas. El que tienes delante cambia en cada ronda.', 'wc.p1':'Sesenta segundos por partida', 'wc.p2':'Un rompecabezas distinto cada ronda', 'wc.p3':'Un fallo cuesta tiempo — una racha paga', 'wc.change':'Cambiar', 'wc.start':'Empieza tu primera partida', 'wc.look':'Echar un vistazo primero',
     'mix.tapes':'Tus listas', 'mix.name':'Nombra esta lista', 'mix.share':'Compartir esta lista', 'mix.delete':'Borrar esta lista', 'mix.untitled':'Lista {n}', 'mix.newTape':'+ Nueva', 'mix.paste':'Pegar un código', 'mix.metaTape':'{name} · {n} modos', 'mix.delConfirm':'¿Borrar «{name}»?', 'mix.keep':'Conservar', 'mix.deleteIt':'Borrar', 'mix.shareText':'Mi lista de Dopamine Drop «{name}» — {n} modos. Pega este código en la pestaña Mix: {code}', 'mix.importTitle':'Añadir una lista', 'mix.importSub':'Pega un código que te hayan enviado. Lleva un nombre y una lista de modos, nada más.', 'mix.importAdd':'Añadirla', 'mix.importBad':'Ahí no hay ningún código de lista. Pega el mensaje entero — el código empieza por DD1.', 'mix.importOk':'Añadida «{name}».', 'mix.importN':'{n} modos.', 'mix.importN1':'Un modo.', 'mix.importDropped':'{n} de sus modos no están en esta versión y se han dejado fuera.', 'mix.importDropped1':'Uno de sus modos no está en esta versión y se ha dejado fuera.',
     'p.rampFast':'Escucha — está acelerando', 'p.rampSlow':'Escucha — está frenando', 'p.rampGo':'Sigue el pulso — quedan {n}', 'ramp.pad':'Toca en cada pulso', 'm.ramp':'Rampa|El tempo se mueve — sigue con él',
@@ -3734,7 +3790,7 @@ const STRINGS = {
     'daily.streak':'{n} Tage in Folge', 'daily.streak1':'Serie heute begonnen', 'daily.share':'Dopamine Drop — Tagesrunde {d}: {a}/{b} gelöst für {n} Punkte, Tag {s} meiner Serie.', 'btn.share':'Teilen', 'daily.copied':'Kopiert',
     'stats.filter':'Modusliste filtern', 'stats.fAll':'Alle', 'stats.fPlayed':'Gespielt', 'stats.fNew':'Ungespielt', 'stats.allPlayed':'Du hast jeden Modus mindestens einmal gespielt.', 'stats.noneYet':'Hier ist noch nichts — spiel einen Marathon und ein Wert erscheint.',
     'p.bbListen':'Hör zu — zwei Takte, dann gehören dir die Lücken', 'p.bbPlay':'Zwischen die Schläge tippen — noch {n}', 'bb.pad':'Zwischen die Schläge tippen', 'm.backbeat':'Nachschlag|Tippe zwischen die Schläge, nie auf einen', 'p.chorus':'Eine davon hält ihr Tempo nicht', 'chorus.lane':'Zeile {n}', 'm.chorus':'Chor|Gleichmäßige Tempi, und eines, das keines hält', 'p.bridge':'{n} Planken gelegt — erreiche das andere Ufer', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Offenes Wasser, Spalte {x} Zeile {y}, tippen zum Planken legen', 'bridge.plank':'Eine Planke, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Brücke|Lege Planken von Ufer zu Ufer — sie sind gezählt', 'p.weave':'Noch {n} Felder falsch', 'weave.want':'Das Muster, das passen muss', 'weave.over':'Oben, Spalte {x} Zeile {y}', 'weave.under':'Unten, Spalte {x} Zeile {y}', 'm.weave':'Weben|Jeder Tipp zieht eine ganze Zeile und Spalte — triff das Tuch',
-    'play.carryOn':'Weiter', 'play.carryBest':'Dein Bestwert {n}', 'why.new':'Ungespielt', 'why.star':'Fast ein Stern', 'why.rare':'Vergessen', 'why.wild':'Zufall',
+    'play.startHere':'Fang hier an', 'play.pickMode':'Modus wählen', 'play.pickSub':'Alle {n}, nach Familie', 'daily.subShort':'Eins aus jeder Familie', 'daily.today':'Die zwölf von heute', 'daily.done':'Heute gespielt', 'daily.streakN':'{n} Tage in Folge', 'play.carryOn':'Weiter', 'play.carryBest':'Dein Bestwert {n}', 'why.new':'Ungespielt', 'why.star':'Fast ein Stern', 'why.rare':'Vergessen', 'why.wild':'Zufall',
     'wc.lead':'{n} kleine Rätsel. Das vor dir wechselt jede Runde.', 'wc.p1':'Sechzig Sekunden pro Runde', 'wc.p2':'Jede Runde ein anderes Rätsel', 'wc.p3':'Ein Fehler kostet Zeit — eine Serie zahlt sich aus', 'wc.change':'Ändern', 'wc.start':'Starte deine erste Runde', 'wc.look':'Erst mal umsehen',
     'mix.tapes':'Deine Playlists', 'mix.name':'Diese Playlist benennen', 'mix.share':'Diese Playlist teilen', 'mix.delete':'Diese Playlist löschen', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Neu', 'mix.paste':'Code einfügen', 'mix.metaTape':'{name} · {n} Modi', 'mix.delConfirm':'„{name}“ löschen?', 'mix.keep':'Behalten', 'mix.deleteIt':'Löschen', 'mix.shareText':'Meine Dopamine-Drop-Playlist „{name}“ — {n} Modi. Füge diesen Code im Mix-Tab ein: {code}', 'mix.importTitle':'Playlist hinzufügen', 'mix.importSub':'Füge einen Code ein, den dir jemand geschickt hat. Er enthält einen Namen und eine Modusliste, sonst nichts.', 'mix.importAdd':'Hinzufügen', 'mix.importBad':'Darin steckt kein Playlist-Code. Füge die ganze Nachricht ein — der Code beginnt mit DD1.', 'mix.importOk':'„{name}“ hinzugefügt.', 'mix.importN':'{n} Modi.', 'mix.importN1':'Ein Modus.', 'mix.importDropped':'{n} ihrer Modi gibt es in dieser Version nicht und wurden weggelassen.', 'mix.importDropped1':'Einen ihrer Modi gibt es in dieser Version nicht, er wurde weggelassen.',
     'p.rampFast':'Hör zu — es wird schneller', 'p.rampSlow':'Hör zu — es wird langsamer', 'p.rampGo':'Bleib im Takt — noch {n}', 'ramp.pad':'Auf jeden Schlag tippen', 'm.ramp':'Rampe|Das Tempo bewegt sich — bleib drauf',
@@ -3901,6 +3957,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.37.0', date:'2026-09-22', items:[
+    'The Play tab stops moving. Carry on and the perk nudge were cards that appeared and vanished, so everything under them — the four ways to play, the sixty-six modes — sat eighty-five pixels lower for a returning player than a new one. The thing under your thumb depended on what you did last time. There is now a row that is always there, holding the two things you came back for: the mode you were on, and the day’s twelve. With nothing to carry on, that slot points at the full list instead of disappearing.',
+    'Shuffle had the faintest edge on the screen — one pixel at a fifth opacity — while Carry on had a solid three-pixel bar and the four small cards had solid borders. It was the biggest thing and the quietest one, which is why nothing read as the obvious first tap. It now has the strongest edge as well as the most room.',
+    'A free perk slot is a notification, not a destination. It had the loudest border on the board and pushed the whole page down; it is now a chip riding a section label that exists anyway, so it costs no layout at all.',
+    'Daily Drop came out of the section called “other ways to play”, which is a strange place for the thing with a streak attached. The three that remain lie flat, the odd one across the full width rather than leaving a hole.',
+  ] },
   { v:'0.36.0', date:'2026-09-18', items:[
     'Sift rebuilt as a belt. Sand falls one grain at a time, always in the same place, and the belt under the chute shifts one slot every time — so a bucket put on the BACK arrives under the chute in exactly as many beats as the belt is long. You are never placing for the grain you can see falling. You are placing for one further down the queue.',
     'Put them on too fast and the belt is full when you need the slot; too slow and the sand lands on bare rubber. The chute rings the grain the back slot will actually meet, so the pipeline is something you can see rather than something you hold in your head.',
@@ -12297,22 +12359,33 @@ function paintPlay(){
     ? t('mix.metaTape', { name: tapeName(tape, tapeIndex(tape)), n: chosen.length })
     : t('mix.tapToChoose');
   const dv = save.daily[todayKey()], dSt = dailyStreak();
-  $('dailyMeta').textContent = dSt ? streakLine(dSt)
-    : dv ? t('daily.best', { n: fmt(dv) }) : t('daily.sub');
+  $('dailyLine').textContent = dSt ? t('daily.streakN', { n: dSt })
+    : dv ? t('daily.done') : t('daily.today');
+  $('dailyMeta').textContent = dv && !dSt ? t('daily.best', { n: fmt(dv) }) : t('daily.subShort');
   $('dailyBtn').classList.toggle('streaking', dSt > 1);
 
+  /* The slot is always here. With nothing to carry on it points at the one
+     place that always has something — the full list — rather than vanishing and
+     taking eighty-five pixels of everything below it along for the ride. */
   const last = save.lastMode && MODES[save.lastMode] ? save.lastMode : null;
   const carry = $('carryOn');
-  carry.hidden = !last;
   if (last){
     const best = save.marathon[last] || 0;
     carry.style.setProperty('--cink', CAT_INK[catOf(last)] || 'var(--flare)');
+    $('carryEyebrow').textContent = t('play.carryOn');
     $('carryGlyph').innerHTML = MODES[last].glyph;
     $('carryName').textContent = modeName(last);
     $('carryMeta').textContent = best
       ? t('play.carryBest', { n: fmt(best) })
       : t('cat.' + catOf(last));
     carry.onclick = () => startRun('marathon', last);
+  } else {
+    carry.style.setProperty('--cink', 'var(--haze)');
+    $('carryEyebrow').textContent = t('play.startHere');
+    $('carryGlyph').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>';
+    $('carryName').textContent = t('play.pickMode');
+    $('carryMeta').textContent = t('play.pickSub', { n: MODE_IDS.length });
+    carry.onclick = () => goTab('Modes');
   }
 
   $('jumpCount').textContent = MODE_IDS.length;
