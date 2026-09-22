@@ -1739,6 +1739,47 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   flex:none;display:flex;gap:8px;padding-top:10px;
 }
 .mixbar button{flex:1;border-radius:var(--r-md);padding:12px;font-size:14px;font-weight:650}
+/* The count belongs beside the button you press when you are done, not inside
+   a paragraph two screens up. */
+.mixbar .count{flex:none;font-family:var(--f-data);font-size:12px;font-weight:700;
+  color:var(--cream);padding-right:2px;white-space:nowrap}
+.mixbar .count.short{color:var(--haze)}
+/* ── The mixtape picker ────────────────────────────────────────────────── */
+/* Choosing is not browsing: a row you can scan, in families, because "I like
+   the calm ones" is how anybody actually picks. */
+.picksec{margin:0 0 13px}
+.pickhead{display:flex;align-items:center;gap:7px;margin:0 0 7px;
+  font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--haze);font-weight:700}
+.pickhead b{width:8px;height:8px;border-radius:50%;flex:none}
+/* The count is information, not decoration: at .65 opacity on --haze it
+   failed contrast outright. */
+.pickhead u{text-decoration:none;font-family:var(--f-data);color:var(--cream);opacity:.8;font-size:10px}
+.pickhead .pickall{margin-left:auto;flex:none;min-height:36px;padding:8px 12px;
+  border-radius:999px;border:1px solid var(--edge-soft);background:#ffffff06;
+  color:var(--cream);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.pickgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pickrow{
+  display:flex;align-items:center;gap:8px;min-height:46px;padding:7px 9px;
+  border-radius:var(--r-md);text-align:left;
+  border:1px solid var(--edge-soft);background:#ffffff05;
+  transition:border-color var(--t-fast),background var(--t-fast),transform var(--t-fast);
+}
+.pickrow:active{transform:scale(.97)}
+.pickrow .g{flex:none;width:19px;height:19px;opacity:.85}
+.pickrow .g svg{width:100%;height:100%;display:block}
+.pickrow b{flex:1;min-width:0;font-size:12.5px;font-weight:650;color:var(--haze);
+  line-height:1.15;overflow-wrap:anywhere}
+/* In or out is a filled tick, not a tint: a state that rests on colour alone
+   is not a state half the people here can read. */
+.pickrow .tick{flex:none;width:17px;height:17px;border-radius:50%;
+  border:1.5px solid var(--edge);position:relative}
+.pickrow.on{border-color:color-mix(in srgb,var(--cink) 60%,transparent);
+  background:color-mix(in srgb,var(--cink) 12%,transparent)}
+.pickrow.on b{color:var(--cream)}
+.pickrow.on .g{opacity:1}
+.pickrow.on .tick{border-color:transparent;background:var(--cink)}
+.pickrow.on .tick::after{content:'';position:absolute;left:5px;top:2px;width:4px;height:9px;
+  border:solid #0D0918;border-width:0 2px 2px 0;transform:rotate(42deg)}
 .mixbar .primary{background:var(--flare);color:#1A0A04}
 .mixbar .ghost{border:1px solid var(--edge);color:var(--cream)}
 
@@ -2543,9 +2584,12 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <button class="yes" type="button" id="tapeGone" data-i18n="mix.deleteIt">Delete</button>
         </div>
         <p class="mixnote" id="mixNote"></p>
-        <div class="modegrid" id="mixGrid"></div>
+        <!-- Not .modegrid any more: this holds family sections, not cards, and the
+             two-column grid was laying the sections themselves side by side. -->
+        <div id="mixGrid"></div>
       </div>
       <div class="mixbar">
+        <span class="count" id="mixCount"></span>
         <button class="ghost" type="button" id="mixAll" data-i18n="mix.selectAll">Select all</button>
         <button class="primary" type="button" id="mixDone" data-i18n="mix.done">Done</button>
       </div>
@@ -2893,7 +2937,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.38.0';
+const VERSION_TAG = 'v0.39.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3312,7 +3356,7 @@ const STRINGS = {
     'mix.title':'Mixtape', 'mix.tapToChoose':'Tap to choose your modes',
     'mix.nChosen':'{n} modes chosen', 'mix.build':'Build your rotation',
     'mix.note':'Pick the modes you actually like. <b>Mixtape</b> shuffles only those. Two or more to make a rotation — <b>{n} chosen</b>.',
-    'mix.chosen':'{n} chosen', 'mix.selectAll':'Select all', 'mix.done':'Done',
+    'mix.pickNote':'Pick the modes you actually like — Mixtape shuffles only those. Two or more makes a rotation.', 'mix.all':'All', 'mix.none':'None', 'mix.clear':'Clear', 'mix.chosen':'{n} chosen', 'mix.selectAll':'Select all', 'mix.done':'Done',
     'daily.title':'Daily Drop', 'daily.sub':'12 rounds, one from every family · same for everyone',
     'daily.best':'Today’s best: {n}',
     'zen.title':'Fidget Loop', 'zen.sub':'No timer, no score',
@@ -3457,7 +3501,7 @@ const STRINGS = {
     'mix.title':'Playlist', 'mix.tapToChoose':'Touchez pour choisir vos modes',
     'mix.nChosen':'{n} modes choisis', 'mix.build':'Composez votre rotation',
     'mix.note':'Choisissez les modes que vous aimez vraiment. <b>Playlist</b> ne mélange que ceux-là. Deux au minimum — <b>{n} choisis</b>.',
-    'mix.chosen':'{n} choisis', 'mix.selectAll':'Tout choisir', 'mix.done':'Terminé',
+    'mix.pickNote':'Choisissez les modes que vous aimez vraiment — la playlist ne mélange que ceux-là. Deux au minimum pour une rotation.', 'mix.all':'Tous', 'mix.none':'Aucun', 'mix.clear':'Vider', 'mix.chosen':'{n} choisis', 'mix.selectAll':'Tout choisir', 'mix.done':'Terminé',
     'daily.title':'Défi du jour', 'daily.sub':'12 manches, une par famille · identique pour tous',
     'daily.best':'Record du jour : {n}',
     'zen.title':'Boucle calme', 'zen.sub':'Sans chrono, sans score',
@@ -3602,7 +3646,7 @@ const STRINGS = {
     'mix.title':'Lista', 'mix.tapToChoose':'Toca para elegir tus modos',
     'mix.nChosen':'{n} modos elegidos', 'mix.build':'Arma tu rotación',
     'mix.note':'Elige los modos que de verdad te gustan. <b>Lista</b> solo mezcla esos. Dos o más para una rotación — <b>{n} elegidos</b>.',
-    'mix.chosen':'{n} elegidos', 'mix.selectAll':'Elegir todos', 'mix.done':'Listo',
+    'mix.pickNote':'Elige los modos que de verdad te gustan: la lista solo mezcla esos. Dos o más forman una rotación.', 'mix.all':'Todos', 'mix.none':'Ninguno', 'mix.clear':'Vaciar', 'mix.chosen':'{n} elegidos', 'mix.selectAll':'Elegir todos', 'mix.done':'Listo',
     'daily.title':'Reto diario', 'daily.sub':'12 rondas, una de cada familia · igual para todos',
     'daily.best':'Récord de hoy: {n}',
     'zen.title':'Modo calma', 'zen.sub':'Sin reloj, sin puntos',
@@ -3747,7 +3791,7 @@ const STRINGS = {
     'mix.title':'Playlist', 'mix.tapToChoose':'Tippen, um Modi zu wählen',
     'mix.nChosen':'{n} Modi gewählt', 'mix.build':'Stelle deine Rotation zusammen',
     'mix.note':'Wähle die Modi, die dir wirklich gefallen. <b>Playlist</b> mischt nur diese. Mindestens zwei — <b>{n} gewählt</b>.',
-    'mix.chosen':'{n} gewählt', 'mix.selectAll':'Alle wählen', 'mix.done':'Fertig',
+    'mix.pickNote':'Wähle die Modi, die dir wirklich gefallen — die Playlist mischt nur diese. Ab zwei wird es eine Rotation.', 'mix.all':'Alle', 'mix.none':'Keine', 'mix.clear':'Leeren', 'mix.chosen':'{n} gewählt', 'mix.selectAll':'Alle wählen', 'mix.done':'Fertig',
     'daily.title':'Tagesrätsel', 'daily.sub':'12 Runden, eine je Familie · für alle gleich',
     'daily.best':'Heutiger Rekord: {n}',
     'zen.title':'Ruhemodus', 'zen.sub':'Ohne Uhr, ohne Punkte',
@@ -3986,6 +4030,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.39.0', date:'2026-09-22', items:[
+    'Mix stops using the browse card to do a picking job. The mode card carries a blurb, three stars and a best score — it is built to sell you a mode — and sixty-six of them was 3659 pixels of scrolling to tick some boxes, with no grouping at all. Choosing wants a row you can scan: the glyph, the name, and whether it is in. And it wants them in families, because “I like the calm ones” is how anybody actually builds a rotation.',
+    'Each family header now carries its own All / None and a live count, which is the bulk action worth having. The number chosen moved out of the middle of a paragraph and sits beside the button you press when you are done.',
+    '“Select all” became a toggle: it takes everything when nothing is chosen, and clears when something is. Taking all sixty-six only rebuilt Shuffle under another name, so it was never the action anyone wanted twice.',
+  ] },
   { v:'0.38.0', date:'2026-09-22', items:[
     'The Modes tab lands on the ten families instead of on all sixty-six modes at once. The flat list was 4319 pixels — five screens on a normal phone, eight on a small one — so the families were headings you scrolled past rather than places you went. They are cards now: three of the family’s own glyphs, how far through it you are, and a bar. Nine tenths of a screen instead of five and a bit.',
     'The filter strip was 1248 pixels of chips in a 400 pixel window, so seven of the ten families sat off the right edge with one clipped word to say so. It is no longer how you find a family — it is how you hop sideways once you are in one, and it carries the way back out. Its chips were also the smallest controls on the screen at 33px; they now get a thumb’s height.',
@@ -12638,11 +12687,60 @@ function paintMix(){
   $('tapeDel').disabled = !tape;
 
   const chosen = tapeModes();
-  $('mixNote').innerHTML = t('mix.note', { n: chosen.length });
-  fillGrid($('mixGrid'), MODE_IDS, { mode:'mix', onTap:null });
-  Array.from($('mixGrid').children).forEach((c,i) => {
-    c.onclick = () => { toggleMix(MODE_IDS[i]); sfx.tap(); buzz('tap'); paintMix(); paintPlay(); };
+  $('mixNote').innerHTML = t('mix.pickNote');
+
+  /* Browsing and choosing are not the same job. The browse card carries a
+     blurb, three stars and a best score — sixty-six of them is 3458px of
+     scrolling to tick some boxes. Choosing wants a row you can scan: the
+     glyph, the name, and whether it is in. And it wants them in families,
+     because "I like the calm ones" is how anybody actually picks. */
+  const host = $('mixGrid');
+  host.replaceChildren();
+  const pick = new Set(chosen);
+  catsPresent().forEach(c => {
+    const ids = idsInCat(c);
+    const inCat = ids.filter(id => pick.has(id)).length;
+    const sec = mk('div','picksec');
+    const head = mk('div','pickhead');
+    head.innerHTML = '<b></b><span></span><u></u>';
+    head.querySelector('b').style.background = CAT_INK[c];
+    head.querySelector('span').textContent = t('cat.' + c);
+    head.querySelector('u').textContent = inCat + '/' + ids.length;
+    /* One tap takes or leaves a whole family, which is the bulk action worth
+       having — unlike taking all sixty-six, which just rebuilds Shuffle. */
+    const all = mk('button','pickall');
+    all.type = 'button';
+    all.textContent = inCat === ids.length ? t('mix.none') : t('mix.all');
+    all.setAttribute('aria-label', (inCat === ids.length ? t('mix.none') : t('mix.all'))
+      + ' — ' + t('cat.' + c));
+    onTap(all, () => { const add = inCat < ids.length;
+      ids.forEach(id => { if (pick.has(id) !== add) toggleMix(id); });
+      sfx.tap(); buzz('tap'); paintMix(); paintPlay(); });
+    head.appendChild(all);
+    sec.appendChild(head);
+    const grid = mk('div','pickgrid');
+    ids.forEach(id => {
+      const b2 = mk('button','pickrow' + (pick.has(id) ? ' on' : ''));
+      b2.type = 'button';
+      b2.style.setProperty('--cink', CAT_INK[c]);
+      b2.innerHTML = '<span class="g"></span><b></b><i class="tick"></i>';
+      b2.querySelector('.g').innerHTML = MODES[id].glyph;
+      b2.querySelector('b').textContent = modeName(id);
+      b2.setAttribute('aria-pressed', pick.has(id) ? 'true' : 'false');
+      b2.setAttribute('aria-label', modeName(id) + ' — ' + t('cat.' + c));
+      onTap(b2, () => { toggleMix(id); sfx.tap(); buzz('tap'); paintMix(); paintPlay(); });
+      grid.appendChild(b2);
+    });
+    sec.appendChild(grid);
+    host.appendChild(sec);
   });
+
+  /* The count is the whole feedback loop of this screen, so it sits next to
+     the button you press when you are done rather than inside a paragraph. */
+  $('mixCount').textContent = t('mix.chosen', { n: chosen.length });
+  $('mixCount').classList.toggle('short', chosen.length < 2);
+  const allBtn = $('mixAll');
+  allBtn.textContent = chosen.length ? t('mix.clear') : t('mix.selectAll');
 }
 
 /* "1 misses a run" is the kind of thing that makes a screen look unfinished.
@@ -13071,8 +13169,11 @@ $('modeFindX').addEventListener('click', () => {
 });
 $('mixDone').addEventListener('click', () => goTab('Play'));
 $('mixAll').addEventListener('click', () => {
+  /* Empty rotation: take everything, so there is something to whittle down.
+     Anything chosen: clear it, which is the global action people actually
+     want — taking all sixty-six just rebuilds Shuffle under another name. */
   const tape = activeTape() || newTape();
-  tape.modes = tape.modes.length === MODE_IDS.length ? [] : MODE_IDS.slice();
+  tape.modes = tape.modes.length ? [] : MODE_IDS.slice();
   persist(); paintMix(); paintPlay();
 });
 
