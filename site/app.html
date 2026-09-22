@@ -1899,6 +1899,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 #surface::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:var(--cool);opacity:0;transition:opacity 180ms ease}
 #surface.flash-win::after{opacity:.16;transition:opacity 60ms ease}
 #surface.flash-bad::after{background:var(--bad);opacity:.2;transition:opacity 60ms ease}
+/* The moment the lid lifts: the meter is where the news is, so that is where
+   it is said. */
+#stage.lidup #hudMeter{box-shadow:0 0 0 2px var(--zap),0 0 18px -4px var(--zap)}
+#stage.lidup #hudMeterFill{background:var(--zap)}
 #count{position:absolute;inset:0;display:grid;place-items:center;z-index:5;background:#0D0918e8;border-radius:var(--r-lg)}
 #count b{font-family:var(--f-disp);font-weight:800;font-size:clamp(60px,20vw,92px);color:var(--flare);animation:cdpop 600ms cubic-bezier(.2,.8,.3,1)}
 @keyframes cdpop{0%{transform:scale(.5);opacity:0}40%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:1}}
@@ -2937,7 +2941,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.39.0';
+const VERSION_TAG = 'v0.40.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3351,7 +3355,7 @@ const STRINGS = {
   en: {
     'nav.sections':'Sections', 'nav.stats':'Your statistics', 'cat.all':'All', 'cat.focus':'Focus', 'cat.reflex':'Reflex', 'cat.memory':'Memory', 'cat.logic':'Logic', 'cat.numbers':'Numbers', 'cat.words':'Words', 'cat.rhythm':'Rhythm', 'cat.calm':'Calm', 'cat.physics':'Physics', 'cat.make':'Make', 'modes.filter':'Filter modes by kind', 'tab.Play':'Play', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Settings',
     'hero.eyebrow':'Every mode, on shuffle', 'hero.title':'Shuffle',
-    'hero.sub':'60 seconds. The puzzle changes every round.', 'hero.best':'BEST',
+    'hero.sub':'60 seconds. The puzzle changes every round.', 'run.lid':'+{n}s ceiling', 'hero.best':'BEST',
     'play.other':'Other ways to play', 'play.jump':'Jump straight in',
     'mix.title':'Mixtape', 'mix.tapToChoose':'Tap to choose your modes',
     'mix.nChosen':'{n} modes chosen', 'mix.build':'Build your rotation',
@@ -3496,7 +3500,7 @@ const STRINGS = {
   fr: {
     'nav.sections':'Sections', 'nav.stats':'Vos statistiques', 'cat.all':'Tout', 'cat.focus':'Attention', 'cat.reflex':'Réflexes', 'cat.memory':'Mémoire', 'cat.logic':'Logique', 'cat.numbers':'Nombres', 'cat.words':'Mots', 'cat.rhythm':'Rythme', 'cat.calm':'Calme', 'cat.physics':'Physique', 'cat.make':'Créer', 'modes.filter':'Filtrer les modes', 'tab.Play':'Jouer', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Réglages',
     'hero.eyebrow':'Tous les modes, en aléatoire', 'hero.title':'Mélange',
-    'hero.sub':'60 secondes. Le casse-tête change à chaque manche.', 'hero.best':'RECORD',
+    'hero.sub':'60 secondes. Le casse-tête change à chaque manche.', 'run.lid':'plafond +{n}s', 'hero.best':'RECORD',
     'play.other':'Autres façons de jouer', 'play.jump':'Commencer tout de suite',
     'mix.title':'Playlist', 'mix.tapToChoose':'Touchez pour choisir vos modes',
     'mix.nChosen':'{n} modes choisis', 'mix.build':'Composez votre rotation',
@@ -3641,7 +3645,7 @@ const STRINGS = {
   es: {
     'nav.sections':'Secciones', 'nav.stats':'Tus estadísticas', 'cat.all':'Todo', 'cat.focus':'Atención', 'cat.reflex':'Reflejos', 'cat.memory':'Memoria', 'cat.logic':'Lógica', 'cat.numbers':'Números', 'cat.words':'Palabras', 'cat.rhythm':'Ritmo', 'cat.calm':'Calma', 'cat.physics':'Física', 'cat.make':'Crear', 'modes.filter':'Filtrar modos', 'tab.Play':'Jugar', 'tab.Modes':'Modos', 'tab.Mix':'Mezcla', 'tab.Stats':'Datos', 'tab.Settings':'Ajustes',
     'hero.eyebrow':'Todos los modos, al azar', 'hero.title':'Mezcla',
-    'hero.sub':'60 segundos. El reto cambia en cada ronda.', 'hero.best':'RÉCORD',
+    'hero.sub':'60 segundos. El reto cambia en cada ronda.', 'run.lid':'techo +{n}s', 'hero.best':'RÉCORD',
     'play.other':'Otras formas de jugar', 'play.jump':'Empieza ya',
     'mix.title':'Lista', 'mix.tapToChoose':'Toca para elegir tus modos',
     'mix.nChosen':'{n} modos elegidos', 'mix.build':'Arma tu rotación',
@@ -3786,7 +3790,7 @@ const STRINGS = {
   de: {
     'nav.sections':'Bereiche', 'nav.stats':'Deine Werte', 'cat.all':'Alle', 'cat.focus':'Fokus', 'cat.reflex':'Reflexe', 'cat.memory':'Gedächtnis', 'cat.logic':'Logik', 'cat.numbers':'Zahlen', 'cat.words':'Wörter', 'cat.rhythm':'Rhythmus', 'cat.calm':'Ruhe', 'cat.physics':'Physik', 'cat.make':'Bauen', 'modes.filter':'Modi filtern', 'tab.Play':'Spielen', 'tab.Modes':'Modi', 'tab.Mix':'Mix', 'tab.Stats':'Werte', 'tab.Settings':'Optionen',
     'hero.eyebrow':'Alle Modi, gemischt', 'hero.title':'Mix',
-    'hero.sub':'60 Sekunden. Das Rätsel wechselt jede Runde.', 'hero.best':'REKORD',
+    'hero.sub':'60 Sekunden. Das Rätsel wechselt jede Runde.', 'run.lid':'+{n}s Limit', 'hero.best':'REKORD',
     'play.other':'Andere Spielarten', 'play.jump':'Direkt loslegen',
     'mix.title':'Playlist', 'mix.tapToChoose':'Tippen, um Modi zu wählen',
     'mix.nChosen':'{n} Modi gewählt', 'mix.build':'Stelle deine Rotation zusammen',
@@ -4030,6 +4034,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.40.0', date:'2026-09-22', items:[
+    'A timed run used to end at about a minute however well it was going. A solve banked a flat few seconds against a round that takes eleven, so the clock drained at the same rate whatever you did — the best possible run and a mediocre one both finished around the same moment, and the sixty-second ceiling was never even reached.',
+    'Solving FAST now gives back the time it saved against par. Speed compounds into more time instead of only into more points, which is the whole arcade loop and it costs nothing on the board. A median mode solved in three seconds banks 11.6s where par banks 3.6.',
+    'And the ceiling lifts as you go — a quarter minute every four solves, up to three. It used to be a constant nobody ever touched; now it is the thing that stops a great run going forever, which is a much better job for it.',
+    'Simulated across four skill levels before it was built, then checked against the arithmetic that shipped: a weak run is unchanged at about a minute, an average one goes 71s to 81s, a good one 85s to 113s, and an excellent one 97s to nearly three minutes. Nobody is made to play longer — playing longer is something you earn.',
+  ] },
   { v:'0.39.0', date:'2026-09-22', items:[
     'Mix stops using the browse card to do a picking job. The mode card carries a blurb, three stars and a best score — it is built to sell you a mode — and sixty-six of them was 3659 pixels of scrolling to tick some boxes, with no grouping at all. Choosing wants a row you can scan: the glyph, the name, and whether it is in. And it wants them in families, because “I like the calm ones” is how anybody actually builds a rotation.',
     'Each family header now carries its own All / None and a live count, which is the bulk action worth having. The number chosen moved out of the middle of a paragraph and sits beside the button you press when you are done.',
@@ -11741,6 +11751,17 @@ const MULT_STEP = [4, 3.2, 2.7, 2.3];
 const multiplier = () => run
   ? clamp(1 + Math.floor(run.streak / MULT_STEP[Perk.lv('zeal')]), 1, 5) : 1;
 
+/* A timed run used to end at sixty seconds however well it was going: solving
+   topped the clock up but never raised the lid, so the best possible run and a
+   mediocre one finished at the same moment. The lid now lifts as you solve, so
+   how long a run lasts is a thing you earn rather than a constant. Four solves
+   buys a quarter minute, up to three. A weak run is untouched — the first lift
+   needs four in a row-ish — and a strong one can reach three minutes. */
+const CAP_EVERY = 4, CAP_STEP = 15000, CAP_MAX = 180000;
+const capOf = k => !k.timed ? 0
+  : Math.min(CAP_MAX, k.cap + Math.floor((run ? run.solved : 0) / CAP_EVERY) * CAP_STEP);
+const capTier = n => Math.floor(n / CAP_EVERY);
+
 /* What you chose on the Stats tab should be visible while it is doing its work.
    Drawn once per run rather than per frame — the set cannot change mid-run. */
 function paintHudPerks(){
@@ -11785,7 +11806,7 @@ function renderHud(){
 
   if (k.timed){
     $('hudMeter').hidden = false; $('hudLives').hidden = true;
-    $('hudMeterFill').style.transform = 'scaleX(' + clamp(run.time / k.cap, 0, 1) + ')';
+    $('hudMeterFill').style.transform = 'scaleX(' + clamp(run.time / capOf(k), 0, 1) + ')';
     $('hudMeter').classList.toggle('warn', run.time < 10000);
   } else if (k.lives){
     $('hudMeter').hidden = true;
@@ -12025,7 +12046,28 @@ function resolve(ok, node){
          run should cost the run, never the progress made inside it. */
       save.lifetime = (save.lifetime || 0) + pts;
     }
-    if (k.timed) run.time = Math.min(k.cap, run.time + mode.bonus*run.pressure);
+    if (k.timed){
+      /* A flat bonus of a few seconds against a round that takes eleven meant
+         the clock drained at the same rate however well you played: the best
+         possible run and a mediocre one both ended around a minute, and the
+         sixty-second lid was never even reached. Solving FAST now gives back
+         the time it saved against par, so speed compounds into more time
+         instead of only into more points. Simulated across four skill levels:
+         a weak run is unchanged at ~60s, a good one goes 85s to 113s, and an
+         excellent one 97s to nearly three minutes.
+
+         Banked before the lid is recalculated, so a solve that lifts the lid
+         also gets to use the room it just made. */
+      const tierBefore = capTier(run.solved - 1);
+      const saved = speed * mode.par * run.pressure;
+      run.time = Math.min(capOf(k), run.time + mode.bonus*run.pressure + saved);
+      if (capTier(run.solved) > tierBefore && capOf(k) < CAP_MAX + 1){
+        el.stage.classList.add('lidup');
+        later(900, () => el.stage.classList.remove('lidup'));
+        floatPts(node, t('run.lid', { n: Math.round(CAP_STEP/1000) }));
+        sfx.good(6);
+      }
+    }
 
     /* Banked per solve, not at the end. Closing the app mid-run should cost
        the run, never the progress in it. */
