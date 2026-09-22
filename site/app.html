@@ -12593,6 +12593,9 @@ function modeCard(id, opts){
       '<span class="foot"><span class="stars"><i></i><i></i><i></i></span><span class="pb"></span></span>' +
       '<span class="pin" hidden>✓</span>' +
       '<span class="why" hidden></span>';
+    /* The card's own id, so anything that needs to find one mode among sixty
+       can ask for it by name rather than by its translated title. */
+    card.dataset.id = id;
     /* Attached to the cached node, inside the build branch: the roster repaints
        on every tab visit and a listener added per paint would stack up. */
     onHold(card, () => openModePreview(id));

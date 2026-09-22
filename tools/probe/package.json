@@ -1,0 +1,10 @@
+{
+  "name": "dopamine-drop-probe",
+  "private": true,
+  "type": "module",
+  "description": "Browser probes for the game. Not shipped; see README.md.",
+  "devDependencies": {
+    "axe-core": "^4.13.0",
+    "playwright": "^1.50.0"
+  }
+}

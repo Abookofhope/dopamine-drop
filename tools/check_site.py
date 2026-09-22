@@ -312,6 +312,13 @@ _missing = [n for _, n in _starts if f"'m.{n}':" not in html]
 check("every mode has a name and blurb string",
       not _missing, "missing: " + ", ".join(_missing[:5]) if _missing else "")
 
+# The browser probes find a mode by its id, so they keep working in German.
+# Losing this line would send them back to matching on translated titles.
+check("mode cards carry their id",
+      "card.dataset.id = id" in html,
+      "" if "card.dataset.id = id" in html else
+        "tools/probe/ opens modes by data-id — see tools/probe/README.md")
+
 frozen, scanned = [], 0
 for _i, (_off, _name) in enumerate(_starts):
     _end = _starts[_i + 1][0] if _i + 1 < len(_starts) else len(modes_src)
