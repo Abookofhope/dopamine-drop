@@ -1905,6 +1905,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:transform var(--t-fast),color var(--t-fast);
 }
 .score.pop{transform:scale(1.1);color:var(--zap)}
+.score.pop.big{transform:scale(1.22);color:var(--flare)}
 .streak{
   display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;
   border:1px solid var(--edge);background:#ffffff06;
@@ -1912,8 +1913,17 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:color var(--t-fast),background var(--t-fast),border-color var(--t-fast);
 }
 .streak.hot{color:#2A1200;background:var(--zap);border-color:var(--zap);transform:scale(1.08)}
-.streak.pop{animation:stpop .28s cubic-bezier(.2,.8,.3,1)}
+/* .streak.hot sets its own animation (emberpulse) further down this file,
+   at equal specificity to a plain .streak.pop — so whichever rule comes
+   later in the cascade wins the animation property outright, and the pop
+   this shipped with has been silently losing to the ember flicker on every
+   solve made during an actual hot streak, which is most of them. Named
+   explicitly against .hot too, so the pop is never the one that goes
+   missing precisely when there is a streak worth celebrating. */
+.streak.pop, .streak.hot.pop{animation:stpop .28s cubic-bezier(.2,.8,.3,1)}
 @keyframes stpop{0%{transform:scale(1)}45%{transform:scale(1.22)}100%{transform:scale(1)}}
+.streak.pop.big, .streak.hot.pop.big{animation:stpopbig .32s cubic-bezier(.2,.8,.3,1)}
+@keyframes stpopbig{0%{transform:scale(1)}45%{transform:scale(1.38)}100%{transform:scale(1)}}
 /* Lives and perks moved up beside the mode name; the row that held them is
    gone, so the width they were given there goes with it. */
 .hudtop .lives,.hudtop .perkbar{flex:none;min-width:0}
@@ -2297,7 +2307,16 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 /* Effects */
 .float{position:absolute;pointer-events:none;font-family:var(--f-data);font-weight:700;font-size:18px;color:var(--zap);animation:floatup 720ms cubic-bezier(.2,.7,.3,1) forwards;text-shadow:0 2px 10px #000}
 @keyframes floatup{0%{opacity:0;transform:translate(-50%,4px) scale(.8)}22%{opacity:1;transform:translate(-50%,-10px) scale(1.06)}100%{opacity:0;transform:translate(-50%,-52px) scale(1)}}
+/* A ×1 solve and a ×5 solve used to spend the identical popup — same size,
+   same colour, same everything, however hot the streak actually was. Size
+   and colour only (still transform/opacity/paint), so it costs no more than
+   the one it replaces. */
+.float.t2{font-size:20px}
+.float.t3{font-size:22px}
+.float.t4{font-size:24px;color:var(--flare);text-shadow:0 0 12px var(--flare-deep),0 2px 10px #000}
+.float.t5{font-size:27px;color:var(--flare);text-shadow:0 0 18px var(--flare-deep),0 2px 10px #000;animation-duration:820ms}
 .spark{position:absolute;width:7px;height:7px;border-radius:2px;pointer-events:none;animation:spark 560ms ease-out forwards}
+.spark.hot{width:9px;height:9px;box-shadow:0 0 8px currentColor}
 @keyframes spark{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.2) rotate(180deg)}}
 </style>
 <style>
@@ -11950,14 +11969,25 @@ function show(name){
 }
 
 /* ═══ Effects ═════════════════════════════════════════════════════════════ */
-function burst(target, color){
+/* tier: 1-5, the multiplier a solve landed at. Untiered callers (the run-
+   length bonus, anything outside the win path) pass nothing and get exactly
+   the plain, un-escalated look these always had — tiering is additive, never
+   a new default. Kept to size/colour/count/reach so it stays what it always
+   was: transform, opacity and paint, nothing that costs a layout pass. */
+function burst(target, color, tier){
   if (motionOff()) return;
   const host = el.surface.getBoundingClientRect();
   const r = target ? target.getBoundingClientRect() : host;
   const cx = r.left - host.left + r.width/2, cy = r.top - host.top + r.height/2;
-  for (let i=0;i<10;i++){
-    const s = mk('span','spark');
-    const ang = (i/10)*Math.PI*2 + Math.random()*0.5, dist = 34 + Math.random()*44;
+  const t = clamp(tier || 1, 1, 5);
+  /* More sparks only at the top of the range, and only a few more — the menu
+     already stuttered once from animating too much at once. */
+  const n = 10 + (t >= 5 ? 4 : t >= 4 ? 2 : 0);
+  const spread = 1 + (t - 1) * 0.08;
+  const hot = t >= 4;
+  for (let i=0;i<n;i++){
+    const s = mk('span', hot ? 'spark hot' : 'spark');
+    const ang = (i/n)*Math.PI*2 + Math.random()*0.5, dist = (34 + Math.random()*44) * spread;
     s.style.left = cx+'px'; s.style.top = cy+'px';
     s.style.setProperty('--dx', Math.cos(ang)*dist + 'px');
     s.style.setProperty('--dy', Math.sin(ang)*dist + 'px');
@@ -11966,11 +11996,11 @@ function burst(target, color){
     setTimeout(() => s.remove(), 600);
   }
 }
-function floatPts(target, text){
+function floatPts(target, text, tier){
   if (motionOff()) return;
   const host = el.surface.getBoundingClientRect();
   const r = target ? target.getBoundingClientRect() : host;
-  const f = mk('div','float');
+  const f = mk('div', 'float t' + clamp(tier || 1, 1, 5));
   f.textContent = text;
   f.style.left = (r.left - host.left + r.width/2) + 'px';
   f.style.top  = (r.top - host.top) + 'px';
@@ -12121,6 +12151,8 @@ function renderHud(){
   const step = MULT_STEP[Perk.lv('zeal')];
   chip.style.setProperty('--to', m >= 5 ? 1 : (run.streak % step) / step);
   chip.classList.toggle('maxed', m >= 5);
+  /* Styled since the multiplier ring was built, never actually turned on. */
+  chip.classList.toggle('blaze', m >= 5);
   chip.setAttribute('aria-label', t('hud.mult', { m, n: m >= 5 ? 0 : step - (run.streak % step) }));
   chip.hidden = !k.scored;
 
@@ -12382,11 +12414,12 @@ function resolve(ok, node){
     const multBefore = multiplier();
     const elapsed = performance.now() - roundStart;
     const speed = clamp(1 - elapsed / (parOf(mode, run.lvl) * run.pressure), 0, 1);
-    const pts = Math.round((100 + 130*speed) * multiplier());
+    const mult = multiplier();
+    const pts = Math.round((100 + 130*speed) * mult);
     run.solved++; run.streak++;
     run.bestStreak = Math.max(run.bestStreak, run.streak);
     if (k.scored){
-      run.score += pts; floatPts(node, '+' + pts);
+      run.score += pts; floatPts(node, '+' + pts, mult);
       /* Lifetime points bank per solve for the same reason XP does: quitting a
          run should cost the run, never the progress made inside it. */
       save.lifetime = (save.lifetime || 0) + pts;
@@ -12417,22 +12450,34 @@ function resolve(ok, node){
     /* Banked per solve, not at the end. Closing the app mid-run should cost
        the run, never the progress in it. */
     const before = Prog.levelForXp(save.xp);
-    save.xp += Prog.xpForSolve(multiplier());
+    save.xp += Prog.xpForSolve(mult);
     save.solved = (save.solved || 0) + 1;
     persist();
     const after = Prog.levelForXp(save.xp);
     if (after > before) pendingLevel = after;
 
-    burst(node, '#33E6C8'); flash('flash-win');
+    burst(node, '#33E6C8', mult); flash('flash-win');
     sfx.good(run.streak); buzz('good');
-    el.prompt.textContent = run.streak >= 4 ? t('p.streak', { n: multiplier() }) : t('p.nice');
+    /* streak++ above already moved this — multAfter is what the player is
+       actually looking at, the tier this solve landed them on, not the one
+       pts was paid out at a moment ago. */
+    const multAfter = multiplier();
+    el.prompt.textContent = run.streak >= 4 ? t('p.streak', { n: multAfter }) : t('p.nice');
     el.prompt.className = 'prompt won';
-    $('hudScore').classList.add('pop');
-    setTimeout(() => $('hudScore').classList.remove('pop'), 160);
-    if (multiplier() > multBefore){
+    /* A ×1 solve and a ×5 solve used to pop identically — the same bump, the
+       same colour, however hot the streak actually was. 'big' rides the same
+       pop animation both already had; it only changes how far it scales and
+       what colour it lands on. (Not 'hot' — hudStreak already owns that class
+       for the persistent multiplier-active state renderHud() drives below;
+       reusing it here would have this timeout switch it back off 300ms into
+       a streak that is very much still hot.) */
+    const big = multAfter >= 4;
+    $('hudScore').classList.add('pop'); $('hudScore').classList.toggle('big', big);
+    setTimeout(() => { $('hudScore').classList.remove('pop', 'big'); }, 160);
+    if (multAfter > multBefore){
       const st = $('hudStreak');
-      st.classList.add('pop');
-      setTimeout(() => st.classList.remove('pop'), 300);
+      st.classList.add('pop'); st.classList.toggle('big', big);
+      setTimeout(() => { st.classList.remove('pop', 'big'); }, 300);
     }
     renderHud();
     later(400, nextRound);
