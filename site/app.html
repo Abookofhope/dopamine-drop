@@ -1743,6 +1743,23 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    a paragraph two screens up. */
 /* How far through a staged round you are. It is the only thing on screen that
    says this round is more than one answer long. */
+/* ── Stats: families that fold ─────────────────────────────────────────── */
+.scat{margin:0 0 7px;border:1px solid var(--edge-soft);border-radius:var(--r-md);
+  background:#ffffff04;overflow:hidden}
+.scat summary{display:flex;align-items:center;gap:8px;min-height:46px;padding:8px 12px;
+  cursor:pointer;list-style:none;
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--haze);font-weight:700}
+.scat summary::-webkit-details-marker{display:none}
+/* The twist is the only thing saying open from shut, so it is not a tint. */
+.scat summary::after{content:'\203A';margin-left:2px;font-size:16px;line-height:1;
+  transform:rotate(90deg);transition:transform var(--t-fast);color:var(--haze)}
+.scat[open] summary::after{transform:rotate(-90deg)}
+.scat summary .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.scat summary span{flex:1;min-width:0}
+.scat summary u{text-decoration:none;font-family:var(--f-data);font-size:11px;color:var(--cream)}
+.scat summary .st{font-style:normal;font-family:var(--f-data);font-size:11px;color:var(--zap)}
+.scat .srow{margin:0;border-radius:0;border:none;border-top:1px solid var(--edge-soft)}
+.firstnote{margin:10px 0 0}
 .stagepips{display:flex;gap:6px;justify-content:center;margin-top:14px}
 .stagepips i{display:block;width:8px;height:8px;border-radius:50%;
   border:1.5px solid var(--edge);transition:background var(--t-med),border-color var(--t-med)}
@@ -2641,14 +2658,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
     <!-- ── STATS ───────────────────────────────────────────────────── -->
     <section class="screen" id="tabStats" hidden>
       <div class="scroll" tabindex="0" role="region" data-i18n-aria="nav.stats">
-        <div class="pkpanel" id="pkPanel">
-          <div class="seclbl"><span data-i18n="perk.title">Perks</span><u id="pkSlots"></u></div>
-          <div class="perknext">
-            <div class="track"><i id="pkFill" style="transform:scaleX(0)"></i></div>
-            <small id="pkNext"></small>
-          </div>
-          <div class="perkgrid" id="pkGrid"></div>
-        </div>
+        <!-- A tab called Stats opened on a shop: 279px of perks, a third of the
+             first screen, before a single number about you. Perks is a place you
+             go to (the Play tab links straight at it), not the headline here. -->
         <div class="seclbl"><span data-i18n="stats.progress">Progress</span></div>
         <div class="xpwrap">
           <div class="top">
@@ -2670,6 +2682,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <div class="stat"><b id="sMastered">0</b><small data-i18n="stats.mastered">Modes mastered</small></div>
           <div class="stat"><b id="sStars">0</b><small data-i18n="stats.stars">Stars earned</small></div>
         </div>
+        <!-- Nothing to show yet is worth saying out loud, rather than six zeroes
+             and sixty-six dashes pretending to be a table. -->
+        <p class="note firstnote" id="sFirst" hidden></p>
         <div class="seclbl"><span data-i18n="stats.everyMode">Every mode</span></div>
         <div class="segrow" id="sFilter" role="group" data-i18n-aria="stats.filter">
           <button class="seg on" type="button" data-f="all"><span data-i18n="stats.fAll">All</span><u></u></button>
@@ -2677,6 +2692,14 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <button class="seg" type="button" data-f="new"><span data-i18n="stats.fNew">Not tried</span><u></u></button>
         </div>
         <div id="sRows"></div>
+        <div class="pkpanel" id="pkPanel">
+          <div class="seclbl"><span data-i18n="perk.title">Perks</span><u id="pkSlots"></u></div>
+          <div class="perknext">
+            <div class="track"><i id="pkFill" style="transform:scaleX(0)"></i></div>
+            <small id="pkNext"></small>
+          </div>
+          <div class="perkgrid" id="pkGrid"></div>
+        </div>
       </div>
     </section>
 
@@ -2987,7 +3010,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.42.0';
+const VERSION_TAG = 'v0.43.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3416,7 +3439,7 @@ const STRINGS = {
     'stats.progress':'Progress', 'stats.level':'Level', 'stats.lifetime':'Lifetime',
     'stats.bestShuffle':'Best shuffle', 'stats.bestStreak':'Best streak', 'stats.runs':'Runs played',
     'stats.solved':'Puzzles solved', 'stats.mastered':'Modes mastered', 'stats.stars':'Stars earned',
-    'stats.everyMode':'Every mode',
+    'stats.firstRun':'Nothing here yet — play a round and this fills in. Every mode is open from the start.', 'stats.everyMode':'Every mode',
     'set.feedback':'Feedback', 'set.sound':'Sound', 'set.soundSub':'Taps and streak chimes — each family in its own key',
     'set.vib':'Vibration', 'set.vibSub':'A short pulse on every answer',
     'set.motion':'Reduce motion', 'set.motionSub':'No particles, no screen shake',
@@ -3561,7 +3584,7 @@ const STRINGS = {
     'stats.progress':'Progression', 'stats.level':'Niveau', 'stats.lifetime':'Total', 'stats.bestShuffle':'Record mélange',
     'stats.bestStreak':'Meilleure série', 'stats.runs':'Parties jouées',
     'stats.solved':'Casse-tête résolus', 'stats.mastered':'Modes maîtrisés', 'stats.stars':'Étoiles gagnées',
-    'stats.everyMode':'Chaque mode',
+    'stats.firstRun':'Rien ici pour l’instant — jouez une partie et tout se remplit. Tous les modes sont ouverts dès le départ.', 'stats.everyMode':'Chaque mode',
     'set.feedback':'Retours', 'set.sound':'Son', 'set.soundSub':'Touches et séries — chaque famille dans sa tonalité',
     'set.vib':'Vibration', 'set.vibSub':'Une brève impulsion à chaque réponse',
     'set.motion':'Réduire les animations', 'set.motionSub':'Ni particules, ni secousses',
@@ -3706,7 +3729,7 @@ const STRINGS = {
     'stats.progress':'Progreso', 'stats.level':'Nivel', 'stats.lifetime':'Totales', 'stats.bestShuffle':'Récord mezcla',
     'stats.bestStreak':'Mejor racha', 'stats.runs':'Partidas jugadas',
     'stats.solved':'Retos resueltos', 'stats.mastered':'Modos dominados', 'stats.stars':'Estrellas ganadas',
-    'stats.everyMode':'Cada modo',
+    'stats.firstRun':'Aquí no hay nada aún: juega una partida y esto se llena. Todos los modos están abiertos desde el principio.', 'stats.everyMode':'Cada modo',
     'set.feedback':'Respuesta', 'set.sound':'Sonido', 'set.soundSub':'Toques y rachas — cada familia en su tono',
     'set.vib':'Vibración', 'set.vibSub':'Un pulso breve en cada respuesta',
     'set.motion':'Reducir movimiento', 'set.motionSub':'Sin partículas ni sacudidas',
@@ -3851,7 +3874,7 @@ const STRINGS = {
     'stats.progress':'Fortschritt', 'stats.level':'Level', 'stats.lifetime':'Gesamt', 'stats.bestShuffle':'Mix-Rekord',
     'stats.bestStreak':'Beste Serie', 'stats.runs':'Runden gespielt',
     'stats.solved':'Rätsel gelöst', 'stats.mastered':'Modi gemeistert', 'stats.stars':'Sterne verdient',
-    'stats.everyMode':'Jeder Modus',
+    'stats.firstRun':'Noch nichts hier — spiel eine Runde, dann füllt sich das. Alle Modi sind von Anfang an offen.', 'stats.everyMode':'Jeder Modus',
     'set.feedback':'Rückmeldung', 'set.sound':'Ton', 'set.soundSub':'Tippen und Serien — jede Familie in eigener Tonart',
     'set.vib':'Vibration', 'set.vibSub':'Ein kurzer Impuls bei jeder Antwort',
     'set.motion':'Bewegung reduzieren', 'set.motionSub':'Keine Partikel, kein Wackeln',
@@ -4080,6 +4103,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.43.0', date:'2026-09-22', items:[
+    'A tab called Stats opened on a shop. Perks took the top 279 pixels — a third of the first screen, six cards and a meter — before a single number about you. It is a place you go to, and the Play tab already links straight at it, so it now sits at the bottom and the tab opens on your level and your lifetime.',
+    'The sixty-six modes were a flat table 3390 pixels long, which answers “how am I doing across the board” only if you scroll all of it and hold it in your head. Each family folds to a line that already answers it — how many played, how many stars — and opens if you want the detail. A filter opens what it leaves, because a filtered list IS the answer.',
+    'Four and nine tenths screens down to one and a half; eight down to two and a third on a small phone.',
+    'And before anything has been played it says so, instead of showing six zeroes and sixty-six dashes arranged to look like data.',
+  ] },
   { v:'0.42.0', date:'2026-09-22', items:[
     'Four modes were crumbs rather than snacks. Odd One Out was one tap at 2.6 seconds, Color Trap one word at 2.4 — a reflex test with a scoreboard rather than a round. Worse, since a solve now pays back the time it saved against par, the shortest modes paid back the least for playing them well, which is exactly backwards.',
     'They run several boards inside one round now, with pips under the board saying how far through you are. A miss still ends it on the spot; only winning moves you on. Odd One Out goes from 2.6 seconds to between 5 and 10 depending on level, Color Trap from 2.4 to between 7 and 12, Count Fast from 4.2 to between 8 and 13.',
@@ -13046,16 +13075,40 @@ function paintStats(){
     ? (a,b) => modeName(a).localeCompare(modeName(b))
     : (a,b) => (save.marathon[b]||0) - (save.marathon[a]||0));
 
+  /* Sixty-six rows in a flat list is 3390px, and the question you actually
+     bring to this tab — how am I doing across the board — is one no amount of
+     scrolling answers, because you have to hold all of it in your head. So
+     each family folds to a line that already says it: how many played, how
+     many stars of how many. Open the one you care about. */
   const frag = document.createDocumentFragment();
-  rows.forEach(id => {
-    const row = mk('div','srow');
-    row.innerHTML = '<span class="g">' + MODES[id].glyph + '</span><b></b>'
-      + '<span class="stars"><i></i><i></i><i></i></span><span class="v"></span>';
-    row.querySelector('b').textContent = modeName(id);
-    const stars = starsFor(id);
-    Array.from(row.querySelectorAll('.stars i')).forEach((s,i) => s.classList.toggle('on', i < stars));
-    row.querySelector('.v').textContent = save.marathon[id] ? fmt(save.marathon[id]) : '—';
-    frag.appendChild(row);
+  const byCat = {};
+  rows.forEach(id => (byCat[catOf(id)] = byCat[catOf(id)] || []).push(id));
+  catsPresent().forEach(c => {
+    const ids = byCat[c];
+    if (!ids || !ids.length) return;
+    const all = idsInCat(c);
+    const played = all.filter(id => save.marathon[id]).length;
+    const stars = all.reduce((n, id) => n + starsFor(id), 0);
+    const sec = mk('details','scat');
+    if (statFilter !== 'all') sec.open = true;
+    const sum = mk('summary');
+    sum.innerHTML = '<b class="dot"></b><span></span><u></u><i class="st"></i>';
+    sum.querySelector('.dot').style.background = CAT_INK[c];
+    sum.querySelector('span').textContent = t('cat.' + c);
+    sum.querySelector('u').textContent = played + '/' + all.length;
+    sum.querySelector('.st').textContent = stars + '\u2605';
+    sec.appendChild(sum);
+    ids.forEach(id => {
+      const row = mk('div','srow');
+      row.innerHTML = '<span class="g">' + MODES[id].glyph + '</span><b></b>'
+        + '<span class="stars"><i></i><i></i><i></i></span><span class="v"></span>';
+      row.querySelector('b').textContent = modeName(id);
+      const st = starsFor(id);
+      Array.from(row.querySelectorAll('.stars i')).forEach((s,i) => s.classList.toggle('on', i < st));
+      row.querySelector('.v').textContent = save.marathon[id] ? fmt(save.marathon[id]) : '\u2014';
+      sec.appendChild(row);
+    });
+    frag.appendChild(sec);
   });
   if (!rows.length){
     const none = mk('p','note');
@@ -13063,6 +13116,14 @@ function paintStats(){
     frag.appendChild(none);
   }
   $('sRows').replaceChildren(frag);
+  /* Before anything has been played, six zeroes and sixty-six dashes is a table
+     pretending to have data. Say what it is instead. */
+  const first = $('sFirst');
+  if (first){
+    const none = !save.runs;
+    first.hidden = !none;
+    if (none) first.textContent = t('stats.firstRun');
+  }
 }
 
 function paintSettings(){
