@@ -532,13 +532,27 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .fcell.mould{background:#ffffff0a;box-shadow:inset 0 0 0 2px var(--edge-soft)}
 .fcell.set{background:linear-gradient(180deg,#d4b4ff,#9b6cf0);box-shadow:inset 0 -3px 0 #00000026}
 .fcell.no{background:#ff3d6e55;box-shadow:inset 0 0 0 2px var(--bad)}
+/* Live preview while a part is dragged over the mould: green where it would
+   land, red where it would not. Distinct from .no, which is the one-shot
+   flash after a placement is actually refused — this updates every frame the
+   part is held over a new cell. */
+.fcell.drop-ok{background:#9b6cf055;box-shadow:inset 0 0 0 2px #C08BFF}
+.fcell.drop-bad{background:#ff3d6e33;box-shadow:inset 0 0 0 2px var(--bad)}
 .fgrid.made .fcell.set{background:linear-gradient(180deg,#e6d2ff,#c08bff);box-shadow:0 0 10px #c08bff66}
 .ftray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;
   flex:none;min-height:52px;width:100%}
 .fpiece{display:grid;gap:2px;padding:8px;border-radius:8px;border:2px solid var(--edge-soft);
-  background:var(--ink-2);cursor:pointer;min-width:44px;min-height:44px;
+  background:var(--ink-2);cursor:grab;min-width:44px;min-height:44px;
   place-content:center;transition:border-color var(--t-fast),transform var(--t-fast)}
 .fpiece.fsel{border-color:#C08BFF;transform:translateY(-3px)}
+/* Lifted well clear of a thumb, scaled up so it reads against board-sized
+   cells rather than its own small tray size, and its own transition turned
+   off — eased motion would lag a full step behind a moving finger. Letting
+   go removes this class, and .fpiece's own transition (still there underneath)
+   is what animates the snap back when a drop is refused or cancelled. */
+.fpiece.fdrag{position:relative;z-index:5;cursor:grabbing;pointer-events:none;
+  transition:none;box-shadow:0 12px 26px #00000055;
+  transform:translate(var(--dx,0px),calc(var(--dy,0px) - 40px)) scale(1.2)}
 .fbit{display:block;width:14px;height:14px;border-radius:3px;background:transparent}
 .fbit.on{background:linear-gradient(180deg,#d4b4ff,#9b6cf0)}
 
@@ -8640,6 +8654,7 @@ const MODES = {
           const w = Math.max(...sh.map(c=>c[0])) + 1, h = Math.max(...sh.map(c=>c[1])) + 1;
           const e = mk('button','fpiece');
           e.type = 'button';
+          e.dataset.idx = i;
           e.style.gridTemplateColumns = 'repeat(' + w + ',1fr)';
           for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){
             const b2 = mk('i', sh.some(c => c[0]===x && c[1]===y) ? 'fbit on' : 'fbit');
@@ -8647,8 +8662,25 @@ const MODES = {
           }
           e.setAttribute('aria-label', t('forge.part', { n: sh.length }));
           if (sel === i) e.classList.add('fsel');
-          onTap(e, () => { if (done) return;
-            sel = (sel === i) ? null : i; drawTray(); });
+          /* Real pointer input goes through the tray's own onDrag below, which
+             tells a tap from a drag by how far it moved. This stays for
+             keyboard activation only — detail is 0 for a synthesised click and
+             1+ for a real pointer click, so a mouse tap can never double-fire
+             here on top of the drag path resolving the same gesture. */
+          /* Real pointer input is fully handled by the tray's own onDrag below,
+             which tells a tap from a drag by how far it moved. This listener
+             exists for keyboard activation — but Chromium also delivers a
+             trusted click, detail 0, after a touch gesture already handled
+             above, so detail alone cannot tell the two apart. The 700ms
+             window (the same one onTap uses) can: a keyboard click arrives
+             long after any pointer gesture on this tray, a touch-compat one
+             lands within a beat of it. */
+          e.addEventListener('click', ev => {
+            if (done) return;
+            const t = ev.timeStamp || performance.now();
+            if (t - lastPointerGesture < 700) return;
+            sel = (sel === i) ? null : i; drawTray();
+          });
           tray.appendChild(e); trayEls.push(e);
         });
       };
@@ -8676,6 +8708,42 @@ const MODES = {
         cellEls.forEach((c, i) => c.classList.toggle('set', filled.has(i)));
       };
 
+      /* What placing a part at idx would occupy, and whether that is free.
+         Tap and drag both call this — the only calculation either of them
+         does — so neither can land a piece the other would have refused. The
+         part lands with its own first square — top row, leftmost — on idx.
+         Anchoring on the bounding box instead means a part whose top-left
+         corner is empty drops somewhere you did not point at, with no way to
+         learn where. */
+      const anchorFor = (selIdx, idx) => {
+        const sh = parts.list[selIdx], a0 = sh[0];
+        const ax = (idx % g) - a0[0], ay = Math.floor(idx / g) - a0[1];
+        const cells = sh.map(c => (ay + c[1])*g + (ax + c[0]));
+        const fits = sh.every((c, k) => ax + c[0] >= 0 && ax + c[0] < g
+          && ay + c[1] >= 0 && ay + c[1] < g
+          && target.has(cells[k]) && !filled.has(cells[k]));
+        return { cells, fits };
+      };
+      /* Places selIdx at idx if it fits and reports whether it did — the one
+         path both an ordinary tap and a drop take, so a part behaves exactly
+         the same way regardless of which one got it there. */
+      const place = (selIdx, idx) => {
+        const { cells, fits } = anchorFor(selIdx, idx);
+        if (!fits) return false;
+        const p = { part: selIdx, cells };
+        cells.forEach(i => filled.set(i, p));
+        placed.push(p); sel = null;
+        drawTray(); paint(); fitBoard();
+        /* Win before spending: a part that completes the mould should never
+           be the move that runs the budget out. */
+        if (filled.size === target.size){
+          done = true; grid.classList.add('made'); ctx.win(grid); return true;
+        }
+        say();
+        budget.spend(cellEls[idx]);
+        return true;
+      };
+
       cellEls.forEach((cell, idx) => {
         onTap(cell, () => {
           if (done) return;
@@ -8688,31 +8756,87 @@ const MODES = {
             return;
           }
           if (sel === null) return;
-          const sh = parts.list[sel];
-          /* The part lands with its own first square — top row, leftmost — on
-             the square you tapped. Anchoring on the bounding box instead means
-             a part whose top-left corner is empty drops somewhere you did not
-             point at, and there is no way to learn where. */
-          const a0 = sh[0];
-          const ax = (idx % g) - a0[0], ay = Math.floor(idx / g) - a0[1];
-          const cells = sh.map(c => (ay + c[1])*g + (ax + c[0]));
-          const fits = sh.every((c, k) => ax + c[0] >= 0 && ax + c[0] < g
-            && ay + c[1] >= 0 && ay + c[1] < g
-            && target.has(cells[k]) && !filled.has(cells[k]));
-          if (!fits){ cell.classList.add('no');
-            ctx.after(220, () => cell.classList.remove('no')); return; }
-          const p = { part: sel, cells };
-          cells.forEach(i => filled.set(i, p));
-          placed.push(p); sel = null;
-          drawTray(); paint(); fitBoard();
-          /* Win before spending: a part that completes the mould should never
-             be the move that runs the budget out. */
-          if (filled.size === target.size){
-            done = true; grid.classList.add('made'); return ctx.win(grid);
+          if (!place(sel, idx)){
+            cell.classList.add('no');
+            ctx.after(220, () => cell.classList.remove('no'));
           }
-          say();
-          budget.spend(cell);
         });
+      });
+
+      /* Dragging is the way this is meant to be played: lift a part off the
+         tray, watch the mould light up green where it fits and red where it
+         does not, drop it. onDrag sits on the tray itself rather than on each
+         piece — the tap-to-select path above rebuilds the tray on every tap,
+         and a piece rebuilt out from under a live drag loses pointer capture
+         and the gesture silently dies. A container that is never itself
+         replaced has nothing to lose. */
+      const pieceElAt = (x, y) => {
+        const el2 = document.elementFromPoint(x, y);
+        return el2 && el2.closest ? el2.closest('.fpiece') : null;
+      };
+      const cellAt = (x, y) => {
+        const el2 = document.elementFromPoint(x, y);
+        const c = el2 && el2.closest ? el2.closest('.fcell') : null;
+        return c ? cellEls.indexOf(c) : -1;
+      };
+      const clearPreview = () => cellEls.forEach(c => c.classList.remove('drop-ok', 'drop-bad'));
+      let dragPiece = -1, dragEl = null, dragMoved = false, dragOX = 0, dragOY = 0, lastPointerGesture = 0;
+      const endDrag = () => {
+        if (dragEl){ dragEl.classList.remove('fdrag');
+          dragEl.style.removeProperty('--dx'); dragEl.style.removeProperty('--dy'); }
+        clearPreview();
+        dragPiece = -1; dragEl = null; dragMoved = false;
+      };
+      onDrag(tray, {
+        start: q => {
+          if (done) return;
+          const el = pieceElAt(q.ev.clientX, q.ev.clientY);
+          if (!el) return;
+          dragPiece = Number(el.dataset.idx); dragEl = el; dragMoved = false;
+          dragOX = q.ev.clientX; dragOY = q.ev.clientY;
+          /* Chromium still fires a trusted, non-keyboard click after this
+             gesture ends, detail 0 and all — preventDefault() on pointerdown
+             does not reliably suppress it here. The piece's own click
+             listener below checks this timestamp against the same 700ms
+             window onTap uses elsewhere, so that click cannot also toggle
+             the selection this gesture already resolved. */
+          lastPointerGesture = q.ev.timeStamp || performance.now();
+        },
+        move: q => {
+          if (dragPiece < 0) return;
+          const dx = q.ev.clientX - dragOX, dy = q.ev.clientY - dragOY;
+          /* A held-still finger is a tap, not a drag — the lift and the
+             preview only start once it has actually moved. */
+          if (!dragMoved && Math.hypot(dx, dy) < 6) return;
+          dragMoved = true;
+          dragEl.classList.add('fdrag');
+          dragEl.style.setProperty('--dx', dx + 'px');
+          dragEl.style.setProperty('--dy', dy + 'px');
+          const r = dragEl.getBoundingClientRect();
+          const idx = cellAt(r.left + r.width/2, r.top + r.height/2);
+          clearPreview();
+          if (idx >= 0){
+            const { cells, fits } = anchorFor(dragPiece, idx);
+            cells.forEach(ci => { if (cellEls[ci]) cellEls[ci].classList.add(fits ? 'drop-ok' : 'drop-bad'); });
+          }
+        },
+        end: () => {
+          if (dragPiece < 0) return;
+          const i = dragPiece, el = dragEl, moved = dragMoved;
+          let idx = -1;
+          if (moved){
+            const r = el.getBoundingClientRect();
+            idx = cellAt(r.left + r.width/2, r.top + r.height/2);
+          }
+          endDrag();
+          if (done) return;
+          if (!moved){ sel = (sel === i) ? null : i; drawTray(); return; }
+          if (idx >= 0 && !place(i, idx)){
+            const cell = cellEls[idx];
+            cell.classList.add('no');
+            ctx.after(220, () => cell.classList.remove('no'));
+          }
+        }
       });
     }
   },
