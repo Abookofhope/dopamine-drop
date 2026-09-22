@@ -3010,7 +3010,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.43.0';
+const VERSION_TAG = 'v0.44.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3524,7 +3524,7 @@ const STRINGS = {
     'p.meld':'{n} more to take', 'meld.cell':'Jelly {v}, worth {p}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'meld.band':'Level {v} pays {p} today', 'meld.selling':'Tap again to sell the {v} for {p}', 'm.meld':'Meld|Merge jellies up, sell them off, reach the day’s takings', 'how.meld':'drag a jelly onto its twin to squash them into one; tap a jelly, then tap it again to sell it. One level pays triple today, and merging past it loses money',
     'p.volley':'{n} squares still bare', 'volley.cell':'{k}, row {r} column {c}', 'volley.blank':'Wants {k}, row {r} column {c}', 'volley.gunL':'{k} cannon, fires right along row {n}', 'volley.gunR':'{k} cannon, fires left along row {n}', 'volley.gunT':'{k} cannon, fires down column {n}', 'volley.gunB':'{k} cannon, fires up column {n}', 'volley.stuck':'Every cannon is spent or wrong — wind a shot back', 'm.volley':'Volley|Fire the cannons in an order that paints the picture', 'how.volley':'tap a cannon to fire it; the ball paints the bare squares it crosses and stops at the first one already painted. Tap a square the last shot painted to wind it back',
     'p.sift':'{n} more to catch', 'sift.slot':'Belt slot {n}, {k} bucket', 'sift.bare':'Belt slot {n}, empty', 'sift.put':'Put a {k} bucket on the belt', 'sift.jam':'Belt is full — knock the front bucket off to make room', 'm.sift':'Sift|Put buckets on the belt before their sand falls',
-    'how.forage':'tap a berry to send a swarm at its colour; it comes in through the bare gaps and eats only what it can reach, then waits in the basket until you send it again. Tap a waiting swarm to call it home', 'how.sift':'tap a colour to drop that bucket on the BACK of the belt; the belt shifts one slot every grain, so you are placing for a grain further down the chute, not the one falling. Tap the front bucket to knock it off',
+    'how.forage':'tap a berry to send a swarm at its colour; it comes in through the bare gaps and eats only what it can reach, then waits in the basket until you send it again. Tap a waiting swarm to call it home', 'how.first':'First time — taking it gently.', 'how.sift':'tap a colour to drop that bucket on the BACK of the belt; the belt shifts one slot every grain, so you are placing for a grain further down the chute, not the one falling. Tap the front bucket to knock it off',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3669,7 +3669,7 @@ const STRINGS = {
     'p.meld':'Encore {n} à encaisser', 'meld.cell':'Gelée {v}, valant {p}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'meld.band':'Le niveau {v} rapporte {p} aujourd’hui', 'meld.selling':'Touchez encore pour vendre la {v} à {p}', 'm.meld':'Fusion|Fusionnez, revendez, atteignez la recette du jour', 'how.meld':'glissez une gelée sur sa jumelle pour n’en faire qu’une ; touchez une gelée, puis touchez-la encore pour la vendre. Un niveau rapporte triple aujourd’hui, et fusionner au-delà fait perdre de l’argent',
     'p.volley':'{n} cases encore vides', 'volley.cell':'{k}, ligne {r} colonne {c}', 'volley.blank':'Attend {k}, ligne {r} colonne {c}', 'volley.gunL':'Canon {k}, tire vers la droite sur la ligne {n}', 'volley.gunR':'Canon {k}, tire vers la gauche sur la ligne {n}', 'volley.gunT':'Canon {k}, tire vers le bas sur la colonne {n}', 'volley.gunB':'Canon {k}, tire vers le haut sur la colonne {n}', 'volley.stuck':'Tous les canons sont épuisés ou faux — annulez un tir', 'm.volley':'Volée|Tirez au canon dans l’ordre qui peint l’image', 'how.volley':'touchez un canon pour tirer ; la bille peint les cases vides qu’elle traverse et s’arrête à la première déjà peinte. Touchez une case du dernier tir pour l’annuler',
     'p.sift':'Encore {n} à attraper', 'sift.slot':'Emplacement {n}, seau {k}', 'sift.bare':'Emplacement {n}, vide', 'sift.put':'Poser un seau {k} sur le tapis', 'sift.jam':'Tapis plein — faites tomber le seau de tête pour faire de la place', 'm.sift':'Tamis|Posez les seaux avant que leur sable ne tombe',
-    'how.forage':'touchez une baie pour lancer un essaim sur sa couleur ; il entre par les trous, ne mange que ce qu’il atteint, puis attend dans le panier que vous le relanciez. Touchez un essaim en attente pour le rappeler', 'how.sift':'touchez une couleur pour poser ce seau à l’ARRIÈRE du tapis ; le tapis avance d’un cran à chaque grain, donc vous posez pour un grain plus loin dans la trémie, pas pour celui qui tombe. Touchez le seau de tête pour le faire tomber',
+    'how.forage':'touchez une baie pour lancer un essaim sur sa couleur ; il entre par les trous, ne mange que ce qu’il atteint, puis attend dans le panier que vous le relanciez. Touchez un essaim en attente pour le rappeler', 'how.first':'Première fois — on y va doucement.', 'how.sift':'touchez une couleur pour poser ce seau à l’ARRIÈRE du tapis ; le tapis avance d’un cran à chaque grain, donc vous posez pour un grain plus loin dans la trémie, pas pour celui qui tombe. Touchez le seau de tête pour le faire tomber',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3814,7 +3814,7 @@ const STRINGS = {
     'p.meld':'Faltan {n} para la caja', 'meld.cell':'Gelatina {v}, vale {p}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'meld.band':'El nivel {v} paga {p} hoy', 'meld.selling':'Toca otra vez para vender la {v} por {p}', 'm.meld':'Fusión|Fusiona, vende y llega a la caja del día', 'how.meld':'arrastra una gelatina sobre su gemela para hacerlas una; toca una gelatina y tócala otra vez para venderla. Un nivel paga el triple hoy, y fusionar más allá pierde dinero',
     'p.volley':'{n} casillas aún vacías', 'volley.cell':'{k}, fila {r} columna {c}', 'volley.blank':'Quiere {k}, fila {r} columna {c}', 'volley.gunL':'Cañón {k}, dispara a la derecha por la fila {n}', 'volley.gunR':'Cañón {k}, dispara a la izquierda por la fila {n}', 'volley.gunT':'Cañón {k}, dispara hacia abajo por la columna {n}', 'volley.gunB':'Cañón {k}, dispara hacia arriba por la columna {n}', 'volley.stuck':'Todos los cañones están gastados o son erróneos — deshaz un disparo', 'm.volley':'Volea|Dispara los cañones en el orden que pinta el dibujo', 'how.volley':'toca un cañón para disparar; la bola pinta las casillas vacías que cruza y se para en la primera ya pintada. Toca una casilla del último disparo para deshacerlo',
     'p.sift':'Faltan {n} por atrapar', 'sift.slot':'Hueco {n}, cubo {k}', 'sift.bare':'Hueco {n}, vacío', 'sift.put':'Poner un cubo {k} en la cinta', 'sift.jam':'Cinta llena — tira el cubo delantero para hacer sitio', 'm.sift':'Criba|Pon los cubos antes de que caiga su arena',
-    'how.forage':'toca una baya para lanzar un enjambre a su color; entra por los huecos, come solo lo que alcanza y luego espera en la cesta a que lo vuelvas a lanzar. Toca un enjambre en espera para llamarlo', 'how.sift':'toca un color para poner ese cubo al FINAL de la cinta; la cinta avanza un hueco con cada grano, así que colocas para un grano más adelante en la tolva, no para el que cae. Toca el cubo delantero para tirarlo',
+    'how.forage':'toca una baya para lanzar un enjambre a su color; entra por los huecos, come solo lo que alcanza y luego espera en la cesta a que lo vuelvas a lanzar. Toca un enjambre en espera para llamarlo', 'how.first':'Primera vez: vamos con calma.', 'how.sift':'toca un color para poner ese cubo al FINAL de la cinta; la cinta avanza un hueco con cada grano, así que colocas para un grano más adelante en la tolva, no para el que cae. Toca el cubo delantero para tirarlo',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3959,7 +3959,7 @@ const STRINGS = {
     'p.meld':'Noch {n} bis zur Tageskasse', 'meld.cell':'Gelee {v}, {p} wert, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'meld.band':'Stufe {v} zahlt heute {p}', 'meld.selling':'Nochmal tippen, um die {v} für {p} zu verkaufen', 'm.meld':'Verschmelzen|Zusammendrücken, verkaufen, die Tageskasse erreichen', 'how.meld':'zieh ein Gelee auf sein Gegenstück, damit eins daraus wird; tippe ein Gelee an und dann nochmal, um es zu verkaufen. Eine Stufe zahlt heute das Dreifache, und darüber hinaus zu verschmelzen kostet Geld',
     'p.volley':'Noch {n} leere Felder', 'volley.cell':'{k}, Zeile {r} Spalte {c}', 'volley.blank':'Will {k}, Zeile {r} Spalte {c}', 'volley.gunL':'{k}-Kanone, schießt nach rechts durch Zeile {n}', 'volley.gunR':'{k}-Kanone, schießt nach links durch Zeile {n}', 'volley.gunT':'{k}-Kanone, schießt nach unten durch Spalte {n}', 'volley.gunB':'{k}-Kanone, schießt nach oben durch Spalte {n}', 'volley.stuck':'Jede Kanone ist verbraucht oder falsch — nimm einen Schuss zurück', 'm.volley':'Salve|Schieß die Kanonen in der Reihenfolge, die das Bild malt', 'how.volley':'tippe eine Kanone an, um zu schießen; die Kugel malt die leeren Felder, die sie überquert, und hält am ersten bereits bemalten. Tippe ein Feld des letzten Schusses an, um ihn zurückzunehmen',
     'p.sift':'Noch {n} zu fangen', 'sift.slot':'Bandplatz {n}, {k}-Eimer', 'sift.bare':'Bandplatz {n}, leer', 'sift.put':'Einen {k}-Eimer aufs Band stellen', 'sift.jam':'Band ist voll — stoß den vordersten Eimer herunter', 'm.sift':'Sieben|Stell die Eimer hin, bevor ihr Sand fällt',
-    'how.forage':'tippe eine Beere an, um einen Schwarm auf ihre Farbe zu schicken; er kommt durch die Lücken herein, frisst nur, was er erreicht, und wartet dann im Korb, bis du ihn erneut schickst. Tippe einen wartenden Schwarm an, um ihn zurückzurufen', 'how.sift':'tippe eine Farbe an, um den Eimer HINTEN aufs Band zu stellen; das Band rückt bei jedem Korn einen Platz vor, du stellst also für ein Korn weiter oben im Schacht, nicht für das fallende. Tippe den vordersten Eimer an, um ihn herunterzustoßen',
+    'how.forage':'tippe eine Beere an, um einen Schwarm auf ihre Farbe zu schicken; er kommt durch die Lücken herein, frisst nur, was er erreicht, und wartet dann im Korb, bis du ihn erneut schickst. Tippe einen wartenden Schwarm an, um ihn zurückzurufen', 'how.first':'Zum ersten Mal — wir fangen sanft an.', 'how.sift':'tippe eine Farbe an, um den Eimer HINTEN aufs Band zu stellen; das Band rückt bei jedem Korn einen Platz vor, du stellst also für ein Korn weiter oben im Schacht, nicht für das fallende. Tippe den vordersten Eimer an, um ihn herunterzustoßen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -4103,6 +4103,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.44.0', date:'2026-09-22', items:[
+    'Meeting a mode for the first time at level forty meant meeting it at its hardest with none of its rules — a five-slot belt at a grain every three-quarters of a second, before anyone had said the belt shifts. The first round of anything is now played at the shallow end whatever your level, and it says so, because otherwise the gentle round reads as the mode being easy and the next one reads as a spike. Sift meets you with three belt slots instead of five, Volley on a 4×4 rather than 5×5, Meld with four jellies rather than six.',
+    'The line that teaches a mode used to go on the first touch of the board — which, on a mode whose rule is the thing being explained, means it went before it was read, because the first thing anybody does is poke the board. It survives the first couple of seconds now whatever you tap, and stays up half as long again.',
+  ] },
   { v:'0.43.0', date:'2026-09-22', items:[
     'A tab called Stats opened on a shop. Perks took the top 279 pixels — a third of the first screen, six cards and a meter — before a single number about you. It is a place you go to, and the Play tab already links straight at it, so it now sits at the bottom and the tab opens on your level and your lifetime.',
     'The sixty-six modes were a flat table 3390 pixels long, which answers “how am I doing across the board” only if you scroll all of it and hold it in your head. Each family folds to a line that already answers it — how many played, how many stars — and opens if you want the detail. A filter opens what it leaves, because a filtered list IS the answer.',
@@ -12080,23 +12084,34 @@ function pickMode(){
    It goes the moment you touch the board, or after six seconds, and it never
    comes back for that mode. */
 let howDrop = null;
-function showHow(id){
+function showHow(id, firstMeet){
   const el2 = $('howto');
   if (!el2) return;
   const seen = save.seen || (save.seen = {});
   if (seen[id]){ el2.hidden = true; return; }
   const gesture = MODES[id] && MODES[id].input;
-  el2.textContent = modeBlurb(id) + (gesture ? ' — ' + t('how.' + gesture) : '');
+  /* Say that this round is the gentle one, or the shallow end looks like the
+     mode simply being easy and the next round looks like a difficulty spike. */
+  el2.textContent = (firstMeet ? t('how.first') + ' ' : '')
+    + modeBlurb(id) + (gesture ? ' \u2014 ' + t('how.' + gesture) : '');
   el2.hidden = false;
   el2.classList.remove('go'); void el2.offsetWidth; el2.classList.add('go');
   seen[id] = 1;
   persist();
-  /* The surface outlives the round, so a listener left on it would still be
-     armed when the next mode's line goes up. Held in one place and cleared as
-     the next round opens. */
-  howDrop = () => { el2.hidden = true; el.surface.removeEventListener('pointerdown', howDrop); };
+  /* It used to go on the first touch of the board, which on a mode whose rule
+     is the thing being explained means it went before it had been read — the
+     first thing anybody does is poke the board. It now survives the first
+     couple of seconds whatever you tap, and stays up half as long again. */
+  const born = performance.now();
+  howDrop = () => {
+    if (performance.now() - born < 2200) return;
+    el2.hidden = true;
+    el.surface.removeEventListener('pointerdown', howDrop);
+    howDrop = null;
+  };
   el.surface.addEventListener('pointerdown', howDrop);
-  later(6000, () => { if (howDrop) howDrop(); });
+  later(9000, () => { if (howDrop){ el2.hidden = true;
+    el.surface.removeEventListener('pointerdown', howDrop); howDrop = null; } });
 }
 function clearHow(){
   if (howDrop){ el.surface.removeEventListener('pointerdown', howDrop); howDrop = null; }
@@ -12134,12 +12149,21 @@ function nextRound(){
   setFamily(id);
   if (changed) announceMode(id);
   clearHow();
-  showHow(id);
+  /* Captured before showHow, which is what marks a mode as met. */
+  const firstMeet = !(save.seen || {})[id];
+  showHow(id, firstMeet);
   roundLive = true;
   roundStart = performance.now();
   /* Settled once per round, because the round clock, the mode's own difficulty
-     and the speed the solve is judged at all have to agree on it. */
-  run.lvl = Prog.effectiveLevel(run.solved, run.playerLevel);
+     and the speed the solve is judged at all have to agree on it.
+
+     And meeting a mode for the first time at level forty means meeting it at
+     its hardest with none of its rules: a five-slot belt at a grain every
+     three-quarters of a second, before anyone has told you the belt shifts.
+     The first round of anything is played at the shallow end, whatever the
+     player's level. It is one round, and it is the round the rules arrive in. */
+  const full = Prog.effectiveLevel(run.solved, run.playerLevel);
+  run.lvl = firstMeet ? Math.min(6, full) : full;
   /* Generous on purpose: par is how long the mode expects to take, and this is
      more than twice that, easing further as the player's level raises pressure.
      It is a floor under dawdling, not a second difficulty dial. */
