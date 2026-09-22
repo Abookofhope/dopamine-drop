@@ -1902,6 +1902,39 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 /* The moment the lid lifts: the meter is where the news is, so that is where
    it is said. */
 #stage.lidup #hudMeter{box-shadow:0 0 0 2px var(--zap),0 0 18px -4px var(--zap)}
+/* ── The multiplier ────────────────────────────────────────────────────── */
+/* It carries its own level, so x5 looks like it was earned rather than like
+   x1 with a different number in it. */
+.streak{position:relative;transition:transform var(--t-med),color var(--t-fast),
+  border-color var(--t-fast),box-shadow var(--t-fast)}
+.streak.hot{transform:scale(calc(1 + (var(--lvl,1) - 1) * 0.07))}
+.streak.maxed{box-shadow:0 0 0 2px var(--zap),0 0 16px -4px var(--zap);color:var(--zap)}
+/* A ring that fills with how close the next step is: the "almost" is the part
+   people push for. */
+.streak::after{content:'';position:absolute;inset:-3px;border-radius:999px;
+  pointer-events:none;
+  background:conic-gradient(var(--zap) calc(var(--to,0) * 360deg), transparent 0);
+  -webkit-mask:radial-gradient(circle, transparent 0 calc(100% - 2.5px), #000 calc(100% - 2.5px));
+  mask:radial-gradient(circle, transparent 0 calc(100% - 2.5px), #000 calc(100% - 2.5px))}
+.streak.maxed::after{background:none}
+/* Losing a x4 should feel like losing something. */
+.streak.snap{animation:multsnap 500ms cubic-bezier(.36,.07,.19,.97) 1}
+@keyframes multsnap{
+  0%{transform:scale(1.22);color:var(--bad)}
+  18%{transform:scale(.82) rotate(-7deg);color:var(--bad)}
+  38%{transform:scale(1.06) rotate(5deg)}
+  100%{transform:scale(1);color:inherit}}
+@media (prefers-reduced-motion:reduce){ .streak.snap{animation:none} }
+/* ── The near miss ─────────────────────────────────────────────────────── */
+.nearmiss{display:flex;flex-direction:column;align-items:center;gap:6px;
+  width:100%;max-width:340px;margin:2px auto 0}
+.nearmiss p{font-family:var(--f-body);font-size:13.5px;color:var(--haze);margin:0;text-align:center}
+.nearmiss p.hot{color:var(--zap);font-weight:700}
+.nearmiss .vs{position:relative;width:100%;height:6px;border-radius:999px;
+  background:#ffffff12;overflow:hidden}
+.nearmiss .vs i{display:block;height:100%;border-radius:999px;background:var(--flare);
+  transform-origin:left;transition:transform 620ms cubic-bezier(.2,.8,.3,1)}
+.nearmiss .best{font-family:var(--f-data);font-size:10.5px;color:var(--haze);letter-spacing:.04em}
 #stage.lidup #hudMeterFill{background:var(--zap)}
 #count{position:absolute;inset:0;display:grid;place-items:center;z-index:5;background:#0D0918e8;border-radius:var(--r-lg)}
 #count b{font-family:var(--f-disp);font-weight:800;font-size:clamp(60px,20vw,92px);color:var(--flare);animation:cdpop 600ms cubic-bezier(.2,.8,.3,1)}
@@ -2734,6 +2767,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <span class="big" id="overScore">0</span>
       </div>
       <span class="newbest" id="newBest" data-i18n="over.newBest" hidden>New personal best</span>
+      <!-- How close it was. A run that just stops is a run nobody repeats; a run
+           that stopped forty points short is a run you play again right now. -->
+      <div class="nearmiss" id="nearMiss" hidden>
+        <p id="nearLine"></p>
+        <div class="vs"><i id="nearFill"></i></div>
+        <span class="best" id="nearBest"></span>
+      </div>
       <div class="dailyrow" id="dailyRow" hidden>
         <span class="dstreak"><i aria-hidden="true"></i><span id="dailyStreakTxt"></span></span>
         <button class="sharebtn" id="shareBtn" type="button">
@@ -2941,7 +2981,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.40.0';
+const VERSION_TAG = 'v0.41.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3391,7 +3431,7 @@ const STRINGS = {
     'dlg.exportFailed':'That did not save. Try again.',
     'btn.update':'Update', 'btn.goAgain':'Go again', 'btn.backToMenu':'Back to menu',
     'update.title':'<b>New version ready.</b> Tap to update.',
-    'over.newBest':'New personal best', 'over.solved':'Solved', 'over.streak':'Best streak',
+    'over.short':'{n} short of your best', 'over.oneMore':'One more solve would have done it', 'over.yourBest':'Your best {n}', 'hud.mult':'Multiplier {m}, {n} more to the next', 'over.newBest':'New personal best', 'over.solved':'Solved', 'over.streak':'Best streak',
     'over.acc':'Accuracy', 'over.beat':'Beat {n}', 'over.twice':'Can you do it twice?',
     'over.another':'Another round', 'over.levelJump':'Level {a} → {b}',
     'run.ready':'Get ready', 'run.nice':'Nice', 'run.streak':'Streak ×{n}!',
@@ -3536,7 +3576,7 @@ const STRINGS = {
     'dlg.exportFailed':'L’enregistrement a échoué. Réessayez.',
     'btn.update':'Mettre à jour', 'btn.goAgain':'Rejouer', 'btn.backToMenu':'Retour au menu',
     'update.title':'<b>Nouvelle version prête.</b> Touchez pour mettre à jour.',
-    'over.newBest':'Nouveau record', 'over.solved':'Résolus', 'over.streak':'Meilleure série',
+    'over.short':'{n} de moins que votre record', 'over.oneMore':'Une réussite de plus et c’était bon', 'over.yourBest':'Votre record {n}', 'hud.mult':'Multiplicateur {m}, encore {n} avant le suivant', 'over.newBest':'Nouveau record', 'over.solved':'Résolus', 'over.streak':'Meilleure série',
     'over.acc':'Précision', 'over.beat':'Battre {n}', 'over.twice':'Deux fois de suite ?',
     'over.another':'Encore une', 'over.levelJump':'Niveau {a} → {b}',
     'run.ready':'Prêt ?', 'run.nice':'Bien', 'run.streak':'Série ×{n} !',
@@ -3681,7 +3721,7 @@ const STRINGS = {
     'dlg.exportFailed':'No se pudo guardar. Inténtalo de nuevo.',
     'btn.update':'Actualizar', 'btn.goAgain':'Otra vez', 'btn.backToMenu':'Volver al menú',
     'update.title':'<b>Nueva versión lista.</b> Toca para actualizar.',
-    'over.newBest':'Nuevo récord', 'over.solved':'Resueltos', 'over.streak':'Mejor racha',
+    'over.short':'{n} por debajo de tu récord', 'over.oneMore':'Con un acierto más lo habrías logrado', 'over.yourBest':'Tu récord {n}', 'hud.mult':'Multiplicador {m}, faltan {n} para el siguiente', 'over.newBest':'Nuevo récord', 'over.solved':'Resueltos', 'over.streak':'Mejor racha',
     'over.acc':'Precisión', 'over.beat':'Supera {n}', 'over.twice':'¿Dos veces seguidas?',
     'over.another':'Otra ronda', 'over.levelJump':'Nivel {a} → {b}',
     'run.ready':'Preparado', 'run.nice':'Bien', 'run.streak':'¡Racha ×{n}!',
@@ -3826,7 +3866,7 @@ const STRINGS = {
     'dlg.exportFailed':'Das Sichern hat nicht geklappt. Bitte erneut versuchen.',
     'btn.update':'Aktualisieren', 'btn.goAgain':'Nochmal', 'btn.backToMenu':'Zum Menü',
     'update.title':'<b>Neue Version bereit.</b> Zum Aktualisieren tippen.',
-    'over.newBest':'Neuer Rekord', 'over.solved':'Gelöst', 'over.streak':'Beste Serie',
+    'over.short':'{n} unter deinem Bestwert', 'over.oneMore':'Ein Treffer mehr hätte gereicht', 'over.yourBest':'Dein Bestwert {n}', 'hud.mult':'Multiplikator {m}, noch {n} bis zum nächsten', 'over.newBest':'Neuer Rekord', 'over.solved':'Gelöst', 'over.streak':'Beste Serie',
     'over.acc':'Genauigkeit', 'over.beat':'Schlage {n}', 'over.twice':'Zweimal hintereinander?',
     'over.another':'Noch eine Runde', 'over.levelJump':'Level {a} → {b}',
     'run.ready':'Bereit', 'run.nice':'Gut', 'run.streak':'Serie ×{n}!',
@@ -4034,6 +4074,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.41.0', date:'2026-09-22', items:[
+    'A run that just stops is a run nobody repeats. One that stopped forty points short is a run you play again right now — so the results screen says how close it was, with a bar showing this run against your best, and the gap reads as a visible sliver rather than a number you have to do arithmetic on. Under one more solve’s worth of points it says so outright.',
+    'It only appears when it was actually close. Being told you were four thousand short is not encouragement, it is a scoreline, so under sixty per cent of your best it stays quiet — and it never appears when you beat your best, because that screen already has its own thing to say.',
+    'The multiplier was climbing in silence. It now carries its own level, so a ×5 looks like it was earned rather than like a ×1 with a different number in it, and a ring around it fills with how close the next step is — the “almost” is the part anybody pushes for.',
+    'And it breaks loudly. Landing a step gets a pop; losing a ×4 gets a snap, red and recoiling, because loss aversion does more work than reward does.',
+  ] },
   { v:'0.40.0', date:'2026-09-22', items:[
     'A timed run used to end at about a minute however well it was going. A solve banked a flat few seconds against a round that takes eleven, so the clock drained at the same rate whatever you did — the best possible run and a mediocre one both finished around the same moment, and the sixty-second ceiling was never even reached.',
     'Solving FAST now gives back the time it saved against par. Speed compounds into more time instead of only into more points, which is the whole arcade loop and it costs nothing on the board. A median mode solved in three seconds banks 11.6s where par banks 3.6.',
@@ -11798,10 +11844,19 @@ function renderHud(){
   const nowId = run.curMode ? modeIdOf(run.curMode) : run.mode;
   $('hudKind').textContent = nowId ? modeName(nowId) : kindName(run.kind);
   $('hudScore').textContent = k.scored ? fmt(run.score) : fmt(run.solved) + ' solved';
+  /* A multiplier that climbs in silence is not something anyone plays for.
+     It carries its own level now, so ×5 looks like it was earned, and a ring
+     round it fills with how close the next step is — the "almost" is the part
+     that makes people push. */
   const m = multiplier();
   const chip = $('hudStreak');
   chip.textContent = '×' + m;
   chip.classList.toggle('hot', m > 1);
+  chip.style.setProperty('--lvl', m);
+  const step = MULT_STEP[Perk.lv('zeal')];
+  chip.style.setProperty('--to', m >= 5 ? 1 : (run.streak % step) / step);
+  chip.classList.toggle('maxed', m >= 5);
+  chip.setAttribute('aria-label', t('hud.mult', { m, n: m >= 5 ? 0 : step - (run.streak % step) }));
   chip.hidden = !k.scored;
 
   if (k.timed){
@@ -12095,7 +12150,15 @@ function resolve(ok, node){
     run.missed++;
     /* A shield keeps the streak, not the round. The miss still costs a life or
        the clock — it buys back momentum, never the mistake. */
+    const multWas = multiplier();
     if (run.shields > 0){ run.shields--; saved = true; } else { run.streak = 0; }
+    /* Losing a ×4 should feel like losing something. Reward gets a pop; this
+       gets a snap, because loss aversion does more work than reward. */
+    if (!saved && multWas > 1){
+      const st = $('hudStreak');
+      st.classList.remove('snap'); void st.offsetWidth; st.classList.add('snap');
+      setTimeout(() => st.classList.remove('snap'), 520);
+    }
     if (k.timed) run.time = Math.max(0, run.time - k.penalty);
     if (k.lives) run.lives--;
     flash('flash-bad');
@@ -12338,6 +12401,23 @@ function endRun(){
   $('againSub').textContent = k.scored
     ? (best ? t('over.twice') : t('over.beat', { n: fmt(target) }))
     : t('over.another');
+
+  /* Only when it was actually close. Being told you were four thousand short
+     is not encouragement, it is a scoreline. */
+  const near = $('nearMiss');
+  const gap = target - r.score;
+  const close = k.scored && !best && target > 0 && r.score > 0 && gap > 0 && r.score >= target*0.6;
+  near.hidden = !close;
+  if (close){
+    /* One more solve is worth roughly a hundred points at the multiplier it
+       ended on, so under that is genuinely "one more go". */
+    const oneMore = 100 * Math.max(1, Math.min(5, 1 + Math.floor(r.bestStreak/4)));
+    $('nearLine').textContent = gap <= oneMore
+      ? t('over.oneMore') : t('over.short', { n: fmt(gap) });
+    $('nearLine').classList.toggle('hot', gap <= oneMore);
+    $('nearFill').style.transform = 'scaleX(' + clamp(r.score/target, 0, 1) + ')';
+    $('nearBest').textContent = t('over.yourBest', { n: fmt(target) });
+  }
   el.over.dataset.kind = r.kind;
   el.over.dataset.mode = r.mode || '';
   el.over.dataset.score = String(r.score);
