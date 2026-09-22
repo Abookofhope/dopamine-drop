@@ -1760,6 +1760,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .scat summary .st{font-style:normal;font-family:var(--f-data);font-size:11px;color:var(--zap)}
 .scat .srow{margin:0;border-radius:0;border:none;border-top:1px solid var(--edge-soft)}
 .firstnote{margin:10px 0 0}
+/* The same two-step the mixtape delete uses, so the bigger loss is at least as
+   deliberate as the smaller one. */
+.resetconfirm{margin:11px 0}
+.setrow.danger{border-bottom:none}
 .stagepips{display:flex;gap:6px;justify-content:center;margin-top:14px}
 .stagepips i{display:block;width:8px;height:8px;border-radius:50%;
   border:1.5px solid var(--edge);transition:background var(--t-med),border-color var(--t-med)}
@@ -2753,9 +2757,16 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <button class="ghost" id="importBtn" type="button" data-i18n="btn.import">Import</button>
           <input type="file" id="importFile" accept="application/json,.json" hidden>
         </div>
-        <div class="setrow danger">
+        <div class="setrow danger" id="resetRow">
           <span class="txt"><b data-i18n="set.reset">Reset progress</b><small data-i18n="set.resetSub">Level, XP and every best score. Settings are kept.</small></span>
           <button class="ghost" id="resetBtn" type="button" data-i18n="btn.reset">Reset</button>
+        </div>
+        <!-- Deleting one mixtape had a considered two-step; erasing everything
+             had a native confirm() people dismiss by reflex. -->
+        <div class="tapeconfirm resetconfirm" id="resetConfirm" hidden>
+          <span data-i18n="dlg.reset">This erases every score and level on this device. Settings are kept.</span>
+          <button class="no" type="button" id="resetKeep" data-i18n="dlg.resetKeep">Keep it</button>
+          <button class="yes" type="button" id="resetGone" data-i18n="dlg.resetGone">Erase</button>
         </div>
         <p class="note">
           Progress is saved on this device only. There is no account, and nothing
@@ -3010,7 +3021,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.44.0';
+const VERSION_TAG = 'v0.45.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3456,7 +3467,7 @@ const STRINGS = {
     'dlg.badBackup':'That does not look like a Dopamine Drop backup.',
     'dlg.restore':'Restore level {lvl} and its scores?\n\nWhat is on this device will be replaced.',
     'dlg.restored':'Restored. Welcome back to level {lvl}.',
-    'dlg.reset':'Reset your level, XP, perks and every best score?\n\nSettings are kept. This cannot be undone.',
+    'dlg.resetKeep':'Keep it', 'dlg.resetGone':'Erase', 'dlg.reset':'Reset your level, XP, perks and every best score?\n\nSettings are kept. This cannot be undone.',
     'dlg.exportFailed':'That did not save. Try again.',
     'btn.update':'Update', 'btn.goAgain':'Go again', 'btn.backToMenu':'Back to menu',
     'update.title':'<b>New version ready.</b> Tap to update.',
@@ -3601,7 +3612,7 @@ const STRINGS = {
     'dlg.badBackup':'Cela ne ressemble pas à une sauvegarde Dopamine Drop.',
     'dlg.restore':'Restaurer le niveau {lvl} et ses scores ?\n\nCe qui se trouve sur cet appareil sera remplacé.',
     'dlg.restored':'Restauré. Bon retour au niveau {lvl}.',
-    'dlg.reset':'Effacer votre niveau, votre XP, vos atouts et tous vos records ?\n\nLes réglages sont conservés. C’est irréversible.',
+    'dlg.resetKeep':'Garder', 'dlg.resetGone':'Effacer', 'dlg.reset':'Effacer votre niveau, votre XP, vos atouts et tous vos records ?\n\nLes réglages sont conservés. C’est irréversible.',
     'dlg.exportFailed':'L’enregistrement a échoué. Réessayez.',
     'btn.update':'Mettre à jour', 'btn.goAgain':'Rejouer', 'btn.backToMenu':'Retour au menu',
     'update.title':'<b>Nouvelle version prête.</b> Touchez pour mettre à jour.',
@@ -3746,7 +3757,7 @@ const STRINGS = {
     'dlg.badBackup':'Esto no parece una copia de seguridad de Dopamine Drop.',
     'dlg.restore':'¿Restaurar el nivel {lvl} y sus puntuaciones?\n\nSe reemplazará lo que hay en este dispositivo.',
     'dlg.restored':'Restaurado. Bienvenido de nuevo al nivel {lvl}.',
-    'dlg.reset':'¿Borrar tu nivel, tu XP, tus ventajas y todos tus récords?\n\nLos ajustes se conservan. No se puede deshacer.',
+    'dlg.resetKeep':'Conservar', 'dlg.resetGone':'Borrar', 'dlg.reset':'¿Borrar tu nivel, tu XP, tus ventajas y todos tus récords?\n\nLos ajustes se conservan. No se puede deshacer.',
     'dlg.exportFailed':'No se pudo guardar. Inténtalo de nuevo.',
     'btn.update':'Actualizar', 'btn.goAgain':'Otra vez', 'btn.backToMenu':'Volver al menú',
     'update.title':'<b>Nueva versión lista.</b> Toca para actualizar.',
@@ -3891,7 +3902,7 @@ const STRINGS = {
     'dlg.badBackup':'Das sieht nicht nach einer Dopamine-Drop-Sicherung aus.',
     'dlg.restore':'Level {lvl} und die zugehörigen Punkte wiederherstellen?\n\nWas auf diesem Gerät ist, wird ersetzt.',
     'dlg.restored':'Wiederhergestellt. Willkommen zurück auf Level {lvl}.',
-    'dlg.reset':'Level, XP, Boni und alle Bestwerte löschen?\n\nEinstellungen bleiben erhalten. Das lässt sich nicht rückgängig machen.',
+    'dlg.resetKeep':'Behalten', 'dlg.resetGone':'Löschen', 'dlg.reset':'Level, XP, Boni und alle Bestwerte löschen?\n\nEinstellungen bleiben erhalten. Das lässt sich nicht rückgängig machen.',
     'dlg.exportFailed':'Das Sichern hat nicht geklappt. Bitte erneut versuchen.',
     'btn.update':'Aktualisieren', 'btn.goAgain':'Nochmal', 'btn.backToMenu':'Zum Menü',
     'update.title':'<b>Neue Version bereit.</b> Zum Aktualisieren tippen.',
@@ -4103,6 +4114,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.45.0', date:'2026-09-22', items:[
+    'The switches were 46 by 27 — the smallest controls in the game, on the one tab that is nothing but controls. The row they sit in is 59 tall and the full width of the screen, and the label is right there, so the row takes the tap now too. The switch stays the control for focus and the keyboard; this only widens where a thumb may land. Rows with a button in them are untouched, so tapping beside Language still does nothing.',
+    'Deleting one mixtape had a considered two-step built into the page. Erasing every score, level and perk had a native confirm() — the kind of dialog people dismiss by reflex because every site throws them. The bigger loss now gets at least the care of the smaller one, and it says what it keeps.',
+  ] },
   { v:'0.44.0', date:'2026-09-22', items:[
     'Meeting a mode for the first time at level forty meant meeting it at its hardest with none of its rules — a five-slot belt at a grain every three-quarters of a second, before anyone had said the belt shifts. The first round of anything is now played at the shallow end whatever your level, and it says so, because otherwise the gentle round reads as the mode being easy and the next one reads as a spike. Sift meets you with three belt slots instead of five, Volley on a 4×4 rather than 5×5, Meld with four jellies rather than six.',
     'The line that teaches a mode used to go on the first touch of the board — which, on a mode whose rule is the thing being explained, means it went before it was read, because the first thing anybody does is poke the board. It survives the first couple of seconds now whatever you tap, and stays up half as long again.',
@@ -13595,12 +13610,22 @@ $('quitBtn').addEventListener('click', () => {
 
 [['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist']]
   .forEach(([id, key]) => {
-    $(id).addEventListener('click', () => {
+    const sw = $(id);
+    const flip = () => {
+      if (sw.disabled) return;
       save[key] = !save[key];
       persist(); paintSettings();
       if (key === 'sound' && save.sound) sfx.tap();
       if (key === 'haptics' && save.haptics) buzz('good');
-    });
+    };
+    sw.addEventListener('click', flip);
+    /* The switch is 46 by 27 — the smallest control in the app, on the one tab
+       that is nothing but controls. The row it sits in is 59 tall and the whole
+       width of the screen, and the label is right there, so the row takes the
+       tap too. The switch stays the control for focus and the keyboard; this
+       only widens where a thumb may land. */
+    const row = sw.closest('.setrow');
+    if (row) row.addEventListener('click', ev => { if (!sw.contains(ev.target)) flip(); });
   });
 
 /* Progress lives on this device and nowhere else — a deliberate choice, but
@@ -13660,8 +13685,7 @@ $('importFile').addEventListener('change', ev => {
   };
   reader.readAsText(file);
 });
-$('resetBtn').addEventListener('click', () => {
-  if (!window.confirm(t('dlg.reset'))) return;
+function wipeProgress(){
   /* Perks are progress too, and the reset predates them: it cleared the level
      and every best score and left a player with five perk slots and a
      level-one account, which is every advantage and no ladder. */
@@ -13673,6 +13697,24 @@ $('resetBtn').addEventListener('click', () => {
      apparently already seen everything. */
   save.seen = {};
   persist(); paintAll();
+}
+
+/* Deleting one mixtape got a considered two-step built into the page, while
+   erasing every score, level and perk got a native confirm() — a dialog people
+   dismiss by reflex because every site throws them. The bigger loss gets at
+   least the care of the smaller one. */
+$('resetBtn').addEventListener('click', () => {
+  const row = $('resetRow'), box = $('resetConfirm');
+  row.hidden = true; box.hidden = false;
+  $('resetKeep').focus();
+});
+$('resetKeep').addEventListener('click', () => {
+  $('resetConfirm').hidden = true; $('resetRow').hidden = false;
+});
+$('resetGone').addEventListener('click', () => {
+  $('resetConfirm').hidden = true; $('resetRow').hidden = false;
+  wipeProgress();
+  sfx.bad(); buzz('bad');
 });
 
 /* ═══ Boot ════════════════════════════════════════════════════════════════ */
