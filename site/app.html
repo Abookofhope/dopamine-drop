@@ -1370,95 +1370,94 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:transform 190ms cubic-bezier(.4,0,.6,1),opacity 190ms ease-in}
 
 /* ── Volley ───────────────────────────────────────────────────────────── */
-.vlybox{position:relative;width:100%;aspect-ratio:1;max-height:100%;overflow:hidden;
-  touch-action:manipulation;border-radius:var(--r-lg);
-  background:linear-gradient(180deg,#140b23,#0b0716);border:1px solid var(--edge-soft);
-  transition:border-color var(--t-fast),background var(--t-fast)}
-.vlybox.off{border-color:var(--bad);background:linear-gradient(180deg,#2a0f1d,#0b0716)}
-.vlybox.won{border-color:var(--cool)}
-.vlywheel{position:absolute;display:block;left:16%;top:6%;width:68%;height:68%;
-  border-radius:50%;box-shadow:0 0 0 3px #ffffff14,0 14px 34px -22px #000;
-  transition:filter var(--t-fast)}
-.vlywheel.hit{filter:brightness(1.35)}
-.vlymarks{position:absolute;display:block;inset:0;pointer-events:none}
-.vlymarks span{position:absolute;left:50%;top:50%;width:19%;height:19%;
-  transform:rotate(var(--a)) translateY(-160%) translateX(-50%)}
-.vlymarks .shp{width:100%;height:100%;display:block}
-.vlyhub{position:absolute;display:block;left:41%;top:31%;width:18%;height:18%;
-  border-radius:50%;background:var(--ink);box-shadow:inset 0 0 0 2px #ffffff1f}
-/* The barrel points at six o'clock, which is the wedge a shot arrives at. */
-.vlybarrel{position:absolute;display:block;left:calc(50% - 9px);bottom:5%;width:18px;height:11%;
-  border-radius:4px 4px 2px 2px;background:linear-gradient(180deg,#3a2c5e,#241a40);
-  box-shadow:inset 0 2px 0 #ffffff1a}
-.vlyball{position:absolute;display:block;left:calc(50% - 13px);bottom:8%;width:26px;height:26px;
-  border-radius:50%;box-shadow:0 0 12px -2px #ffffff5c,inset 0 -3px 0 #00000033;
-  transition:opacity var(--t-fast),transform var(--t-fast)}
-.vlyball .shp{width:100%;height:100%;display:block}
-.vlyball.load{opacity:.42;transform:scale(.62)}
-.vlyqueue{position:absolute;display:flex;gap:6px;left:0;right:0;bottom:1.5%;
-  justify-content:center;align-items:center;transition:transform var(--t-med)}
-.vlyqueue span{display:block;width:13px;height:13px;border-radius:50%;opacity:.45;
-  transition:opacity var(--t-fast),transform var(--t-fast)}
-.vlyqueue span.now{width:19px;height:19px;opacity:1;box-shadow:0 0 0 2px #ffffff40}
-/* The shot a run of three paid for, leaving without being fired. */
-.vlyqueue.free span.now{animation:vlyfree 400ms ease-out 1}
-@keyframes vlyfree{0%{transform:scale(1);opacity:1}100%{transform:scale(2.1);opacity:0}}
-@media (prefers-reduced-motion:reduce){ .vlyqueue.free span.now{animation:none} }
-.vlyqueue .shp{width:100%;height:100%;display:block}
-/* The other ball you could be firing. Swapping is free, but the barrel has to
-   reload — so it costs a window, which is what makes it a decision. */
-.vlyswap{position:absolute;right:3%;bottom:7%;display:flex;align-items:center;gap:6px;
-  padding:6px 9px;border-radius:999px;border:1px solid var(--edge-soft);
-  background:#ffffff0d;color:var(--haze);cursor:pointer;
-  transition:transform var(--t-fast),border-color var(--t-fast),opacity var(--t-fast)}
-.vlyswap.off{opacity:.3;cursor:default}
-.vlyswap.go{transform:scale(1.14);border-color:var(--cool)}
-.vlyswap i{display:block;width:17px;height:17px;border-radius:50%;
-  box-shadow:inset 0 -2px 0 #00000033}
-.vlyswap .shp{width:100%;height:100%;display:block}
-.vlyswap b{font-family:var(--f-data);font-size:13px;line-height:1}
-/* Three in a row and the queue gives one back. */
-.vlychain{position:absolute;left:4%;bottom:7%;display:flex;flex-direction:column;gap:5px}
-.vlychain i{display:block;width:9px;height:9px;border-radius:50%;
-  border:1.5px solid #ffffff2e;transition:background var(--t-fast),box-shadow var(--t-fast)}
-.vlychain i.on{background:var(--cool);border-color:transparent;box-shadow:0 0 9px -2px var(--cool)}
+/* A ring of cannons round a picture: the corners of the grid stay empty, and
+   every edge cell is a barrel pointing in. */
+.vbox{display:grid;gap:4px;width:100%;max-width:340px;margin:0 auto;
+  place-items:stretch;transition:filter var(--t-med)}
+.vbox.won{filter:brightness(1.12)}
+.vpix{display:block;min-width:0;min-height:0;aspect-ratio:1;border-radius:3px;padding:0;
+  transition:opacity var(--t-fast),transform var(--t-fast),box-shadow var(--t-fast)}
+/* A square still to paint shows what it WANTS, faintly — the picture is never
+   the thing you have to remember, only the order is. */
+.vpix.bare{opacity:.17;border:1px dashed #ffffff40;cursor:default}
+.vpix.on{opacity:1;border:1px solid #00000038;box-shadow:inset 0 -2px 0 #00000026}
+.vpix.on.fresh{cursor:pointer;box-shadow:inset 0 0 0 2px #ffffff85,inset 0 -2px 0 #00000026}
+.vpix.land{transform:scale(1.14)}
+/* What stopped the ball, taking the knock. */
+.vpix.thunk{transform:scale(.88)}
+.vpix .shp{width:62%;height:62%;display:block;margin:auto}
+.vgun{min-width:0;min-height:0;border-radius:3px;padding:0;align-self:center;justify-self:center;
+  border:1px solid #00000038;box-shadow:inset 0 -2px 0 #00000026;
+  transition:transform var(--t-fast),opacity var(--t-fast),box-shadow var(--t-fast)}
+.vgun .shp{width:62%;height:62%;display:block;margin:auto}
+.vL,.vR{width:15px;height:64%}
+.vT,.vB{height:15px;width:64%}
+/* Clip-pathed into a barrel pointing the way it fires, so which way a cannon
+   shoots is a thing you can see rather than a thing you work out. */
+.vL{clip-path:polygon(0 18%,60% 0,100% 50%,60% 100%,0 82%)}
+.vR{clip-path:polygon(100% 18%,40% 0,0 50%,40% 100%,100% 82%)}
+.vT{clip-path:polygon(18% 0,0 60%,50% 100%,100% 60%,82% 0)}
+.vB{clip-path:polygon(18% 100%,0 40%,50% 0,100% 40%,82% 100%)}
+/* Spent: nothing bare left on its line. Fits: it would land right, right now. */
+.vgun.spent{opacity:.22;cursor:default}
+.vgun.fits{box-shadow:0 0 0 2px #ffffff5c,inset 0 -2px 0 #00000026}
+.vgun.kick{animation:vkick 340ms ease-out 1}
+@keyframes vkick{0%,100%{transform:none}30%{transform:scale(.8)}65%{transform:scale(1.1)}}
+@media (prefers-reduced-motion:reduce){ .vgun.kick{animation:none} }
 
 /* ── Sift ─────────────────────────────────────────────────────────────── */
-.siftgrid{display:grid;gap:3px;width:100%;max-width:380px;margin:0 auto;
-  padding:4px;border-radius:var(--r-lg);
-  background:linear-gradient(180deg,#120c1f,#0a0714);border:1px solid var(--edge-soft);
-  transition:border-color var(--t-med)}
-.siftgrid.won{border-color:var(--cool)}
-.siftgrid.settling{border-color:#ff9a3d7a}
-.siftgrid.settling .sand.k1{cursor:default}
-.sand{min-width:0;min-height:0;border-radius:4px;border:1px solid transparent;
-  transition:background var(--t-fast),border-color var(--t-fast),transform var(--t-fast)}
-.sand.k0{background:#ffffff07}
-.sand.k1{background:linear-gradient(180deg,#c99a5e,#9c7440);cursor:pointer;
-  box-shadow:inset 0 -2px 0 #00000026}
-.sand.k1:active{transform:scale(.9)}
-/* A rock is darker AND squarer AND has a hard edge; a gem is brighter AND
-   pointed. Neither rests on its colour alone. */
-/* Cross-hatched and hard-cornered: it has to look like the one thing on the
-   board that will not move, because that is the rule nobody is told. */
-.sand.k2{background:
-    repeating-linear-gradient(45deg,#ffffff0f 0 2px,transparent 2px 5px),
-    linear-gradient(180deg,#6a6275,#2e2b38);
-  border-color:#00000073;border-radius:1px;
-  box-shadow:inset 0 2px 0 #ffffff1a,inset 0 0 0 1px #ffffff12;cursor:not-allowed}
-.sand.k3{background:linear-gradient(150deg,#b6fff2,#33E6C8);
-  border-radius:50% 4px 50% 4px;box-shadow:0 0 12px -3px var(--cool)}
-/* The bottom row is where the gems are going, so it is drawn as somewhere
-   things arrive rather than as four more cells that happen to be lowest. */
-.sand.floor{box-shadow:inset 0 -3px 0 #33E6C83d,inset 0 -1px 0 #33E6C866}
-.sand.k1.floor{box-shadow:inset 0 -2px 0 #00000026,inset 0 -4px 0 #33E6C84d}
-.sand.k3.got{box-shadow:0 0 18px -2px var(--cool),0 0 0 2px var(--cool)}
-.sand.nope{background:var(--bad);border-color:var(--bad)}
-.sifttally{display:flex;gap:7px;justify-content:center;margin-top:9px}
-.siftpip{width:13px;height:13px;border-radius:50% 3px 50% 3px;
-  border:1.5px solid #33E6C866;transition:background var(--t-med),box-shadow var(--t-med)}
-.siftpip.on{background:linear-gradient(150deg,#b6fff2,#33E6C8);border-color:transparent;
-  box-shadow:0 0 10px -2px var(--cool)}
+.beltbox{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;width:100%;max-width:360px;margin:0 auto}
+/* What is coming, nearest the belt at the bottom. */
+.chute{position:relative;display:flex;flex-direction:column-reverse;align-items:center;gap:5px;
+  padding-bottom:22px;width:100%}
+.grain{display:block;width:15px;height:15px;border-radius:50%;opacity:.55;
+  transition:opacity var(--t-fast),transform var(--t-fast),box-shadow var(--t-fast)}
+.grain .shp{width:100%;height:100%;display:block}
+.grain.next{width:21px;height:21px;opacity:1}
+/* The grain the BACK of the belt would meet — the one every placement is for,
+   which is never the one about to land. */
+.grain.aim{opacity:.95;box-shadow:0 0 0 2px var(--zap),0 0 12px -3px var(--zap)}
+.falling{position:absolute;left:calc(50% - 8px);bottom:22px;display:block;
+  width:16px;height:16px;border-radius:50%;opacity:0}
+.falling .shp{width:100%;height:100%;display:block}
+.falling.go{animation:pour var(--fall,400ms) cubic-bezier(.4,0,.8,1) 1 forwards}
+@keyframes pour{0%{opacity:1;transform:translateY(0)}100%{opacity:1;transform:translateY(22px)}}
+@media (prefers-reduced-motion:reduce){ .falling.go{animation:none;opacity:1} }
+/* The belt itself: slot 0 is under the chute, and everything shifts toward it. */
+.belt{display:grid;gap:5px;width:100%;padding:6px;border-radius:var(--r-md);
+  background:repeating-linear-gradient(90deg,#241a3d 0 9px,#1b1330 9px 18px);
+  border:1px solid var(--edge-soft);transition:border-color var(--t-fast)}
+.belt.spill{border-color:var(--bad);animation:spill 360ms ease-out 1}
+@keyframes spill{0%,100%{transform:none}30%{transform:translateY(3px)}}
+.belt.jam{animation:jam 400ms ease-out 1}
+@keyframes jam{0%,100%{transform:none}30%{transform:translateX(-5px)}65%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){ .belt.spill,.belt.jam{animation:none} }
+.beltbox.won .belt{border-color:var(--cool)}
+.bslot{aspect-ratio:1;min-width:0;padding:0;border-radius:4px 4px 7px 7px;
+  transition:transform var(--t-med),box-shadow var(--t-fast),opacity var(--t-fast)}
+.bslot .shp{width:58%;height:58%;display:block;margin:auto}
+.bslot.bare{border:1px dashed #ffffff26;background:#ffffff05;cursor:default}
+.bslot.full{border:1px solid #00000038;box-shadow:inset 0 -3px 0 #00000026}
+/* Where the sand actually lands, and the only slot you can knock clear. */
+.bslot.mouth{box-shadow:inset 0 0 0 2px #ffffff3d}
+.bslot.mouth.full{cursor:pointer;box-shadow:inset 0 0 0 2px #ffffff7a,inset 0 -3px 0 #00000026}
+/* Where a new bucket would go. */
+.bslot.open{border-color:var(--zap);border-style:solid}
+.bslot.drop{animation:bdrop 240ms cubic-bezier(.34,1.4,.5,1) 1}
+@keyframes bdrop{0%{transform:translateY(-14px) scale(.8)}100%{transform:none}}
+.bslot.catch{animation:bcatch 300ms ease-out 1}
+@keyframes bcatch{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.bslot.toss{animation:btoss 280ms ease-in 1}
+@keyframes btoss{0%{transform:none;opacity:1}100%{transform:translateY(-18px) rotate(22deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){ .bslot.drop,.bslot.catch,.bslot.toss{animation:none} }
+.tray{display:flex;gap:9px;justify-content:center;width:100%}
+.bkt{width:44px;height:38px;border-radius:4px 4px 9px 9px;padding:0;
+  border:1px solid #00000038;box-shadow:inset 0 -3px 0 #00000026;
+  transition:transform var(--t-fast),opacity var(--t-fast)}
+.bkt .shp{width:56%;height:56%;display:block;margin:auto}
+.bkt:active{transform:scale(.92)}
+.bkt.shut{opacity:.3}
 
 /* ── Tide Breath ──────────────────────────────────────────────────────── */
 .tidebox{position:relative;width:100%;aspect-ratio:1;display:grid;place-items:center;touch-action:none;
@@ -2809,7 +2808,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.34.0';
+const VERSION_TAG = 'v0.36.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3321,9 +3320,9 @@ const STRINGS = {
     'how.seek':'tap the letters in order, or drag through them',
     'p.forage':'{n} berries left', 'forage.cell':'{k}, row {r} column {c}', 'forage.gone':'Eaten, row {r} column {c}', 'forage.slot':'Swarm waiting on {k}, {n} left', 'forage.free':'Empty basket slot', 'forage.full':'Basket full — call a swarm home, or open the way for one', 'm.forage':'Forage|Send a swarm at a colour — only so many can be out at once',
     'p.meld':'{n} more to take', 'meld.cell':'Jelly {v}, worth {p}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'meld.band':'Level {v} pays {p} today', 'meld.selling':'Tap again to sell the {v} for {p}', 'm.meld':'Meld|Merge jellies up, sell them off, reach the day’s takings', 'how.meld':'drag a jelly onto its twin to squash them into one; tap a jelly, then tap it again to sell it. One level pays triple today, and merging past it loses money',
-    'p.volley':'{n} to land — fire on its colour', 'volley.box':'A turning wheel of colours, with a barrel below it', 'volley.swap':'Swap to {c}', 'volley.last':'Last ball — nothing to swap', 'volley.ball':'Loaded: {c}', 'm.volley':'Volley|Two balls in hand — fire each when its colour comes round', 'how.volley':'tap the wheel to fire; the swap pill takes the other ball instead, but the barrel needs a moment to reload',
-    'p.sift':'Gems to the bottom row — {n} to go', 'sift.empty':'Air, row {r} column {c}', 'sift.grain':'Sand, row {r} column {c}', 'sift.rock':'Rock, row {r} column {c}', 'sift.gem':'Gem, row {r} column {c}', 'm.sift':'Sift|Dig around the rocks and let the gems slide down',
-    'sift.stuckRock':'Rock will not budge — dig beside it and let the gem slide', 'how.forage':'tap a berry to send a swarm at its colour; it comes in through the bare gaps and eats only what it can reach, then waits in the basket until you send it again. Tap a waiting swarm to call it home', 'how.sift':'only sand can be dug — rocks never move. Open a slope and the gems slide down it',
+    'p.volley':'{n} squares still bare', 'volley.cell':'{k}, row {r} column {c}', 'volley.blank':'Wants {k}, row {r} column {c}', 'volley.gunL':'{k} cannon, fires right along row {n}', 'volley.gunR':'{k} cannon, fires left along row {n}', 'volley.gunT':'{k} cannon, fires down column {n}', 'volley.gunB':'{k} cannon, fires up column {n}', 'volley.stuck':'Every cannon is spent or wrong — wind a shot back', 'm.volley':'Volley|Fire the cannons in an order that paints the picture', 'how.volley':'tap a cannon to fire it; the ball paints the bare squares it crosses and stops at the first one already painted. Tap a square the last shot painted to wind it back',
+    'p.sift':'{n} more to catch', 'sift.slot':'Belt slot {n}, {k} bucket', 'sift.bare':'Belt slot {n}, empty', 'sift.put':'Put a {k} bucket on the belt', 'sift.jam':'Belt is full — knock the front bucket off to make room', 'm.sift':'Sift|Put buckets on the belt before their sand falls',
+    'how.forage':'tap a berry to send a swarm at its colour; it comes in through the bare gaps and eats only what it can reach, then waits in the basket until you send it again. Tap a waiting swarm to call it home', 'how.sift':'tap a colour to drop that bucket on the BACK of the belt; the belt shifts one slot every grain, so you are placing for a grain further down the chute, not the one falling. Tap the front bucket to knock it off',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
     'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
@@ -3466,9 +3465,9 @@ const STRINGS = {
     'how.seek':'touchez les lettres dans l’ordre, ou glissez dessus',
     'p.forage':'{n} baies restantes', 'forage.cell':'{k}, ligne {r} colonne {c}', 'forage.gone':'Mangée, ligne {r} colonne {c}', 'forage.slot':'Essaim en attente de {k}, {n} restantes', 'forage.free':'Emplacement libre', 'forage.full':'Panier plein — rappelez un essaim, ou dégagez-lui le passage', 'm.forage':'Cueillette|Lancez un essaim sur une couleur — peu peuvent sortir à la fois',
     'p.meld':'Encore {n} à encaisser', 'meld.cell':'Gelée {v}, valant {p}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'meld.band':'Le niveau {v} rapporte {p} aujourd’hui', 'meld.selling':'Touchez encore pour vendre la {v} à {p}', 'm.meld':'Fusion|Fusionnez, revendez, atteignez la recette du jour', 'how.meld':'glissez une gelée sur sa jumelle pour n’en faire qu’une ; touchez une gelée, puis touchez-la encore pour la vendre. Un niveau rapporte triple aujourd’hui, et fusionner au-delà fait perdre de l’argent',
-    'p.volley':'Encore {n} — tirez sur sa couleur', 'volley.box':'Une roue de couleurs qui tourne, avec un canon en dessous', 'volley.swap':'Échanger : {c}', 'volley.last':'Dernière bille — rien à échanger', 'volley.ball':'Chargé : {c}', 'm.volley':'Volée|Deux billes en main — tirez chacune quand sa couleur revient', 'how.volley':'touchez la roue pour tirer ; la pastille d’échange prend l’autre bille, mais le canon met un instant à se recharger',
-    'p.sift':'Les gemmes tout en bas — encore {n}', 'sift.empty':'Vide, ligne {r} colonne {c}', 'sift.grain':'Sable, ligne {r} colonne {c}', 'sift.rock':'Roche, ligne {r} colonne {c}', 'sift.gem':'Gemme, ligne {r} colonne {c}', 'm.sift':'Tamis|Creusez autour des roches et laissez glisser les gemmes',
-    'sift.stuckRock':'La roche ne bouge pas — creusez à côté et laissez glisser la gemme', 'how.forage':'touchez une baie pour lancer un essaim sur sa couleur ; il entre par les trous, ne mange que ce qu’il atteint, puis attend dans le panier que vous le relanciez. Touchez un essaim en attente pour le rappeler', 'how.sift':'seul le sable se creuse — les roches ne bougent jamais. Dégagez une pente et les gemmes y glissent',
+    'p.volley':'{n} cases encore vides', 'volley.cell':'{k}, ligne {r} colonne {c}', 'volley.blank':'Attend {k}, ligne {r} colonne {c}', 'volley.gunL':'Canon {k}, tire vers la droite sur la ligne {n}', 'volley.gunR':'Canon {k}, tire vers la gauche sur la ligne {n}', 'volley.gunT':'Canon {k}, tire vers le bas sur la colonne {n}', 'volley.gunB':'Canon {k}, tire vers le haut sur la colonne {n}', 'volley.stuck':'Tous les canons sont épuisés ou faux — annulez un tir', 'm.volley':'Volée|Tirez au canon dans l’ordre qui peint l’image', 'how.volley':'touchez un canon pour tirer ; la bille peint les cases vides qu’elle traverse et s’arrête à la première déjà peinte. Touchez une case du dernier tir pour l’annuler',
+    'p.sift':'Encore {n} à attraper', 'sift.slot':'Emplacement {n}, seau {k}', 'sift.bare':'Emplacement {n}, vide', 'sift.put':'Poser un seau {k} sur le tapis', 'sift.jam':'Tapis plein — faites tomber le seau de tête pour faire de la place', 'm.sift':'Tamis|Posez les seaux avant que leur sable ne tombe',
+    'how.forage':'touchez une baie pour lancer un essaim sur sa couleur ; il entre par les trous, ne mange que ce qu’il atteint, puis attend dans le panier que vous le relanciez. Touchez un essaim en attente pour le rappeler', 'how.sift':'touchez une couleur pour poser ce seau à l’ARRIÈRE du tapis ; le tapis avance d’un cran à chaque grain, donc vous posez pour un grain plus loin dans la trémie, pas pour celui qui tombe. Touchez le seau de tête pour le faire tomber',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
     'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
@@ -3611,9 +3610,9 @@ const STRINGS = {
     'how.seek':'toca las letras en orden o deslízate por ellas',
     'p.forage':'Quedan {n} bayas', 'forage.cell':'{k}, fila {r} columna {c}', 'forage.gone':'Comida, fila {r} columna {c}', 'forage.slot':'Enjambre esperando {k}, quedan {n}', 'forage.free':'Hueco libre en la cesta', 'forage.full':'Cesta llena — llama a un enjambre, o ábrele el paso', 'm.forage':'Recolecta|Lanza un enjambre a un color — pocos pueden estar fuera a la vez',
     'p.meld':'Faltan {n} para la caja', 'meld.cell':'Gelatina {v}, vale {p}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'meld.band':'El nivel {v} paga {p} hoy', 'meld.selling':'Toca otra vez para vender la {v} por {p}', 'm.meld':'Fusión|Fusiona, vende y llega a la caja del día', 'how.meld':'arrastra una gelatina sobre su gemela para hacerlas una; toca una gelatina y tócala otra vez para venderla. Un nivel paga el triple hoy, y fusionar más allá pierde dinero',
-    'p.volley':'Faltan {n} — dispara en su color', 'volley.box':'Una rueda de colores que gira, con un cañón debajo', 'volley.swap':'Cambiar: {c}', 'volley.last':'Última bola — nada que cambiar', 'volley.ball':'Cargado: {c}', 'm.volley':'Volea|Dos bolas en mano — dispara cada una cuando pase su color', 'how.volley':'toca la rueda para disparar; la pastilla de cambio coge la otra bola, pero el cañón tarda un momento en recargar',
-    'p.sift':'Gemas a la fila de abajo — faltan {n}', 'sift.empty':'Aire, fila {r} columna {c}', 'sift.grain':'Arena, fila {r} columna {c}', 'sift.rock':'Roca, fila {r} columna {c}', 'sift.gem':'Gema, fila {r} columna {c}', 'm.sift':'Criba|Excava alrededor de las rocas y deja resbalar las gemas',
-    'sift.stuckRock':'La roca no se mueve — excava al lado y deja resbalar la gema', 'how.forage':'toca una baya para lanzar un enjambre a su color; entra por los huecos, come solo lo que alcanza y luego espera en la cesta a que lo vuelvas a lanzar. Toca un enjambre en espera para llamarlo', 'how.sift':'solo la arena se excava: las rocas nunca se mueven. Abre una pendiente y las gemas resbalan por ella',
+    'p.volley':'{n} casillas aún vacías', 'volley.cell':'{k}, fila {r} columna {c}', 'volley.blank':'Quiere {k}, fila {r} columna {c}', 'volley.gunL':'Cañón {k}, dispara a la derecha por la fila {n}', 'volley.gunR':'Cañón {k}, dispara a la izquierda por la fila {n}', 'volley.gunT':'Cañón {k}, dispara hacia abajo por la columna {n}', 'volley.gunB':'Cañón {k}, dispara hacia arriba por la columna {n}', 'volley.stuck':'Todos los cañones están gastados o son erróneos — deshaz un disparo', 'm.volley':'Volea|Dispara los cañones en el orden que pinta el dibujo', 'how.volley':'toca un cañón para disparar; la bola pinta las casillas vacías que cruza y se para en la primera ya pintada. Toca una casilla del último disparo para deshacerlo',
+    'p.sift':'Faltan {n} por atrapar', 'sift.slot':'Hueco {n}, cubo {k}', 'sift.bare':'Hueco {n}, vacío', 'sift.put':'Poner un cubo {k} en la cinta', 'sift.jam':'Cinta llena — tira el cubo delantero para hacer sitio', 'm.sift':'Criba|Pon los cubos antes de que caiga su arena',
+    'how.forage':'toca una baya para lanzar un enjambre a su color; entra por los huecos, come solo lo que alcanza y luego espera en la cesta a que lo vuelvas a lanzar. Toca un enjambre en espera para llamarlo', 'how.sift':'toca un color para poner ese cubo al FINAL de la cinta; la cinta avanza un hueco con cada grano, así que colocas para un grano más adelante en la tolva, no para el que cae. Toca el cubo delantero para tirarlo',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
     'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
@@ -3756,9 +3755,9 @@ const STRINGS = {
     'how.seek':'tippe die Buchstaben der Reihe nach an oder zieh darüber',
     'p.forage':'Noch {n} Beeren', 'forage.cell':'{k}, Zeile {r} Spalte {c}', 'forage.gone':'Gefressen, Zeile {r} Spalte {c}', 'forage.slot':'Schwarm wartet auf {k}, noch {n}', 'forage.free':'Freier Korbplatz', 'forage.full':'Korb voll — ruf einen Schwarm zurück, oder mach ihm den Weg frei', 'm.forage':'Sammeln|Schick einen Schwarm auf eine Farbe — nur wenige dürfen draußen sein',
     'p.meld':'Noch {n} bis zur Tageskasse', 'meld.cell':'Gelee {v}, {p} wert, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'meld.band':'Stufe {v} zahlt heute {p}', 'meld.selling':'Nochmal tippen, um die {v} für {p} zu verkaufen', 'm.meld':'Verschmelzen|Zusammendrücken, verkaufen, die Tageskasse erreichen', 'how.meld':'zieh ein Gelee auf sein Gegenstück, damit eins daraus wird; tippe ein Gelee an und dann nochmal, um es zu verkaufen. Eine Stufe zahlt heute das Dreifache, und darüber hinaus zu verschmelzen kostet Geld',
-    'p.volley':'Noch {n} — schieß auf seine Farbe', 'volley.box':'Ein sich drehendes Farbrad mit einem Lauf darunter', 'volley.swap':'Wechseln: {c}', 'volley.last':'Letzte Kugel — nichts zu tauschen', 'volley.ball':'Geladen: {c}', 'm.volley':'Salve|Zwei Kugeln in der Hand — schieß jede, wenn ihre Farbe kommt', 'how.volley':'tippe aufs Rad zum Schießen; der Tausch-Knopf nimmt die andere Kugel, aber der Lauf braucht einen Moment zum Nachladen',
-    'p.sift':'Edelsteine in die unterste Reihe — noch {n}', 'sift.empty':'Luft, Zeile {r} Spalte {c}', 'sift.grain':'Sand, Zeile {r} Spalte {c}', 'sift.rock':'Fels, Zeile {r} Spalte {c}', 'sift.gem':'Edelstein, Zeile {r} Spalte {c}', 'm.sift':'Sieben|Grab um die Felsen herum und lass die Edelsteine rutschen',
-    'sift.stuckRock':'Der Fels rührt sich nicht — grab daneben und lass den Stein rutschen', 'how.forage':'tippe eine Beere an, um einen Schwarm auf ihre Farbe zu schicken; er kommt durch die Lücken herein, frisst nur, was er erreicht, und wartet dann im Korb, bis du ihn erneut schickst. Tippe einen wartenden Schwarm an, um ihn zurückzurufen', 'how.sift':'nur Sand lässt sich graben – Felsen bewegen sich nie. Grab eine Schräge frei, dann rutschen die Edelsteine hinunter',
+    'p.volley':'Noch {n} leere Felder', 'volley.cell':'{k}, Zeile {r} Spalte {c}', 'volley.blank':'Will {k}, Zeile {r} Spalte {c}', 'volley.gunL':'{k}-Kanone, schießt nach rechts durch Zeile {n}', 'volley.gunR':'{k}-Kanone, schießt nach links durch Zeile {n}', 'volley.gunT':'{k}-Kanone, schießt nach unten durch Spalte {n}', 'volley.gunB':'{k}-Kanone, schießt nach oben durch Spalte {n}', 'volley.stuck':'Jede Kanone ist verbraucht oder falsch — nimm einen Schuss zurück', 'm.volley':'Salve|Schieß die Kanonen in der Reihenfolge, die das Bild malt', 'how.volley':'tippe eine Kanone an, um zu schießen; die Kugel malt die leeren Felder, die sie überquert, und hält am ersten bereits bemalten. Tippe ein Feld des letzten Schusses an, um ihn zurückzunehmen',
+    'p.sift':'Noch {n} zu fangen', 'sift.slot':'Bandplatz {n}, {k}-Eimer', 'sift.bare':'Bandplatz {n}, leer', 'sift.put':'Einen {k}-Eimer aufs Band stellen', 'sift.jam':'Band ist voll — stoß den vordersten Eimer herunter', 'm.sift':'Sieben|Stell die Eimer hin, bevor ihr Sand fällt',
+    'how.forage':'tippe eine Beere an, um einen Schwarm auf ihre Farbe zu schicken; er kommt durch die Lücken herein, frisst nur, was er erreicht, und wartet dann im Korb, bis du ihn erneut schickst. Tippe einen wartenden Schwarm an, um ihn zurückzurufen', 'how.sift':'tippe eine Farbe an, um den Eimer HINTEN aufs Band zu stellen; das Band rückt bei jedem Korn einen Platz vor, du stellst also für ein Korn weiter oben im Schacht, nicht für das fallende. Tippe den vordersten Eimer an, um ihn herunterzustoßen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
     'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
@@ -3902,6 +3901,19 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.36.0', date:'2026-09-18', items:[
+    'Sift rebuilt as a belt. Sand falls one grain at a time, always in the same place, and the belt under the chute shifts one slot every time — so a bucket put on the BACK arrives under the chute in exactly as many beats as the belt is long. You are never placing for the grain you can see falling. You are placing for one further down the queue.',
+    'Put them on too fast and the belt is full when you need the slot; too slow and the sand lands on bare rubber. The chute rings the grain the back slot will actually meet, so the pipeline is something you can see rather than something you hold in your head.',
+    'The belt starts loaded for the first grains, because the warm-up beats would otherwise be spills nobody could have prevented — and this way the thing is shown working once before it is asked for. Knocking the front bucket off is the way out of a belt loaded wrong, and costs a move.',
+    'The timing was simulated before it was built and then checked against the real thing: a perfect pipeline spills nothing at any setting, and eight probed belts played by a bot spilled nothing. Missing a quarter of the beats and mistiming a fifth of the rest spills between one and thirteen, against a budget of four to nine.',
+  ] },
+  { v:'0.35.0', date:'2026-09-18', items:[
+    'Volley rebuilt as what Shoot Colors actually is: a picture and a ring of cannons. Each cannon keeps one colour for the round and fires straight in, painting the bare squares it crosses — and stopping dead at the first square already painted. That stop is the whole mode: the same cannon reaches less every time the board fills, so a shot taken early is a wall built for later, and a wall in the wrong place is a picture you cannot finish.',
+    'The picture is built by firing, so it can always be painted; then the board is thrown back if any shorter order exists at all. That makes the shot count the difficulty and a measured thing rather than a hoped one. Twelve probed pictures were painted by an independent search in five to nine shots.',
+    'A cannon whose line would take the wrong colour kicks back instead of firing, and a square the last shot painted can be tapped to wind that shot off the board. Both cost a move. Random play that only ever fires cannons that fit still painted itself into a corner in three rounds out of six, which is exactly what winding back is for.',
+    'Every bare square shows the colour it wants, faintly. The picture is never the thing to remember here — only the order is.',
+    'Volley now sits with the logic modes rather than the rhythm ones, because there is no longer any tempo in it.',
+  ] },
   { v:'0.34.0', date:'2026-09-18', items:[
     'Meld rebuilt around the till. A merge game is only a merge game for about a minute; what keeps one going is that a bigger jelly is worth more than the two it came from, but making it spends a jelly — so every one on the board is the same question: cash it now, or grow it first?',
     'And the answer is not always grow it, because ONE level pays triple today, and triple beats the next level up. That level is a peak: stopping there is right and merging past it is money thrown away. It is worked out from the board itself, one short of the highest level the board could ever reach, because a price nobody here could reach is decoration rather than a price.',
@@ -10727,349 +10739,388 @@ const MODES = {
 
   /* ── Volley ───────────────────────────────────────────────────────────── */
   volley: {
-    name:'Volley', blurb:'Fire each ball when its own colour comes round', input:'volley', cat:'rhythm', par:13000, bonus:3400,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6.5" fill="none" stroke="#FF8AD8" stroke-width="1.6"/><path d="M12 2.5A6.5 6.5 0 0 1 18.5 9L12 9z" fill="#FF8AD8" opacity=".55"/><circle cx="12" cy="20" r="2.4" fill="#FF8AD8"/><path d="M12 17.4V15.5" stroke="#FF8AD8" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    name:'Volley', blurb:'Fire the cannons in an order that paints the picture', input:'volley', cat:'logic', par:18000, bonus:4600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="13" height="4" rx="1" fill="#33E6C8" opacity=".8"/><rect x="8" y="9" width="13" height="4" rx="1" fill="#33E6C8" opacity=".4"/><rect x="8" y="15" width="13" height="4" rx="1" fill="#33E6C8" opacity=".6"/><path d="M2 5h4M2 11h4M2 17h4" stroke="#33E6C8" stroke-width="2" stroke-linecap="round"/></svg>',
     build(ctx){
-      /* The six rhythm modes are all about tempo — when to tap against a beat.
-         This one is the same clock seen from the side: a wheel turning at a
-         fixed rate, and a shot that has to leave early enough to arrive while
-         the right colour is still there. The beat is a place rather than a
-         sound. */
-      const k      = clamp(3 + Math.floor(ctx.level/6), 3, 6);       /* wedges */
-      const period = clamp(2600 - ctx.level*50, 1500, 2600);         /* ms per turn */
-      const need   = clamp(4 + Math.floor(ctx.level/6), 4, 8);       /* balls to land */
-      const FLIGHT = 300;                                            /* ms to the rim */
-      const arc    = 360/k;
-      /* How long the right wedge sits over the barrel. Stated here because it
-         is the whole of whether this is fair: at the hardest setting it is a
-         quarter of a second, which is a shot, not a coin toss. */
-      const windowMs = period/k;
+      /* A picture, and a ring of cannons round it. Each cannon is one colour
+         and fires straight in, painting the bare squares it crosses — and
+         STOPPING dead at the first square already painted. That is what makes
+         the order everything: the same cannon reaches less every time the
+         board fills up, so a shot you take early is a wall you built for
+         later, and a wall in the wrong place is a picture you cannot finish. */
+      const W = ctx.level < 8 ? 4 : 5, H = ctx.level < 16 ? 4 : 5;
+      const CELLS = W*H;
+      const k    = clamp(3 + Math.floor(ctx.level/14), 3, 4);
+      /* How many shots the picture takes. It is the difficulty and it is
+         proven: the board is thrown back if any shorter way exists. */
+      const want = clamp(4 + Math.floor(ctx.level/6), 4, 9);
+
+      /* Cannons: one into each row from either side, one into each column from
+         above or below. Each keeps one colour for the whole round. */
+      const guns = [];
+      for (let r = 0; r < H; r++){ guns.push({ s:'L', i:r }); guns.push({ s:'R', i:r }); }
+      for (let c = 0; c < W; c++){ guns.push({ s:'T', i:c }); guns.push({ s:'B', i:c }); }
+      guns.forEach(g => {
+        g.path = g.s === 'L' ? Array.from({ length: W }, (_, c) => g.i*W + c)
+               : g.s === 'R' ? Array.from({ length: W }, (_, c) => g.i*W + (W-1-c))
+               : g.s === 'T' ? Array.from({ length: H }, (_, r) => r*W + g.i)
+               :               Array.from({ length: H }, (_, r) => (H-1-r)*W + g.i);
+      });
+
+      /* One shot: paint the bare squares along the line until something already
+         painted stops it. Returns the squares it reached, in the order it
+         reached them, because that is also the order to draw them in. */
+      const shot = (grid, g) => {
+        const hit = [];
+        for (const i of g.path){
+          if (grid[i]) break;
+          hit.push(i);
+        }
+        return hit;
+      };
+
+      let target = null, tint = null, answer = want;
+      for (let attempt = 0; attempt < 260 && !target; attempt++){
+        const colour = guns.map(() => 1 + Math.floor(ctx.rnd()*k));
+        const seenCols = new Set(colour);
+        if (seenCols.size < k) continue;          /* every colour must have a cannon */
+        const paint = (grid, gi) => { const hit = shot(grid, guns[gi]);
+          hit.forEach(i => { grid[i] = colour[gi]; }); return hit.length; };
+        const g0 = new Array(CELLS).fill(0);
+        let used = 0;
+        while (g0.indexOf(0) >= 0 && used <= want){
+          const live = [];
+          for (let gi = 0; gi < guns.length; gi++) if (shot(g0, guns[gi]).length) live.push(gi);
+          if (!live.length) break;
+          paint(g0, live[Math.floor(ctx.rnd()*live.length)]);
+          used++;
+        }
+        if (g0.indexOf(0) >= 0 || used !== want) continue;
+
+        /* Is there a shorter way? Only shots that land the right colour are
+           worth exploring, which keeps this small — about a thousand boards at
+           the widest setting. */
+        const goal = g0.join(',');
+        const seen = new Set(['' + new Array(CELLS).fill(0).join(',')]);
+        let front = [new Array(CELLS).fill(0)], shorter = false;
+        for (let d = 1; d < want && !shorter; d++){
+          const next = [];
+          for (const cur of front){
+            for (let gi = 0; gi < guns.length && !shorter; gi++){
+              const hit = shot(cur, guns[gi]);
+              if (!hit.length) continue;
+              if (hit.some(i => g0[i] !== colour[gi])) continue;
+              const nx = cur.slice();
+              hit.forEach(i => { nx[i] = colour[gi]; });
+              const key = nx.join(',');
+              if (key === goal){ shorter = true; break; }
+              if (seen.has(key)) continue;
+              seen.add(key); next.push(nx);
+            }
+            if (shorter) break;
+          }
+          front = next;
+          if (!front.length) break;
+        }
+        if (shorter) continue;
+        target = g0; tint = colour; answer = want;
+      }
+      if (!target){
+        /* Rows painted one after another from the left, which any board can do. */
+        tint = guns.map((g, i) => 1 + (i % k));
+        target = new Array(CELLS).fill(0);
+        for (let r = 0; r < H; r++) for (let c = 0; c < W; c++)
+          target[r*W + c] = tint[r*2];
+        answer = H;
+      }
 
       const inks = shuffle(INKS.slice(), ctx.rnd).slice(0, k);
-      const queue = Array.from({ length: need }, () => Math.floor(ctx.rnd()*k));
+      const ink  = v => inks[v - 1];
 
-      const box = mk('div','vlybox');
-      const wheel = mk('i','vlywheel');
-      wheel.style.background = 'conic-gradient(' + inks.map((c, i) =>
-        c.hex + ' ' + (i*arc) + 'deg ' + ((i+1)*arc) + 'deg').join(',') + ')';
-      const hub = mk('i','vlyhub');
-      const marks = mk('i','vlymarks');
-      if (assistOn()) marks.innerHTML = inks.map((c, i) =>
-        '<span style="--a:' + (i*arc + arc/2) + 'deg">' + shapeSvg(c.shape, '#0D0918') + '</span>').join('');
-      wheel.appendChild(marks);
-      const barrel = mk('i','vlybarrel');
-      const ball   = mk('i','vlyball');
-      /* It carries its colour's name, and a bare <i> is not allowed to: an
-         element with no role cannot take aria-label. It is a picture of the
-         ball that is loaded, so that is the role it gets. */
-      ball.setAttribute('role','img');
-      const queueEl = mk('i','vlyqueue');
-      /* Waiting for one colour to come round is not a decision — it is a
-         queue. Holding TWO and picking which one the next window is worth is
-         a decision, and swapping costs a reload, so it has to be made early
-         rather than at the last instant. */
-      const swapEl = mk('button','vlyswap');
-      swapEl.type = 'button';
-      const swapDot = mk('i'), swapTag = mk('b');
-      swapTag.textContent = '\u21C4';
-      swapEl.appendChild(swapDot); swapEl.appendChild(swapTag);
-      const chainEl = mk('i','vlychain');
-      const chainPips = [0,1,2].map(() => { const d = mk('i'); chainEl.appendChild(d); return d; });
-      chainEl.setAttribute('aria-hidden','true');
-      box.appendChild(wheel); box.appendChild(hub); box.appendChild(barrel);
-      box.appendChild(ball); box.appendChild(queueEl);
-      box.appendChild(swapEl); box.appendChild(chainEl);
-      box.setAttribute('role','application');
-      box.setAttribute('aria-label', t('volley.box'));
+      /* ── the board, with a ring of cannons round it ──────────────────── */
+      const box = mk('div','vbox');
+      box.style.gridTemplateColumns = 'auto repeat(' + W + ',1fr) auto';
+      box.style.gridTemplateRows    = 'auto repeat(' + H + ',1fr) auto';
+      const pix = [], gunEls = [];
+      const place = (el, col, row) => { el.style.gridColumn = col; el.style.gridRow = row; box.appendChild(el); };
+      for (let i = 0; i < CELLS; i++){
+        /* A real button, not a decorated <i>: these are tapped to wind a shot
+           back, and an element with no role is not allowed to carry the label
+           that says what it is. */
+        const b = mk('button','vpix');
+        b.type = 'button';
+        place(b, (i % W) + 2, Math.floor(i/W) + 2);
+        pix.push(b);
+      }
+      guns.forEach((g, gi) => {
+        const b = mk('button','vgun v' + g.s);
+        b.type = 'button';
+        b.style.background = ink(tint[gi]).hex;
+        if (assistOn()) b.innerHTML = shapeSvg(ink(tint[gi]).shape, '#0D0918');
+        if (g.s === 'L') place(b, 1, g.i + 2);
+        else if (g.s === 'R') place(b, W + 2, g.i + 2);
+        else if (g.s === 'T') place(b, g.i + 2, 1);
+        else place(b, g.i + 2, H + 2);
+        b.setAttribute('aria-label', t('volley.gun' + g.s,
+          { k: inkName(ink(tint[gi])), n: g.i + 1 }));
+        gunEls.push(b);
+      });
       ctx.surface.appendChild(box);
 
-      const budget = moveBudget(ctx, 0);
-      /* What a swap costs. Long enough that it cannot be used to cheat a window
-         you have already seen arrive, short enough that deciding one window
-         ahead is always enough. */
-      const RELOAD = 240;
-      const CHAIN  = 3;
-      let at = 0, flying = null, done = false, raf2 = 0, chain = 0, ready = 0;
-      const t0 = performance.now();
-      const angleAt = ms => ((ms - t0) / period * 360) % 360;
-      /* Which wedge is over the barrel — the barrel fires straight up, so the
-         wedge at six o'clock is the one that gets hit. */
-      const wedgeAt = ms => Math.floor((((180 - angleAt(ms)) % 360) + 360) % 360 / arc);
+      const budget = moveBudget(ctx, answer);
+      let grid = new Array(CELLS).fill(0), done = false, busy = false;
+      const hist = [];
 
-      const paintQueue = () => {
-        queueEl.innerHTML = '';
-        for (let i = at; i < Math.min(queue.length, at + 4); i++){
-          const c = inks[queue[i]];
-          const d = mk('span', i === at ? 'now' : '');
-          d.style.background = c.hex;
-          if (assistOn()) d.innerHTML = shapeSvg(c.shape, '#0D0918');
-          queueEl.appendChild(d);
-        }
-        ctx.prompt(t('p.volley', { n: need - at }));
-      };
-      const dress = () => {
-        const c = inks[queue[at]];
-        ball.style.background = c.hex;
-        ball.innerHTML = assistOn() ? shapeSvg(c.shape, '#0D0918') : '';
-        ball.setAttribute('aria-label', t('volley.ball', { c: inkName(c) }));
-      };
-      const paintSwap = () => {
-        const nxt = at + 1 < queue.length ? inks[queue[at+1]] : null;
-        swapEl.classList.toggle('off', !nxt || done);
-        swapEl.setAttribute('aria-disabled', (!nxt || done) ? 'true' : 'false');
-        swapDot.style.background = nxt ? nxt.hex : 'transparent';
-        swapDot.innerHTML = nxt && assistOn() ? shapeSvg(nxt.shape, '#0D0918') : '';
-        swapEl.setAttribute('aria-label', nxt
-          ? t('volley.swap', { c: inkName(nxt) }) : t('volley.last'));
-      };
-      const paintChain = () => chainPips.forEach((d, i) => d.classList.toggle('on', i < chain));
-      dress(); paintQueue(); paintSwap(); paintChain();
-
-      const swap = () => {
-        if (done || flying || at + 1 >= queue.length) return;
-        const tmp = queue[at]; queue[at] = queue[at+1]; queue[at+1] = tmp;
-        ready = performance.now() + RELOAD;
-        ball.classList.add('load');
-        ctx.after(RELOAD, () => ball.classList.remove('load'));
-        dress(); paintQueue(); paintSwap();
-        sfx.tap(); buzz('tap');
-        swapEl.classList.add('go');
-        ctx.after(200, () => swapEl.classList.remove('go'));
+      const paint = () => {
+        const fresh = hist.length ? hist[hist.length - 1].hit : [];
+        pix.forEach((b, i) => {
+          const v = grid[i], goal = target[i];
+          b.className = 'vpix' + (v ? ' on' : ' bare') + (fresh.indexOf(i) >= 0 ? ' fresh' : '');
+          b.style.background = ink(v || goal).hex;
+          b.innerHTML = assistOn() ? shapeSvg(ink(v || goal).shape, v ? '#0D0918' : '#ffffff59') : '';
+          b.setAttribute('aria-label', v
+            ? t('volley.cell',  { k: inkName(ink(v)),    r: Math.floor(i/W)+1, c: (i%W)+1 })
+            : t('volley.blank', { k: inkName(ink(goal)), r: Math.floor(i/W)+1, c: (i%W)+1 }));
+        });
+        gunEls.forEach((b, gi) => {
+          const hit = shot(grid, guns[gi]);
+          b.classList.toggle('spent', !hit.length);
+          b.classList.toggle('fits', !!hit.length && !hit.some(i => target[i] !== tint[gi]));
+        });
+        ctx.prompt(t('p.volley', { n: grid.reduce((a, v) => a + (v ? 0 : 1), 0) }));
       };
 
-      const frame = () => {
-        if (done) return;
-        const now = performance.now();
-        wheel.style.transform = 'rotate(' + angleAt(now).toFixed(2) + 'deg)';
-        if (flying){
-          const p = clamp((now - flying.left) / FLIGHT, 0, 1);
-          ball.style.bottom = (8 + p*32) + '%';
-          if (p >= 1){
-            const hitIdx = wedgeAt(now);
-            const good = hitIdx === queue[at];
-            ball.style.bottom = '8%';
-            flying = null;
-            if (good){
-              at++; chain++;
-              wheel.classList.add('hit');
-              ctx.after(160, () => wheel.classList.remove('hit'));
-              sfx.good(at); buzz('good');
-              /* Three landed without a bounce and the queue gives one back. It
-                 is the only thing in the mode that rewards taking the tighter
-                 window instead of waiting a whole turn for an easy one. */
-              if (chain >= CHAIN && at < need){
-                chain = 0; at++;
-                queueEl.classList.add('free');
-                ctx.after(420, () => queueEl.classList.remove('free'));
-                sfx.good(at + 3);
-              }
-              if (at >= need){
-                done = true; cancelAnimationFrame(raf2);
-                box.classList.add('won');
-                return ctx.win(wheel);
-              }
-              dress(); paintQueue(); paintSwap(); paintChain();
-            } else {
-              /* The ball comes back rather than the round ending: a shot that
-                 hit the wrong colour is a miss, not a death. */
-              box.classList.add('off');
-              ctx.after(260, () => box.classList.remove('off'));
-              sfx.bad(); buzz('bad');
-              chain = 0; paintChain();
-              budget.spend(ball);
-            }
+      /* The ball travels and the squares light as it passes, then it thunks
+         against whatever stopped it. A shot that would land the wrong colour
+         never leaves the barrel — it kicks back instead. */
+      const roll = (gi, hit, then) => {
+        busy = true;
+        const step = x => {
+          if (x >= hit.length){
+            busy = false;
+            const last = hit[hit.length - 1];
+            const stopper = guns[gi].path[hit.length];
+            if (stopper !== undefined) pix[stopper].classList.add('thunk');
+            ctx.after(220, () => { if (stopper !== undefined) pix[stopper].classList.remove('thunk'); });
+            if (last !== undefined){ pix[last].classList.add('land');
+              ctx.after(240, () => pix[last].classList.remove('land')); }
+            return then();
           }
-        }
-        raf2 = requestAnimationFrame(frame);
+          grid[hit[x]] = tint[gi];
+          paint();
+          sfx.tap();
+          ctx.after(motionOff() ? 0 : 46, () => step(x + 1));
+        };
+        step(0);
       };
-      raf2 = requestAnimationFrame(frame);
 
-      onTap(box, ev => {
-        if (done) return;
-        /* The swap pill lives inside the firing area, so it has to be taken out
-           of it by hand — otherwise reaching for the other colour fires the one
-           you were trying to put down. */
-        if (ev && ev.target && ev.target.closest && ev.target.closest('.vlyswap')) return swap();
-        if (flying || performance.now() < ready) return;
-        flying = { left: performance.now() };
-        sfx.tap();
-      });
+      const fire = gi => {
+        const hit = shot(grid, guns[gi]);
+        const b = gunEls[gi];
+        if (!hit.length || hit.some(i => target[i] !== tint[gi])){
+          /* Nowhere to go, or the wrong colour for somewhere it would go. */
+          b.classList.add('kick');
+          ctx.after(360, () => b.classList.remove('kick'));
+          sfx.bad(); buzz('bad');
+          budget.spend(b);
+          return;
+        }
+        hist.push({ gi, hit });
+        budget.spend(b);
+        roll(gi, hit, () => {
+          paint();
+          sfx.good(2 + hist.length); buzz('good');
+          if (grid.indexOf(0) < 0){
+            done = true;
+            box.classList.add('won');
+            return ctx.win(box);
+          }
+          /* Painted into a corner: every cannon is either spent or wrong. */
+          const anyFits = guns.some((g, x) => { const h = shot(grid, g);
+            return h.length && !h.some(i => target[i] !== tint[x]); });
+          if (!anyFits) ctx.prompt(t('volley.stuck'));
+        });
+      };
+
+      gunEls.forEach((b, gi) => onTap(b, () => { if (done || busy) return; fire(gi); }));
+
+      /* A shot you cannot take back would make this a mode you lose to one bad
+         guess. Tapping any square the last shot painted winds it off the board,
+         and costs a move, like the shot did. */
+      pix.forEach((b, i) => onTap(b, () => {
+        if (done || busy || !hist.length) return;
+        const last = hist[hist.length - 1];
+        if (last.hit.indexOf(i) < 0) return;
+        hist.pop();
+        last.hit.forEach(x => { grid[x] = 0; });
+        paint(); sfx.tap(); buzz('tap');
+        budget.spend(b);
+      }));
+
+      paint();
     }
   },
 
   /* ── Sift ─────────────────────────────────────────────────────────────── */
   sift: {
-    name:'Sift', blurb:'Dig around the rocks and let the gems slide down', input:'sift', cat:'physics', par:16000, bonus:4200,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-3 7H7z" fill="none" stroke="#FF9A3D" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 14.5l2 2 2-2-2-2z" fill="#33E6C8"/><circle cx="8" cy="20" r="1.2" fill="#FF9A3D"/><circle cx="12" cy="21" r="1.2" fill="#FF9A3D"/><circle cx="16" cy="20" r="1.2" fill="#FF9A3D"/></svg>',
+    name:'Sift', blurb:'Put buckets on the belt before their sand falls', input:'sift', cat:'physics', par:20000, bonus:4800,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6l-1 5h-4z" fill="none" stroke="#FF9A3D" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="1" fill="#FF9A3D"/><circle cx="12" cy="12" r="1" fill="#FF9A3D" opacity=".6"/><rect x="3" y="15" width="7" height="5" rx="1" fill="none" stroke="#FF9A3D" stroke-width="1.5"/><rect x="13" y="15" width="7" height="5" rx="1" fill="none" stroke="#FF9A3D" stroke-width="1.5" opacity=".45"/><path d="M2 22h20" stroke="#FF9A3D" stroke-width="1.5" stroke-linecap="round"/></svg>',
     build(ctx){
-      /* The other five physics modes are about one object: where a stone will
-         sit, where a drop will roll, what a beam balances on. Sand is the
-         opposite — nothing in it moves alone. Take one grain out and the whole
-         pile rearranges itself, which is the only reason digging under a rock
-         is a different idea from digging beside it. */
-      const W = ctx.level < 10 ? 5 : 6, H = 5;
-      const CELLS = W*H;
-      const EMPTY = 0, SAND = 1, ROCK = 2, GEM = 3;
-      const gems  = clamp(1 + Math.floor(ctx.level/8), 1, 2);
-      const rocks = clamp(2 + Math.floor(ctx.level/7), 2, 4);
-      /* The fewest digs the board can be cleared in. It is the difficulty and
-         it is measured, not guessed — a board is thrown back unless its answer
-         is at least this long. */
-      const minDig = clamp(1 + Math.floor(ctx.level/6), 1, 4);
+      /* Sand falls one grain at a time, always in the same place, and the belt
+         under it shifts one slot every time. So a bucket you put on the BACK of
+         the belt arrives under the chute in exactly as many beats as the belt
+         is long — which means you are never placing for the grain you can see
+         falling, you are placing for one further down the queue. Put them on
+         too fast and the belt is full when you need the slot; too slow and the
+         sand lands on bare rubber. */
+      const cap  = clamp(3 + Math.floor(ctx.level/12), 3, 5);   /* belt slots */
+      const k    = clamp(3 + Math.floor(ctx.level/10), 3, 5);   /* colours */
+      const need = clamp(6 + Math.floor(ctx.level/5), 6, 14);   /* grains to catch */
+      const beat = clamp(1500 - ctx.level*22, 750, 1500);       /* ms per grain */
+      const FALL = Math.min(430, beat*0.45);
+      const LEAD = cap - 1;                       /* beats from the back to the chute */
 
-      /* One pass of sand physics: fall if you can, else slide off the pile.
-         Rocks fall but never slide, which is what makes them worth digging
-         around rather than through. */
-      const step = g => {
-        let moved = false;
-        for (let y = H-2; y >= 0; y--) for (let x = 0; x < W; x++){
-          const v = g[y*W+x];
-          if (v === EMPTY) continue;
-          if (g[(y+1)*W+x] === EMPTY){ g[(y+1)*W+x] = v; g[y*W+x] = EMPTY; moved = true; continue; }
-          if (v === ROCK) continue;
-          const order = ((x+y) % 2) ? [-1, 1] : [1, -1];
-          for (const dx of order){
-            const nx = x + dx;
-            if (nx < 0 || nx >= W) continue;
-            if (g[(y+1)*W+nx] === EMPTY && g[y*W+nx] === EMPTY){
-              g[(y+1)*W+nx] = v; g[y*W+x] = EMPTY; moved = true; break;
-            }
-          }
-        }
-        return moved;
-      };
-      const settle = g => { const h = g.slice(); let n = 0; while (step(h) && n++ < 60); return h; };
-      const home = g => { let n = 0;
-        for (let x = 0; x < W; x++) if (g[(H-1)*W+x] === GEM) n++;
-        return n; };
+      const inks  = shuffle(INKS.slice(), ctx.rnd).slice(0, k);
+      const queue = Array.from({ length: need + cap + 3 }, () => Math.floor(ctx.rnd()*k));
 
-      /* Breadth-first over digs, so the answer it finds is the shortest one. */
-      const shortest = (g0, total, cap) => {
-        const seen = new Set([g0.join('')]);
-        let front = [g0];
-        for (let d = 1; d <= cap; d++){
-          const next = [];
-          for (const cur of front) for (let i = 0; i < CELLS; i++){
-            if (cur[i] !== SAND) continue;
-            const h = cur.slice(); h[i] = EMPTY;
-            const sd = settle(h), key = sd.join('');
-            if (seen.has(key)) continue;
-            seen.add(key);
-            if (home(sd) === total) return d;
-            next.push(sd);
-          }
-          front = next;
-          if (!front.length) break;
-        }
-        return null;
-      };
+      const box  = mk('div','beltbox');
+      /* What is coming, nearest at the bottom. The one the back of the belt
+         would meet is ringed, because that — not the grain about to land — is
+         the one every placement is actually for. */
+      const chute = mk('div','chute');
+      const queueEls = Array.from({ length: cap + 2 }, () => { const d = mk('i','grain');
+        chute.appendChild(d); return d; });
+      const drop  = mk('i','falling');
+      chute.appendChild(drop);
+      box.appendChild(chute);
 
-      let board = null, answer = minDig;
-      for (let attempt = 0; attempt < 90 && !board; attempt++){
-        const g0 = new Array(CELLS).fill(EMPTY);
-        for (let i = W; i < CELLS; i++) g0[i] = SAND;
-        const spots = shuffle(Array.from({ length: CELLS - W }, (_, i) => i + W), ctx.rnd);
-        for (let i = 0; i < gems; i++)  g0[spots[i]] = GEM;
-        for (let i = 0; i < rocks; i++) g0[spots[gems+i]] = ROCK;
-        const start = settle(g0);
-        if (home(start) === gems) continue;              /* already done */
-        const d = shortest(start, gems, 6);
-        if (d === null || d < minDig) continue;
-        board = start; answer = d;
-      }
-      if (!board){
-        const g0 = new Array(CELLS).fill(EMPTY);
-        for (let i = W; i < CELLS; i++) g0[i] = SAND;
-        g0[W*2+1] = GEM; g0[W*3+3] = ROCK;
-        board = settle(g0); answer = 1;
-      }
+      const belt = mk('div','belt');
+      belt.style.gridTemplateColumns = 'repeat(' + cap + ',1fr)';
+      const slots = Array.from({ length: cap }, (_, x) => { const b = mk('button','bslot');
+        b.type = 'button'; belt.appendChild(b); return b; });
+      box.appendChild(belt);
 
-      const grid = mk('div','siftgrid');
-      grid.style.gridTemplateColumns = 'repeat(' + W + ',1fr)';
-      grid.style.gridTemplateRows    = 'repeat(' + H + ',1fr)';
-      grid.style.aspectRatio = W + ' / ' + H;
-      const cells = [];
-      for (let i = 0; i < CELLS; i++){
-        const b = mk('button','sand');
+      const tray = mk('div','tray');
+      const btns = inks.map((c, ci) => { const b = mk('button','bkt');
         b.type = 'button';
-        grid.appendChild(b); cells.push(b);
-      }
-      ctx.surface.appendChild(grid);
+        b.style.background = c.hex;
+        if (assistOn()) b.innerHTML = shapeSvg(c.shape, '#0D0918');
+        b.setAttribute('aria-label', t('sift.put', { k: inkName(c) }));
+        tray.appendChild(b); return b; });
+      box.appendChild(tray);
+      ctx.surface.appendChild(box);
 
-      /* "How do I get rid of the black squares" is what you ask when the board
-         never told you what it wants. It wants gems on the bottom row, so the
-         bottom row is drawn as a tray and the gems still owed are drawn under
-         it — the goal is on the board, not in a line of text that left after
-         six seconds. */
-      const tally = mk('div','sifttally');
-      const pips  = [];
-      for (let i = 0; i < gems; i++){
-        const d = mk('span','siftpip');
-        tally.appendChild(d); pips.push(d);
-      }
-      tally.setAttribute('aria-hidden','true');
-      ctx.surface.appendChild(tally);
+      /* Perfect play spills nothing, so this is the room for the beats you
+         misread rather than a target to hit. */
+      const budget = moveBudget(ctx, 1);
+      /* The belt starts loaded for the first grains. The warm-up beats would
+         otherwise be spills nobody could have prevented, and this way the thing
+         is shown working once before it is asked for. */
+      const lane = Array.from({ length: cap }, (_, x) => queue[x]);
+      let at = 0, caught = 0, done = false, timer = null;
 
-      /* One dig of headroom over the shortest answer. Nothing here can be taken
-         back — an undo would cost a move on top of the one it undoes, which is
-         worse than the mistake — so the slack is where the forgiveness lives. */
-      const budget = moveBudget(ctx, answer + 1);
-      let g = board.slice(), busy = false, done = false;
-      const KIND = { 0:'empty', 1:'grain', 2:'rock', 3:'gem' };
+      const dress = (el, v) => {
+        el.style.background = v === null || v === undefined ? '' : inks[v].hex;
+        el.innerHTML = (v !== null && v !== undefined && assistOn())
+          ? shapeSvg(inks[v].shape, '#0D0918') : '';
+      };
 
       const paint = () => {
-        const landed = home(g);
-        cells.forEach((b, i) => {
-          const v = g[i], onFloor = Math.floor(i/W) === H-1;
-          b.className = 'sand k' + v + (onFloor ? ' floor' : '')
-            + (v === GEM && onFloor ? ' got' : '');
-          b.setAttribute('aria-label', t('sift.' + KIND[v],
-            { r: Math.floor(i/W) + 1, c: (i % W) + 1 }));
+        slots.forEach((b, x) => {
+          const v = lane[x];
+          b.className = 'bslot' + (v === null ? ' bare' : ' full') + (x === 0 ? ' mouth' : '')
+            + (x === cap-1 && v === null ? ' open' : '');
+          dress(b, v);
+          b.setAttribute('aria-label', v === null
+            ? t('sift.bare', { n: x + 1 })
+            : t('sift.slot', { n: x + 1, k: inkName(inks[v]) }));
         });
-        pips.forEach((d, i) => d.classList.toggle('on', i < landed));
-        ctx.prompt(t('p.sift', { n: gems - landed }));
+        queueEls.forEach((d, i) => {
+          const v = queue[at + i];
+          d.className = 'grain' + (i === 0 ? ' next' : '') + (i === LEAD ? ' aim' : '');
+          dress(d, v === undefined ? null : v);
+          d.setAttribute('aria-hidden','true');
+        });
+        btns.forEach(b => b.classList.toggle('shut', lane[cap-1] !== null));
+        ctx.prompt(t('p.sift', { n: need - caught }));
       };
 
-      /* Settled one pass at a time rather than all at once: watching the pile
-         come down is most of why a sand game is a sand game. */
-      const run = () => {
-        const h = g.slice();
-        if (step(h)){
-          g = h; paint();
-          return ctx.after(38, run);
+      const put = ci => {
+        if (done) return;
+        if (lane[cap-1] !== null){
+          /* No room at the back: the belt is the queue, and it is full. */
+          belt.classList.add('jam');
+          ctx.after(420, () => belt.classList.remove('jam'));
+          ctx.prompt(t('sift.jam'));
+          sfx.bad(); buzz('bad');
+          return;                                  /* refused, and it costs nothing */
         }
-        busy = false;
-        grid.classList.remove('settling');
-        paint();
-        if (home(g) === gems){
-          done = true;
-          grid.classList.add('won');
-          return ctx.win(grid);
-        }
-      };
-
-      cells.forEach((b, i) => onTap(b, () => {
-        if (done || busy) return;
-        if (g[i] !== SAND){
-          /* A rock is not going anywhere, and saying so on the rock is the only
-             place anybody will read it. */
-          b.classList.add('nope');
-          ctx.after(280, () => b.classList.remove('nope'));
-          if (g[i] === ROCK) ctx.prompt(t('sift.stuckRock'));
-          return;
-        }
-        g[i] = EMPTY;
+        lane[cap-1] = ci;
+        slots[cap-1].classList.add('drop');
+        ctx.after(260, () => slots[cap-1] && slots[cap-1].classList.remove('drop'));
         paint(); sfx.tap(); buzz('tap');
-        busy = true;
-        /* Taps are ignored while the pile is still moving, so the board says so
-           rather than swallowing them silently. A deep collapse is a dozen
-           passes, which at this rate is under half a second. */
-        grid.classList.add('settling');
-        budget.spend(b);
-        ctx.after(40, run);
-      }));
+      };
+
+      /* Knocking the front bucket off is the way out of a belt you have loaded
+         wrong. It costs a move, because loading it wrong cost the grain. */
+      const knock = () => {
+        if (done || lane[0] === null) return;
+        lane[0] = null;
+        slots[0].classList.add('toss');
+        ctx.after(300, () => slots[0] && slots[0].classList.remove('toss'));
+        paint(); sfx.tap(); buzz('tap');
+        budget.spend(slots[0]);
+      };
+
+      const land = () => {
+        if (done) return;
+        const grain = queue[at];
+        drop.classList.remove('go');
+        if (lane[0] === grain){
+          caught++;
+          lane[0] = null;
+          slots[0].classList.add('catch');
+          ctx.after(320, () => slots[0] && slots[0].classList.remove('catch'));
+          sfx.good(Math.min(6, 2 + caught)); buzz('good');
+          if (caught >= need){
+            done = true;
+            if (timer) timer = null;
+            box.classList.add('won');
+            paint();
+            return ctx.win(belt);
+          }
+        } else {
+          /* Bare rubber, or the wrong bucket: the grain goes on the floor and
+             whatever was in the way is knocked off with it. */
+          lane[0] = null;
+          belt.classList.add('spill');
+          ctx.after(380, () => belt.classList.remove('spill'));
+          sfx.bad(); buzz('bad');
+          budget.spend(slots[0]);
+        }
+        at++;
+        lane.shift(); lane.push(null);
+        paint();
+      };
+
+      const tick = () => {
+        if (done) return;
+        if (at >= queue.length - 1){ done = true; return ctx.miss(belt); }
+        dress(drop, queue[at]);
+        drop.classList.remove('go');
+        void drop.offsetWidth;
+        drop.style.setProperty('--fall', FALL + 'ms');
+        drop.classList.add('go');
+        ctx.after(FALL, land);
+        timer = ctx.after(beat, tick);
+      };
+
+      slots.forEach((b, x) => onTap(b, () => { if (x === 0) knock(); }));
+      btns.forEach((b, ci) => onTap(b, () => put(ci)));
 
       paint();
+      /* A beat of grace before the first grain, so the belt can be read. */
+      ctx.after(Math.min(900, beat), tick);
     }
   },
 
