@@ -1,5 +1,6 @@
-/* Every probe, in the order that fails fastest: the cheap structural ones
- * before the twelve-minute sweep. Exits non-zero on the first failure.
+/* Every probe, in the order that fails fastest: the quick ones first, the sweep
+ * — which opens all sixty-six modes and takes minutes — last. Exits non-zero on
+ * the first failure.
  *
  *   node tools/probe/all.mjs
  */
