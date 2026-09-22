@@ -10,7 +10,7 @@ cd tools/probe && npm install && npx playwright install chromium   # once
 cd ../.. && python3 tools/build_site.py _site
 (cd _site && python3 -m http.server 8275 &)
 
-node tools/probe/all.mjs         # all four, in order
+node tools/probe/all.mjs         # all five, in order
 ```
 
 Or one at a time:
@@ -19,6 +19,7 @@ Or one at a time:
 |---|---|
 | `sweep.mjs` | Opens every mode and looks for what an eye would catch: something outside the board, a target under 40px, a control with no name, an element that takes space and paints nothing, an SVG whose ink is black on black. Plus axe on each. |
 | `board.mjs` | Do the four hand-built boards fit a 320px phone in German with colour assist on, and is every control named? |
+| `mix.mjs` | Under a real touch gesture — not a synthetic click — do taps in the Mix tab add up, or does each one cancel the last? |
 | `home.mjs` | Does the home tab hold up fresh, mid-climb, and with every mode mastered — four distinct picks, each with a reason, in four languages at three sizes? |
 | `settings.mjs` | Does a settings row toggle when you tap it, does a row holding a button *not*, and does erasing your progress ask in the page? |
 

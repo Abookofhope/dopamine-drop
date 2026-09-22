@@ -282,14 +282,21 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 /* It rides the section label, which exists whether or not a perk is waiting. */
 /* A chip is still a control: 23px high was under even the 24px floor, so it
    gets the height a thumb needs without getting the weight of a card. */
-.perkchip{display:flex;align-items:center;gap:6px;flex:none;min-height:36px;
-  padding:6px 12px 6px 8px;border-radius:999px;
+/* 36px tall, once — the smallest tap target on a tab where the next smallest
+   is 59. It rides a label row on purpose, so it should cost the layout
+   nothing on its way past someone scanning for a bigger card — but "costs
+   nothing" is not the same claim as "is legal to miss with a thumb". */
+.perkchip{display:flex;align-items:center;gap:9px;flex:none;min-height:59px;
+  max-width:100%;padding:10px 16px 10px 12px;border-radius:999px;
   border:1px solid color-mix(in srgb,var(--cink,var(--flare)) 40%, transparent);
   background:color-mix(in srgb,var(--cink,var(--flare)) 14%, transparent);
   color:var(--cream)}
-.perkchip .g{display:block;width:15px;height:15px;color:var(--cink,var(--flare))}
+.perkchip .g{display:block;width:21px;height:21px;color:var(--cink,var(--flare));flex:none}
 .perkchip .g svg{width:100%;height:100%;display:block}
-.perkchip b{font-size:10px;letter-spacing:.04em;font-weight:700;text-transform:none}
+/* flex:1 + min-width:0 so French — the longest of the four — wraps to a
+   second line inside the pill instead of pushing the pill past the screen. */
+.perkchip b{flex:1;min-width:0;font-size:12.5px;letter-spacing:.01em;font-weight:700;
+  text-transform:none;line-height:1.25}
 /* Three cards, not four: the odd one takes the whole row rather than leaving a
    hole where a fourth used to be. */
 /* The odd one out lies down instead of standing up: a full-width card built
@@ -3512,7 +3519,7 @@ const STRINGS = {
     'daily.streak':'{n}-day streak', 'daily.streak1':'Streak started today', 'daily.share':'Dopamine Drop — Daily Drop {d}: {a}/{b} solved for {n} points, day {s} of my streak.', 'btn.share':'Share', 'daily.copied':'Copied',
     'stats.filter':'Filter the mode list', 'stats.fAll':'All', 'stats.fPlayed':'Played', 'stats.fNew':'Not tried', 'stats.allPlayed':'You have played every mode at least once.', 'stats.noneYet':'Nothing here yet — play a Marathon and a score appears.',
     'p.bbListen':'Listen — two bars, then the gaps are yours', 'p.bbPlay':'Tap between the beats — {n} to go', 'bb.pad':'Tap between the beats', 'm.backbeat':'Backbeat|Tap between the beats, never on one', 'p.chorus':'One of these is not holding its tempo', 'chorus.lane':'Row {n}', 'm.chorus':'Chorus|Steady tempos, and one that is not staying steady', 'p.bridge':'{n} planks laid — reach the far bank', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Open water, column {x} row {y}, tap to lay a plank', 'bridge.plank':'A plank, column {x} row {y}, tap to lift it', 'm.bridge':'Bridge|Lay planks bank to bank — you have only so many', 'p.weave':'{n} squares still wrong', 'weave.want':'The pattern to match', 'weave.over':'Over, column {x} row {y}', 'weave.under':'Under, column {x} row {y}', 'm.weave':'Weave|Each tap pulls a whole row and column — match the cloth',
-    'play.startHere':'Start here', 'play.pickMode':'Pick a mode', 'play.pickSub':'All {n}, by family', 'daily.subShort':'One from every family', 'daily.today':'Today’s twelve', 'daily.done':'Played today', 'daily.streakN':'{n}-day streak', 'play.carryOn':'Carry on', 'play.carryBest':'Your best {n}', 'why.new':'Untried', 'why.star':'Near a star', 'why.rare':'Neglected', 'why.wild':'Wildcard',
+    'play.startHere':'Start here', 'play.pickMode':'Pick a mode', 'play.pickSub':'All {n}, by family', 'daily.subShort':'One from every family', 'daily.today':'Today’s twelve', 'daily.done':'Played today', 'daily.streakN':'{n}-day streak', 'play.carryOn':'Carry on', 'play.carryBest':'Your best {n}', 'why.new':'Untried', 'why.new2':'Fresh pick', 'why.new3':'First try', 'why.new4':'New to you', 'why.star':'Near a star', 'why.star2':'Almost there', 'why.star3':'So close', 'why.star4':'One more push', 'why.rare':'Neglected', 'why.rare2':'Long overdue', 'why.rare3':'Catching dust', 'why.rare4':'Overlooked', 'why.wild':'Wildcard', 'why.wild2':'Random pick', 'why.wild3':'For variety', 'why.wild4':'Mix it up',
     'wc.lead':'{n} small puzzles. The one in front of you changes every round.', 'wc.p1':'Sixty seconds a run', 'wc.p2':'A different puzzle every round', 'wc.p3':'A miss costs time — a streak pays', 'wc.change':'Change', 'wc.start':'Start your first run', 'wc.look':'Look around first',
     'mix.tapes':'Your mixtapes', 'mix.name':'Name this mixtape', 'mix.share':'Share this mixtape', 'mix.delete':'Delete this mixtape', 'mix.untitled':'Mixtape {n}', 'mix.newTape':'+ New', 'mix.paste':'Paste a code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Delete “{name}”?', 'mix.keep':'Keep', 'mix.deleteIt':'Delete', 'mix.shareText':'My Dopamine Drop mixtape “{name}” — {n} modes. Paste this code into the Mix tab: {code}', 'mix.importTitle':'Add a mixtape', 'mix.importSub':'Paste a code someone sent you. It carries a name and a list of modes, nothing else.', 'mix.importAdd':'Add it', 'mix.importBad':'No mixtape code in that. Paste the whole message — the code starts with DD1.', 'mix.importOk':'Added “{name}”.', 'mix.importN':'{n} modes.', 'mix.importN1':'One mode.', 'mix.importDropped':'{n} of its modes are not in this version and were left out.', 'mix.importDropped1':'One of its modes is not in this version and was left out.',
     'p.rampFast':'Listen — it is speeding up', 'p.rampSlow':'Listen — it is slowing down', 'p.rampGo':'Stay on the beat — {n} to go', 'ramp.pad':'Tap on each beat', 'm.ramp':'Ramp|The tempo is moving — stay on it',
@@ -3657,7 +3664,7 @@ const STRINGS = {
     'daily.streak':'Série de {n} jours', 'daily.streak1':'Série commencée aujourd’hui', 'daily.share':'Dopamine Drop — Tirage du jour {d} : {a}/{b} réussis pour {n} points, {s}ᵉ jour de ma série.', 'btn.share':'Partager', 'daily.copied':'Copié',
     'stats.filter':'Filtrer la liste des modes', 'stats.fAll':'Tout', 'stats.fPlayed':'Joués', 'stats.fNew':'Jamais essayés', 'stats.allPlayed':'Vous avez joué à tous les modes au moins une fois.', 'stats.noneYet':'Rien ici — jouez un Marathon et un score apparaîtra.',
     'p.bbListen':'Écoutez — deux mesures, puis les silences sont à vous', 'p.bbPlay':'Touchez entre les temps — encore {n}', 'bb.pad':'Touchez entre les temps', 'm.backbeat':'Contretemps|Touchez entre les temps, jamais sur un temps', 'p.chorus':'L’une d’elles ne tient pas son tempo', 'chorus.lane':'Ligne {n}', 'm.chorus':'Chœur|Des tempos réguliers, et un qui ne l’est pas', 'p.bridge':'{n} planches posées — atteignez l’autre rive', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Eau libre, colonne {x} ligne {y}, touchez pour poser une planche', 'bridge.plank':'Une planche, colonne {x} ligne {y}, touchez pour la retirer', 'm.bridge':'Pont|Posez des planches d’une rive à l’autre — elles sont comptées', 'p.weave':'Encore {n} cases fausses', 'weave.want':'Le motif à reproduire', 'weave.over':'Dessus, colonne {x} ligne {y}', 'weave.under':'Dessous, colonne {x} ligne {y}', 'm.weave':'Tissage|Chaque touche tire toute une ligne et une colonne — reproduisez le tissu',
-    'play.startHere':'Commencez ici', 'play.pickMode':'Choisir un mode', 'play.pickSub':'Les {n}, par famille', 'daily.subShort':'Une de chaque famille', 'daily.today':'Les douze du jour', 'daily.done':'Fait aujourd’hui', 'daily.streakN':'Série de {n} jours', 'play.carryOn':'Reprendre', 'play.carryBest':'Votre record {n}', 'why.new':'Jamais joué', 'why.star':'Presque une étoile', 'why.rare':'Délaissé', 'why.wild':'Au hasard',
+    'play.startHere':'Commencez ici', 'play.pickMode':'Choisir un mode', 'play.pickSub':'Les {n}, par famille', 'daily.subShort':'Une de chaque famille', 'daily.today':'Les douze du jour', 'daily.done':'Fait aujourd’hui', 'daily.streakN':'Série de {n} jours', 'play.carryOn':'Reprendre', 'play.carryBest':'Votre record {n}', 'why.new':'Jamais joué', 'why.new2':'Coup d’essai', 'why.new3':'Pas encore fait', 'why.new4':'Pour découvrir', 'why.star':'Presque une étoile', 'why.star2':'Si proche', 'why.star3':'Encore un effort', 'why.star4':'Un dernier coup', 'why.rare':'Délaissé', 'why.rare2':'Oublié depuis longtemps', 'why.rare3':'Prend la poussière', 'why.rare4':'Trop mis de côté', 'why.wild':'Au hasard', 'why.wild2':'Pour changer', 'why.wild3':'Un peu de variété', 'why.wild4':'Coup de dé',
     'wc.lead':'{n} petits casse-têtes. Celui qui est devant vous change à chaque manche.', 'wc.p1':'Soixante secondes par partie', 'wc.p2':'Un casse-tête différent à chaque manche', 'wc.p3':'Une erreur coûte du temps — une série rapporte', 'wc.change':'Changer', 'wc.start':'Lancer votre première partie', 'wc.look':'Jeter un œil d’abord',
     'mix.tapes':'Vos playlists', 'mix.name':'Nommer cette playlist', 'mix.share':'Partager cette playlist', 'mix.delete':'Supprimer cette playlist', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Nouvelle', 'mix.paste':'Coller un code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Supprimer « {name} » ?', 'mix.keep':'Garder', 'mix.deleteIt':'Supprimer', 'mix.shareText':'Ma playlist Dopamine Drop « {name} » — {n} modes. Collez ce code dans l’onglet Mix : {code}', 'mix.importTitle':'Ajouter une playlist', 'mix.importSub':'Collez un code qu’on vous a envoyé. Il contient un nom et une liste de modes, rien d’autre.', 'mix.importAdd':'Ajouter', 'mix.importBad':'Aucun code de playlist là-dedans. Collez tout le message — le code commence par DD1.', 'mix.importOk':'« {name} » ajoutée.', 'mix.importN':'{n} modes.', 'mix.importN1':'Un mode.', 'mix.importDropped':'{n} de ses modes n’existent pas dans cette version et ont été écartés.', 'mix.importDropped1':'Un de ses modes n’existe pas dans cette version et a été écarté.',
     'p.rampFast':'Écoutez — ça accélère', 'p.rampSlow':'Écoutez — ça ralentit', 'p.rampGo':'Restez sur le temps — encore {n}', 'ramp.pad':'Touchez sur chaque temps', 'm.ramp':'Accélération|Le tempo bouge — restez dessus',
@@ -3802,7 +3809,7 @@ const STRINGS = {
     'daily.streak':'Racha de {n} días', 'daily.streak1':'Racha empezada hoy', 'daily.share':'Dopamine Drop — Reto diario {d}: {a}/{b} resueltos por {n} puntos, día {s} de mi racha.', 'btn.share':'Compartir', 'daily.copied':'Copiado',
     'stats.filter':'Filtrar la lista de modos', 'stats.fAll':'Todos', 'stats.fPlayed':'Jugados', 'stats.fNew':'Sin probar', 'stats.allPlayed':'Has jugado todos los modos al menos una vez.', 'stats.noneYet':'Aquí no hay nada — juega un Maratón y aparecerá una puntuación.',
     'p.bbListen':'Escucha — dos compases y los huecos son tuyos', 'p.bbPlay':'Toca entre los golpes — quedan {n}', 'bb.pad':'Toca entre los golpes', 'm.backbeat':'Contratiempo|Toca entre los golpes, nunca sobre uno', 'p.chorus':'Una de ellas no mantiene su tempo', 'chorus.lane':'Fila {n}', 'm.chorus':'Coro|Tempos estables, y uno que no lo es', 'p.bridge':'{n} tablones puestos — llega a la otra orilla', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Agua abierta, columna {x} fila {y}, toca para poner un tablón', 'bridge.plank':'Un tablón, columna {x} fila {y}, toca para quitarlo', 'm.bridge':'Puente|Pon tablones de orilla a orilla — están contados', 'p.weave':'Quedan {n} casillas mal', 'weave.want':'El patrón que hay que igualar', 'weave.over':'Encima, columna {x} fila {y}', 'weave.under':'Debajo, columna {x} fila {y}', 'm.weave':'Telar|Cada toque tira de toda una fila y columna — iguala la tela',
-    'play.startHere':'Empieza aquí', 'play.pickMode':'Elige un modo', 'play.pickSub':'Los {n}, por familia', 'daily.subShort':'Uno de cada familia', 'daily.today':'Los doce de hoy', 'daily.done':'Jugado hoy', 'daily.streakN':'Racha de {n} días', 'play.carryOn':'Continuar', 'play.carryBest':'Tu récord {n}', 'why.new':'Sin probar', 'why.star':'Cerca de una estrella', 'why.rare':'Olvidado', 'why.wild':'Al azar',
+    'play.startHere':'Empieza aquí', 'play.pickMode':'Elige un modo', 'play.pickSub':'Los {n}, por familia', 'daily.subShort':'Uno de cada familia', 'daily.today':'Los doce de hoy', 'daily.done':'Jugado hoy', 'daily.streakN':'Racha de {n} días', 'play.carryOn':'Continuar', 'play.carryBest':'Tu récord {n}', 'why.new':'Sin probar', 'why.new2':'Aún sin jugar', 'why.new3':'Primera vez', 'why.new4':'Para descubrir', 'why.star':'Cerca de una estrella', 'why.star2':'Tan cerca', 'why.star3':'Ya casi', 'why.star4':'Un empujón más', 'why.rare':'Olvidado', 'why.rare2':'Hace tiempo', 'why.rare3':'Cogiendo polvo', 'why.rare4':'Muy descuidado', 'why.wild':'Al azar', 'why.wild2':'Para variar', 'why.wild3':'Un poco de variedad', 'why.wild4':'Tirada de dados',
     'wc.lead':'{n} pequeños rompecabezas. El que tienes delante cambia en cada ronda.', 'wc.p1':'Sesenta segundos por partida', 'wc.p2':'Un rompecabezas distinto cada ronda', 'wc.p3':'Un fallo cuesta tiempo — una racha paga', 'wc.change':'Cambiar', 'wc.start':'Empieza tu primera partida', 'wc.look':'Echar un vistazo primero',
     'mix.tapes':'Tus listas', 'mix.name':'Nombra esta lista', 'mix.share':'Compartir esta lista', 'mix.delete':'Borrar esta lista', 'mix.untitled':'Lista {n}', 'mix.newTape':'+ Nueva', 'mix.paste':'Pegar un código', 'mix.metaTape':'{name} · {n} modos', 'mix.delConfirm':'¿Borrar «{name}»?', 'mix.keep':'Conservar', 'mix.deleteIt':'Borrar', 'mix.shareText':'Mi lista de Dopamine Drop «{name}» — {n} modos. Pega este código en la pestaña Mix: {code}', 'mix.importTitle':'Añadir una lista', 'mix.importSub':'Pega un código que te hayan enviado. Lleva un nombre y una lista de modos, nada más.', 'mix.importAdd':'Añadirla', 'mix.importBad':'Ahí no hay ningún código de lista. Pega el mensaje entero — el código empieza por DD1.', 'mix.importOk':'Añadida «{name}».', 'mix.importN':'{n} modos.', 'mix.importN1':'Un modo.', 'mix.importDropped':'{n} de sus modos no están en esta versión y se han dejado fuera.', 'mix.importDropped1':'Uno de sus modos no está en esta versión y se ha dejado fuera.',
     'p.rampFast':'Escucha — está acelerando', 'p.rampSlow':'Escucha — está frenando', 'p.rampGo':'Sigue el pulso — quedan {n}', 'ramp.pad':'Toca en cada pulso', 'm.ramp':'Rampa|El tempo se mueve — sigue con él',
@@ -3947,7 +3954,7 @@ const STRINGS = {
     'daily.streak':'{n} Tage in Folge', 'daily.streak1':'Serie heute begonnen', 'daily.share':'Dopamine Drop — Tagesrunde {d}: {a}/{b} gelöst für {n} Punkte, Tag {s} meiner Serie.', 'btn.share':'Teilen', 'daily.copied':'Kopiert',
     'stats.filter':'Modusliste filtern', 'stats.fAll':'Alle', 'stats.fPlayed':'Gespielt', 'stats.fNew':'Ungespielt', 'stats.allPlayed':'Du hast jeden Modus mindestens einmal gespielt.', 'stats.noneYet':'Hier ist noch nichts — spiel einen Marathon und ein Wert erscheint.',
     'p.bbListen':'Hör zu — zwei Takte, dann gehören dir die Lücken', 'p.bbPlay':'Zwischen die Schläge tippen — noch {n}', 'bb.pad':'Zwischen die Schläge tippen', 'm.backbeat':'Nachschlag|Tippe zwischen die Schläge, nie auf einen', 'p.chorus':'Eine davon hält ihr Tempo nicht', 'chorus.lane':'Zeile {n}', 'm.chorus':'Chor|Gleichmäßige Tempi, und eines, das keines hält', 'p.bridge':'{n} Planken gelegt — erreiche das andere Ufer', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Offenes Wasser, Spalte {x} Zeile {y}, tippen zum Planken legen', 'bridge.plank':'Eine Planke, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Brücke|Lege Planken von Ufer zu Ufer — sie sind gezählt', 'p.weave':'Noch {n} Felder falsch', 'weave.want':'Das Muster, das passen muss', 'weave.over':'Oben, Spalte {x} Zeile {y}', 'weave.under':'Unten, Spalte {x} Zeile {y}', 'm.weave':'Weben|Jeder Tipp zieht eine ganze Zeile und Spalte — triff das Tuch',
-    'play.startHere':'Fang hier an', 'play.pickMode':'Modus wählen', 'play.pickSub':'Alle {n}, nach Familie', 'daily.subShort':'Eins aus jeder Familie', 'daily.today':'Die zwölf von heute', 'daily.done':'Heute gespielt', 'daily.streakN':'{n} Tage in Folge', 'play.carryOn':'Weiter', 'play.carryBest':'Dein Bestwert {n}', 'why.new':'Ungespielt', 'why.star':'Fast ein Stern', 'why.rare':'Vergessen', 'why.wild':'Zufall',
+    'play.startHere':'Fang hier an', 'play.pickMode':'Modus wählen', 'play.pickSub':'Alle {n}, nach Familie', 'daily.subShort':'Eins aus jeder Familie', 'daily.today':'Die zwölf von heute', 'daily.done':'Heute gespielt', 'daily.streakN':'{n} Tage in Folge', 'play.carryOn':'Weiter', 'play.carryBest':'Dein Bestwert {n}', 'why.new':'Ungespielt', 'why.new2':'Noch nie probiert', 'why.new3':'Erstes Mal', 'why.new4':'Zum Entdecken', 'why.star':'Fast ein Stern', 'why.star2':'So nah dran', 'why.star3':'Nur noch ein Schritt', 'why.star4':'Ein letzter Versuch', 'why.rare':'Vergessen', 'why.rare2':'Lange her', 'why.rare3':'Verstaubt', 'why.rare4':'Zu lange liegen gelassen', 'why.wild':'Zufall', 'why.wild2':'Zur Abwechslung', 'why.wild3':'Etwas Abwechslung', 'why.wild4':'Wurf der Würfel',
     'wc.lead':'{n} kleine Rätsel. Das vor dir wechselt jede Runde.', 'wc.p1':'Sechzig Sekunden pro Runde', 'wc.p2':'Jede Runde ein anderes Rätsel', 'wc.p3':'Ein Fehler kostet Zeit — eine Serie zahlt sich aus', 'wc.change':'Ändern', 'wc.start':'Starte deine erste Runde', 'wc.look':'Erst mal umsehen',
     'mix.tapes':'Deine Playlists', 'mix.name':'Diese Playlist benennen', 'mix.share':'Diese Playlist teilen', 'mix.delete':'Diese Playlist löschen', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Neu', 'mix.paste':'Code einfügen', 'mix.metaTape':'{name} · {n} Modi', 'mix.delConfirm':'„{name}“ löschen?', 'mix.keep':'Behalten', 'mix.deleteIt':'Löschen', 'mix.shareText':'Meine Dopamine-Drop-Playlist „{name}“ — {n} Modi. Füge diesen Code im Mix-Tab ein: {code}', 'mix.importTitle':'Playlist hinzufügen', 'mix.importSub':'Füge einen Code ein, den dir jemand geschickt hat. Er enthält einen Namen und eine Modusliste, sonst nichts.', 'mix.importAdd':'Hinzufügen', 'mix.importBad':'Darin steckt kein Playlist-Code. Füge die ganze Nachricht ein — der Code beginnt mit DD1.', 'mix.importOk':'„{name}“ hinzugefügt.', 'mix.importN':'{n} Modi.', 'mix.importN1':'Ein Modus.', 'mix.importDropped':'{n} ihrer Modi gibt es in dieser Version nicht und wurden weggelassen.', 'mix.importDropped1':'Einen ihrer Modi gibt es in dieser Version nicht, er wurde weggelassen.',
     'p.rampFast':'Hör zu — es wird schneller', 'p.rampSlow':'Hör zu — es wird langsamer', 'p.rampGo':'Bleib im Takt — noch {n}', 'ramp.pad':'Auf jeden Schlag tippen', 'm.ramp':'Rampe|Das Tempo bewegt sich — bleib drauf',
@@ -12748,7 +12755,7 @@ function paintPlay(){
     c.style.setProperty('--cink', CAT_INK[catOf(p.id)] || 'var(--flare)');
     const why = c.querySelector('.why');
     why.hidden = !anyPlayed;
-    why.textContent = t('why.' + p.why);
+    why.textContent = t('why.' + p.why + (p.whyVariant ? p.whyVariant + 1 : ''));
     c.classList.toggle('why-on', anyPlayed);
     c.onclick = () => startRun('marathon', p.id);
   });
@@ -12786,6 +12793,20 @@ function quickPicks(){
   const pool = shuffle(MODE_IDS.slice(), rnd);
   for (const id of pool) if (save.marathon[id]) add(id, 'wild');
   for (const id of pool) add(id, 'new');
+
+  /* Each reason has one fixed word, and a well-worn account fills two or
+     three of its four slots from the same fallback — a mastered player can
+     see "Wildcard" three times on one screen, every day, forever. Four
+     phrasings per reason (see the why.* keys), chosen from the same per-day
+     seed that already picked the modes: the wording rotates day to day, and
+     when a render does carry the same reason twice, each slot gets a
+     different phrasing rather than the identical word repeated. */
+  const byWhy = {};
+  out.forEach(p => (byWhy[p.why] || (byWhy[p.why] = [])).push(p));
+  Object.values(byWhy).forEach(group => {
+    const order = shuffle([0, 1, 2, 3], rnd);
+    group.forEach((p, i) => { p.whyVariant = order[i % order.length]; });
+  });
   return out;
 }
 
@@ -12940,6 +12961,10 @@ function paintTapeStrip(){
   });
 }
 
+/* Reused across repaints so a tap's own guard survives the repaint it
+   triggers — see the comment inside paintMix(). Bounded by the mode and
+   category counts, same as cardCache above. */
+const mixRowCache = new Map(), mixAllCache = new Map();
 function paintMix(){
   const tape = activeTape();
   paintTapeStrip();
@@ -12960,6 +12985,16 @@ function paintMix(){
   const host = $('mixGrid');
   host.replaceChildren();
   const pick = new Set(chosen);
+  /* Every tap here used to rebuild the whole grid from scratch, the same
+     instant it fired: pointerdown toggled the mode and repainted, and the
+     click that follows a beat later — the second half of the same real tap —
+     landed on a brand-new button standing in the old one's place, with its
+     own dedup guard never having fired. So it ran the handler again and
+     undid the tap. Two in a row looked identical to zero: you could not add
+     a second mode without the first already having cancelled itself out.
+     Reused, cached nodes — updated in place instead of replaced — are the
+     same fix modeCard already relies on for the Modes tab, which never had
+     this problem. */
   catsPresent().forEach(c => {
     const ids = idsInCat(c);
     const inCat = ids.filter(id => pick.has(id)).length;
@@ -12971,27 +13006,44 @@ function paintMix(){
     head.querySelector('u').textContent = inCat + '/' + ids.length;
     /* One tap takes or leaves a whole family, which is the bulk action worth
        having — unlike taking all sixty-six, which just rebuilds Shuffle. */
-    const all = mk('button','pickall');
-    all.type = 'button';
-    all.textContent = inCat === ids.length ? t('mix.none') : t('mix.all');
-    all.setAttribute('aria-label', (inCat === ids.length ? t('mix.none') : t('mix.all'))
-      + ' — ' + t('cat.' + c));
-    onTap(all, () => { const add = inCat < ids.length;
-      ids.forEach(id => { if (pick.has(id) !== add) toggleMix(id); });
-      sfx.tap(); buzz('tap'); paintMix(); paintPlay(); });
+    let all = mixAllCache.get(c);
+    if (!all){
+      all = mk('button','pickall');
+      all.type = 'button';
+      /* ids is fixed for this button's whole life; how many are chosen is
+         read fresh on every tap rather than captured at build time, so a
+         selection made since this button was cached can't be undone by a
+         stale count. */
+      onTap(all, () => {
+        const cur = new Set(tapeModes());
+        const add = ids.filter(id => cur.has(id)).length < ids.length;
+        ids.forEach(id => { if (cur.has(id) !== add) toggleMix(id); });
+        sfx.tap(); buzz('tap'); paintMix(); paintPlay();
+      });
+      mixAllCache.set(c, all);
+    }
+    const allLabel = inCat === ids.length ? t('mix.none') : t('mix.all');
+    all.textContent = allLabel;
+    all.setAttribute('aria-label', allLabel + ' — ' + t('cat.' + c));
     head.appendChild(all);
     sec.appendChild(head);
     const grid = mk('div','pickgrid');
     ids.forEach(id => {
-      const b2 = mk('button','pickrow' + (pick.has(id) ? ' on' : ''));
-      b2.type = 'button';
+      let b2 = mixRowCache.get(id);
+      if (!b2){
+        b2 = mk('button','pickrow');
+        b2.type = 'button';
+        b2.innerHTML = '<span class="g"></span><b></b><i class="tick"></i>';
+        b2.querySelector('.g').innerHTML = MODES[id].glyph;
+        onTap(b2, () => { toggleMix(id); sfx.tap(); buzz('tap'); paintMix(); paintPlay(); });
+        mixRowCache.set(id, b2);
+      }
+      const on = pick.has(id);
+      b2.className = 'pickrow' + (on ? ' on' : '');
       b2.style.setProperty('--cink', CAT_INK[c]);
-      b2.innerHTML = '<span class="g"></span><b></b><i class="tick"></i>';
-      b2.querySelector('.g').innerHTML = MODES[id].glyph;
       b2.querySelector('b').textContent = modeName(id);
-      b2.setAttribute('aria-pressed', pick.has(id) ? 'true' : 'false');
+      b2.setAttribute('aria-pressed', on ? 'true' : 'false');
       b2.setAttribute('aria-label', modeName(id) + ' — ' + t('cat.' + c));
-      onTap(b2, () => { toggleMix(id); sfx.tap(); buzz('tap'); paintMix(); paintPlay(); });
       grid.appendChild(b2);
     });
     sec.appendChild(grid);

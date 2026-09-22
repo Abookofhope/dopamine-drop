@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const probes = ['settings.mjs', 'board.mjs', 'home.mjs', 'sweep.mjs'];
+const probes = ['settings.mjs', 'board.mjs', 'mix.mjs', 'home.mjs', 'sweep.mjs'];
 
 for (const p of probes){
   console.log(`\n=== ${p} ${'='.repeat(Math.max(0, 60 - p.length))}`);
