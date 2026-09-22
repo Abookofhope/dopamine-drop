@@ -9442,18 +9442,35 @@ const MODES = {
     name:'Bridge', blurb:'Lay planks bank to bank — you have only so many', cat:'make', par:14000, bonus:4000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 15h4M18 15h4" stroke="#C08BFF" stroke-width="2" stroke-linecap="round"/><rect x="7" y="13" width="4" height="4" rx="1" fill="#C08BFF"/><rect x="13" y="13" width="4" height="4" rx="1" fill="#C08BFF" opacity=".45"/><path d="M4 15v5M20 15v5" stroke="#C08BFF" stroke-width="1.6" stroke-linecap="round" opacity=".5"/><path d="M6 9h12" stroke="#C08BFF" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2.5 2.5" opacity=".6"/></svg>',
     build(ctx){
-      const g = 5;
+      /* The board used to be five wide forever, and the walk's own turns were
+         pure luck at every level — a straight, one-column-off crossing was as
+         likely at level 40 as level 0, and rocks were the only thing that
+         ever changed. A wider board and a walk that has to actually earn its
+         turns are what the size and the level are supposed to be buying. */
+      const g = clamp(5 + Math.floor(ctx.level/14), 5, 6);
       /* The crossing is WALKED before it is drawn, so one always exists and the
          plank allowance handed out is the count of a route that genuinely
-         works — never a number guessed at a board nobody solved. */
-      const sy = Math.floor(ctx.rnd()*g);
-      let y = sy;
-      const path = [[0, y]];
-      for (let x = 1; x < g; x++){
-        path.push([x, y]);
-        const ny = clamp(y + (Math.floor(ctx.rnd()*3) - 1), 0, g-1);
-        const step = ny > y ? 1 : -1;
-        while (y !== ny){ y += step; path.push([x, y]); }
+         works — never a number guessed at a board nobody solved. Rerolled
+         until it turns enough times: an amble that drifts one column at a
+         time never reads as a decision, however long it happens to run. */
+      const minTurns = clamp(1 + Math.floor(ctx.level/8), 1, 3);
+      let sy, y, path;
+      for (let attempt = 0; attempt < 40; attempt++){
+        sy = Math.floor(ctx.rnd()*g);
+        y = sy;
+        path = [[0, y]];
+        let turns = 0, lastStep = 0;
+        for (let x = 1; x < g; x++){
+          path.push([x, y]);
+          /* A bigger single swing reads as a real choice; a board that only
+             ever drifts by one row never does, however often it turns. */
+          const reach = ctx.level >= 10 && ctx.rnd() < 0.35 ? 2 : 1;
+          const ny = clamp(y + (Math.floor(ctx.rnd()*(2*reach+1)) - reach), 0, g-1);
+          const step = ny > y ? 1 : ny < y ? -1 : 0;
+          if (step && step !== lastStep){ turns++; lastStep = step; }
+          while (y !== ny){ y += step; path.push([x, y]); }
+        }
+        if (turns >= minTurns) break;
       }
       const kk = (x,yy) => yy*g + x;
       const onPath = new Set(path.map(c => kk(c[0], c[1])));
@@ -9462,7 +9479,7 @@ const MODES = {
       const free = [];
       for (let i = 0; i < g*g; i++) if (!onPath.has(i)) free.push(i);
       const rocks = new Set(shuffle(free, ctx.rnd)
-        .slice(0, Math.min(free.length, 3 + Math.min(5, Math.floor(ctx.level/5)))));
+        .slice(0, Math.min(free.length, 3 + Math.min(7, Math.floor(ctx.level/4)))));
 
       const need = path.length - 2;         /* the banks are already there */
 
