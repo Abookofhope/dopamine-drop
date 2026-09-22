@@ -1741,6 +1741,12 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .mixbar button{flex:1;border-radius:var(--r-md);padding:12px;font-size:14px;font-weight:650}
 /* The count belongs beside the button you press when you are done, not inside
    a paragraph two screens up. */
+/* How far through a staged round you are. It is the only thing on screen that
+   says this round is more than one answer long. */
+.stagepips{display:flex;gap:6px;justify-content:center;margin-top:14px}
+.stagepips i{display:block;width:8px;height:8px;border-radius:50%;
+  border:1.5px solid var(--edge);transition:background var(--t-med),border-color var(--t-med)}
+.stagepips i.on{background:var(--flare);border-color:transparent}
 .mixbar .count{flex:none;font-family:var(--f-data);font-size:12px;font-weight:700;
   color:var(--cream);padding-right:2px;white-space:nowrap}
 .mixbar .count.short{color:var(--haze)}
@@ -2981,7 +2987,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.41.0';
+const VERSION_TAG = 'v0.42.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4074,6 +4080,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.42.0', date:'2026-09-22', items:[
+    'Four modes were crumbs rather than snacks. Odd One Out was one tap at 2.6 seconds, Color Trap one word at 2.4 — a reflex test with a scoreboard rather than a round. Worse, since a solve now pays back the time it saved against par, the shortest modes paid back the least for playing them well, which is exactly backwards.',
+    'They run several boards inside one round now, with pips under the board saying how far through you are. A miss still ends it on the spot; only winning moves you on. Odd One Out goes from 2.6 seconds to between 5 and 10 depending on level, Color Trap from 2.4 to between 7 and 12, Count Fast from 4.2 to between 8 and 13.',
+    'Snap Order was already long — three bubbles at the start, twelve later — but its par stayed at three bubbles’ worth forever, so a twelve-bubble round was being judged against a third of the time it honestly takes. Par follows the board now, at the same 1.27 seconds a bubble the original number implied: 3.8s early, 15.2s late.',
+    'Underneath both: par can now follow the level. It is a static number on a mode while difficulty scales with the player, so it was only ever honest at one point on the curve.',
+  ] },
   { v:'0.41.0', date:'2026-09-22', items:[
     'A run that just stops is a run nobody repeats. One that stopped forty points short is a run you play again right now — so the results screen says how close it was, with a bar showing this run against your best, and the gap reads as a visible sliver rather than a number you have to do arithmetic on. Under one more solve’s worth of points it says so outright.',
     'It only appears when it was actually close. Being told you were four thousand short is not encouragement, it is a scoreline, so under sixty per cent of your best it stays quiet — and it never appears when you beat your best, because that screen already has its own thing to say.',
@@ -4877,6 +4889,9 @@ const MODES = {
   /* ── 1. Odd One Out — visual discrimination, ramps by hue delta ──────── */
   odd: {
     name:'Odd One Out', blurb:'Spot the tile that doesn’t match', cat:'focus', par:2600, bonus:1200,
+    /* One tap was not a round, it was a reflex test with a scoreboard. Three
+       boards in a row is the same puzzle asked properly. */
+    stages: lvl => clamp(2 + Math.floor(lvl/9), 2, 4),
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="13" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="3" y="13" width="8" height="8" rx="2" fill="#6C6191"/><rect x="13" y="13" width="8" height="8" rx="2" fill="#FF5B39"/></svg>',
     build(ctx){
       const n = clamp(2 + Math.floor(ctx.level/4), 2, 6);
@@ -4906,6 +4921,11 @@ const MODES = {
   /* ── 2. Snap Order — visual search under sequence pressure ───────────── */
   order: {
     name:'Snap Order', blurb:'Tap the numbers in order, fast', cat:'focus', par:3800, bonus:1500,
+    /* This one was already long — three bubbles at level zero, twelve later —
+       but par stayed at three bubbles' worth forever, so a twelve-bubble round
+       was judged against a third of the time it takes. Par follows the board
+       now, at the same 1.27s a bubble the original number implied. */
+    parAt: lvl => 1270 * clamp(3 + Math.floor(lvl/2), 3, 12),
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="18" r="3.2" fill="#FF5B39"/><circle cx="12" cy="11" r="3.2" fill="#6C6191"/><circle cx="19" cy="5" r="3.2" fill="#6C6191"/><path d="M7 16.2 10.2 13M14 9.2 17 6.6" stroke="#6C6191" stroke-width="1.6" stroke-linecap="round"/></svg>',
     build(ctx){
       const n = clamp(3 + Math.floor(ctx.level/2), 3, 12);
@@ -4955,6 +4975,9 @@ const MODES = {
   /* ── 3. Color Trap — the Stroop task: read the ink, not the word ─────── */
   stroop: {
     name:'Color Trap', blurb:'Match the ink colour, ignore the word', cat:'focus', par:2400, bonus:1200,
+    /* The interference only bites once you are going fast, and one word is
+       over before that happens. */
+    stages: lvl => clamp(3 + Math.floor(lvl/10), 3, 5),
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="10" r="6" fill="#FF5B39" opacity=".85"/><circle cx="15" cy="14" r="6" fill="#33E6C8" opacity=".8"/></svg>',
     build(ctx){
       const k = clamp(3 + Math.floor(ctx.level/6), 3, 6);
@@ -5218,6 +5241,7 @@ const MODES = {
   /* ── 7. Count Fast — enumeration, an axis nothing else touches ───────── */
   count: {
     name:'Count Fast', blurb:'Count the target before the clock does', cat:'numbers', par:4200, bonus:1600,
+    stages: lvl => clamp(2 + Math.floor(lvl/14), 2, 3),
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="8" r="3" fill="#FF5B39"/><circle cx="16" cy="7" r="3" fill="#6C6191"/><circle cx="9" cy="16" r="3" fill="#6C6191"/><circle cx="17" cy="16" r="3" fill="#FF5B39"/></svg>',
     build(ctx){
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0,3);
@@ -11794,6 +11818,47 @@ function celebrateLevel(level){
    raises the ceiling, so a perk cannot out-score the game, only get there
    sooner. */
 const MULT_STEP = [4, 3.2, 2.7, 2.3];
+/* par is a static number on a mode, but how hard a round is scales with the
+   level — so par is only honest at one point on the curve. Two escapes, both
+   optional: parAt(level) for a mode whose own content grows, and stages(level)
+   for a mode that is one decision long and needs several to be a round at all.
+   A mode with neither behaves exactly as before. */
+const parOf = (mode, lvl) =>
+  (mode.parAt ? mode.parAt(lvl) : mode.par) * (mode.stages ? mode.stages(lvl) : 1);
+
+/* Some modes are a single decision. At two and a half seconds they are crumbs
+   rather than snacks — and since a solve now pays back the time it saved
+   against par, the shortest modes paid back the least for playing them well,
+   which is backwards. This runs the same build several times inside one round,
+   so the round is honestly as long as its par claims. A miss still ends it on
+   the spot; only winning moves you on. */
+function staged(mode, ctx, want){
+  let at = 0;
+  const pips = mk('div','stagepips');
+  for (let i = 0; i < want; i++) pips.appendChild(mk('i'));
+  const mark = () => Array.from(pips.children)
+    .forEach((d, i) => d.classList.toggle('on', i < at));
+  const one = () => {
+    mode.build(Object.assign({}, ctx, {
+      win: node => {
+        at++; mark();
+        if (at >= want) return ctx.win(node);
+        sfx.good(1 + at); buzz('tap');
+        /* A beat to see it land, then the next board in the same round. */
+        ctx.after(motionOff() ? 60 : 270, () => {
+          if (!roundLive) return;
+          ctx.surface.replaceChildren();
+          ctx.surface.appendChild(pips);
+          one();
+        });
+      }
+    }));
+    ctx.surface.appendChild(pips);
+    mark();
+  };
+  one();
+}
+
 const multiplier = () => run
   ? clamp(1 + Math.floor(run.streak / MULT_STEP[Perk.lv('zeal')]), 1, 5) : 1;
 
@@ -12043,12 +12108,15 @@ function nextRound(){
   showHow(id);
   roundLive = true;
   roundStart = performance.now();
+  /* Settled once per round, because the round clock, the mode's own difficulty
+     and the speed the solve is judged at all have to agree on it. */
+  run.lvl = Prog.effectiveLevel(run.solved, run.playerLevel);
   /* Generous on purpose: par is how long the mode expects to take, and this is
      more than twice that, easing further as the player's level raises pressure.
      It is a floor under dawdling, not a second difficulty dial. */
   if (k.roundClock){
     run.roundLimit = Math.max(4000,
-      Math.round(mode.par * 2.6 * run.pressure * (1 + Perk.step('patience')/100)));
+      Math.round(parOf(mode, run.lvl) * 2.6 * run.pressure * (1 + Perk.step('patience')/100)));
     run.roundLeft = run.roundLimit;
     run.timedOut = false;
     el.roundBar.hidden = false;
@@ -12057,9 +12125,9 @@ function nextRound(){
   } else {
     el.roundBar.hidden = true;
   }
-  mode.build({
+  const ctx = {
     surface: el.surface,
-    level: Prog.effectiveLevel(run.solved, run.playerLevel),
+    level: run.lvl,
     rnd: run.rnd,
     after: later,
     /* Content that should not repeat goes through here rather than pick(). */
@@ -12076,7 +12144,9 @@ function nextRound(){
       el.prompt.textContent = txt; el.prompt.className = 'prompt'; },
     win: node => resolve(true, node),
     miss: node => resolve(false, node)
-  });
+  };
+  const want = mode.stages ? Math.max(1, mode.stages(run.lvl)) : 1;
+  if (want > 1) staged(mode, ctx, want); else mode.build(ctx);
 }
 
 function resolve(ok, node){
@@ -12091,7 +12161,7 @@ function resolve(ok, node){
   if (ok){
     const multBefore = multiplier();
     const elapsed = performance.now() - roundStart;
-    const speed = clamp(1 - elapsed / (mode.par * run.pressure), 0, 1);
+    const speed = clamp(1 - elapsed / (parOf(mode, run.lvl) * run.pressure), 0, 1);
     const pts = Math.round((100 + 130*speed) * multiplier());
     run.solved++; run.streak++;
     run.bestStreak = Math.max(run.bestStreak, run.streak);
@@ -12114,7 +12184,7 @@ function resolve(ok, node){
          Banked before the lid is recalculated, so a solve that lifts the lid
          also gets to use the room it just made. */
       const tierBefore = capTier(run.solved - 1);
-      const saved = speed * mode.par * run.pressure;
+      const saved = speed * parOf(mode, run.lvl) * run.pressure;
       run.time = Math.min(capOf(k), run.time + mode.bonus*run.pressure + saved);
       if (capTier(run.solved) > tierBefore && capOf(k) < CAP_MAX + 1){
         el.stage.classList.add('lidup');
