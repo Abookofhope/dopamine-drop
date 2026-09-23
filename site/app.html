@@ -2003,10 +2003,16 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 @keyframes cdpop{0%{transform:scale(.5);opacity:0}40%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:1}}
 
 /* ── Paused ───────────────────────────────────────────────────────────── */
+/* Fixed to the viewport, not absolute within #surface: #surface is a square
+   (aspect-ratio:1), so at a narrow, short phone it is barely 290px tall —
+   comfortable for the original three lines, not for a title, a mode
+   reminder, two buttons and the settings row below all fighting the same
+   290px. The screen itself has far more height than the square board ever
+   claims; #levelup already uses this exact pattern for the same reason. */
 .pausebox{
-  position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;
+  position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:10px;padding:22px;
-  border-radius:var(--r-lg);background:#0D0918f2;text-align:center;
+  background:#0D0918f2;text-align:center;
 }
 .pausebox b{font-family:var(--f-disp);font-weight:800;font-size:clamp(24px,7vw,32px);color:var(--cream)}
 .pausebox > small{font-size:11.5px;color:var(--haze);line-height:1.45;max-width:30ch;margin-bottom:6px}
@@ -2020,6 +2026,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .pauserule small{font-size:11.5px;color:var(--cream);opacity:.85;line-height:1.4;text-align:center}
 .pausebox .cta{width:100%;max-width:240px;justify-content:center;padding:14px 18px;font-size:15px}
 .pausebox .ghost{width:100%;max-width:240px;padding:11px 18px;font-size:13px}
+.pausequick{display:flex;gap:18px;margin-top:8px}
+.pauseswrow{display:flex;align-items:center;gap:9px;padding:8px;cursor:pointer}
+.pauseswrow small{font-size:11px;color:var(--haze);font-weight:600}
 
 /* ── The mode changed ─────────────────────────────────────────────────── */
 .swap{
@@ -11953,6 +11962,13 @@ function clearBoard(){
   el.roundBar.hidden = true;
   el.surface.innerHTML = '';
   Array.from(el.surface.parentNode.querySelectorAll('.budget')).forEach(n => n.remove());
+  /* Lives on el.stage now, not inside #surface — paint containment there
+     clips a position:fixed descendant to the board's own square regardless
+     of what its geometry says, so the pause sheet has to escape it entirely
+     to actually cover the screen. el.surface.innerHTML above no longer
+     reaches it; this is the one function every exit path already calls. */
+  const pb = el.stage.querySelector('.pausebox');
+  if (pb) pb.remove();
   clearHow();                       /* quitting mid-round leaves nothing armed */
 }
 function later(ms, fn){ const t = setTimeout(fn, ms); timers.push(t); return t; }
@@ -12630,9 +12646,42 @@ function pauseRun(){
   go.textContent = t('pause.resume');
   const out = mk('button','ghost'); out.type = 'button';
   out.textContent = t('pause.end');
+  /* Sound and haptics are the two things you actually want to reach for
+     mid-run — you paused because a room went quiet, not because you wanted
+     to read a menu. Both were previously three taps away, past the tab
+     bar and into a whole settings screen. Same switch, same wiring as
+     Settings — this is a second place that toggles the same save keys,
+     not a second source of truth for them. */
+  const quick = mk('div','pausequick');
+  [['sound','set.sound'],['haptics','set.vib']].forEach(([key, labelKey]) => {
+    const row = mk('div','pauseswrow');
+    const lab = mk('small'); lab.textContent = t(labelKey);
+    const sw = mk('button','sw'); sw.type = 'button';
+    sw.setAttribute('role','switch');
+    sw.setAttribute('aria-checked', String(!!save[key]));
+    sw.setAttribute('aria-label', t(labelKey));
+    const flip = () => {
+      save[key] = !save[key]; persist();
+      sw.setAttribute('aria-checked', String(save[key]));
+      if (key === 'sound' && save.sound) sfx.tap();
+      if (key === 'haptics' && save.haptics) buzz('good');
+    };
+    sw.addEventListener('click', flip);
+    /* Same reason the Settings row itself is a tap target, not just the
+       switch inside it: a 46x27 control is the thing in this sheet easiest
+       to miss under a thumb reaching to get back into the round. */
+    row.addEventListener('click', ev => { if (!sw.contains(ev.target)) flip(); });
+    row.appendChild(lab); row.appendChild(sw);
+    quick.appendChild(row);
+  });
   box.insertBefore(h, box.firstChild);
-  box.appendChild(sub); box.appendChild(go); box.appendChild(out);
-  el.surface.appendChild(box);
+  box.appendChild(sub); box.appendChild(go); box.appendChild(out); box.appendChild(quick);
+  /* Appended to the stage, not the surface: #surface carries contain:layout
+     paint for its own animation performance, and paint containment clips a
+     fixed-position descendant's rendering to the container's own box no
+     matter what position:fixed's geometry says — the escape from the
+     square board only works if it never lands inside that box at all. */
+  el.stage.appendChild(box);
   go.addEventListener('click', () => { sfx.tap(); resumeRun(); });
   out.addEventListener('click', () => { sfx.tap(); run.paused = false; endRun(); });
   go.focus();
