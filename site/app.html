@@ -1944,6 +1944,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 #surface::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:var(--cool);opacity:0;transition:opacity 180ms ease}
 #surface.flash-win::after{opacity:.16;transition:opacity 60ms ease}
 #surface.flash-bad::after{background:var(--bad);opacity:.2;transition:opacity 60ms ease}
+/* The top multiplier tier already gets the biggest spark burst and float text
+   on every solve from there on — this is the one extra beat for the tap that
+   FIRST reaches it, once a run, since every solve after that already looks
+   the part. A held pulse rather than the flat flash-win tint, so it reads as
+   a bigger event than an ordinary win. */
+#surface.tierglow::after{background:var(--flare);animation:tierglowpulse 700ms cubic-bezier(.2,.8,.3,1)}
+@keyframes tierglowpulse{0%{opacity:0}30%{opacity:.4}100%{opacity:0}}
 /* The moment the lid lifts: the meter is where the news is, so that is where
    it is said. */
 #stage.lidup #hudMeter{box-shadow:0 0 0 2px var(--zap),0 0 18px -4px var(--zap)}
@@ -2119,6 +2126,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   align-self:center;padding:4px 11px;border-radius:999px;background:var(--zap);color:#2A1200;
   font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
 }
+/* Its own colour, not the same gold as a new best — the two can land on the
+   same run (fastest AND cleanest) and stacking two identical pills would
+   read as one badge said twice rather than two different things earned. */
+.newbest.flawless{background:var(--cool);color:#04211C;margin-top:5px}
 .xpstrip{
   flex:none;border-radius:var(--r-md);padding:11px 12px;
   border:1px solid var(--edge-soft);background:var(--ink-3);
@@ -2921,6 +2932,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <span class="big" id="overScore">0</span>
       </div>
       <span class="newbest" id="newBest" data-i18n="over.newBest" hidden>New personal best</span>
+      <span class="newbest flawless" id="flawlessBadge" data-i18n="over.flawless" hidden>Flawless run</span>
       <!-- How close it was. A run that just stops is a run nobody repeats; a run
            that stopped forty points short is a run you play again right now. -->
       <div class="nearmiss" id="nearMiss" hidden>
@@ -3147,7 +3159,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.48.0';
+const VERSION_TAG = 'v0.49.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3400,7 +3412,16 @@ const sfx = {
   bad:  () => tone(196, 0.24, 'sawtooth', 0.045, 0.55),
   over: () => { [420,340,260].forEach((f,i)=>setTimeout(()=>tone(f,0.22,'triangle',0.045,0.92), i*130)); },
   level:() => { [520,660,880].forEach((f,i)=>setTimeout(()=>tone(f,0.26,'triangle',0.05), i*110)); },
-  go:   () => tone(760 * toneShift, 0.14, 'triangle', 0.05)
+  go:   () => tone(760 * toneShift, 0.14, 'triangle', 0.05),
+  /* good() plays on every solve and has to stay small — this plays only on
+     the tap that actually crosses into a new multiplier tier (×3, ×4, ×5),
+     which is a handful of times in a good run rather than every few seconds,
+     so it can afford to be a small fanfare rather than one more blip. A
+     three-note rising arpeggio, one extra step of it lit per tier, in the
+     family's own key like everything else this run. */
+  combo:tier => { const s = toneShift, t = clamp(tier || 3, 3, 5);
+    const notes = [660, 880, 1100, 1320].slice(0, t - 1);
+    notes.forEach((f,i) => setTimeout(() => tone(f * s, 0.11, 'square', 0.045), i*70)); }
 };
 /* Twenty-odd call sites had each picked their own number — 6, 8, 10, 12, 14,
    20, [20,30,20] — so the same event buzzed differently depending on which
@@ -3631,7 +3652,7 @@ const STRINGS = {
     'dlg.exportFailed':'That did not save. Try again.',
     'btn.update':'Update', 'btn.goAgain':'Go again', 'btn.backToMenu':'Back to menu',
     'update.title':'<b>New version ready.</b> Tap to update.',
-    'over.short':'{n} short of your best', 'over.oneMore':'One more solve would have done it', 'over.yourBest':'Your best {n}', 'hud.mult':'Multiplier {m}, {n} more to the next', 'over.newBest':'New personal best', 'over.solved':'Solved', 'over.streak':'Best streak',
+    'over.short':'{n} short of your best', 'over.oneMore':'One more solve would have done it', 'over.yourBest':'Your best {n}', 'hud.mult':'Multiplier {m}, {n} more to the next', 'over.newBest':'New personal best', 'over.flawless':'Flawless run', 'over.solved':'Solved', 'over.streak':'Best streak',
     'over.acc':'Accuracy', 'over.beat':'Beat {n}', 'over.twice':'Can you do it twice?',
     'over.another':'Another round', 'over.levelJump':'Level {a} → {b}',
     'run.ready':'Get ready', 'run.nice':'Nice', 'run.streak':'Streak ×{n}!',
@@ -3794,7 +3815,7 @@ const STRINGS = {
     'dlg.exportFailed':'L’enregistrement a échoué. Réessayez.',
     'btn.update':'Mettre à jour', 'btn.goAgain':'Rejouer', 'btn.backToMenu':'Retour au menu',
     'update.title':'<b>Nouvelle version prête.</b> Touchez pour mettre à jour.',
-    'over.short':'{n} de moins que votre record', 'over.oneMore':'Une réussite de plus et c’était bon', 'over.yourBest':'Votre record {n}', 'hud.mult':'Multiplicateur {m}, encore {n} avant le suivant', 'over.newBest':'Nouveau record', 'over.solved':'Résolus', 'over.streak':'Meilleure série',
+    'over.short':'{n} de moins que votre record', 'over.oneMore':'Une réussite de plus et c’était bon', 'over.yourBest':'Votre record {n}', 'hud.mult':'Multiplicateur {m}, encore {n} avant le suivant', 'over.newBest':'Nouveau record', 'over.flawless':'Partie parfaite', 'over.solved':'Résolus', 'over.streak':'Meilleure série',
     'over.acc':'Précision', 'over.beat':'Battre {n}', 'over.twice':'Deux fois de suite ?',
     'over.another':'Encore une', 'over.levelJump':'Niveau {a} → {b}',
     'run.ready':'Prêt ?', 'run.nice':'Bien', 'run.streak':'Série ×{n} !',
@@ -3957,7 +3978,7 @@ const STRINGS = {
     'dlg.exportFailed':'No se pudo guardar. Inténtalo de nuevo.',
     'btn.update':'Actualizar', 'btn.goAgain':'Otra vez', 'btn.backToMenu':'Volver al menú',
     'update.title':'<b>Nueva versión lista.</b> Toca para actualizar.',
-    'over.short':'{n} por debajo de tu récord', 'over.oneMore':'Con un acierto más lo habrías logrado', 'over.yourBest':'Tu récord {n}', 'hud.mult':'Multiplicador {m}, faltan {n} para el siguiente', 'over.newBest':'Nuevo récord', 'over.solved':'Resueltos', 'over.streak':'Mejor racha',
+    'over.short':'{n} por debajo de tu récord', 'over.oneMore':'Con un acierto más lo habrías logrado', 'over.yourBest':'Tu récord {n}', 'hud.mult':'Multiplicador {m}, faltan {n} para el siguiente', 'over.newBest':'Nuevo récord', 'over.flawless':'Partida perfecta', 'over.solved':'Resueltos', 'over.streak':'Mejor racha',
     'over.acc':'Precisión', 'over.beat':'Supera {n}', 'over.twice':'¿Dos veces seguidas?',
     'over.another':'Otra ronda', 'over.levelJump':'Nivel {a} → {b}',
     'run.ready':'Preparado', 'run.nice':'Bien', 'run.streak':'¡Racha ×{n}!',
@@ -4120,7 +4141,7 @@ const STRINGS = {
     'dlg.exportFailed':'Das Sichern hat nicht geklappt. Bitte erneut versuchen.',
     'btn.update':'Aktualisieren', 'btn.goAgain':'Nochmal', 'btn.backToMenu':'Zum Menü',
     'update.title':'<b>Neue Version bereit.</b> Zum Aktualisieren tippen.',
-    'over.short':'{n} unter deinem Bestwert', 'over.oneMore':'Ein Treffer mehr hätte gereicht', 'over.yourBest':'Dein Bestwert {n}', 'hud.mult':'Multiplikator {m}, noch {n} bis zum nächsten', 'over.newBest':'Neuer Rekord', 'over.solved':'Gelöst', 'over.streak':'Beste Serie',
+    'over.short':'{n} unter deinem Bestwert', 'over.oneMore':'Ein Treffer mehr hätte gereicht', 'over.yourBest':'Dein Bestwert {n}', 'hud.mult':'Multiplikator {m}, noch {n} bis zum nächsten', 'over.newBest':'Neuer Rekord', 'over.flawless':'Fehlerfreier Lauf', 'over.solved':'Gelöst', 'over.streak':'Beste Serie',
     'over.acc':'Genauigkeit', 'over.beat':'Schlage {n}', 'over.twice':'Zweimal hintereinander?',
     'over.another':'Noch eine Runde', 'over.levelJump':'Level {a} → {b}',
     'run.ready':'Bereit', 'run.nice':'Gut', 'run.streak':'Serie ×{n}!',
@@ -4328,6 +4349,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.49.0', date:'2026-09-23', items:[
+    'A ×1 solve and a ×5 solve already looked different — the spark burst and the point float both scale with the multiplier — but they sounded and felt identical, and the run itself gave no sign a hot streak was even happening beyond a small line of prompt text. Reaching ×3 or better now says so: a short rising chime distinct from the ordinary solve sound, and the same "Streak ×N!" text as a bigger beat off the score itself rather than a passing line under the board. The first time a run reaches the top tier gets one extra pulse across the board, once, not on every tap after — every solve from there already carries the loudest version of everything else.',
+    'A run that ends without a single miss looked exactly like any other run that ended, unless it also happened to be a new personal best. It gets its own badge now, next to New Personal Best rather than instead of it, since a run can earn both.',
+  ] },
   { v:'0.48.0', date:'2026-09-23', items:[
     'Stats had running numbers — a streak, a lifetime total, modes mastered — but nothing that said what to go do next. Fifteen achievements now sit above the mode list: first run, first star, mastering a mode and then a whole family and then all 66, playing every mode at least once, a 10- and a 20-solve streak, a flawless 10-round run, a 7- and a 30-day Daily Drop streak, two lifetime-point milestones, five favorites, and a five-mode mixtape. Locked ones stay fully readable rather than hidden behind mystery — a goal you can’t see isn’t one you can chase — and a small toast announces one the moment it’s earned, without blocking the run it happened in. A save that already qualified for some of these before today gets credited on sight, once, quietly, rather than a run of toasts for things that happened months ago.',
   ] },
@@ -12894,6 +12919,25 @@ function resolve(ok, node){
       const st = $('hudStreak');
       st.classList.add('pop'); st.classList.toggle('big', big);
       setTimeout(() => { st.classList.remove('pop', 'big'); }, 300);
+      /* A tier-up is rare enough in a run to earn its own beat — the small
+         prompt text already says "Streak ×N!" but reads it in passing; this
+         is the same words, said louder, at the moment that's actually worth
+         announcing (×2 is common enough to be noise here). */
+      if (multAfter >= 3){
+        floatPts($('hudScore'), t('p.streak', { n: multAfter }), multAfter + 1);
+        sfx.combo(multAfter);
+      }
+      /* Once per run, not once per tap at the top: reaching ×5 already keeps
+         paying out the biggest burst() and floatPts() tier on every solve
+         from here on, so a repeat of the same glow every tap would just be
+         noise. This says "you got here", once. */
+      if (multAfter === 5 && run.maxTier < 5){
+        run.maxTier = 5;
+        if (!motionOff()){
+          el.surface.classList.add('tierglow');
+          setTimeout(() => el.surface.classList.remove('tierglow'), 700);
+        }
+      }
     }
     renderHud();
     later(400, nextRound);
@@ -12935,7 +12979,7 @@ function startRun(kind, modeId){
   const lvl = playerLevel();
   run = {
     kind, mode: modeId || null, curMode: null, lastMode: null, bag: null,
-    score:0, solved:0, missed:0, streak:0, bestStreak:0, log:[],
+    score:0, solved:0, missed:0, streak:0, bestStreak:0, maxTier:1, log:[],
     lifeAtStart: save.lifetime || 0,
     time: (k.start || 0) + (k.timed ? Perk.step('rally')*1000 : 0),
     lives: (k.lives || 0) + (k.lives ? Perk.step('spare') : 0),
@@ -13144,6 +13188,7 @@ function endRun(){
   $('overKind').textContent = (r.mode ? modeName(r.mode) + ' · ' : '') + kindName(r.kind);
   $('overScore').textContent = k.scored ? fmt(r.score) : fmt(r.solved);
   $('newBest').hidden = !best;
+  $('flawlessBadge').hidden = !(k.scored && r.solved >= 10 && r.missed === 0);
 
   /* The shape of the run, one pip per round. Three numbers tell you how it
      went; this tells you where it went wrong, which is the thing that makes
