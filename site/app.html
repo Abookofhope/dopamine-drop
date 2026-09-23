@@ -2887,6 +2887,19 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         </div>
         <div class="assistprev" id="assistPrev" hidden></div>
 
+        <!-- Slows the round clock and every mode's own internal pacing (via
+             the same ctx.after every mode already schedules through) without
+             touching scoring, par, or what counts as a solve — the puzzle is
+             the same puzzle, just with more room to think about it. -->
+        <div class="setrow">
+          <span class="txt"><b data-i18n="set.speed">Game speed</b><small data-i18n="set.speedSub">More time to think, same puzzles and scoring</small></span>
+        </div>
+        <div class="segrow" id="speedRow" role="group" data-i18n-aria="set.speed">
+          <button class="seg" type="button" data-sp="normal"><span data-i18n="set.speedNormal">Normal</span></button>
+          <button class="seg" type="button" data-sp="relaxed"><span data-i18n="set.speedRelaxed">Relaxed</span></button>
+          <button class="seg" type="button" data-sp="slow"><span data-i18n="set.speedSlow">Slow</span></button>
+        </div>
+
         <div class="seclbl"><span data-i18n="set.lang">Language</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.lang">Language</b><small data-i18n="lang.sub">The whole game, including the word puzzles.</small></span>
@@ -3190,7 +3203,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.51.0';
+const VERSION_TAG = 'v0.52.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3204,7 +3217,7 @@ const QUARANTINE = 'dd.v1.unreadable';
 const SCHEMA = 10;
 const defaults = {
   pbBlitz:0, pbStreak:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
-  mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false,
+  mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
   lifetime:0, perks:[], perkLv:{}, tokens:0,
   dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0,
@@ -3427,6 +3440,17 @@ const CAT_TONE = {
   physics: -3, memory: -5, calm: -12
 };
 let toneShift = 1;
+
+/* A multiplier on real time, not on difficulty: scoring, par, and what
+   counts as a solve are all untouched — only how fast the clock drains and
+   how fast each mode's own scheduled events (ctx.after, which is later())
+   arrive. 1 changes nothing from how the game always ran. */
+const GAME_SPEEDS = { normal:1, relaxed:0.8, slow:0.62 };
+let gameSpeedMult = 1;
+function applyGameSpeed(){
+  gameSpeedMult = GAME_SPEEDS[save.gameSpeed] || 1;
+}
+
 function setFamilyTone(modeId){
   const semi = CAT_TONE[catOf(modeId)];
   toneShift = Math.pow(2, (typeof semi === 'number' ? semi : 0) / 12);
@@ -3682,6 +3706,8 @@ const STRINGS = {
     'set.access':'Accessibility', 'set.assist':'Colour assist',
     'set.assistSub':'Adds shapes and brightness so no puzzle depends on telling two colours apart',
     'set.assistPrev':'Every colour also carries a shape',
+    'set.speed':'Game speed', 'set.speedSub':'More time to think, same puzzles and scoring',
+    'set.speedNormal':'Normal', 'set.speedRelaxed':'Relaxed', 'set.speedSlow':'Slow',
     'set.lang':'Language', 'set.data':'Data',
     'set.backup':'Back up progress', 'set.backupSub':'Save a file you can move to another phone',
     'set.restore':'Restore progress', 'set.restoreSub':'Load a backup. This replaces what is on this device.',
@@ -3848,6 +3874,8 @@ const STRINGS = {
     'set.access':'Accessibilité', 'set.assist':'Aide aux couleurs',
     'set.assistSub':'Ajoute formes et luminosité pour qu’aucun casse-tête ne repose sur la distinction de deux couleurs',
     'set.assistPrev':'Chaque couleur porte aussi une forme',
+    'set.speed':'Vitesse de jeu', 'set.speedSub':'Plus de temps pour réfléchir, mêmes énigmes et le même score',
+    'set.speedNormal':'Normal', 'set.speedRelaxed':'Détendu', 'set.speedSlow':'Lent',
     'set.lang':'Langue', 'set.data':'Données',
     'set.backup':'Sauvegarder la progression', 'set.backupSub':'Un fichier à transférer sur un autre téléphone',
     'set.restore':'Restaurer la progression', 'set.restoreSub':'Charger une sauvegarde. Remplace ce qui est sur cet appareil.',
@@ -4014,6 +4042,8 @@ const STRINGS = {
     'set.access':'Accesibilidad', 'set.assist':'Ayuda de color',
     'set.assistSub':'Añade formas y brillo para que ningún reto dependa de distinguir dos colores',
     'set.assistPrev':'Cada color lleva también una forma',
+    'set.speed':'Velocidad de juego', 'set.speedSub':'Más tiempo para pensar, mismos puzles y puntuación',
+    'set.speedNormal':'Normal', 'set.speedRelaxed':'Relajado', 'set.speedSlow':'Lento',
     'set.lang':'Idioma', 'set.data':'Datos',
     'set.backup':'Guardar progreso', 'set.backupSub':'Un archivo que puedes llevar a otro teléfono',
     'set.restore':'Restaurar progreso', 'set.restoreSub':'Carga una copia. Reemplaza lo que hay en este dispositivo.',
@@ -4180,6 +4210,8 @@ const STRINGS = {
     'set.access':'Barrierefreiheit', 'set.assist':'Farbhilfe',
     'set.assistSub':'Ergänzt Formen und Helligkeit, damit kein Rätsel vom Unterscheiden zweier Farben abhängt',
     'set.assistPrev':'Jede Farbe trägt auch eine Form',
+    'set.speed':'Spielgeschwindigkeit', 'set.speedSub':'Mehr Zeit zum Nachdenken, gleiche Rätsel und Wertung',
+    'set.speedNormal':'Normal', 'set.speedRelaxed':'Entspannt', 'set.speedSlow':'Langsam',
     'set.lang':'Sprache', 'set.data':'Daten',
     'set.backup':'Fortschritt sichern', 'set.backupSub':'Eine Datei für ein anderes Telefon',
     'set.restore':'Fortschritt laden', 'set.restoreSub':'Sicherung laden. Ersetzt, was auf diesem Gerät ist.',
@@ -4402,6 +4434,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.52.0', date:'2026-09-23', items:[
+    'Reduce motion already existed for anyone who finds the particles and screen shake too much. Nothing existed for the opposite — a puzzle you want without the reflex pressure of a timer draining under it. Settings now has a Game speed control: Normal, Relaxed, or Slow, which stretches the round clock and every mode’s own pacing (the same shared timer sixty-six modes already schedule through) without touching scoring, par, or what counts as a solve. The puzzle is the same puzzle, just with more room to sit with it.',
+  ] },
   { v:'0.51.0', date:'2026-09-23', items:[
     'A Daily Drop streak had two payoffs: the number itself, and an achievement badge at 7 and 30 days. Six milestones — 3, 7, 14, 30, 60 and 100 days — now also pay a small XP bonus the moment they’re reached, announced the same way an achievement is, on top of whatever the run itself earned. Paid once per milestone ever, not once every day the streak happens to sit at or above it.',
   ] },
@@ -12473,7 +12508,13 @@ function clearBoard(){
   if (pb) pb.remove();
   clearHow();                       /* quitting mid-round leaves nothing armed */
 }
-function later(ms, fn){ const t = setTimeout(fn, ms); timers.push(t); return t; }
+/* Every mode schedules its own internal pacing through this one function
+   (it's what ctx.after is) — flashes, sequences, falling grains, all of it.
+   Scaling the delay here, once, is what makes the Settings "Game speed"
+   option relax sixty-six bespoke modes' pacing without touching any of
+   their sixty-six files: the ratios between a mode's own scheduled events
+   stay identical, only how long real time it takes to get through them. */
+function later(ms, fn){ const t = setTimeout(fn, ms / gameSpeedMult); timers.push(t); return t; }
 
 function show(name){
   screen = name;
@@ -12734,14 +12775,15 @@ function tick(ts){
   const dt = Math.min(ts - lastTs, 250);
   lastTs = ts;
   const kind = KINDS[run.kind];
+  const edt = dt * gameSpeedMult;   /* the clock itself slows at "Relaxed"/"Slow" too */
   if (kind.timed && run.started){
-    run.time -= dt;
+    run.time -= edt;
     if (run.time <= 0){ run.time = 0; renderHud(); return endRun(); }
   }
   /* The round limit. Timed runs already punish slowness through the shared
      clock, so this is Marathon's — where nothing else did. */
   if (kind.roundClock && roundLive && run.roundLeft > 0){
-    run.roundLeft -= dt;
+    run.roundLeft -= edt;
     const frac = clamp(run.roundLeft / run.roundLimit, 0, 1);
     el.roundFill.style.transform = 'scaleX(' + frac + ')';
     el.roundBar.classList.toggle('warn', frac < 0.25);
@@ -14000,6 +14042,11 @@ function paintSettings(){
   levelSettingButtons();
   [['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist']]
     .forEach(([id,key]) => $(id).setAttribute('aria-checked', String(!!save[key])));
+  Array.from($('speedRow').children).forEach(b => {
+    const on = b.dataset.sp === (save.gameSpeed || 'normal');
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', String(on));
+  });
   /* Safari on iOS has no vibrate() at all, so this switch was a promise the
      phone could not keep — on and doing nothing, with no way to tell. Say so
      rather than leave it flippable. */
@@ -14461,6 +14508,9 @@ $('shareBtn').addEventListener('click', () => {
 Array.from($('sFilter').children).forEach(b =>
   onTap(b, () => { statFilter = b.dataset.f; sfx.tap(); paintStats(); }));
 
+Array.from($('speedRow').children).forEach(b =>
+  onTap(b, () => { save.gameSpeed = b.dataset.sp; applyGameSpeed(); persist(); sfx.tap(); paintSettings(); }));
+
 $('homeBtn').addEventListener('click', () => goTab('Play'));
 $('againBtn').addEventListener('click', () =>
   startRun(el.over.dataset.kind || 'shuffle', el.over.dataset.mode || null));
@@ -14596,6 +14646,7 @@ function boot(){
   try { document.documentElement.lang = save.lang; } catch(e){}
   applyStatic();
   backfillAchievements();
+  applyGameSpeed();
   persist();
   show('Play');
   paintAll();
