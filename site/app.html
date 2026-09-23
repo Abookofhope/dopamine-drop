@@ -2591,7 +2591,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
             <button class="guidedBtn" id="pickModeBtn" type="button">
               <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span>
               <b data-i18n="play.pickMode">Pick a mode</b>
-              <small data-i18n="play.pickSub">All 66, by family</small>
+              <small id="pickModeSub"></small>
             </button>
             <button class="guidedBtn" id="myStuffBtn" type="button">
               <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></span>
@@ -13125,6 +13125,7 @@ function paintPlay(){
   } else {
     $('justPlaySub').textContent = t('hero.sub');
   }
+  $('pickModeSub').textContent = t('play.pickSub', { n: MODE_IDS.length });
 
   /* A chosen shortlist, not an algorithmic one — shown only once it exists,
      so a fresh save sees exactly what it saw before this section existed. */

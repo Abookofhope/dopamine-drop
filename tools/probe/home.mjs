@@ -67,18 +67,27 @@ for (const [label, extra] of PROFILES){
       const home = await page.evaluate(measure);
       const homeInfo = await page.evaluate(() => ({
         labels: [...document.querySelectorAll('.guidedBtn b')].map(b => b.textContent.trim()),
+        subs: [...document.querySelectorAll('.guidedBtn small')].map(s => s.textContent.trim()),
         justPlaySub: document.getElementById('justPlaySub').textContent.trim(),
+        pickModeSub: document.getElementById('pickModeSub').textContent.trim(),
         dailyLine: document.getElementById('dailyStatusLine').textContent.trim(),
       }));
+      /* A {placeholder} that made it to screen unfilled — the exact shape of bug
+         a static data-i18n span produces when its string needs a var() and none
+         was given — is worse than blank: it reads as broken software. */
+      const rawBrace = [...homeInfo.labels, ...homeInfo.subs, homeInfo.dailyLine]
+        .find(s => /\{[a-zA-Z]/.test(s));
       const homeDistinct = new Set(homeInfo.labels).size === homeInfo.labels.length;
       const homeOk = !home.hscroll && !home.clipped.length && home.minTap >= 30
-        && homeInfo.labels.length === 3 && homeDistinct
-        && !!homeInfo.justPlaySub && !!homeInfo.dailyLine && !errs.length;
+        && homeInfo.labels.length === 3 && homeInfo.subs.length === 3 && homeDistinct
+        && !!homeInfo.justPlaySub && !!homeInfo.pickModeSub && !!homeInfo.dailyLine
+        && !rawBrace && !errs.length;
       if (!homeOk) bad++;
       console.log(`${homeOk ? 'ok  ' : 'FAIL'} ${label.padEnd(8)} ${vw}x${vh} ${lang}  home`
-        + `  "${homeInfo.labels.join(' / ')}"  justPlay "${homeInfo.justPlaySub}"  daily "${homeInfo.dailyLine}"`
+        + `  "${homeInfo.labels.join(' / ')}"  subs "${homeInfo.subs.join(' / ')}"  daily "${homeInfo.dailyLine}"`
         + `  ${home.clipped.length ? 'clipped ' + home.clipped.join(',') : ''}${home.hscroll ? ' H-SCROLL' : ''}`
         + `  smallest tap ${home.minTap}px (${home.minWho})`
+        + (rawBrace ? ' UNFILLED-PLACEHOLDER "' + rawBrace + '"' : '')
         + (errs.length ? ' ERR ' + errs[0] : ''));
       floorOrDie(`${label} guided labels`, homeInfo.labels.length, 3);
 
