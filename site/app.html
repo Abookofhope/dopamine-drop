@@ -2168,6 +2168,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell{border-radius:var(--r-sm);border:1px solid #ffffff10;min-width:0;min-height:0;display:grid;place-items:center;transition:transform var(--t-fast),background var(--t-fast)}
 .cell:active{transform:scale(.94)}
 .cell.tile{box-shadow:inset 0 -3px 0 #00000026}
+.cell.tile.bigtile{transform:scale(1.12);z-index:1}
+.cell.tile.bigtile:active{transform:scale(1.05)}
 .orderbox{position:relative;width:100%;max-width:380px;aspect-ratio:1}
 .bub{position:absolute;border-radius:50%;display:grid;place-items:center;font-family:var(--f-data);font-weight:700;background:linear-gradient(170deg,#3B2A6B,#251A48);border:1.5px solid var(--edge);color:var(--cream);transition:transform var(--t-fast),opacity var(--t-fast),background var(--t-fast)}
 .bub.done{background:var(--cool);border-color:var(--cool);color:#052A24;opacity:.5}
@@ -2183,6 +2185,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.pad{background:linear-gradient(170deg,#33245F,#221846)}
 .cell.pad.lit{background:var(--zap)}
 .cell.pad.ok{background:var(--cool)}
+.cell.pad.ghost{background:var(--flare)}
 .cell.pipe{background:#ffffff07;border-color:#ffffff0d}
 .cell.pipe svg{width:100%;height:100%;display:block;transition:transform 180ms cubic-bezier(.2,.8,.3,1)}
 .cell.pipe .wire{stroke:var(--haze);stroke-width:11;stroke-linecap:round;fill:none;transition:stroke var(--t-med)}
@@ -2300,6 +2303,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   animation-name:pulse;animation-iteration-count:infinite;animation-timing-function:ease-in-out;
 }
 @keyframes pulse{0%,100%{transform:scale(.62);opacity:.55}50%{transform:scale(1);opacity:1}}
+/* The visual bait: brighter and glowing, but on the same clock as everything
+   that is not the answer. */
+.beatdot.decoy{background:var(--zap);box-shadow:0 0 16px var(--zap)}
 
 /* Sort Drop */
 .sortwrap{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;height:100%;justify-content:center}
@@ -5053,9 +5059,16 @@ const MODES = {
       const hue = Math.floor(ctx.rnd()*360);
       const oddHue = hueForDistance(hue, want, 68, 58, ctx.rnd() < 0.5 ? 1 : -1);
       const odd = Math.floor(ctx.rnd()*n*n);
+      /* Past a point the grid is big enough to hide a second kind of
+         different: a tile the same colour as everything else, just a touch
+         larger. It draws the eye exactly like the real answer does, so
+         reaching for "the one that looks off" stops being enough — only hue
+         was ever the question. */
+      const sizeDecoy = n*n >= 9 && ctx.level >= 14 ? pick(
+        Array.from({length:n*n},(_,i)=>i).filter(i => i !== odd), ctx.rnd) : -1;
       const g = gridEl(n);
       for (let i=0;i<n*n;i++){
-        const b = mk('button','cell tile');
+        const b = mk('button','cell tile' + (i===sizeDecoy ? ' bigtile' : ''));
         b.type = 'button';
         b.style.background = 'hsl(' + (i===odd ? oddHue : hue)
           + ' 68% ' + (i===odd ? 58+light : 58) + '%)';
@@ -5583,6 +5596,12 @@ const MODES = {
       const n = ctx.level < 5 ? 3 : ctx.level < 20 ? 4 : 5;
       const count = clamp(3 + Math.floor(ctx.level/3), 3, n*n - 2);
       const pattern = new Set(shuffle(Array.from({length:n*n},(_,i)=>i), ctx.rnd).slice(0,count));
+      /* Past a point, recall alone is not the whole test. One cell outside the
+         shape flashes in the very same reveal, in a different colour — so
+         "it lit up" stops being proof it belongs. The shape has to be held
+         onto specifically, this one set aside on purpose. */
+      const ghost = ctx.level >= 14 ? pick(
+        Array.from({length:n*n},(_,i)=>i).filter(i => !pattern.has(i)), ctx.rnd) : -1;
       const found = new Set();
       let showing = true;
 
@@ -5592,6 +5611,7 @@ const MODES = {
         const b = mk('button','cell pad'); b.type='button'; b.disabled = true;
         b.setAttribute('aria-label', t('a.cell', { n: i+1 }));
         if (pattern.has(i)) b.classList.add('lit');
+        else if (i === ghost) b.classList.add('ghost');
         onTap(b, () => {
           if (showing || found.has(i)) return;
           if (!pattern.has(i)) return ctx.miss(b);
@@ -5606,7 +5626,7 @@ const MODES = {
       /* Long enough to take in, short enough that nobody counts it out loud. */
       ctx.after(700 + count*110, () => {
         showing = false;
-        cells.forEach(c => { c.classList.remove('lit'); c.disabled = false; });
+        cells.forEach(c => { c.classList.remove('lit','ghost'); c.disabled = false; });
         ctx.prompt(t('p.blinkGo', { n: count }));
       });
     }
@@ -6000,10 +6020,17 @@ const MODES = {
          rather than of reflex hardware. */
       const offset = clamp(260 - ctx.level*9, 70, 260);
       const odd = Math.floor(ctx.rnd()*n);
+      /* Past a point, telling the dots apart by timing alone is not what is
+         being sold short — a dot that simply looks different is. The decoy
+         glows brighter than the rest but keeps the group's own period
+         exactly, so reaching for "the one that stands out" now costs a miss;
+         only the one actually out of time still wins. */
+      const decoy = n >= 4 && ctx.level >= 14 ? pick(
+        Array.from({length:n},(_,i)=>i).filter(i => i !== odd), ctx.rnd) : -1;
 
       const row = mk('div','beatrow');
       for (let i=0;i<n;i++){
-        const b = mk('button','beatdot'); b.type='button';
+        const b = mk('button','beatdot' + (i===decoy ? ' decoy' : '')); b.type='button';
         b.setAttribute('aria-label', t('a.dot', { n: i+1 }));
         b.style.animationDuration = (i===odd ? period + offset : period) + 'ms';
         onTap(b, () => i===odd ? ctx.win(b) : ctx.miss(b));
