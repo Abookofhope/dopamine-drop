@@ -2301,13 +2301,14 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .ltile.bait{border-color:var(--flare);box-shadow:0 0 0 1px var(--flare),0 0 12px #ff5b3955}
 
 /* Phrase Wheel */
-.wheelwrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;height:100%;justify-content:center}
+.wheelwrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;height:100%;justify-content:center;border-radius:var(--r-lg);
+  background:radial-gradient(120% 70% at 50% 8%, color-mix(in srgb, var(--fam,transparent) 8%, transparent), transparent 72%)}
 .wcat{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--zap);font-weight:700}
 .wboard{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;max-width:100%}
 .wword{display:flex;gap:3px}
 .wcell{
   width:19px;height:25px;border-radius:4px;background:#ffffff0d;
-  border-bottom:2px solid var(--edge);display:grid;place-items:center;
+  border-bottom:2px solid color-mix(in srgb, var(--fam,var(--edge)) 30%, var(--edge));display:grid;place-items:center;
   font-family:var(--f-data);font-size:13px;font-weight:700;color:var(--cream);
 }
 .wcell.on{background:var(--cool);border-color:var(--cool);color:var(--ink)}
@@ -2323,9 +2324,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .key{
   position:relative;
   width:38px;height:42px;border-radius:9px;background:var(--ink-3);
-  border:1px solid var(--edge);color:var(--cream);
+  border:1px solid color-mix(in srgb, var(--fam,var(--edge)) 26%, var(--edge));color:var(--cream);
   font-family:var(--f-data);font-size:14px;font-weight:700;
-  transition:transform var(--t-fast),opacity var(--t-fast),background var(--t-fast);
+  transition:transform var(--t-fast),opacity var(--t-fast),background var(--t-fast),border-color var(--t-med);
 }
 .key::after{content:'';position:absolute;inset:-2px}
 .key:active{transform:scale(.9)}
