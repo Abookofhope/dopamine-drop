@@ -1802,6 +1802,35 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .xpwrap .top small{font-family:var(--f-data);font-size:10px;color:var(--haze)}
 .track{height:7px;border-radius:99px;background:var(--ink-3);overflow:hidden}
 .track i{display:block;height:100%;background:linear-gradient(90deg,var(--zap),var(--flare));transform-origin:left}
+
+/* ── Achievements ────────────────────────────────────────────────────────── */
+.achgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex:none}
+.achcard{
+  --ink:var(--zap);
+  position:relative;border:1px solid var(--edge-soft);border-radius:var(--r-md);
+  background:#ffffff05;padding:12px 8px 10px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;
+}
+.achcard .g{
+  width:34px;height:34px;padding:6px;border-radius:11px;
+  color:var(--ink);background:color-mix(in srgb, var(--ink) 15%, transparent);
+  border:1px solid color-mix(in srgb, var(--ink) 34%, transparent);
+}
+.achcard .g svg{width:100%;height:100%;display:block}
+.achcard b{font-size:10.5px;font-weight:700;line-height:1.2}
+.achcard small{font-size:8.5px;color:var(--haze);line-height:1.3}
+/* Locked stays legible, just quiet — the goal is the point, not the mystery.
+   Only the icon well dims; halving the whole card's opacity took the name
+   and description down with it and failed contrast at that size. A lock
+   glyph in the corner is the only thing that changes shape, so the signal
+   survives independently of colour too. */
+.achcard.locked .g{color:var(--haze);background:var(--ink-3);border-color:var(--edge)}
+.achcard.locked b{color:var(--haze)}
+.achcard .lock{
+  position:absolute;top:6px;right:6px;width:13px;height:13px;color:var(--haze);
+}
+.achcard.locked .lock{display:block}
+.achcard:not(.locked) .lock{display:none}
 .srow{
   display:flex;align-items:center;gap:10px;padding:9px 2px;
   border-bottom:1px solid var(--edge-soft);
@@ -2029,6 +2058,38 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 #levelup .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--zap);font-weight:700}
 #levelup h3{font-family:var(--f-disp);font-weight:800;font-size:30px;margin:6px 0 0;text-transform:uppercase}
 #levelup p{margin:8px 0 0;color:var(--haze);font-size:13px}
+
+/* ── Achievement toast ──────────────────────────────────────────────────── */
+/* A win screen already exists for the thing you were doing; this is for the
+   thing you didn't know you'd just finished. It rides above the run rather
+   than blocking it — no backdrop, no tap to dismiss, gone on its own in a
+   couple of seconds, because a run that just ended is still worth looking
+   at more than a badge is. */
+.achtoast{
+  --ink:var(--zap);
+  position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 14px);z-index:90;
+  transform:translate(-50%,-140%);width:min(92vw,380px);
+  display:flex;align-items:center;gap:12px;padding:11px 15px;
+  border-radius:var(--r-lg);background:var(--ink-2);
+  border:1px solid var(--edge-soft);border-left:3px solid var(--ink);
+  box-shadow:0 14px 30px -18px #000c;
+  transition:transform 320ms cubic-bezier(.2,.9,.3,1);
+  pointer-events:none;
+}
+.achtoast.in{transform:translate(-50%,0)}
+.achtoast .g{
+  width:34px;height:34px;flex:none;padding:6px;border-radius:11px;
+  color:var(--ink);background:color-mix(in srgb, var(--ink) 16%, transparent);
+  border:1px solid color-mix(in srgb, var(--ink) 36%, transparent);
+}
+.achtoast .g svg{width:100%;height:100%;display:block}
+.achtoast .txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.achtoast em{font-style:normal;font-size:9px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink)}
+.achtoast b{font-size:14px;font-weight:700;margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.achtoast small{font-size:10.5px;color:var(--haze);margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ── Game over ───────────────────────────────────────────────────────────── */
 /* The payoff screen was the flattest in the app: a small number floating in
@@ -2734,6 +2795,14 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
         <!-- Nothing to show yet is worth saying out loud, rather than six zeroes
              and sixty-six dashes pretending to be a table. -->
         <p class="note firstnote" id="sFirst" hidden></p>
+
+        <!-- A goal list, not another running number — the stat grids above say
+             how you're doing; this says what to go do next. Locked ones stay
+             visible rather than hidden behind mystery, because a goal you can't
+             see isn't one you can chase. -->
+        <div class="seclbl"><span data-i18n="stats.achievements">Achievements</span><u id="achCount"></u></div>
+        <div class="achgrid" id="achGrid"></div>
+
         <div class="seclbl"><span data-i18n="stats.everyMode">Every mode</span></div>
         <div class="segrow" id="sFilter" role="group" data-i18n-aria="stats.filter">
           <button class="seg on" type="button" data-f="all"><span data-i18n="stats.fAll">All</span><u></u></button>
@@ -3023,6 +3092,15 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
     <p id="luSub">Keep going.</p>
   </div>
 </div>
+
+<div class="achtoast" id="achToast" hidden role="status" aria-live="polite">
+  <span class="g"></span>
+  <span class="txt">
+    <em data-i18n="ach.unlocked">Achievement unlocked</em>
+    <b></b>
+    <small></small>
+  </span>
+</div>
 <script>
 (function(){
 "use strict";
@@ -3069,7 +3147,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.47.0';
+const VERSION_TAG = 'v0.48.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3094,7 +3172,11 @@ const defaults = {
   seen:{},
   /* Modes starred from the preview sheet — a short, deliberately-chosen list,
      distinct from marathon bests or the algorithmic quick picks. */
-  favs:[]
+  favs:[],
+  /* Achievement ids already earned, each a timestamp rather than a bare
+     true — a record of when, not just whether, with room to sort or show
+     a date later without another migration. */
+  achieve:{}
 };
 
 function migrate(data){
@@ -3513,6 +3595,22 @@ const STRINGS = {
     'stats.bestShuffle':'Best shuffle', 'stats.bestStreak':'Best streak', 'stats.runs':'Runs played',
     'stats.solved':'Puzzles solved', 'stats.mastered':'Modes mastered', 'stats.stars':'Stars earned',
     'stats.firstRun':'Nothing here yet — play a round and this fills in. Every mode is open from the start.', 'stats.everyMode':'Every mode',
+    'stats.achievements':'Achievements', 'ach.unlocked':'Achievement unlocked',
+    'ach.first':'First Drop', 'ach.first.d':'Finish your first run.',
+    'ach.star':'First Star', 'ach.star.d':'Earn a star on any mode.',
+    'ach.master':'Mastered', 'ach.master.d':'3-star a mode for the first time.',
+    'ach.family':'Whole Family', 'ach.family.d':'3-star every mode in one family.',
+    'ach.complete':'Completionist', 'ach.complete.d':'3-star all 66 modes.',
+    'ach.explorer':'Explorer', 'ach.explorer.d':'Play every mode at least once.',
+    'ach.streak10':'On a Roll', 'ach.streak10.d':'Hit a 10-solve streak.',
+    'ach.streak20':'Unstoppable', 'ach.streak20.d':'Hit a 20-solve streak.',
+    'ach.flawless':'Flawless', 'ach.flawless.d':'A 10-round run with zero misses.',
+    'ach.week':'One Week In', 'ach.week.d':'A 7-day Daily Drop streak.',
+    'ach.month':'Creature of Habit', 'ach.month.d':'A 30-day Daily Drop streak.',
+    'ach.wealthy':'Well Earned', 'ach.wealthy.d':'25,000 lifetime points.',
+    'ach.fortune':'Deep Pockets', 'ach.fortune.d':'1,000,000 lifetime points.',
+    'ach.curator':'Curator', 'ach.curator.d':'Favorite 5 modes.',
+    'ach.dj':'Mixologist', 'ach.dj.d':'Build a mixtape of 5 modes or more.',
     'set.feedback':'Feedback', 'set.sound':'Sound', 'set.soundSub':'Taps and streak chimes — each family in its own key',
     'set.vib':'Vibration', 'set.vibSub':'A short pulse on every answer',
     'set.motion':'Reduce motion', 'set.motionSub':'No particles, no screen shake',
@@ -3660,6 +3758,22 @@ const STRINGS = {
     'stats.bestStreak':'Meilleure série', 'stats.runs':'Parties jouées',
     'stats.solved':'Casse-tête résolus', 'stats.mastered':'Modes maîtrisés', 'stats.stars':'Étoiles gagnées',
     'stats.firstRun':'Rien ici pour l’instant — jouez une partie et tout se remplit. Tous les modes sont ouverts dès le départ.', 'stats.everyMode':'Chaque mode',
+    'stats.achievements':'Succès', 'ach.unlocked':'Succès débloqué',
+    'ach.first':'Première manche', 'ach.first.d':'Terminez votre première partie.',
+    'ach.star':'Première étoile', 'ach.star.d':'Gagnez une étoile sur un mode.',
+    'ach.master':'Maîtrisé', 'ach.master.d':'Obtenez 3 étoiles sur un mode pour la première fois.',
+    'ach.family':'Famille au complet', 'ach.family.d':'Obtenez 3 étoiles sur tous les modes d’une famille.',
+    'ach.complete':'Perfectionniste', 'ach.complete.d':'Obtenez 3 étoiles sur les 66 modes.',
+    'ach.explorer':'Explorateur', 'ach.explorer.d':'Jouez à chaque mode au moins une fois.',
+    'ach.streak10':'Lancé', 'ach.streak10.d':'Atteignez une série de 10 bonnes réponses.',
+    'ach.streak20':'Imparable', 'ach.streak20.d':'Atteignez une série de 20 bonnes réponses.',
+    'ach.flawless':'Sans faute', 'ach.flawless.d':'Une partie de 10 manches sans aucune erreur.',
+    'ach.week':'Une semaine', 'ach.week.d':'Une série de 7 jours au Défi du jour.',
+    'ach.month':'Habitude prise', 'ach.month.d':'Une série de 30 jours au Défi du jour.',
+    'ach.wealthy':'Bien mérité', 'ach.wealthy.d':'25 000 points cumulés.',
+    'ach.fortune':'Fortune faite', 'ach.fortune.d':'1 000 000 de points cumulés.',
+    'ach.curator':'Curateur', 'ach.curator.d':'Mettez 5 modes en favoris.',
+    'ach.dj':'DJ', 'ach.dj.d':'Composez une Mixtape d’au moins 5 modes.',
     'set.feedback':'Retours', 'set.sound':'Son', 'set.soundSub':'Touches et séries — chaque famille dans sa tonalité',
     'set.vib':'Vibration', 'set.vibSub':'Une brève impulsion à chaque réponse',
     'set.motion':'Réduire les animations', 'set.motionSub':'Ni particules, ni secousses',
@@ -3807,6 +3921,22 @@ const STRINGS = {
     'stats.bestStreak':'Mejor racha', 'stats.runs':'Partidas jugadas',
     'stats.solved':'Retos resueltos', 'stats.mastered':'Modos dominados', 'stats.stars':'Estrellas ganadas',
     'stats.firstRun':'Aquí no hay nada aún: juega una partida y esto se llena. Todos los modos están abiertos desde el principio.', 'stats.everyMode':'Cada modo',
+    'stats.achievements':'Logros', 'ach.unlocked':'Logro desbloqueado',
+    'ach.first':'Primera partida', 'ach.first.d':'Termina tu primera partida.',
+    'ach.star':'Primera estrella', 'ach.star.d':'Gana una estrella en cualquier modo.',
+    'ach.master':'Dominado', 'ach.master.d':'Consigue 3 estrellas en un modo por primera vez.',
+    'ach.family':'Familia completa', 'ach.family.d':'Consigue 3 estrellas en todos los modos de una familia.',
+    'ach.complete':'Coleccionista', 'ach.complete.d':'Consigue 3 estrellas en los 66 modos.',
+    'ach.explorer':'Explorador', 'ach.explorer.d':'Juega cada modo al menos una vez.',
+    'ach.streak10':'En racha', 'ach.streak10.d':'Consigue una racha de 10 aciertos.',
+    'ach.streak20':'Imparable', 'ach.streak20.d':'Consigue una racha de 20 aciertos.',
+    'ach.flawless':'Impecable', 'ach.flawless.d':'Una partida de 10 rondas sin ningún fallo.',
+    'ach.week':'Una semana', 'ach.week.d':'Una racha de 7 días en el Reto diario.',
+    'ach.month':'Ya es costumbre', 'ach.month.d':'Una racha de 30 días en el Reto diario.',
+    'ach.wealthy':'Bien ganado', 'ach.wealthy.d':'25.000 puntos acumulados.',
+    'ach.fortune':'Un tesoro', 'ach.fortune.d':'1.000.000 de puntos acumulados.',
+    'ach.curator':'Curador', 'ach.curator.d':'Marca 5 modos como favoritos.',
+    'ach.dj':'DJ', 'ach.dj.d':'Crea una Mixtape de 5 modos o más.',
     'set.feedback':'Respuesta', 'set.sound':'Sonido', 'set.soundSub':'Toques y rachas — cada familia en su tono',
     'set.vib':'Vibración', 'set.vibSub':'Un pulso breve en cada respuesta',
     'set.motion':'Reducir movimiento', 'set.motionSub':'Sin partículas ni sacudidas',
@@ -3954,6 +4084,22 @@ const STRINGS = {
     'stats.bestStreak':'Beste Serie', 'stats.runs':'Runden gespielt',
     'stats.solved':'Rätsel gelöst', 'stats.mastered':'Modi gemeistert', 'stats.stars':'Sterne verdient',
     'stats.firstRun':'Noch nichts hier — spiel eine Runde, dann füllt sich das. Alle Modi sind von Anfang an offen.', 'stats.everyMode':'Jeder Modus',
+    'stats.achievements':'Erfolge', 'ach.unlocked':'Erfolg freigeschaltet',
+    'ach.first':'Erster Lauf', 'ach.first.d':'Schließe deinen ersten Lauf ab.',
+    'ach.star':'Erster Stern', 'ach.star.d':'Verdiene einen Stern in einem beliebigen Modus.',
+    'ach.master':'Gemeistert', 'ach.master.d':'Hole zum ersten Mal 3 Sterne in einem Modus.',
+    'ach.family':'Ganze Familie', 'ach.family.d':'Hole 3 Sterne in jedem Modus einer Familie.',
+    'ach.complete':'Komplettist', 'ach.complete.d':'Hole 3 Sterne in allen 66 Modi.',
+    'ach.explorer':'Entdecker', 'ach.explorer.d':'Spiele jeden Modus mindestens einmal.',
+    'ach.streak10':'Im Lauf', 'ach.streak10.d':'Erreiche eine Serie von 10 Lösungen.',
+    'ach.streak20':'Unaufhaltsam', 'ach.streak20.d':'Erreiche eine Serie von 20 Lösungen.',
+    'ach.flawless':'Fehlerfrei', 'ach.flawless.d':'Ein Lauf über 10 Runden ganz ohne Fehler.',
+    'ach.week':'Eine Woche geschafft', 'ach.week.d':'Eine 7-tägige Tagesrätsel-Serie.',
+    'ach.month':'Gewohnheitstier', 'ach.month.d':'Eine 30-tägige Tagesrätsel-Serie.',
+    'ach.wealthy':'Gut verdient', 'ach.wealthy.d':'25.000 Punkte auf Lebenszeit.',
+    'ach.fortune':'Tiefe Taschen', 'ach.fortune.d':'1.000.000 Punkte auf Lebenszeit.',
+    'ach.curator':'Kurator', 'ach.curator.d':'Favorisiere 5 Modi.',
+    'ach.dj':'DJ', 'ach.dj.d':'Stelle eine Playlist mit 5 oder mehr Modi zusammen.',
     'set.feedback':'Rückmeldung', 'set.sound':'Ton', 'set.soundSub':'Tippen und Serien — jede Familie in eigener Tonart',
     'set.vib':'Vibration', 'set.vibSub':'Ein kurzer Impuls bei jeder Antwort',
     'set.motion':'Bewegung reduzieren', 'set.motionSub':'Keine Partikel, kein Wackeln',
@@ -4182,6 +4328,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.48.0', date:'2026-09-23', items:[
+    'Stats had running numbers — a streak, a lifetime total, modes mastered — but nothing that said what to go do next. Fifteen achievements now sit above the mode list: first run, first star, mastering a mode and then a whole family and then all 66, playing every mode at least once, a 10- and a 20-solve streak, a flawless 10-round run, a 7- and a 30-day Daily Drop streak, two lifetime-point milestones, five favorites, and a five-mode mixtape. Locked ones stay fully readable rather than hidden behind mystery — a goal you can’t see isn’t one you can chase — and a small toast announces one the moment it’s earned, without blocking the run it happened in. A save that already qualified for some of these before today gets credited on sight, once, quietly, rather than a run of toasts for things that happened months ago.',
+  ] },
   { v:'0.47.0', date:'2026-09-23', items:[
     'The Play tab opened on a stack of five different decisions in a row — a shuffle slab, a two-card status row, a curated-picks grid, then two more sections below that — before you had made any of them. It is one screen now, one question, exactly three answers: Just Play (continues whatever you last played, or shuffles if there is nothing to continue), Pick a Mode, and My Stuff, which holds Favorites, Mixtape, Fidget Loop, Marathon and Stats behind one tap instead of stacking all of it on the way in. The four-pick "why this mode" shelf is gone with it — a reason attached to an algorithmic guess mattered less once the guessing went away.',
   ] },
@@ -12024,6 +12173,119 @@ const Perk = {
   waiting: () => Perk.openSlots() + Perk.spendable()
 };
 
+/* ═══ Achievements ═══════════════════════════════════════════════════════
+   Concrete, one-time things worth doing, separate from the running numbers
+   Stats already shows — a streak or a lifetime total tells you how you're
+   doing, not what to go do next. Each is checked once, against save state
+   that already exists for other reasons (marathon bests, seen modes, daily
+   streak), so unlocking never needs its own bookkeeping scattered through
+   every mode. Earning is permanent and celebrated once, on the way it
+   happened — a run ending, or (for a save that already qualified before
+   this existed) the app opening. */
+const ACHIEVEMENTS = [
+  { id:'first', ink:'#FF5B39',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 8l6 4-6 4V8z" fill="currentColor"/></svg>',
+    goal: () => (save.runs || 0) >= 1 },
+  { id:'star', ink:'#FFC53D',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor"/></svg>',
+    goal: () => MODE_IDS.some(id => starsFor(id) >= 1) },
+  { id:'master', ink:'#FFC53D',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.6 5.9 6.4.6-4.8 4.3 1.4 6.3L12 15.9 6.4 19.1l1.4-6.3-4.8-4.3 6.4-.6L12 2z" fill="currentColor"/></svg>',
+    goal: () => MODE_IDS.some(id => starsFor(id) >= 3) },
+  { id:'family', ink:'#33E6C8',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="17" cy="9" r="2.4" fill="currentColor"/><path d="M2 20c0-3.3 2.7-6 6-6s6 2.7 6 6M13.5 20c0-2.6-1-4.9-2.6-6.4.9-.7 2-1.1 3.1-1.1 2.8 0 5 2.2 5 5v2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    goal: () => catsPresent().some(c => idsInCat(c).every(id => starsFor(id) >= 3)) },
+  { id:'complete', ink:'#9C7BFF',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v3.5c0 4.5-3 7.7-6.2 8.3v2.7h3.2V21H8v-2.5h3.2v-2.7C8 15.2 5 12 5 7.5V4z" fill="currentColor"/><path d="M5 5.5H2.5v1.8c0 1.6 1 2.9 2.5 3.3M19 5.5h2.5v1.8c0 1.6-1 2.9-2.5 3.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    goal: () => MODE_IDS.every(id => starsFor(id) >= 3) },
+  { id:'explorer', ink:'#4BC0FF',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z" fill="currentColor"/></svg>',
+    goal: () => MODE_IDS.every(id => (save.seen || {})[id]) },
+  { id:'streak10', ink:'#FF8AD8',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="currentColor"/></svg>',
+    goal: () => (save.pbStreak || 0) >= 10 },
+  { id:'streak20', ink:'#FF8AD8',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 1 2 15h7l-1.5 8L21 9h-7l-1-8z" fill="currentColor"/></svg>',
+    goal: () => (save.pbStreak || 0) >= 20 },
+  { id:'flawless', ink:'#33E6C8',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v6c0 4.4-3.3 8-8 9-4.7-1-8-4.6-8-9V6z" fill="currentColor"/><path d="M8.5 12l2.3 2.3 4.7-4.7" fill="none" stroke="#0D0918" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    goal: (r) => !!(r && r.solved >= 10 && r.missed === 0) },
+  { id:'week', ink:'#33E6C8',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 3v4M16 3v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 15l2.5 2.5L16 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    goal: () => (save.dailyBestStreak || 0) >= 7 },
+  { id:'month', ink:'#33E6C8',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3" fill="currentColor"/><path d="M8 3v4M16 3v4M3 10h18" stroke="#0D0918" stroke-width="2" stroke-linecap="round"/></svg>',
+    goal: () => (save.dailyBestStreak || 0) >= 30 },
+  { id:'wealthy', ink:'#FFC53D',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="15" cy="15" r="6" fill="currentColor"/></svg>',
+    goal: () => (save.lifetime || 0) >= 25000 },
+  { id:'fortune', ink:'#FFC53D',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l3 6-9 12L3 9l3-6z" fill="currentColor"/><path d="M3 9h18M9 3l3 18 3-18" stroke="#0D0918" stroke-width="1.4" stroke-linejoin="round"/></svg>',
+    goal: () => (save.lifetime || 0) >= 1000000 },
+  { id:'curator', ink:'#FF3D6E',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20S4 14.5 4 9.4A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8 2.4C20 14.5 12 20 12 20z" fill="currentColor"/></svg>',
+    goal: () => (save.favs || []).length >= 5 },
+  { id:'dj', ink:'#9C7BFF',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M4 12h16M4 17h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="7" r="2.4" fill="currentColor"/><circle cx="15" cy="17" r="2.4" fill="currentColor"/></svg>',
+    goal: () => (save.mix || []).length >= 5 },
+];
+const ACH_BY_ID = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));
+
+/* Checked after anything that could have just completed one. `r` is the
+   run that just ended, when there is one — only 'flawless' looks at it,
+   everything else reads save state that already persisted. Returns the
+   ones newly earned this call, for the toast queue to announce. */
+function checkAchievements(r){
+  const set = save.achieve || (save.achieve = {});
+  const fresh = ACHIEVEMENTS.filter(a => !set[a.id] && a.goal(r));
+  if (fresh.length){
+    fresh.forEach(a => { set[a.id] = Date.now(); });
+    persist();
+    fresh.forEach(announceAchievement);
+  }
+  return fresh;
+}
+
+/* Boot-only: a save that already qualified for something before this
+   feature existed (a veteran who mastered everything last month) gets
+   credited on sight, not one toast every 2.4s for however many that is —
+   a backfill is not "just happened" and shouldn't perform as one. */
+function backfillAchievements(){
+  const set = save.achieve || (save.achieve = {});
+  let any = false;
+  ACHIEVEMENTS.forEach(a => { if (!set[a.id] && a.goal()){ set[a.id] = Date.now(); any = true; } });
+  if (any) persist();
+}
+
+/* A queue, not a single slot — two achievements can land on the same run
+   (Explorer and Completionist both complete on the mode that finishes
+   both), and the second toast should wait its turn rather than replace
+   the first mid-read. */
+let achToastQueue = [], achToastBusy = false;
+function announceAchievement(a){
+  achToastQueue.push(a);
+  if (!achToastBusy) drainAchToast();
+}
+function drainAchToast(){
+  const a = achToastQueue.shift();
+  if (!a){ achToastBusy = false; return; }
+  achToastBusy = true;
+  const host = $('achToast');
+  host.style.setProperty('--ink', a.ink);
+  host.querySelector('.g').innerHTML = a.glyph;
+  host.querySelector('b').textContent = t('ach.' + a.id);
+  host.querySelector('small').textContent = t('ach.' + a.id + '.d');
+  host.hidden = false;
+  void host.offsetWidth;
+  host.classList.add('in');
+  sfx.level();
+  const hide = () => {
+    host.classList.remove('in');
+    setTimeout(() => { host.hidden = true; drainAchToast(); }, 260);
+  };
+  setTimeout(hide, motionOff() ? 1400 : 2400);
+}
+
 /* ═══ Frame guard ═════════════════════════════════════════════════════════
    A mode's animation loop reschedules itself every frame and stops only when
    the mode decides it is finished — a win, a miss, its own timer. Quitting is
@@ -12861,6 +13123,7 @@ function endRun(){
   }
   if (r.bestStreak > save.pbStreak) save.pbStreak = r.bestStreak;
   persist();
+  checkAchievements(r);
 
   /* A run that held an update back is over; take it now rather than leaving
      the banner to be noticed. */
@@ -13468,6 +13731,31 @@ function paintPerks(){
 
 let statFilter = 'all';
 
+/* Rebuilt each visit rather than cached — fifteen small nodes is cheap, and
+   the alternative is a second cache keyed like modeCard's for a tenth the
+   count. Locked cards render in full (icon, name, description) rather than
+   staying blank: the goal is the point, and a goal you can't read isn't one
+   you can chase. */
+function paintAchievements(){
+  const set = save.achieve || {};
+  const earned = ACHIEVEMENTS.filter(a => set[a.id]).length;
+  $('achCount').textContent = earned + '/' + ACHIEVEMENTS.length;
+  const frag = document.createDocumentFragment();
+  ACHIEVEMENTS.forEach(a => {
+    const on = !!set[a.id];
+    const card = mk('div', 'achcard' + (on ? '' : ' locked'));
+    card.style.setProperty('--ink', a.ink);
+    card.innerHTML = '<span class="g"></span>'
+      + '<svg class="lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'
+      + '<b></b><small></small>';
+    card.querySelector('.g').innerHTML = a.glyph;
+    card.querySelector('b').textContent = t('ach.' + a.id);
+    card.querySelector('small').textContent = t('ach.' + a.id + '.d');
+    frag.appendChild(card);
+  });
+  $('achGrid').replaceChildren(frag);
+}
+
 function paintStats(){
   paintPerks();
   const lvl = playerLevel();
@@ -13482,6 +13770,7 @@ function paintStats(){
   countTo($('sSolved'), save.solved || 0);
   $('sMastered').textContent = masteredCount() + '/' + MODE_IDS.length;
   $('sStars').textContent = totalStars() + '/' + (MODE_IDS.length*3);
+  paintAchievements();
 
   /* "Every mode" was a leaderboard: the modes you have played, best first, and
      the ones you have not buried under them. The thing it could not answer is
@@ -14133,6 +14422,7 @@ function boot(){
   if (!save.lang) save.lang = detectLang();
   try { document.documentElement.lang = save.lang; } catch(e){}
   applyStatic();
+  backfillAchievements();
   persist();
   show('Play');
   paintAll();
