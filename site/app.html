@@ -1926,11 +1926,21 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 .prompt.won{color:var(--cool)}
 .prompt.lost{color:var(--bad)}
+/* Every mode's board is a direct child of #surface, and --fam is already set
+   on #play per mode — so tinting the frame itself, once, gives all 66 a
+   consistent family presence, including the 46 bespoke-era modes that never
+   got the per-piece tinting the early-era shared classes did. Layered under
+   whatever a mode's own CSS already draws, not replacing it — a soft ambient
+   wash behind the board rather than a second, competing treatment. */
 #surface{
   flex:0 1 auto;margin:0 auto;width:min(100%,62vh);aspect-ratio:1;
   min-height:0;display:grid;place-items:center;position:relative;overflow:hidden;
-  border-radius:var(--r-lg);border:1px solid var(--edge-soft);
-  background:#ffffff05;padding:14px;contain:layout paint;
+  border-radius:var(--r-lg);
+  border:1px solid color-mix(in srgb, var(--fam,var(--edge-soft)) 22%, var(--edge-soft));
+  background:
+    radial-gradient(120% 90% at 50% 8%, color-mix(in srgb, var(--fam,transparent) 9%, transparent), transparent 70%),
+    #ffffff05;
+  padding:14px;contain:layout paint;
 }
 #surface.shake{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
 @keyframes shake{10%,90%{transform:translateX(-3px)}20%,80%{transform:translateX(5px)}30%,50%,70%{transform:translateX(-8px)}40%,60%{transform:translateX(8px)}}
@@ -3203,7 +3213,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.52.0';
+const VERSION_TAG = 'v0.53.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4434,6 +4444,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.53.0', date:'2026-09-23', items:[
+    'An earlier pass gave the first nineteen modes — the ones sharing a handful of generic board pieces — a soft wash of their own family colour behind the board. The other forty-six, each with entirely custom board art, never got any of it. Rather than forty-six separate patches, the frame every one of them already renders inside now carries the tint itself: a family-coloured edge and an ambient glow behind whatever a mode draws on top of it. All 66 read as the same system now, not two eras stitched together.',
+  ] },
   { v:'0.52.0', date:'2026-09-23', items:[
     'Reduce motion already existed for anyone who finds the particles and screen shake too much. Nothing existed for the opposite — a puzzle you want without the reflex pressure of a timer draining under it. Settings now has a Game speed control: Normal, Relaxed, or Slow, which stretches the round clock and every mode’s own pacing (the same shared timer sixty-six modes already schedule through) without touching scoring, par, or what counts as a solve. The puzzle is the same puzzle, just with more room to sit with it.',
   ] },
