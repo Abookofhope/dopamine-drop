@@ -2170,6 +2170,31 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .assistprev .sq{width:32px;height:32px;border-radius:9px;flex:none}
 .assistprev .sq .shp{padding:5px;box-sizing:border-box}
 .assistprev span{font-size:11px;color:var(--haze)}
+
+/* ── Cosmetic swatches ──────────────────────────────────────────────────── */
+.swrow{display:flex;flex-wrap:wrap;gap:9px;margin:2px 0 10px}
+.swatch{
+  --c:var(--cool);
+  position:relative;width:44px;height:44px;border-radius:50%;flex:none;
+  background:var(--c);border:2px solid transparent;
+  display:grid;place-items:center;
+  transition:transform var(--t-fast),border-color var(--t-fast);
+}
+.swatch:active{transform:scale(.92)}
+.swatch.on{border-color:var(--cream)}
+.swatch .tick{width:18px;height:18px;color:#0D0918;display:none}
+.swatch.on .tick{display:block}
+/* Locked stays in the row, at full colour — the level it unlocks at is the
+   whole reason to show it, and greying the colour out is the one thing this
+   picker can't do to a swatch and still let you see what you're picking
+   toward. A lock badge and the level number carry the state instead. */
+.swatch.locked{cursor:default}
+.swatch .lockbadge{
+  position:absolute;inset:-2px;border-radius:50%;
+  background:#0D0918b0;display:none;place-items:center;
+  font-family:var(--f-data);font-size:10px;font-weight:700;color:var(--cream);
+}
+.swatch.locked .lockbadge{display:grid}
 /* The build number, legible. At 9.5px and 45% opacity it failed contrast
    outright — and it is the one thing a player reads back when something is
    wrong, so it is the last thing that should be hard to read. */
@@ -2849,6 +2874,12 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <button class="sw" id="swMotion" role="switch" aria-checked="false" aria-label="Reduce motion"></button>
         </div>
 
+        <!-- Locked swatches stay in the row rather than vanishing — the level
+             they unlock at is the whole point of showing them at all. -->
+        <div class="seclbl"><span data-i18n="set.cosmetic">Victory color</span></div>
+        <p class="note" id="cosmeticSub" data-i18n="set.cosmeticSub">The colour every solve bursts in.</p>
+        <div class="swrow" id="cosmeticRow"></div>
+
         <div class="seclbl"><span data-i18n="set.access">Accessibility</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.assist">Colour assist</b><small data-i18n="set.assistSub">Adds shapes and brightness so no puzzle depends on telling two colours apart</small></span>
@@ -3159,7 +3190,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.49.0';
+const VERSION_TAG = 'v0.50.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3188,7 +3219,10 @@ const defaults = {
   /* Achievement ids already earned, each a timestamp rather than a bare
      true — a record of when, not just whether, with room to sort or show
      a date later without another migration. */
-  achieve:{}
+  achieve:{},
+  /* The win colour a level buys — 'teal' is the colour every run has
+     always used, so this changes nothing for a save that never opens it. */
+  cosmetic:'teal'
 };
 
 function migrate(data){
@@ -3635,6 +3669,8 @@ const STRINGS = {
     'set.feedback':'Feedback', 'set.sound':'Sound', 'set.soundSub':'Taps and streak chimes — each family in its own key',
     'set.vib':'Vibration', 'set.vibSub':'A short pulse on every answer',
     'set.motion':'Reduce motion', 'set.motionSub':'No particles, no screen shake',
+    'set.cosmetic':'Victory color', 'set.cosmeticSub':'The colour every solve bursts in.', 'set.cosmeticLocked':'Unlocks at level {n}',
+    'cosmetic.teal':'Teal', 'cosmetic.flare':'Flare', 'cosmetic.zap':'Gold', 'cosmetic.purple':'Violet', 'cosmetic.pink':'Pink', 'cosmetic.blue':'Sky',
     'set.access':'Accessibility', 'set.assist':'Colour assist',
     'set.assistSub':'Adds shapes and brightness so no puzzle depends on telling two colours apart',
     'set.assistPrev':'Every colour also carries a shape',
@@ -3798,6 +3834,8 @@ const STRINGS = {
     'set.feedback':'Retours', 'set.sound':'Son', 'set.soundSub':'Touches et séries — chaque famille dans sa tonalité',
     'set.vib':'Vibration', 'set.vibSub':'Une brève impulsion à chaque réponse',
     'set.motion':'Réduire les animations', 'set.motionSub':'Ni particules, ni secousses',
+    'set.cosmetic':'Couleur de victoire', 'set.cosmeticSub':'La couleur de l’éclat à chaque réussite.', 'set.cosmeticLocked':'Débloqué au niveau {n}',
+    'cosmetic.teal':'Turquoise', 'cosmetic.flare':'Flamme', 'cosmetic.zap':'Or', 'cosmetic.purple':'Violet', 'cosmetic.pink':'Rose', 'cosmetic.blue':'Ciel',
     'set.access':'Accessibilité', 'set.assist':'Aide aux couleurs',
     'set.assistSub':'Ajoute formes et luminosité pour qu’aucun casse-tête ne repose sur la distinction de deux couleurs',
     'set.assistPrev':'Chaque couleur porte aussi une forme',
@@ -3961,6 +3999,8 @@ const STRINGS = {
     'set.feedback':'Respuesta', 'set.sound':'Sonido', 'set.soundSub':'Toques y rachas — cada familia en su tono',
     'set.vib':'Vibración', 'set.vibSub':'Un pulso breve en cada respuesta',
     'set.motion':'Reducir movimiento', 'set.motionSub':'Sin partículas ni sacudidas',
+    'set.cosmetic':'Color de victoria', 'set.cosmeticSub':'El color con el que estalla cada acierto.', 'set.cosmeticLocked':'Se desbloquea en el nivel {n}',
+    'cosmetic.teal':'Turquesa', 'cosmetic.flare':'Llama', 'cosmetic.zap':'Oro', 'cosmetic.purple':'Violeta', 'cosmetic.pink':'Rosa', 'cosmetic.blue':'Cielo',
     'set.access':'Accesibilidad', 'set.assist':'Ayuda de color',
     'set.assistSub':'Añade formas y brillo para que ningún reto dependa de distinguir dos colores',
     'set.assistPrev':'Cada color lleva también una forma',
@@ -4124,6 +4164,8 @@ const STRINGS = {
     'set.feedback':'Rückmeldung', 'set.sound':'Ton', 'set.soundSub':'Tippen und Serien — jede Familie in eigener Tonart',
     'set.vib':'Vibration', 'set.vibSub':'Ein kurzer Impuls bei jeder Antwort',
     'set.motion':'Bewegung reduzieren', 'set.motionSub':'Keine Partikel, kein Wackeln',
+    'set.cosmetic':'Siegesfarbe', 'set.cosmeticSub':'Die Farbe, in der jede Lösung aufblitzt.', 'set.cosmeticLocked':'Ab Level {n}',
+    'cosmetic.teal':'Türkis', 'cosmetic.flare':'Flamme', 'cosmetic.zap':'Gold', 'cosmetic.purple':'Violett', 'cosmetic.pink':'Pink', 'cosmetic.blue':'Himmel',
     'set.access':'Barrierefreiheit', 'set.assist':'Farbhilfe',
     'set.assistSub':'Ergänzt Formen und Helligkeit, damit kein Rätsel vom Unterscheiden zweier Farben abhängt',
     'set.assistPrev':'Jede Farbe trägt auch eine Form',
@@ -4349,6 +4391,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.50.0', date:'2026-09-23', items:[
+    'Every solve’s spark burst and point float has always carried a colour, and it was always the same one — hard-coded, regardless of anything about the player. A level now buys a say in that: Settings has a row of colour swatches, one already unlocked, five more opening at levels 5 through 40. Nothing else about the app’s look changes — family colours, category identity, perk icons are all untouched — just the one accent a run already spends on every single win.',
+  ] },
   { v:'0.49.0', date:'2026-09-23', items:[
     'A ×1 solve and a ×5 solve already looked different — the spark burst and the point float both scale with the multiplier — but they sounded and felt identical, and the run itself gave no sign a hot streak was even happening beyond a small line of prompt text. Reaching ×3 or better now says so: a short rising chime distinct from the ordinary solve sound, and the same "Streak ×N!" text as a bigger beat off the score itself rather than a passing line under the board. The first time a run reaches the top tier gets one extra pulse across the board, once, not on every tap after — every solve from there already carries the loudest version of everything else.',
     'A run that ends without a single miss looked exactly like any other run that ended, unless it also happened to be a new personal best. It gets its own badge now, next to New Personal Best rather than instead of it, since a run can earn both.',
@@ -12256,6 +12301,31 @@ const ACHIEVEMENTS = [
 ];
 const ACH_BY_ID = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));
 
+/* ═══ Cosmetics ═══════════════════════════════════════════════════════════
+   The one thing a level-up bought before this was a bigger number. Every
+   solve's spark burst and point float already carry a colour — it was
+   always the same one, hard-coded, regardless of anything about the player.
+   These are level-gated picks for that colour, nothing else: not the app's
+   own brand palette (family inks, perk colours, category identity all stay
+   exactly what they are), just the one accent a run already spends on every
+   single win. Teal is what it always was, so a player who never opens this
+   sees no change at all. */
+const COSMETICS = [
+  { id:'teal',   hex:'#33E6C8', lvl:0  },
+  { id:'flare',  hex:'#FF5B39', lvl:5  },
+  { id:'zap',    hex:'#FFC53D', lvl:10 },
+  { id:'purple', hex:'#9C7BFF', lvl:15 },
+  { id:'pink',   hex:'#FF8AD8', lvl:25 },
+  { id:'blue',   hex:'#4BC0FF', lvl:40 },
+];
+const cosmeticUnlocked = c => playerLevel() >= c.lvl;
+/* Falls back to teal for an id that is unset, unknown, or was picked before
+   a level reset ever undid its unlock — never a blank or invalid colour. */
+function cosmeticHex(){
+  const c = COSMETICS.find(c => c.id === save.cosmetic);
+  return (c && cosmeticUnlocked(c)) ? c.hex : COSMETICS[0].hex;
+}
+
 /* Checked after anything that could have just completed one. `r` is the
    run that just ended, when there is one — only 'flawless' looks at it,
    everything else reads save state that already persisted. Returns the
@@ -12897,7 +12967,7 @@ function resolve(ok, node){
     const after = Prog.levelForXp(save.xp);
     if (after > before) pendingLevel = after;
 
-    burst(node, '#33E6C8', mult); flash('flash-win');
+    burst(node, cosmeticHex(), mult); flash('flash-win');
     sfx.good(run.streak); buzz('good');
     /* streak++ above already moved this — multAfter is what the player is
        actually looking at, the tier this solve landed them on, not the one
@@ -13912,6 +13982,29 @@ function paintSettings(){
     ).join('') + '<span>Every colour also carries a shape</span>';
     prev.dataset.built = '1';
   }
+  paintCosmetics();
+}
+
+/* Rebuilt every visit, not cached once like the colour-assist preview above —
+   which swatches are locked changes as the player levels up, so a cached
+   build would keep showing yesterday's level forever. Six nodes is cheap. */
+function paintCosmetics(){
+  const lvl = playerLevel();
+  const frag = document.createDocumentFragment();
+  COSMETICS.forEach(c => {
+    const unlocked = lvl >= c.lvl;
+    const on = unlocked && save.cosmetic === c.id;
+    const b = mk('button', 'swatch' + (on ? ' on' : '') + (unlocked ? '' : ' locked'));
+    b.type = 'button';
+    b.style.setProperty('--c', c.hex);
+    b.setAttribute('aria-label', unlocked ? t('cosmetic.' + c.id) : t('set.cosmeticLocked', { n: c.lvl }));
+    b.setAttribute('aria-pressed', String(on));
+    b.innerHTML = '<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>'
+      + (unlocked ? '' : '<span class="lockbadge" aria-hidden="true">' + c.lvl + '</span>');
+    if (unlocked) b.onclick = () => { save.cosmetic = c.id; sfx.tap(); persist(); paintCosmetics(); };
+    frag.appendChild(b);
+  });
+  $('cosmeticRow').replaceChildren(frag);
 }
 
 /* Only the visible tab is repainted. Repainting all five on every change was
