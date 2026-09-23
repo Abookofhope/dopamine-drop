@@ -3139,7 +3139,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 <div class="achtoast" id="achToast" hidden role="status" aria-live="polite">
   <span class="g"></span>
   <span class="txt">
-    <em data-i18n="ach.unlocked">Achievement unlocked</em>
+    <em></em>
     <b></b>
     <small></small>
   </span>
@@ -3190,7 +3190,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.50.0';
+const VERSION_TAG = 'v0.51.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3207,7 +3207,7 @@ const defaults = {
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false,
   lang:null, seenVersion:null,
   lifetime:0, perks:[], perkLv:{}, tokens:0,
-  dailyStreak:0, dailyLast:null, dailyBestStreak:0,
+  dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0,
   lastMode:null, onboarded:false,
   tapes:[], tapeId:null,
   /* Which modes the player has ever met, so a first look can be taught
@@ -3486,6 +3486,13 @@ const motionOff = () => save.reduceMotion || prefersLessMotion();
 
    Levels no longer gate content. They are a record of how far you have taken
    the game, not a toll gate in front of it.                                */
+
+/* A milestone streak paid out once, the moment it's reached — not a bigger
+   number every day forever, which would eventually dwarf the run that
+   earned it. Sized against xpForSolve's 8-16 per tap: even the 100-day
+   bonus is worth a handful of daily runs, not a shortcut past them. */
+const DAILY_BONUS_XP = { 3:10, 7:25, 14:50, 30:100, 60:200, 100:400 };
+
 const Prog = {
   xpToNext: lvl => 50 + 10*(lvl-1),
   totalXpForLevel: lvl => lvl <= 1 ? 0 : (lvl-1)*(5*lvl+40),
@@ -3641,6 +3648,7 @@ const STRINGS = {
     'mix.note':'Pick the modes you actually like. <b>Mixtape</b> shuffles only those. Two or more to make a rotation — <b>{n} chosen</b>.',
     'mix.pickNote':'Pick the modes you actually like — Mixtape shuffles only those. Two or more makes a rotation.', 'mix.all':'All', 'mix.none':'None', 'mix.clear':'Clear', 'mix.chosen':'{n} chosen', 'mix.selectAll':'Select all', 'mix.done':'Done',
     'daily.title':'Daily Drop', 'daily.sub':'12 rounds, one from every family · same for everyone',
+    'daily.bonusEyebrow':'Streak bonus', 'daily.bonusTitle':'{n}-day streak!', 'daily.bonusXp':'+{n} XP',
     'daily.best':'Today’s best: {n}',
     'zen.title':'Fidget Loop', 'zen.sub':'No timer, no score',
     'marathon.title':'Marathon', 'marathon.sub':'One mode, three lives',
@@ -3806,6 +3814,7 @@ const STRINGS = {
     'mix.note':'Choisissez les modes que vous aimez vraiment. <b>Playlist</b> ne mélange que ceux-là. Deux au minimum — <b>{n} choisis</b>.',
     'mix.pickNote':'Choisissez les modes que vous aimez vraiment — la playlist ne mélange que ceux-là. Deux au minimum pour une rotation.', 'mix.all':'Tous', 'mix.none':'Aucun', 'mix.clear':'Vider', 'mix.chosen':'{n} choisis', 'mix.selectAll':'Tout choisir', 'mix.done':'Terminé',
     'daily.title':'Défi du jour', 'daily.sub':'12 manches, une par famille · identique pour tous',
+    'daily.bonusEyebrow':'Bonus de série', 'daily.bonusTitle':'Série de {n} jours !', 'daily.bonusXp':'+{n} XP',
     'daily.best':'Record du jour : {n}',
     'zen.title':'Boucle calme', 'zen.sub':'Sans chrono, sans score',
     'marathon.title':'Marathon', 'marathon.sub':'Un seul mode, trois vies',
@@ -3971,6 +3980,7 @@ const STRINGS = {
     'mix.note':'Elige los modos que de verdad te gustan. <b>Lista</b> solo mezcla esos. Dos o más para una rotación — <b>{n} elegidos</b>.',
     'mix.pickNote':'Elige los modos que de verdad te gustan: la lista solo mezcla esos. Dos o más forman una rotación.', 'mix.all':'Todos', 'mix.none':'Ninguno', 'mix.clear':'Vaciar', 'mix.chosen':'{n} elegidos', 'mix.selectAll':'Elegir todos', 'mix.done':'Listo',
     'daily.title':'Reto diario', 'daily.sub':'12 rondas, una de cada familia · igual para todos',
+    'daily.bonusEyebrow':'Bono de racha', 'daily.bonusTitle':'¡Racha de {n} días!', 'daily.bonusXp':'+{n} XP',
     'daily.best':'Récord de hoy: {n}',
     'zen.title':'Modo calma', 'zen.sub':'Sin reloj, sin puntos',
     'marathon.title':'Maratón', 'marathon.sub':'Un modo, tres vidas',
@@ -4136,6 +4146,7 @@ const STRINGS = {
     'mix.note':'Wähle die Modi, die dir wirklich gefallen. <b>Playlist</b> mischt nur diese. Mindestens zwei — <b>{n} gewählt</b>.',
     'mix.pickNote':'Wähle die Modi, die dir wirklich gefallen — die Playlist mischt nur diese. Ab zwei wird es eine Rotation.', 'mix.all':'Alle', 'mix.none':'Keine', 'mix.clear':'Leeren', 'mix.chosen':'{n} gewählt', 'mix.selectAll':'Alle wählen', 'mix.done':'Fertig',
     'daily.title':'Tagesrätsel', 'daily.sub':'12 Runden, eine je Familie · für alle gleich',
+    'daily.bonusEyebrow':'Serien-Bonus', 'daily.bonusTitle':'{n} Tage in Folge!', 'daily.bonusXp':'+{n} XP',
     'daily.best':'Heutiger Rekord: {n}',
     'zen.title':'Ruhemodus', 'zen.sub':'Ohne Uhr, ohne Punkte',
     'marathon.title':'Marathon', 'marathon.sub':'Ein Modus, drei Leben',
@@ -4391,6 +4402,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.51.0', date:'2026-09-23', items:[
+    'A Daily Drop streak had two payoffs: the number itself, and an achievement badge at 7 and 30 days. Six milestones — 3, 7, 14, 30, 60 and 100 days — now also pay a small XP bonus the moment they’re reached, announced the same way an achievement is, on top of whatever the run itself earned. Paid once per milestone ever, not once every day the streak happens to sit at or above it.',
+  ] },
   { v:'0.50.0', date:'2026-09-23', items:[
     'Every solve’s spark burst and point float has always carried a colour, and it was always the same one — hard-coded, regardless of anything about the player. A level now buys a say in that: Settings has a row of colour swatches, one already unlocked, five more opening at levels 5 through 40. Nothing else about the app’s look changes — family colours, category identity, perk icons are all untouched — just the one accent a run already spends on every single win.',
   ] },
@@ -12355,28 +12369,36 @@ function backfillAchievements(){
 /* A queue, not a single slot — two achievements can land on the same run
    (Explorer and Completionist both complete on the mode that finishes
    both), and the second toast should wait its turn rather than replace
-   the first mid-read. */
-let achToastQueue = [], achToastBusy = false;
-function announceAchievement(a){
-  achToastQueue.push(a);
-  if (!achToastBusy) drainAchToast();
+   the first mid-read. Generic over what's being announced — an achievement
+   unlock and a daily-streak bonus are the same shape of interruption (an
+   icon, an eyebrow, a title, a line under it), so they share one queue and
+   one piece of markup rather than each getting their own toast host. */
+let toastQueue = [], toastBusy = false;
+function announceToast(x){
+  toastQueue.push(x);
+  if (!toastBusy) drainToast();
 }
-function drainAchToast(){
-  const a = achToastQueue.shift();
-  if (!a){ achToastBusy = false; return; }
-  achToastBusy = true;
+function announceAchievement(a){
+  announceToast({ ink: a.ink, glyph: a.glyph, eyebrow: t('ach.unlocked'),
+    title: t('ach.' + a.id), desc: t('ach.' + a.id + '.d') });
+}
+function drainToast(){
+  const x = toastQueue.shift();
+  if (!x){ toastBusy = false; return; }
+  toastBusy = true;
   const host = $('achToast');
-  host.style.setProperty('--ink', a.ink);
-  host.querySelector('.g').innerHTML = a.glyph;
-  host.querySelector('b').textContent = t('ach.' + a.id);
-  host.querySelector('small').textContent = t('ach.' + a.id + '.d');
+  host.style.setProperty('--ink', x.ink);
+  host.querySelector('.g').innerHTML = x.glyph;
+  host.querySelector('em').textContent = x.eyebrow;
+  host.querySelector('b').textContent = x.title;
+  host.querySelector('small').textContent = x.desc;
   host.hidden = false;
   void host.offsetWidth;
   host.classList.add('in');
   sfx.level();
   const hide = () => {
     host.classList.remove('in');
-    setTimeout(() => { host.hidden = true; drainAchToast(); }, 260);
+    setTimeout(() => { host.hidden = true; drainToast(); }, 260);
   };
   setTimeout(hide, motionOff() ? 1400 : 2400);
 }
@@ -13232,6 +13254,19 @@ function endRun(){
         save.dailyStreak = (save.dailyLast === dayKey(-1)) ? (save.dailyStreak || 0) + 1 : 1;
         save.dailyLast = today;
         if (save.dailyStreak > (save.dailyBestStreak || 0)) save.dailyBestStreak = save.dailyStreak;
+        /* Paid once per milestone ever, via dailyBonusAt — not once per day
+           the streak happens to sit at or above it, which is what checking
+           dailyStreak alone would do every single day past the milestone. */
+        const bonus = DAILY_BONUS_XP[save.dailyStreak];
+        if (bonus && (save.dailyBonusAt || 0) < save.dailyStreak){
+          save.dailyBonusAt = save.dailyStreak;
+          save.xp += bonus;
+          announceToast({ ink:'#33E6C8',
+            glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
+            eyebrow: t('daily.bonusEyebrow'),
+            title: t('daily.bonusTitle', { n: save.dailyStreak }),
+            desc: t('daily.bonusXp', { n: bonus }) });
+        }
       }
     }
   }
