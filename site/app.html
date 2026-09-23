@@ -1979,6 +1979,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 #surface.shake{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
 @keyframes shake{10%,90%{transform:translateX(-3px)}20%,80%{transform:translateX(5px)}30%,50%,70%{transform:translateX(-8px)}40%,60%{transform:translateX(8px)}}
+/* A new round used to just appear, mid-tap. Every mode's board is a direct
+   child of #surface (one append per round, whatever wrapper it uses), so
+   this one rule marks the moment for all sixty-six without any of them
+   needing to ask for it. Purely decorative — it never delays a tap, since
+   nothing here touches pointer-events. */
+#surface.boardin > *{animation:boardin 240ms cubic-bezier(.2,.8,.3,1)}
+@keyframes boardin{0%{opacity:0;transform:scale(.97) translateY(4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
 #surface::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:var(--cool);opacity:0;transition:opacity 180ms ease}
 #surface.flash-win::after{opacity:.16;transition:opacity 60ms ease}
 #surface.flash-bad::after{background:var(--bad);opacity:.2;transition:opacity 60ms ease}
@@ -12604,6 +12611,13 @@ function nextRound(){
   };
   const want = mode.stages ? Math.max(1, mode.stages(run.lvl)) : 1;
   if (want > 1) staged(mode, ctx, want); else mode.build(ctx);
+  /* One hook, all sixty-six modes: every board used to just appear, mid-tap,
+     with nothing marking the moment a new round actually started. Toggled
+     fresh each round rather than left on, so a live change to the in-app
+     motion setting is picked up immediately rather than on the next launch —
+     matching motionOff()'s own two-source check (the setting or the OS),
+     since CSS alone only ever sees the OS half of that. */
+  el.surface.classList.toggle('boardin', !motionOff());
 }
 
 function resolve(ok, node){
