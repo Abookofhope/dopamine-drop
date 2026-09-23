@@ -3213,7 +3213,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.53.0';
+const VERSION_TAG = 'v0.54.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4444,6 +4444,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.54.0', date:'2026-09-23', items:[
+    'The tab bar already cross-fades on every switch; two spots inside a tab still snapped instantly between two different screens’ worth of content — My Stuff opening over the Play tab’s guided choices, and drilling into a family on the Modes tab. Both now cross-fade the same way, so the whole app reads as one consistent motion language instead of the top level getting it and everything nested inside not.',
+  ] },
   { v:'0.53.0', date:'2026-09-23', items:[
     'An earlier pass gave the first nineteen modes — the ones sharing a handful of generic board pieces — a soft wash of their own family colour behind the board. The other forty-six, each with entirely custom board art, never got any of it. Rather than forty-six separate patches, the frame every one of them already renders inside now carries the tint itself: a family-coloured edge and an ambient glow behind whatever a mode draws on top of it. All 66 read as the same system now, not two eras stitched together.',
   ] },
@@ -13554,9 +13557,11 @@ function paintChrome(){
 let playView = 'home';
 
 function setPlayView(v){
-  playView = v;
-  $('playHome').hidden = v !== 'home';
-  $('playMyStuff').hidden = v !== 'myStuff';
+  withTransition(() => {
+    playView = v;
+    $('playHome').hidden = v !== 'home';
+    $('playMyStuff').hidden = v !== 'myStuff';
+  });
   if (v === 'myStuff' && !motionOff()){
     $('playMyStuff').querySelectorAll('.stufflist, .modegrid').forEach(grid => {
       grid.classList.remove('stagger');
@@ -13632,7 +13637,7 @@ function paintModes(){
     back.type = 'button';
     back.innerHTML = '<span></span>';
     back.querySelector('span').textContent = '\u2039 ' + t('modes.families');
-    onTap(back, () => { catFilter = 'pick'; paintModes(); });
+    onTap(back, () => { withTransition(() => { catFilter = 'pick'; paintModes(); }); });
     strip.appendChild(back);
   }
   (catFilter === 'pick' ? [] : [['all', MODE_IDS.length]].concat(cats.map(c => [c, idsInCat(c).length])))
@@ -13645,7 +13650,7 @@ function paintModes(){
       b.innerHTML = (id === 'all' ? '' : '<i></i>') + '<span></span><u></u>';
       b.querySelector('span').textContent = id === 'all' ? t('cat.all') : t('cat.' + id);
       b.querySelector('u').textContent = n;
-      onTap(b, () => { catFilter = id; paintModes(); });
+      onTap(b, () => { withTransition(() => { catFilter = id; paintModes(); }); });
       strip.appendChild(b);
     });
 
