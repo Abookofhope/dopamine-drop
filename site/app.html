@@ -3154,7 +3154,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.45.0';
+const VERSION_TAG = 'v0.46.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4259,6 +4259,14 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.46.0', date:'2026-09-23', items:[
+    'Sound and haptics were three taps away mid-run — past the pause sheet, past the tab bar, into a whole settings screen — for the two things you actually reach for when a room goes quiet. The pause sheet carries both switches now, same wiring as Settings, one tap closer. Fitting them in meant moving the sheet itself off the board: #surface is a tight square that doubles as a canvas for board animations, and a fixed-position sheet inside it was being clipped to that square no matter what its own layout said. It now covers the full screen the way the level-up card already did.',
+    'Sixty-six modes was a long list to dig through for the handful you actually keep coming back to. Long-pressing any mode card already opened a preview; that preview now carries a star, and starred modes get their own row at the top of the Play tab, above even the curated picks — a chosen shortlist beats an algorithmic one. Nothing shows until something is starred, so a fresh save looks exactly as it did before.',
+    'Mixtape, Fidget Loop and Marathon sat in a grid sized for four cards. With three, the odd one out landed alone on its own row, and an earlier fix made it lie down full-width rather than leave a gap — which fixed the gap and left the row looking like two cards plus a patch. All three now share one compact shape, a stack of rows rather than a grid with an exception.',
+    'Carry On and Daily Drop sat in identical cards despite being different things — one a shortcut back into whatever you were doing, the other the one ritual on the tab, the same puzzle for everyone today and gone tomorrow. Daily Drop now carries the stronger treatment: a bolder wash, a thicker border, its icon in a filled colour well. Carry On stays the plain, quiet card it always was.',
+    'Twelve modes had no twist at any level — the same single mechanic, just bigger or faster, forever. Past level 14 each one now hides a plausible-looking wrong answer among the real ones: a dot that glows but keeps the group’s own rhythm, a tile that’s merely bigger, a second pad that flashes at the same instant as the last real one, a letter or number dressed to look chosen. None of it touches the win check — every decoy routes through the same tap handler as any other wrong answer, so getting fooled by one costs exactly what a plain mistake always did.',
+    'The early half of the roster — Odd One Out, Snap Order, Color Trap, Sum Snap, Count Fast, Mirror, Echo, Blink, Word Snap, Letter Gap, Phrase Wheel — drew every board from the same handful of shared, flat-grey pieces regardless of which family the mode belonged to. Those pieces now tint toward the mode’s own family colour, the board containers carry a soft matching backdrop instead of no background at all, and a new round announces itself with a brief fade-and-settle instead of just appearing mid-tap.',
+  ] },
   { v:'0.45.0', date:'2026-09-22', items:[
     'The switches were 46 by 27 — the smallest controls in the game, on the one tab that is nothing but controls. The row they sit in is 59 tall and the full width of the screen, and the label is right there, so the row takes the tap now too. The switch stays the control for focus and the keyboard; this only widens where a thumb may land. Rows with a button in them are untouched, so tapping beside Language still does nothing.',
     'Deleting one mixtape had a considered two-step built into the page. Erasing every score, level and perk had a native confirm() — the kind of dialog people dismiss by reflex because every site throws them. The bigger loss now gets at least the care of the smaller one, and it says what it keeps.',
