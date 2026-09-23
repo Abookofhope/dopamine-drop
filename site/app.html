@@ -172,52 +172,56 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .seclbl button{color:var(--flare);font-size:10px;letter-spacing:.1em;font-weight:700}
 
 /* ── Play tab ────────────────────────────────────────────────────────────── */
-/* Shuffle used to be a slab of solid orange on an otherwise black screen, which
-   made it the only thing on the menu with any weight — and Shuffle is not a
-   mode, it is the rotation. Everything below it read as empty boxes by
-   comparison. It is a dark card with an orange accent now: still first, still
-   the widest, still the only one with a filled button, but no longer the only
-   thing your eye can land on. */
-.hero{
-  flex:none;position:relative;overflow:hidden;
-  border-radius:var(--r-xl);padding:18px 20px 20px;
-  /* The wash sits in the corner, not behind the button: centred, it smeared
-     orange across the whole card and put a second glow around the one thing
-     that is meant to be the focal point. */
-  background:
-    radial-gradient(68% 95% at 100% 0%, #ff5b3921, transparent 58%),
-    linear-gradient(168deg,#241a49,var(--ink-2));
-  /* The primary action had the FAINTEST edge on the screen: 1px at 0.2 alpha,
-     against a 3px opaque bar on Carry on and solid borders on the four small
-     cards. It won on size and lost on contrast, which is the half the eye
-     reads first. */
-  border:1px solid #ff5b398c;
+/* The old menu opened with Shuffle as a slab, then a two-card status row, then
+   a curated-picks grid, then the full favourites/quick-mode grids below that —
+   five different decisions stacked on top of each other before you'd made
+   any of them. This is one screen, one question: exactly three destinations,
+   same size, same shape, nothing competing for the first glance. */
+.statusline{
+  display:flex;align-items:center;gap:8px;flex:none;width:100%;text-align:left;
+  min-height:44px;padding:10px 2px;margin-bottom:14px;
+}
+.statusline .dot{width:7px;height:7px;border-radius:99px;background:var(--cool);flex:none}
+.statusline span{flex:1;min-width:0;font-size:12.5px;color:var(--haze);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.statusline b{font-size:13px;color:var(--cool);font-weight:700;flex:none}
+.statusline.streaking .dot{background:var(--zap)}
 
-  color:var(--cream);text-align:left;width:100%;
-  box-shadow:0 12px 28px -26px var(--flare);
+.guidedTitle{
+  font-family:var(--f-disp);font-weight:800;font-size:22px;line-height:1.05;
+  text-transform:uppercase;color:var(--cream);margin-bottom:4px;flex:none;
+}
+.guidedSub{font-size:13px;color:var(--haze);margin-bottom:22px;flex:none}
+
+.guidedlist{display:flex;flex-direction:column;gap:14px;flex:1}
+.guidedBtn{
+  flex:none;min-height:132px;border-radius:var(--r-xl);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:0 22px;text-align:left;width:100%;
+  border:1.5px solid var(--edge);background:var(--ink-2);color:var(--cream);
   transition:transform var(--t-fast),border-color var(--t-fast);
 }
-.hero:active{transform:scale(.985);border-color:#ff5b3980}
-.hero .eyebrow{
-  font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
-  color:var(--flare);
+.guidedBtn:active{transform:scale(.98)}
+.guidedBtn .g{width:28px;height:28px;color:var(--flare);margin-bottom:8px}
+.guidedBtn .g svg{width:100%;height:100%;display:block}
+.guidedBtn b{font-family:var(--f-disp);font-weight:800;font-size:20px;
+  text-transform:uppercase;letter-spacing:-.01em}
+.guidedBtn small{font-size:12.5px;color:var(--haze);margin-top:3px}
+.guidedBtn.primary{
+  border-color:#ff5b398c;
+  background:linear-gradient(155deg,var(--flare),var(--flare-deep));
+  color:#1A0A04;
+  box-shadow:0 12px 28px -26px var(--flare);
 }
-.hero h2{
-  font-family:var(--f-disp);font-weight:800;font-size:38px;line-height:.95;
-  margin:4px 0 6px;text-transform:uppercase;letter-spacing:-.01em;color:var(--cream);
+.guidedBtn.primary .g{color:#1A0A04}
+.guidedBtn.primary small{color:#4a1c0e}
+
+.backrow{
+  display:flex;align-items:center;gap:8px;flex:none;width:100%;text-align:left;
+  min-height:44px;padding:10px 2px 10px 0;margin-bottom:4px;
+  font-size:12.5px;font-weight:700;color:var(--haze);
 }
-.hero p{margin:0;font-size:12.5px;font-weight:600;color:var(--haze);max-width:24ch}
-.hero .go{
-  position:absolute;right:18px;bottom:18px;
-  width:46px;height:46px;border-radius:50%;
-  background:linear-gradient(160deg,var(--flare),var(--flare-deep));
-  color:#1A0A04;display:grid;place-items:center;
-  font-size:20px;font-weight:700;box-shadow:0 6px 15px -10px var(--flare);
-}
-.hero .best{
-  position:absolute;right:18px;top:18px;
-  font-family:var(--f-data);font-size:11px;font-weight:700;color:var(--haze);
-}
+.backrow svg{width:16px;height:16px;display:block}
 
 /* Used to be a 2-column grid built for four cards; with three, the odd one
    out sat alone on its own row, half-empty beside it. A one-off rule made
@@ -255,53 +259,6 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .qcard small{font-size:10.5px;color:var(--haze);line-height:1.35;position:relative;align-self:start}
 .qcard.streaking{border-color:color-mix(in srgb, var(--acc) 55%, transparent)}
 
-/* ── Carry on ─────────────────────────────────────────────────────────── */
-.carryon{
-  display:flex;align-items:center;gap:12px;width:100%;flex:none;margin-top:10px;
-  padding:11px 13px;border-radius:var(--r-lg);text-align:left;
-  border:1px solid var(--edge-soft);border-left:3px solid var(--cink,var(--flare));
-  background:linear-gradient(90deg,
-    color-mix(in srgb, var(--cink,var(--flare)) 11%, transparent), #ffffff05 45%);
-  transition:border-color var(--t-fast),transform var(--t-fast);
-}
-/* ── The today row ─────────────────────────────────────────────────────── */
-/* Two slots, always both present, always the same height. Nothing below this
-   row moves between one session and the next. */
-.todayrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:none;margin-top:10px}
-.todaycard{
-  display:flex;flex-direction:column;align-items:flex-start;gap:2px;
-  padding:11px 12px 12px;border-radius:var(--r-lg);text-align:left;min-height:96px;
-  border:1px solid var(--edge-soft);
-  border-left:2px solid color-mix(in srgb, var(--cink,var(--flare)) 45%, transparent);
-  background:#ffffff05;
-  transition:border-color var(--t-fast),transform var(--t-fast),background var(--t-fast);
-}
-.todaycard:active{transform:scale(.97)}
-.todaycard .g{display:block;width:24px;height:24px;color:var(--cink,var(--flare));margin-bottom:3px}
-.todaycard .g svg{width:100%;height:100%;display:block}
-.todaycard .eyebrow{font-size:9px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--haze);font-weight:700}
-.todaycard b{font-family:var(--f-disp);font-size:clamp(15px,4.4vw,18px);line-height:1.1;
-  color:var(--cream)}
-.todaycard small{font-size:11px;color:var(--haze);line-height:1.25}
-/* Daily Drop is the one ritual on this tab — the same puzzle for everyone
-   today, gone tomorrow, worth coming back for. Carry On is a shortcut back
-   into something of your own, not a destination in its own right — both sat
-   in identical cards, so neither read as more than the other. This is the
-   stronger "this one matters" treatment; Carry On keeps the plain one above,
-   which is what it always was. */
-.todaycard.event{
-  border-color:color-mix(in srgb, var(--cink,var(--flare)) 40%, transparent);
-  border-left-width:4px;
-  background:linear-gradient(135deg,
-    color-mix(in srgb, var(--cink,var(--flare)) 20%, transparent), #ffffff05 65%);
-}
-.todaycard.event .g{
-  width:32px;height:32px;padding:5px;margin-bottom:4px;border-radius:10px;
-  background:color-mix(in srgb, var(--cink,var(--flare)) 16%, transparent);
-  border:1px solid color-mix(in srgb, var(--cink,var(--flare)) 34%, transparent);
-}
-.todaycard.streaking{border-left-color:var(--cink,var(--cool))}
 /* ── The perk chip ─────────────────────────────────────────────────────── */
 /* It rides the section label, which exists whether or not a perk is waiting. */
 /* A chip is still a control: 23px high was under even the 24px floor, so it
@@ -321,37 +278,6 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    second line inside the pill instead of pushing the pill past the screen. */
 .perkchip b{flex:1;min-width:0;font-size:12.5px;letter-spacing:.01em;font-weight:700;
   text-transform:none;line-height:1.25}
-.carryon:active{transform:scale(.985)}
-.carryon .g{
-  width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:11px;
-  background:var(--ink-3);border:1px solid var(--edge);
-}
-.carryon .g svg{width:21px;height:21px;display:block}
-.carryon .txt{flex:1;min-width:0}
-.carryon .eyebrow{
-  display:block;font-family:var(--f-data);font-size:8.5px;font-weight:700;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--cink,var(--flare));
-}
-.carryon b{
-  display:block;margin-top:2px;font-size:14.5px;font-weight:650;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.carryon small{display:block;font-size:10.5px;color:var(--haze)}
-.carryon .arrow{
-  width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;
-  background:var(--ink-3);border:1px solid var(--edge);color:var(--cream);font-size:15px;
-}
-
-/* ── Why a mode is being suggested ────────────────────────────────────── */
-.mcard .why{
-  align-self:flex-end;max-width:100%;
-  padding:2px 7px;border-radius:99px;
-  background:color-mix(in srgb, var(--cink,var(--flare)) 17%, transparent);
-  color:var(--cink,var(--flare));
-  font-family:var(--f-data);font-size:8px;font-weight:700;letter-spacing:.07em;
-  text-transform:uppercase;line-height:1.5;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
 
 /* ── Find a mode ──────────────────────────────────────────────────────── */
 .findrow{position:relative;display:flex;margin:2px 0 8px}
@@ -2389,28 +2315,6 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    menu already stuttered once from doing too much; appeal that costs frames
    is not appeal.                                                          */
 
-/* An aurora behind the hero. One element, one slow transform — the card stops
-   reading as a flat rectangle and starts looking lit from inside. Cream and hot
-   pink at 42% were chosen for a card that was solid orange; on a dark one they
-   are a pink smear across the middle. The app's own violet and flare, at less
-   than half the strength, read as light rather than paint. */
-.hero::before{
-  content:"";position:absolute;inset:-40% -20%;
-  background:
-    radial-gradient(38% 46% at 22% 26%, #7B5BFF 0%, transparent 62%),
-    radial-gradient(34% 42% at 82% 72%, #FF5B39 0%, transparent 60%);
-  opacity:.24;filter:blur(20px);
-  animation:aurora 14s ease-in-out infinite alternate;
-  pointer-events:none;
-}
-@keyframes aurora{
-  0%  { transform:translate3d(-6%,-4%,0) scale(1.05) rotate(0deg) }
-  100%{ transform:translate3d(8%,6%,0) scale(1.18) rotate(8deg) }
-}
-.hero > *{position:relative;z-index:1}
-.hero .go{transition:transform var(--t-fast)}
-.hero:active .go{transform:scale(.88)}
-
 /* Cards arrive in sequence rather than all at once. Only on a tab change, and
    only for what is on screen. */
 .stagger > *{animation:rise 340ms cubic-bezier(.2,.9,.3,1) both}
@@ -2665,76 +2569,87 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
     <!-- ── PLAY ────────────────────────────────────────────────────── -->
     <section class="screen" id="tabPlay">
       <div class="scroll">
-        <button class="hero" id="shuffleBtn" type="button">
-          <span class="best" id="shuffleBest"></span>
-          <span class="eyebrow" data-i18n="hero.eyebrow">Every mode, on shuffle</span>
-          <h2 data-i18n="hero.title">Shuffle</h2>
-          <p data-i18n="hero.sub">60 seconds. The puzzle changes every round.</p>
-          <span class="go" aria-hidden="true">&rarr;</span>
-        </button>
 
-        <!-- The two things a returning player actually came for, in a row that is
-             ALWAYS here. When these were cards that appeared and vanished, every
-             thing below them moved by 85px between one session and the next. -->
-        <div class="todayrow">
-          <button class="todaycard" id="carryOn" type="button">
-            <span class="g" id="carryGlyph" aria-hidden="true"></span>
-            <span class="eyebrow" id="carryEyebrow" data-i18n="play.carryOn">Carry on</span>
-            <b id="carryName"></b>
-            <small id="carryMeta"></small>
+        <!-- Home: exactly three choices, ever, on this screen. Each leads to
+             its own focused sub-screen instead of showing everything at once. -->
+        <div id="playHome">
+          <button class="statusline" id="dailyStatus" type="button">
+            <span class="dot" aria-hidden="true"></span>
+            <span id="dailyStatusLine"></span>
+            <b aria-hidden="true">&rarr;</b>
           </button>
-          <button class="todaycard event" id="dailyBtn" type="button" style="--cink:#33E6C8">
-            <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
-            <span class="eyebrow" data-i18n="daily.title">Daily Drop</span>
-            <b id="dailyLine"></b>
-            <small id="dailyMeta"></small>
-          </button>
+
+          <div class="guidedTitle" data-i18n="play.guidedTitle">What do you want to do?</div>
+          <div class="guidedSub" data-i18n="play.guidedSub">Three questions, not sixty-six modes at once.</div>
+
+          <div class="guidedlist">
+            <button class="guidedBtn primary" id="justPlayBtn" type="button">
+              <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg></span>
+              <b data-i18n="play.justPlay">Just play</b>
+              <small id="justPlaySub"></small>
+            </button>
+            <button class="guidedBtn" id="pickModeBtn" type="button">
+              <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span>
+              <b data-i18n="play.pickMode">Pick a mode</b>
+              <small data-i18n="play.pickSub">All 66, by family</small>
+            </button>
+            <button class="guidedBtn" id="myStuffBtn" type="button">
+              <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></span>
+              <b data-i18n="play.myStuff">My stuff</b>
+              <small data-i18n="play.myStuffSub">Favorites, Mixtape, Marathon</small>
+            </button>
+          </div>
+
+          <p class="verline" id="verLine"></p>
         </div>
 
-        <!-- Hidden until the player has starred something — a chosen shortlist
-             earns the top of the tab, but only once it exists. Nothing to show
-             here for a fresh save, so it costs a first-time player nothing. -->
-        <div class="seclbl" id="favLbl" hidden><span data-i18n="play.favorites">Favorites</span><u id="favCount"></u></div>
-        <div class="modegrid" id="favModes" hidden></div>
-
-        <!-- Curated picks right after the two things a returning player already
-             came for — this used to sit last, after two full sections of
-             exploratory stuff (perks, Mixtape/Fidget/Marathon) a player has to
-             scroll past just to see "here's what to try." "Where do I even
-             start" is the complaint a game with 66 modes earns by default; the
-             one section built to answer it belongs near the top, not the
-             bottom. -->
-        <div class="seclbl"><span data-i18n="play.jump">Jump straight in</span><u id="jumpCount"></u></div>
-        <div class="modegrid" id="quickModes"></div>
-
-        <div class="seclbl"><span data-i18n="play.other">Other ways to play</span>
-          <!-- A perk waiting is a notification, not a destination. As a card it
-               had the loudest border on the screen and pushed everything down;
-               as a chip on a row that exists anyway it costs no layout at all. -->
-          <button class="perkchip" id="perkCall" type="button" hidden>
-            <span class="g" id="perkCallGlyph" aria-hidden="true"></span>
-            <b id="perkCallLine"></b>
+        <!-- My stuff: everything that isn't one of the three big questions —
+             favorites, the perk chip, and the other ways to play. -->
+        <div id="playMyStuff" hidden>
+          <button class="backrow" id="myStuffBack" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            <span data-i18n="btn.backToMenu">Back to menu</span>
           </button>
+
+          <div class="seclbl"><span data-i18n="play.other">Other ways to play</span>
+            <!-- A perk waiting is a notification, not a destination. As a card it
+                 had the loudest border on the screen and pushed everything down;
+                 as a chip on a row that exists anyway it costs no layout at all. -->
+            <button class="perkchip" id="perkCall" type="button" hidden>
+              <span class="g" id="perkCallGlyph" aria-hidden="true"></span>
+              <b id="perkCallLine"></b>
+            </button>
+          </div>
+          <div class="stufflist quick">
+            <button class="qcard" id="mixBtn" type="button" style="--acc:#FF5B39">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M4 12h16M4 17h7"/><circle cx="18" cy="7" r="2.4" fill="currentColor" stroke="none"/><circle cx="15" cy="17" r="2.4" fill="currentColor" stroke="none"/></svg>
+              <b data-i18n="mix.title">Mixtape</b>
+              <small id="mixMeta">Your own rotation</small>
+            </button>
+            <button class="qcard" id="zenBtn" type="button" style="--acc:#7BE38A">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><circle cx="12" cy="12" r="3"/></svg>
+              <b data-i18n="zen.title">Fidget Loop</b>
+              <small data-i18n="zen.sub">No timer, no score</small>
+            </button>
+            <button class="qcard" id="marathonBtn" type="button" style="--acc:#9C7BFF">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 20V9M10 20V4M16 20v-8M22 20h-20"/></svg>
+              <b data-i18n="marathon.title">Marathon</b>
+              <small data-i18n="marathon.sub">One mode, three lives</small>
+            </button>
+            <button class="qcard" id="statsBtn" type="button" style="--acc:#4BC0FF">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
+              <b data-i18n="tab.Stats">Stats</b>
+              <small data-i18n="nav.stats">Your statistics</small>
+            </button>
+          </div>
+
+          <!-- Hidden until the player has starred something — a chosen shortlist
+               earns a spot here, but only once it exists. Nothing to show here
+               for a fresh save, so it costs a first-time player nothing. -->
+          <div class="seclbl" id="favLbl" hidden><span data-i18n="play.favorites">Favorites</span><u id="favCount"></u></div>
+          <div class="modegrid" id="favModes" hidden></div>
         </div>
-        <div class="quick">
-          <button class="qcard" id="mixBtn" type="button" style="--acc:#FF5B39">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M4 12h16M4 17h7"/><circle cx="18" cy="7" r="2.4" fill="currentColor" stroke="none"/><circle cx="15" cy="17" r="2.4" fill="currentColor" stroke="none"/></svg>
-            <b data-i18n="mix.title">Mixtape</b>
-            <small id="mixMeta">Your own rotation</small>
-          </button>
-          <button class="qcard" id="zenBtn" type="button" style="--acc:#7BE38A">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><circle cx="12" cy="12" r="3"/></svg>
-            <b data-i18n="zen.title">Fidget Loop</b>
-            <small data-i18n="zen.sub">No timer, no score</small>
-          </button>
-          <button class="qcard" id="marathonBtn" type="button" style="--acc:#9C7BFF">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 20V9M10 20V4M16 20v-8M22 20h-20"/></svg>
-            <b data-i18n="marathon.title">Marathon</b>
-            <small data-i18n="marathon.sub">One mode, three lives</small>
-          </button>
-        </div>
 
-        <p class="verline" id="verLine"></p>
       </div>
     </section>
 
@@ -3154,7 +3069,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.46.0';
+const VERSION_TAG = 'v0.47.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3580,8 +3495,10 @@ const STRINGS = {
   en: {
     'nav.sections':'Sections', 'nav.stats':'Your statistics', 'cat.all':'All', 'cat.focus':'Focus', 'cat.reflex':'Reflex', 'cat.memory':'Memory', 'cat.logic':'Logic', 'cat.numbers':'Numbers', 'cat.words':'Words', 'cat.rhythm':'Rhythm', 'cat.calm':'Calm', 'cat.physics':'Physics', 'cat.make':'Make', 'modes.filter':'Filter modes by kind', 'tab.Play':'Play', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Settings',
     'hero.eyebrow':'Every mode, on shuffle', 'hero.title':'Shuffle',
-    'hero.sub':'60 seconds. The puzzle changes every round.', 'run.lid':'+{n}s ceiling', 'hero.best':'BEST',
-    'play.other':'Other ways to play', 'play.jump':'Jump straight in', 'play.favorites':'Favorites',
+    'hero.sub':'60 seconds. The puzzle changes every round.', 'run.lid':'+{n}s ceiling',
+    'play.other':'Other ways to play', 'play.favorites':'Favorites',
+    'play.guidedTitle':'What do you want to do?', 'play.guidedSub':'Three questions, not sixty-six modes at once.',
+    'play.justPlay':'Just play', 'play.myStuff':'My stuff', 'play.myStuffSub':'Favorites, Mixtape, Marathon',
     'mix.title':'Mixtape', 'mix.tapToChoose':'Tap to choose your modes',
     'mix.nChosen':'{n} modes chosen', 'mix.build':'Build your rotation',
     'mix.note':'Pick the modes you actually like. <b>Mixtape</b> shuffles only those. Two or more to make a rotation — <b>{n} chosen</b>.',
@@ -3657,7 +3574,7 @@ const STRINGS = {
     'daily.streak':'{n}-day streak', 'daily.streak1':'Streak started today', 'daily.share':'Dopamine Drop — Daily Drop {d}: {a}/{b} solved for {n} points, day {s} of my streak.', 'btn.share':'Share', 'daily.copied':'Copied',
     'stats.filter':'Filter the mode list', 'stats.fAll':'All', 'stats.fPlayed':'Played', 'stats.fNew':'Not tried', 'stats.allPlayed':'You have played every mode at least once.', 'stats.noneYet':'Nothing here yet — play a Marathon and a score appears.',
     'p.bbListen':'Listen — two bars, then the gaps are yours', 'p.bbPlay':'Tap between the beats — {n} to go', 'bb.pad':'Tap between the beats', 'm.backbeat':'Backbeat|Tap between the beats, never on one', 'p.chorus':'One of these is not holding its tempo', 'chorus.lane':'Row {n}', 'm.chorus':'Chorus|Steady tempos, and one that is not staying steady', 'p.bridge':'{n} planks laid — reach the far bank', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Open water, column {x} row {y}, tap to lay a plank', 'bridge.plank':'A plank, column {x} row {y}, tap to lift it', 'm.bridge':'Bridge|Lay planks bank to bank — you have only so many', 'p.weave':'{n} squares still wrong', 'weave.want':'The pattern to match', 'weave.over':'Over, column {x} row {y}', 'weave.under':'Under, column {x} row {y}', 'm.weave':'Weave|Each tap pulls a whole row and column — match the cloth',
-    'play.startHere':'Start here', 'play.pickMode':'Pick a mode', 'play.pickSub':'All {n}, by family', 'daily.subShort':'One from every family', 'daily.today':'Today’s twelve', 'daily.done':'Played today', 'daily.streakN':'{n}-day streak', 'play.carryOn':'Carry on', 'play.carryBest':'Your best {n}', 'why.new':'Untried', 'why.new2':'Fresh pick', 'why.new3':'First try', 'why.new4':'New to you', 'why.star':'Near a star', 'why.star2':'Almost there', 'why.star3':'So close', 'why.star4':'One more push', 'why.rare':'Neglected', 'why.rare2':'Long overdue', 'why.rare3':'Catching dust', 'why.rare4':'Overlooked', 'why.wild':'Wildcard', 'why.wild2':'Random pick', 'why.wild3':'For variety', 'why.wild4':'Mix it up',
+    'play.pickMode':'Pick a mode', 'play.pickSub':'All {n}, by family', 'daily.subShort':'One from every family', 'daily.today':'Today’s twelve', 'daily.done':'Played today', 'daily.streakN':'{n}-day streak', 'play.carryBest':'Your best {n}',
     'wc.lead':'{n} small puzzles. The one in front of you changes every round.', 'wc.p1':'Sixty seconds a run', 'wc.p2':'A different puzzle every round', 'wc.p3':'A miss costs time — a streak pays', 'wc.change':'Change', 'wc.start':'Start your first run', 'wc.look':'Look around first',
     'mix.tapes':'Your mixtapes', 'mix.name':'Name this mixtape', 'mix.share':'Share this mixtape', 'mix.delete':'Delete this mixtape', 'mix.untitled':'Mixtape {n}', 'mix.newTape':'+ New', 'mix.paste':'Paste a code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Delete “{name}”?', 'mix.keep':'Keep', 'mix.deleteIt':'Delete', 'mix.shareText':'My Dopamine Drop mixtape “{name}” — {n} modes. Paste this code into the Mix tab: {code}', 'mix.importTitle':'Add a mixtape', 'mix.importSub':'Paste a code someone sent you. It carries a name and a list of modes, nothing else.', 'mix.importAdd':'Add it', 'mix.importBad':'No mixtape code in that. Paste the whole message — the code starts with DD1.', 'mix.importOk':'Added “{name}”.', 'mix.importN':'{n} modes.', 'mix.importN1':'One mode.', 'mix.importDropped':'{n} of its modes are not in this version and were left out.', 'mix.importDropped1':'One of its modes is not in this version and was left out.',
     'p.rampFast':'Listen — it is speeding up', 'p.rampSlow':'Listen — it is slowing down', 'p.rampGo':'Stay on the beat — {n} to go', 'ramp.pad':'Tap on each beat', 'm.ramp':'Ramp|The tempo is moving — stay on it',
@@ -3725,8 +3642,10 @@ const STRINGS = {
   fr: {
     'nav.sections':'Sections', 'nav.stats':'Vos statistiques', 'cat.all':'Tout', 'cat.focus':'Attention', 'cat.reflex':'Réflexes', 'cat.memory':'Mémoire', 'cat.logic':'Logique', 'cat.numbers':'Nombres', 'cat.words':'Mots', 'cat.rhythm':'Rythme', 'cat.calm':'Calme', 'cat.physics':'Physique', 'cat.make':'Créer', 'modes.filter':'Filtrer les modes', 'tab.Play':'Jouer', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Réglages',
     'hero.eyebrow':'Tous les modes, en aléatoire', 'hero.title':'Mélange',
-    'hero.sub':'60 secondes. Le casse-tête change à chaque manche.', 'run.lid':'plafond +{n}s', 'hero.best':'RECORD',
-    'play.other':'Autres façons de jouer', 'play.jump':'Commencer tout de suite', 'play.favorites':'Favoris',
+    'hero.sub':'60 secondes. Le casse-tête change à chaque manche.', 'run.lid':'plafond +{n}s',
+    'play.other':'Autres façons de jouer', 'play.favorites':'Favoris',
+    'play.guidedTitle':'Que voulez-vous faire ?', 'play.guidedSub':'Trois questions, pas soixante-six modes d’un coup.',
+    'play.justPlay':'Jouer', 'play.myStuff':'Mes affaires', 'play.myStuffSub':'Favoris, Mixtape, Marathon',
     'mix.title':'Playlist', 'mix.tapToChoose':'Touchez pour choisir vos modes',
     'mix.nChosen':'{n} modes choisis', 'mix.build':'Composez votre rotation',
     'mix.note':'Choisissez les modes que vous aimez vraiment. <b>Playlist</b> ne mélange que ceux-là. Deux au minimum — <b>{n} choisis</b>.',
@@ -3802,7 +3721,7 @@ const STRINGS = {
     'daily.streak':'Série de {n} jours', 'daily.streak1':'Série commencée aujourd’hui', 'daily.share':'Dopamine Drop — Tirage du jour {d} : {a}/{b} réussis pour {n} points, {s}ᵉ jour de ma série.', 'btn.share':'Partager', 'daily.copied':'Copié',
     'stats.filter':'Filtrer la liste des modes', 'stats.fAll':'Tout', 'stats.fPlayed':'Joués', 'stats.fNew':'Jamais essayés', 'stats.allPlayed':'Vous avez joué à tous les modes au moins une fois.', 'stats.noneYet':'Rien ici — jouez un Marathon et un score apparaîtra.',
     'p.bbListen':'Écoutez — deux mesures, puis les silences sont à vous', 'p.bbPlay':'Touchez entre les temps — encore {n}', 'bb.pad':'Touchez entre les temps', 'm.backbeat':'Contretemps|Touchez entre les temps, jamais sur un temps', 'p.chorus':'L’une d’elles ne tient pas son tempo', 'chorus.lane':'Ligne {n}', 'm.chorus':'Chœur|Des tempos réguliers, et un qui ne l’est pas', 'p.bridge':'{n} planches posées — atteignez l’autre rive', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Eau libre, colonne {x} ligne {y}, touchez pour poser une planche', 'bridge.plank':'Une planche, colonne {x} ligne {y}, touchez pour la retirer', 'm.bridge':'Pont|Posez des planches d’une rive à l’autre — elles sont comptées', 'p.weave':'Encore {n} cases fausses', 'weave.want':'Le motif à reproduire', 'weave.over':'Dessus, colonne {x} ligne {y}', 'weave.under':'Dessous, colonne {x} ligne {y}', 'm.weave':'Tissage|Chaque touche tire toute une ligne et une colonne — reproduisez le tissu',
-    'play.startHere':'Commencez ici', 'play.pickMode':'Choisir un mode', 'play.pickSub':'Les {n}, par famille', 'daily.subShort':'Une de chaque famille', 'daily.today':'Les douze du jour', 'daily.done':'Fait aujourd’hui', 'daily.streakN':'Série de {n} jours', 'play.carryOn':'Reprendre', 'play.carryBest':'Votre record {n}', 'why.new':'Jamais joué', 'why.new2':'Coup d’essai', 'why.new3':'Pas encore fait', 'why.new4':'Pour découvrir', 'why.star':'Presque une étoile', 'why.star2':'Si proche', 'why.star3':'Encore un effort', 'why.star4':'Un dernier coup', 'why.rare':'Délaissé', 'why.rare2':'Oublié depuis longtemps', 'why.rare3':'Prend la poussière', 'why.rare4':'Trop mis de côté', 'why.wild':'Au hasard', 'why.wild2':'Pour changer', 'why.wild3':'Un peu de variété', 'why.wild4':'Coup de dé',
+    'play.pickMode':'Choisir un mode', 'play.pickSub':'Les {n}, par famille', 'daily.subShort':'Une de chaque famille', 'daily.today':'Les douze du jour', 'daily.done':'Fait aujourd’hui', 'daily.streakN':'Série de {n} jours', 'play.carryBest':'Votre record {n}',
     'wc.lead':'{n} petits casse-têtes. Celui qui est devant vous change à chaque manche.', 'wc.p1':'Soixante secondes par partie', 'wc.p2':'Un casse-tête différent à chaque manche', 'wc.p3':'Une erreur coûte du temps — une série rapporte', 'wc.change':'Changer', 'wc.start':'Lancer votre première partie', 'wc.look':'Jeter un œil d’abord',
     'mix.tapes':'Vos playlists', 'mix.name':'Nommer cette playlist', 'mix.share':'Partager cette playlist', 'mix.delete':'Supprimer cette playlist', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Nouvelle', 'mix.paste':'Coller un code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Supprimer « {name} » ?', 'mix.keep':'Garder', 'mix.deleteIt':'Supprimer', 'mix.shareText':'Ma playlist Dopamine Drop « {name} » — {n} modes. Collez ce code dans l’onglet Mix : {code}', 'mix.importTitle':'Ajouter une playlist', 'mix.importSub':'Collez un code qu’on vous a envoyé. Il contient un nom et une liste de modes, rien d’autre.', 'mix.importAdd':'Ajouter', 'mix.importBad':'Aucun code de playlist là-dedans. Collez tout le message — le code commence par DD1.', 'mix.importOk':'« {name} » ajoutée.', 'mix.importN':'{n} modes.', 'mix.importN1':'Un mode.', 'mix.importDropped':'{n} de ses modes n’existent pas dans cette version et ont été écartés.', 'mix.importDropped1':'Un de ses modes n’existe pas dans cette version et a été écarté.',
     'p.rampFast':'Écoutez — ça accélère', 'p.rampSlow':'Écoutez — ça ralentit', 'p.rampGo':'Restez sur le temps — encore {n}', 'ramp.pad':'Touchez sur chaque temps', 'm.ramp':'Accélération|Le tempo bouge — restez dessus',
@@ -3870,8 +3789,10 @@ const STRINGS = {
   es: {
     'nav.sections':'Secciones', 'nav.stats':'Tus estadísticas', 'cat.all':'Todo', 'cat.focus':'Atención', 'cat.reflex':'Reflejos', 'cat.memory':'Memoria', 'cat.logic':'Lógica', 'cat.numbers':'Números', 'cat.words':'Palabras', 'cat.rhythm':'Ritmo', 'cat.calm':'Calma', 'cat.physics':'Física', 'cat.make':'Crear', 'modes.filter':'Filtrar modos', 'tab.Play':'Jugar', 'tab.Modes':'Modos', 'tab.Mix':'Mezcla', 'tab.Stats':'Datos', 'tab.Settings':'Ajustes',
     'hero.eyebrow':'Todos los modos, al azar', 'hero.title':'Mezcla',
-    'hero.sub':'60 segundos. El reto cambia en cada ronda.', 'run.lid':'techo +{n}s', 'hero.best':'RÉCORD',
-    'play.other':'Otras formas de jugar', 'play.jump':'Empieza ya', 'play.favorites':'Favoritos',
+    'hero.sub':'60 segundos. El reto cambia en cada ronda.', 'run.lid':'techo +{n}s',
+    'play.other':'Otras formas de jugar', 'play.favorites':'Favoritos',
+    'play.guidedTitle':'¿Qué quieres hacer?', 'play.guidedSub':'Tres preguntas, no sesenta y seis modos a la vez.',
+    'play.justPlay':'Jugar', 'play.myStuff':'Lo mío', 'play.myStuffSub':'Favoritos, Mixtape, Maratón',
     'mix.title':'Lista', 'mix.tapToChoose':'Toca para elegir tus modos',
     'mix.nChosen':'{n} modos elegidos', 'mix.build':'Arma tu rotación',
     'mix.note':'Elige los modos que de verdad te gustan. <b>Lista</b> solo mezcla esos. Dos o más para una rotación — <b>{n} elegidos</b>.',
@@ -3947,7 +3868,7 @@ const STRINGS = {
     'daily.streak':'Racha de {n} días', 'daily.streak1':'Racha empezada hoy', 'daily.share':'Dopamine Drop — Reto diario {d}: {a}/{b} resueltos por {n} puntos, día {s} de mi racha.', 'btn.share':'Compartir', 'daily.copied':'Copiado',
     'stats.filter':'Filtrar la lista de modos', 'stats.fAll':'Todos', 'stats.fPlayed':'Jugados', 'stats.fNew':'Sin probar', 'stats.allPlayed':'Has jugado todos los modos al menos una vez.', 'stats.noneYet':'Aquí no hay nada — juega un Maratón y aparecerá una puntuación.',
     'p.bbListen':'Escucha — dos compases y los huecos son tuyos', 'p.bbPlay':'Toca entre los golpes — quedan {n}', 'bb.pad':'Toca entre los golpes', 'm.backbeat':'Contratiempo|Toca entre los golpes, nunca sobre uno', 'p.chorus':'Una de ellas no mantiene su tempo', 'chorus.lane':'Fila {n}', 'm.chorus':'Coro|Tempos estables, y uno que no lo es', 'p.bridge':'{n} tablones puestos — llega a la otra orilla', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Agua abierta, columna {x} fila {y}, toca para poner un tablón', 'bridge.plank':'Un tablón, columna {x} fila {y}, toca para quitarlo', 'm.bridge':'Puente|Pon tablones de orilla a orilla — están contados', 'p.weave':'Quedan {n} casillas mal', 'weave.want':'El patrón que hay que igualar', 'weave.over':'Encima, columna {x} fila {y}', 'weave.under':'Debajo, columna {x} fila {y}', 'm.weave':'Telar|Cada toque tira de toda una fila y columna — iguala la tela',
-    'play.startHere':'Empieza aquí', 'play.pickMode':'Elige un modo', 'play.pickSub':'Los {n}, por familia', 'daily.subShort':'Uno de cada familia', 'daily.today':'Los doce de hoy', 'daily.done':'Jugado hoy', 'daily.streakN':'Racha de {n} días', 'play.carryOn':'Continuar', 'play.carryBest':'Tu récord {n}', 'why.new':'Sin probar', 'why.new2':'Aún sin jugar', 'why.new3':'Primera vez', 'why.new4':'Para descubrir', 'why.star':'Cerca de una estrella', 'why.star2':'Tan cerca', 'why.star3':'Ya casi', 'why.star4':'Un empujón más', 'why.rare':'Olvidado', 'why.rare2':'Hace tiempo', 'why.rare3':'Cogiendo polvo', 'why.rare4':'Muy descuidado', 'why.wild':'Al azar', 'why.wild2':'Para variar', 'why.wild3':'Un poco de variedad', 'why.wild4':'Tirada de dados',
+    'play.pickMode':'Elige un modo', 'play.pickSub':'Los {n}, por familia', 'daily.subShort':'Uno de cada familia', 'daily.today':'Los doce de hoy', 'daily.done':'Jugado hoy', 'daily.streakN':'Racha de {n} días', 'play.carryBest':'Tu récord {n}',
     'wc.lead':'{n} pequeños rompecabezas. El que tienes delante cambia en cada ronda.', 'wc.p1':'Sesenta segundos por partida', 'wc.p2':'Un rompecabezas distinto cada ronda', 'wc.p3':'Un fallo cuesta tiempo — una racha paga', 'wc.change':'Cambiar', 'wc.start':'Empieza tu primera partida', 'wc.look':'Echar un vistazo primero',
     'mix.tapes':'Tus listas', 'mix.name':'Nombra esta lista', 'mix.share':'Compartir esta lista', 'mix.delete':'Borrar esta lista', 'mix.untitled':'Lista {n}', 'mix.newTape':'+ Nueva', 'mix.paste':'Pegar un código', 'mix.metaTape':'{name} · {n} modos', 'mix.delConfirm':'¿Borrar «{name}»?', 'mix.keep':'Conservar', 'mix.deleteIt':'Borrar', 'mix.shareText':'Mi lista de Dopamine Drop «{name}» — {n} modos. Pega este código en la pestaña Mix: {code}', 'mix.importTitle':'Añadir una lista', 'mix.importSub':'Pega un código que te hayan enviado. Lleva un nombre y una lista de modos, nada más.', 'mix.importAdd':'Añadirla', 'mix.importBad':'Ahí no hay ningún código de lista. Pega el mensaje entero — el código empieza por DD1.', 'mix.importOk':'Añadida «{name}».', 'mix.importN':'{n} modos.', 'mix.importN1':'Un modo.', 'mix.importDropped':'{n} de sus modos no están en esta versión y se han dejado fuera.', 'mix.importDropped1':'Uno de sus modos no está en esta versión y se ha dejado fuera.',
     'p.rampFast':'Escucha — está acelerando', 'p.rampSlow':'Escucha — está frenando', 'p.rampGo':'Sigue el pulso — quedan {n}', 'ramp.pad':'Toca en cada pulso', 'm.ramp':'Rampa|El tempo se mueve — sigue con él',
@@ -4015,8 +3936,10 @@ const STRINGS = {
   de: {
     'nav.sections':'Bereiche', 'nav.stats':'Deine Werte', 'cat.all':'Alle', 'cat.focus':'Fokus', 'cat.reflex':'Reflexe', 'cat.memory':'Gedächtnis', 'cat.logic':'Logik', 'cat.numbers':'Zahlen', 'cat.words':'Wörter', 'cat.rhythm':'Rhythmus', 'cat.calm':'Ruhe', 'cat.physics':'Physik', 'cat.make':'Bauen', 'modes.filter':'Modi filtern', 'tab.Play':'Spielen', 'tab.Modes':'Modi', 'tab.Mix':'Mix', 'tab.Stats':'Werte', 'tab.Settings':'Optionen',
     'hero.eyebrow':'Alle Modi, gemischt', 'hero.title':'Mix',
-    'hero.sub':'60 Sekunden. Das Rätsel wechselt jede Runde.', 'run.lid':'+{n}s Limit', 'hero.best':'REKORD',
-    'play.other':'Andere Spielarten', 'play.jump':'Direkt loslegen', 'play.favorites':'Favoriten',
+    'hero.sub':'60 Sekunden. Das Rätsel wechselt jede Runde.', 'run.lid':'+{n}s Limit',
+    'play.other':'Andere Spielarten', 'play.favorites':'Favoriten',
+    'play.guidedTitle':'Was möchtest du tun?', 'play.guidedSub':'Drei Fragen, nicht sechsundsechzig Modi auf einmal.',
+    'play.justPlay':'Loslegen', 'play.myStuff':'Meine Sachen', 'play.myStuffSub':'Favoriten, Mixtape, Marathon',
     'mix.title':'Playlist', 'mix.tapToChoose':'Tippen, um Modi zu wählen',
     'mix.nChosen':'{n} Modi gewählt', 'mix.build':'Stelle deine Rotation zusammen',
     'mix.note':'Wähle die Modi, die dir wirklich gefallen. <b>Playlist</b> mischt nur diese. Mindestens zwei — <b>{n} gewählt</b>.',
@@ -4092,7 +4015,7 @@ const STRINGS = {
     'daily.streak':'{n} Tage in Folge', 'daily.streak1':'Serie heute begonnen', 'daily.share':'Dopamine Drop — Tagesrunde {d}: {a}/{b} gelöst für {n} Punkte, Tag {s} meiner Serie.', 'btn.share':'Teilen', 'daily.copied':'Kopiert',
     'stats.filter':'Modusliste filtern', 'stats.fAll':'Alle', 'stats.fPlayed':'Gespielt', 'stats.fNew':'Ungespielt', 'stats.allPlayed':'Du hast jeden Modus mindestens einmal gespielt.', 'stats.noneYet':'Hier ist noch nichts — spiel einen Marathon und ein Wert erscheint.',
     'p.bbListen':'Hör zu — zwei Takte, dann gehören dir die Lücken', 'p.bbPlay':'Zwischen die Schläge tippen — noch {n}', 'bb.pad':'Zwischen die Schläge tippen', 'm.backbeat':'Nachschlag|Tippe zwischen die Schläge, nie auf einen', 'p.chorus':'Eine davon hält ihr Tempo nicht', 'chorus.lane':'Zeile {n}', 'm.chorus':'Chor|Gleichmäßige Tempi, und eines, das keines hält', 'p.bridge':'{n} Planken gelegt — erreiche das andere Ufer', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Offenes Wasser, Spalte {x} Zeile {y}, tippen zum Planken legen', 'bridge.plank':'Eine Planke, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Brücke|Lege Planken von Ufer zu Ufer — sie sind gezählt', 'p.weave':'Noch {n} Felder falsch', 'weave.want':'Das Muster, das passen muss', 'weave.over':'Oben, Spalte {x} Zeile {y}', 'weave.under':'Unten, Spalte {x} Zeile {y}', 'm.weave':'Weben|Jeder Tipp zieht eine ganze Zeile und Spalte — triff das Tuch',
-    'play.startHere':'Fang hier an', 'play.pickMode':'Modus wählen', 'play.pickSub':'Alle {n}, nach Familie', 'daily.subShort':'Eins aus jeder Familie', 'daily.today':'Die zwölf von heute', 'daily.done':'Heute gespielt', 'daily.streakN':'{n} Tage in Folge', 'play.carryOn':'Weiter', 'play.carryBest':'Dein Bestwert {n}', 'why.new':'Ungespielt', 'why.new2':'Noch nie probiert', 'why.new3':'Erstes Mal', 'why.new4':'Zum Entdecken', 'why.star':'Fast ein Stern', 'why.star2':'So nah dran', 'why.star3':'Nur noch ein Schritt', 'why.star4':'Ein letzter Versuch', 'why.rare':'Vergessen', 'why.rare2':'Lange her', 'why.rare3':'Verstaubt', 'why.rare4':'Zu lange liegen gelassen', 'why.wild':'Zufall', 'why.wild2':'Zur Abwechslung', 'why.wild3':'Etwas Abwechslung', 'why.wild4':'Wurf der Würfel',
+    'play.pickMode':'Modus wählen', 'play.pickSub':'Alle {n}, nach Familie', 'daily.subShort':'Eins aus jeder Familie', 'daily.today':'Die zwölf von heute', 'daily.done':'Heute gespielt', 'daily.streakN':'{n} Tage in Folge', 'play.carryBest':'Dein Bestwert {n}',
     'wc.lead':'{n} kleine Rätsel. Das vor dir wechselt jede Runde.', 'wc.p1':'Sechzig Sekunden pro Runde', 'wc.p2':'Jede Runde ein anderes Rätsel', 'wc.p3':'Ein Fehler kostet Zeit — eine Serie zahlt sich aus', 'wc.change':'Ändern', 'wc.start':'Starte deine erste Runde', 'wc.look':'Erst mal umsehen',
     'mix.tapes':'Deine Playlists', 'mix.name':'Diese Playlist benennen', 'mix.share':'Diese Playlist teilen', 'mix.delete':'Diese Playlist löschen', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Neu', 'mix.paste':'Code einfügen', 'mix.metaTape':'{name} · {n} Modi', 'mix.delConfirm':'„{name}“ löschen?', 'mix.keep':'Behalten', 'mix.deleteIt':'Löschen', 'mix.shareText':'Meine Dopamine-Drop-Playlist „{name}“ — {n} Modi. Füge diesen Code im Mix-Tab ein: {code}', 'mix.importTitle':'Playlist hinzufügen', 'mix.importSub':'Füge einen Code ein, den dir jemand geschickt hat. Er enthält einen Namen und eine Modusliste, sonst nichts.', 'mix.importAdd':'Hinzufügen', 'mix.importBad':'Darin steckt kein Playlist-Code. Füge die ganze Nachricht ein — der Code beginnt mit DD1.', 'mix.importOk':'„{name}“ hinzugefügt.', 'mix.importN':'{n} Modi.', 'mix.importN1':'Ein Modus.', 'mix.importDropped':'{n} ihrer Modi gibt es in dieser Version nicht und wurden weggelassen.', 'mix.importDropped1':'Einen ihrer Modi gibt es in dieser Version nicht, er wurde weggelassen.',
     'p.rampFast':'Hör zu — es wird schneller', 'p.rampSlow':'Hör zu — es wird langsamer', 'p.rampGo':'Bleib im Takt — noch {n}', 'ramp.pad':'Auf jeden Schlag tippen', 'm.ramp':'Rampe|Das Tempo bewegt sich — bleib drauf',
@@ -4259,6 +4182,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.47.0', date:'2026-09-23', items:[
+    'The Play tab opened on a stack of five different decisions in a row — a shuffle slab, a two-card status row, a curated-picks grid, then two more sections below that — before you had made any of them. It is one screen now, one question, exactly three answers: Just Play (continues whatever you last played, or shuffles if there is nothing to continue), Pick a Mode, and My Stuff, which holds Favorites, Mixtape, Fidget Loop, Marathon and Stats behind one tap instead of stacking all of it on the way in. The four-pick "why this mode" shelf is gone with it — a reason attached to an algorithmic guess mattered less once the guessing went away.',
+  ] },
   { v:'0.46.0', date:'2026-09-23', items:[
     'Sound and haptics were three taps away mid-run — past the pause sheet, past the tab bar, into a whole settings screen — for the two things you actually reach for when a room goes quiet. The pause sheet carries both switches now, same wiring as Settings, one tap closer. Fitting them in meant moving the sheet itself off the board: #surface is a tight square that doubles as a canvas for board animations, and a fixed-position sheet inside it was being clipped to that square no matter what its own layout said. It now covers the full screen the way the level-up card already did.',
     'Sixty-six modes was a long list to dig through for the handful you actually keep coming back to. Long-pressing any mode card already opened a preview; that preview now carries a star, and starred modes get their own row at the top of the Play tab, above even the curated picks — a chosen shortlist beats an algorithmic one. Nothing shows until something is starred, so a fresh save looks exactly as it did before.',
@@ -13049,8 +12975,7 @@ function modeCard(id, opts){
       '<span class="top"><span class="glyph">' + m.glyph + '</span><b></b></span>' +
       '<small></small>' +
       '<span class="foot"><span class="stars"><i></i><i></i><i></i></span><span class="pb"></span></span>' +
-      '<span class="pin" hidden>✓</span>' +
-      '<span class="why" hidden></span>';
+      '<span class="pin" hidden>✓</span>';
     /* The card's own id, so anything that needs to find one mode among sixty
        can ask for it by name rather than by its translated title. */
     card.dataset.id = id;
@@ -13075,8 +13000,6 @@ function modeCard(id, opts){
   const inMix = tapeModes().includes(id);
   card.classList.toggle('inmix', opts.mode === 'mix' && inMix);
   card.querySelector('.pin').hidden = !(opts.mode === 'mix' && inMix);
-  card.querySelector('.why').hidden = true;   /* the caller turns it back on */
-  card.classList.remove('why-on');
   card.onclick = opts.onTap;
   return card;
 }
@@ -13157,40 +13080,50 @@ function paintChrome(){
   const vs = $('setVerSub'); if (vs) vs.textContent = version();
 }
 
+/* Which of the two Play sub-screens is showing. Not reset on tab navigation —
+   only the explicit Back button returns to home — so ducking out to check
+   Stats and coming back doesn't lose your place in My Stuff. */
+let playView = 'home';
+
+function setPlayView(v){
+  playView = v;
+  $('playHome').hidden = v !== 'home';
+  $('playMyStuff').hidden = v !== 'myStuff';
+  if (v === 'myStuff' && !motionOff()){
+    $('playMyStuff').querySelectorAll('.stufflist, .modegrid').forEach(grid => {
+      grid.classList.remove('stagger');
+      void grid.offsetWidth;
+      grid.classList.add('stagger');
+      Array.from(grid.children).forEach((c,i) => c.style.animationDelay = Math.min(i*26, 260) + 'ms');
+    });
+  }
+}
+
 function paintPlay(){
-  $('shuffleBest').textContent = save.pbBlitz ? t('hero.best') + ' ' + fmt(save.pbBlitz) : '';
+  $('playHome').hidden = playView !== 'home';
+  $('playMyStuff').hidden = playView !== 'myStuff';
+
   const chosen = tapeModes(), tape = activeTape();
   $('mixMeta').textContent = chosen.length >= 2
     ? t('mix.metaTape', { name: tapeName(tape, tapeIndex(tape)), n: chosen.length })
     : t('mix.tapToChoose');
-  const dv = save.daily[todayKey()], dSt = dailyStreak();
-  $('dailyLine').textContent = dSt ? t('daily.streakN', { n: dSt })
-    : dv ? t('daily.done') : t('daily.today');
-  $('dailyMeta').textContent = dv && !dSt ? t('daily.best', { n: fmt(dv) }) : t('daily.subShort');
-  $('dailyBtn').classList.toggle('streaking', dSt > 1);
 
-  /* The slot is always here. With nothing to carry on it points at the one
-     place that always has something — the full list — rather than vanishing and
-     taking eighty-five pixels of everything below it along for the ride. */
+  const dv = save.daily[todayKey()], dSt = dailyStreak();
+  const dLine = dSt ? t('daily.streakN', { n: dSt }) : dv ? t('daily.done') : t('daily.today');
+  $('dailyStatusLine').textContent = t('daily.title') + ' · ' + dLine;
+  $('dailyStatus').classList.toggle('streaking', dSt > 1);
+
+  /* Just Play always has somewhere to go: the last mode played, or Shuffle if
+     there isn't one yet — the same smart default Carry On used to carry,
+     folded into the one primary button instead of living beside it as a
+     second decision. */
   const last = save.lastMode && MODES[save.lastMode] ? save.lastMode : null;
-  const carry = $('carryOn');
   if (last){
     const best = save.marathon[last] || 0;
-    carry.style.setProperty('--cink', CAT_INK[catOf(last)] || 'var(--flare)');
-    $('carryEyebrow').textContent = t('play.carryOn');
-    $('carryGlyph').innerHTML = MODES[last].glyph;
-    $('carryName').textContent = modeName(last);
-    $('carryMeta').textContent = best
-      ? t('play.carryBest', { n: fmt(best) })
-      : t('cat.' + catOf(last));
-    carry.onclick = () => startRun('marathon', last);
+    $('justPlaySub').textContent = modeName(last) + ' — ' +
+      (best ? t('play.carryBest', { n: fmt(best) }) : t('cat.' + catOf(last)));
   } else {
-    carry.style.setProperty('--cink', 'var(--haze)');
-    $('carryEyebrow').textContent = t('play.startHere');
-    $('carryGlyph').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>';
-    $('carryName').textContent = t('play.pickMode');
-    $('carryMeta').textContent = t('play.pickSub', { n: MODE_IDS.length });
-    carry.onclick = () => goTab('Modes');
+    $('justPlaySub').textContent = t('hero.sub');
   }
 
   /* A chosen shortlist, not an algorithmic one — shown only once it exists,
@@ -13208,73 +13141,6 @@ function paintPlay(){
       c.onclick = () => startRun('marathon', id);
     });
   }
-
-  $('jumpCount').textContent = MODE_IDS.length;
-  const picks = quickPicks();
-  /* Before anything has been played every reason reads "Untried", which is four
-     labels saying the same true and useless thing. They arrive once there is
-     something to contrast them against. */
-  const anyPlayed = MODE_IDS.some(id => save.marathon[id]);
-  fillGrid($('quickModes'), picks.map(p => p.id), { onTap: null, mode:'quick' });
-  Array.from($('quickModes').children).forEach((c,i) => {
-    const p = picks[i];
-    c.dataset.cat = catOf(p.id);
-    c.style.setProperty('--cink', CAT_INK[catOf(p.id)] || 'var(--flare)');
-    const why = c.querySelector('.why');
-    why.hidden = !anyPlayed;
-    why.textContent = t('why.' + p.why + (p.whyVariant ? p.whyVariant + 1 : ''));
-    c.classList.toggle('why-on', anyPlayed);
-    c.onclick = () => startRun('marathon', p.id);
-  });
-}
-
-/* Four suggestions with a reason behind each, rather than four thrown at the
-   wall: something you have never opened, the one closest to its next star,
-   something from the family you have left alone, and a wildcard. Fifty-two
-   modes need a way in that is not scrolling, and "here are four at random" is
-   only a way in by accident. Seeded by the day, so the shelf is stable while
-   you are looking at it and different tomorrow. */
-function quickPicks(){
-  const rnd = mulberry32(hashStr(todayKey() + '|quick'));
-  const taken = new Set(), out = [];
-  const add = (id, why) => {
-    if (!id || taken.has(id) || out.length >= 4) return false;
-    taken.add(id); out.push({ id, why }); return true;
-  };
-
-  add(shuffle(MODE_IDS.filter(id => !save.marathon[id]), rnd)[0], 'new');
-
-  const gap = id => STAR_AT[starsFor(id)] - (save.marathon[id] || 0);
-  add(MODE_IDS.filter(id => save.marathon[id] && starsFor(id) < 3)
-               .sort((a,b) => gap(a) - gap(b))[0], 'star');
-
-  /* Stars per mode, not stars in total: a family of ten is not neglected for
-     having fewer than a family of two. */
-  const thin = catsPresent()
-    .map(c => [c, idsInCat(c).reduce((n,id) => n + starsFor(id), 0) / idsInCat(c).length])
-    .sort((a,b) => a[1] - b[1])[0];
-  if (thin) for (const id of shuffle(idsInCat(thin[0]), rnd)) if (add(id, 'rare')) break;
-
-  /* The wildcard takes something you HAVE played where it can: filling the
-     last slot from the untried pile only repeats the first card's pill. */
-  const pool = shuffle(MODE_IDS.slice(), rnd);
-  for (const id of pool) if (save.marathon[id]) add(id, 'wild');
-  for (const id of pool) add(id, 'new');
-
-  /* Each reason has one fixed word, and a well-worn account fills two or
-     three of its four slots from the same fallback — a mastered player can
-     see "Wildcard" three times on one screen, every day, forever. Four
-     phrasings per reason (see the why.* keys), chosen from the same per-day
-     seed that already picked the modes: the wording rotates day to day, and
-     when a render does carry the same reason twice, each slot gets a
-     different phrasing rather than the identical word repeated. */
-  const byWhy = {};
-  out.forEach(p => (byWhy[p.why] || (byWhy[p.why] = [])).push(p));
-  Object.values(byWhy).forEach(group => {
-    const order = shuffle([0, 1, 2, 3], rnd);
-    group.forEach((p, i) => { p.whyVariant = order[i % order.length]; });
-  });
-  return out;
 }
 
 /* 'pick' is the landing view: the ten families as cards. 'all' is still the
@@ -13741,7 +13607,7 @@ function goTab(name){
   if (motionOff()) return;
   /* Staggered entrance, re-armed per visit. Delays are capped so a long list
      never leaves the last card crawling in seconds later. */
-  host.querySelectorAll('.modegrid, .quick, .statgrid').forEach(grid => {
+  host.querySelectorAll('.modegrid, .quick, .statgrid, .guidedlist').forEach(grid => {
     grid.classList.remove('stagger');
     void grid.offsetWidth;
     grid.classList.add('stagger');
@@ -13982,13 +13848,20 @@ Array.from(el.tabbar.children).forEach(b =>
       const f = $('modeFind'); if (f) f.value = ''; }
     goTab(b.dataset.tab); }));
 
-$('shuffleBtn').addEventListener('click', () => startRun('shuffle'));
+$('justPlayBtn').addEventListener('click', () => {
+  const last = save.lastMode && MODES[save.lastMode] ? save.lastMode : null;
+  if (last) startRun('marathon', last); else startRun('shuffle');
+});
+$('pickModeBtn').addEventListener('click', () => goTab('Modes'));
+$('myStuffBtn').addEventListener('click', () => { setPlayView('myStuff'); sfx.tap(); });
+$('myStuffBack').addEventListener('click', () => { setPlayView('home'); sfx.tap(); });
+$('statsBtn').addEventListener('click', () => goTab('Stats'));
+$('dailyStatus').addEventListener('click', () => startRun('daily'));
 $('mixBtn').addEventListener('click', () => {
   /* First tap opens the editor, because a Mixtape nobody has built is just
      Shuffle with a different name. */
   if (tapeModes().length >= 2) startRun('mix'); else goTab('Mix');
 });
-$('dailyBtn').addEventListener('click', () => startRun('daily'));
 $('zenBtn').addEventListener('click', () => startRun('zen', pick(MODE_IDS, Math.random)));
 $('marathonBtn').addEventListener('click', () => goTab('Modes'));
 $('modeFind').addEventListener('input', ev => { modeQuery = ev.target.value || ''; paintModes(); });

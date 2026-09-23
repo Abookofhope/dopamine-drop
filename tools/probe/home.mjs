@@ -1,7 +1,8 @@
-/* The home tab across the three save states it has to hold: a player who has
- * never played, one mid-climb, and one who has mastered everything. The last is
- * the one that matters — it is the state the suggestion logic falls through, and
- * an empty "why" or a repeated pick only shows up there.
+/* The Play tab (guided home, then My Stuff) across the three save states it has
+ * to hold: a player who has never played, one mid-climb, and one who has
+ * mastered everything. Two sub-screens now instead of one long scroll — both
+ * get checked, since My Stuff is where Favorites/Mixtape/Fidget/Marathon/Stats
+ * actually live.
  *
  *   node tools/probe/home.mjs
  */
@@ -19,10 +20,35 @@ const PROFILES = [
   ['fresh',   { xp: 0, solved: 0, runs: 0, onboarded: true }],
   ['playing', { xp: 9000, solved: 600, runs: 40, lastMode: 'cairn', pbBlitz: 3120,
                 marathon: { odd: 2400, echo: 1700, cairn: 700 },
-                mix: ['odd','echo','heft'], dailyStreak: 4, dailyLast: dayKey(-1) }],
+                mix: ['odd','echo','heft'], dailyStreak: 4, dailyLast: dayKey(-1),
+                favs: ['odd', 'echo'] }],
   ['veteran', { xp: 400000, solved: 20000, runs: 900, lastMode: 'weave', pbBlitz: 9400,
-                marathon: mastered, mix: ['odd','echo'], dailyStreak: 31, dailyLast: dayKey(0) }],
+                marathon: mastered, mix: ['odd','echo'], dailyStreak: 31, dailyLast: dayKey(0),
+                favs: ['weave'] }],
 ];
+
+/* Shared shape-and-reach measurement for whichever sub-screen is currently
+ * showing — same checks the old single-screen probe made, just callable
+ * twice (once for the guided home, once for My Stuff). */
+const measure = () => {
+  const scroll = document.querySelector('#tabPlay .scroll');
+  const visible = [...scroll.children].find(n => !n.hidden) || scroll;
+  const sr = visible.getBoundingClientRect();
+  const clipped = [...visible.querySelectorAll('*')].filter(n => {
+    const r = n.getBoundingClientRect();
+    return r.width && (r.left < sr.left - 1 || r.right > sr.right + 1);
+  }).map(n => `${n.className}(${Math.round(n.getBoundingClientRect().width)})`);
+  const taps = [...visible.querySelectorAll('button')]
+    .filter(x => x.getBoundingClientRect().width)
+    .map(x => { const r = x.getBoundingClientRect();
+      return { id: x.id || x.className, s: Math.round(Math.min(r.width, r.height)) }; })
+    .sort((a, c) => a.s - c.s);
+  return {
+    hscroll: scroll.scrollWidth > scroll.clientWidth + 1,
+    clipped: clipped.slice(0, 3),
+    minTap: taps.length ? taps[0].s : 0, minWho: taps.length ? taps[0].id : '',
+  };
+};
 
 const browser = await chromium.launch();
 let bad = 0;
@@ -36,47 +62,60 @@ for (const [label, extra] of PROFILES){
       page.on('pageerror', e => errs.push(String(e)));
       await openApp(page, { ...extra, lang });
 
-      const m = await page.evaluate(() => {
-        const scroll = document.querySelector('#tabPlay .scroll');
-        const sr = scroll.getBoundingClientRect();
-        const clipped = [...scroll.querySelectorAll('*')].filter(n => {
-          const r = n.getBoundingClientRect();
-          return r.width && (r.left < sr.left - 1 || r.right > sr.right + 1);
-        }).map(n => `${n.className}(${Math.round(n.getBoundingClientRect().width)})`);
-        const taps = [...scroll.querySelectorAll('button')]
-          .filter(x => x.getBoundingClientRect().width)
-          .map(x => { const r = x.getBoundingClientRect();
-            return { id: x.id || x.className, s: Math.round(Math.min(r.width, r.height)) }; })
-          .sort((a, c) => a.s - c.s);
-        const names = [...document.querySelectorAll('#quickModes b')].map(w => w.textContent);
-        return {
-          carry: document.getElementById('carryOn').hidden ? '—'
-            : document.getElementById('carryName').textContent + ' / '
-              + document.getElementById('carryMeta').textContent,
-          whys: [...document.querySelectorAll('#quickModes .why')].map(w => w.textContent),
-          names, dupes: new Set(names).size,
-          hscroll: scroll.scrollWidth > scroll.clientWidth + 1,
-          clipped: clipped.slice(0, 3),
-          minTap: taps.length ? taps[0].s : 0, minWho: taps.length ? taps[0].id : '' };
-      });
-
-      /* Four picks, each with a reason, none of them the same mode twice. */
-      const ok = !m.hscroll && !m.clipped.length && m.minTap >= 30
-        && m.dupes === m.names.length && m.whys.length === m.names.length
-        && m.whys.every(w => w.trim()) && !errs.length;
-      if (!ok) bad++;
-      console.log(`${ok ? 'ok  ' : 'FAIL'} ${label.padEnd(8)} ${vw}x${vh} ${lang}  `
-        + `carry "${m.carry}"  picks ${m.whys.join('/')}  `
-        + `${m.clipped.length ? 'clipped ' + m.clipped.join(',') : ''}${m.hscroll ? ' H-SCROLL' : ''}  `
-        + `smallest tap ${m.minTap}px (${m.minWho}) dupes ${m.dupes}/${m.names.length}`
+      /* ── Guided home: exactly three choices, and Just Play knows what it's
+         continuing (or falls back to the Shuffle blurb with nothing to carry). */
+      const home = await page.evaluate(measure);
+      const homeInfo = await page.evaluate(() => ({
+        labels: [...document.querySelectorAll('.guidedBtn b')].map(b => b.textContent.trim()),
+        justPlaySub: document.getElementById('justPlaySub').textContent.trim(),
+        dailyLine: document.getElementById('dailyStatusLine').textContent.trim(),
+      }));
+      const homeDistinct = new Set(homeInfo.labels).size === homeInfo.labels.length;
+      const homeOk = !home.hscroll && !home.clipped.length && home.minTap >= 30
+        && homeInfo.labels.length === 3 && homeDistinct
+        && !!homeInfo.justPlaySub && !!homeInfo.dailyLine && !errs.length;
+      if (!homeOk) bad++;
+      console.log(`${homeOk ? 'ok  ' : 'FAIL'} ${label.padEnd(8)} ${vw}x${vh} ${lang}  home`
+        + `  "${homeInfo.labels.join(' / ')}"  justPlay "${homeInfo.justPlaySub}"  daily "${homeInfo.dailyLine}"`
+        + `  ${home.clipped.length ? 'clipped ' + home.clipped.join(',') : ''}${home.hscroll ? ' H-SCROLL' : ''}`
+        + `  smallest tap ${home.minTap}px (${home.minWho})`
         + (errs.length ? ' ERR ' + errs[0] : ''));
-      floorOrDie(`${label} picks`, m.names.length, 1);
+      floorOrDie(`${label} guided labels`, homeInfo.labels.length, 3);
+
+      /* ── My Stuff: everything that isn't one of the three guided choices —
+         Favorites (once earned), the perk chip, and the four rows below it. */
+      await page.click('#myStuffBtn');
+      await page.waitForTimeout(280);
+      const stuff = await page.evaluate(measure);
+      const stuffInfo = await page.evaluate(() => ({
+        rows: [...document.querySelectorAll('#playMyStuff .stufflist b')].map(b => b.textContent.trim()),
+        favCount: document.getElementById('favModes').hidden ? 0
+          : document.getElementById('favModes').children.length,
+      }));
+      const rowsDistinct = new Set(stuffInfo.rows).size === stuffInfo.rows.length;
+      const stuffOk = !stuff.hscroll && !stuff.clipped.length && stuff.minTap >= 30
+        && stuffInfo.rows.length === 4 && rowsDistinct && !errs.length;
+      if (!stuffOk) bad++;
+      console.log(`${stuffOk ? 'ok  ' : 'FAIL'} ${label.padEnd(8)} ${vw}x${vh} ${lang}  my-stuff`
+        + `  rows "${stuffInfo.rows.join('/')}"  favs ${stuffInfo.favCount}`
+        + `  ${stuff.clipped.length ? 'clipped ' + stuff.clipped.join(',') : ''}${stuff.hscroll ? ' H-SCROLL' : ''}`
+        + `  smallest tap ${stuff.minTap}px (${stuff.minWho})`);
+      floorOrDie(`${label} my-stuff rows`, stuffInfo.rows.length, 4);
 
       if (vw === 400 && lang === 'en'){
-        const v = await axeOn(page, '#tabPlay');
+        const vHome = await axeOn(page, '#playHome');
+        await page.click('#myStuffBack');
+        await page.waitForTimeout(280);
+        const v = vHome;
         if (v.length) bad++;
         console.log('     ' + (v.length
-          ? 'FAIL a11y: ' + v.map(x => `${x.id} x${x.n}`).join(' | ') : 'a11y clean'));
+          ? 'FAIL a11y (home): ' + v.map(x => `${x.id} x${x.n}`).join(' | ') : 'a11y clean (home)'));
+        await page.click('#myStuffBtn');
+        await page.waitForTimeout(280);
+        const vStuff = await axeOn(page, '#playMyStuff');
+        if (vStuff.length) bad++;
+        console.log('     ' + (vStuff.length
+          ? 'FAIL a11y (my-stuff): ' + vStuff.map(x => `${x.id} x${x.n}`).join(' | ') : 'a11y clean (my-stuff)'));
       }
       await ctx.close();
     }
