@@ -661,6 +661,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 .bbring.beat{transform:scale(1.06);border-color:#FF8AD8;box-shadow:0 0 24px #ff8ad855}
 .bbring.beat::after{transform:scale(1.28);background:#FF8AD8;box-shadow:0 0 20px #ff8ad8aa}
+.bbring.flicker{transform:scale(1.06);border-color:var(--zap);box-shadow:0 0 24px #ffc53d55}
+.bbring.flicker::after{transform:scale(1.28);background:var(--zap);box-shadow:0 0 20px #ffc53daa}
 .bbpips{display:flex;gap:8px;flex:none}
 .bbpip{width:12px;height:12px;border-radius:50%;display:block;background:var(--edge);
   transition:background var(--t-fast),box-shadow var(--t-fast)}
@@ -691,6 +693,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 .rmpring.beat{transform:scale(1.06);border-color:#FF8AD8;box-shadow:0 0 24px #ff8ad855}
 .rmpring.beat::after{transform:scale(1.3);background:#FF8AD8;box-shadow:0 0 20px #ff8ad8aa}
+.rmpring.flicker{transform:scale(1.06);border-color:var(--zap);box-shadow:0 0 24px #ffc53d55}
+.rmpring.flicker::after{transform:scale(1.3);background:var(--zap);box-shadow:0 0 20px #ffc53daa}
 .rmpwrap .bbpad{width:100%;flex:1;min-height:110px}
 .rmpwrap.good .bbpad{border-color:var(--cool);border-style:solid;background:#33e6c814}
 .rmpwrap.bad  .bbpad{border-color:var(--bad);border-style:solid;background:#ff3d6e14}
@@ -712,7 +716,12 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 .kpring.beat{transform:scale(1.06);border-color:#FF8AD8;box-shadow:0 0 24px #ff8ad855}
 .kpring.beat::after{transform:scale(1.28);background:#FF8AD8;box-shadow:0 0 20px #ff8ad8aa}
-/* The silence is visible too: a ring with nothing left in it. */
+.kpring.flicker{transform:scale(1.06);border-color:var(--zap);box-shadow:0 0 24px #ffc53d55}
+.kpring.flicker::after{transform:scale(1.28);background:var(--zap);box-shadow:0 0 20px #ffc53daa}
+/* The silence is visible too: a ring with nothing left in it. Flicker still
+   shows through it (the border and glow are not part of the quiet override),
+   just without the filled core the beat gets — a fainter tell for a mode
+   that has already taken every other reference away. */
 .kpwrap.quiet .kpring{border-style:dashed;border-color:var(--edge)}
 .kpwrap.quiet .kpring::after{opacity:0}
 .kpwrap .bbpad{width:100%;flex:1;min-height:110px}
@@ -9480,6 +9489,21 @@ const MODES = {
       };
       raf2 = requestAnimationFrame(frame);
 
+      /* Past a point, the ring itself throws one in: a single flicker at a
+         moment that means nothing, in a colour the real pulse never wears.
+         It never touches gapAt or the tap window, so it costs nothing to get
+         wrong — the only thing it can cost is a tap thrown off by chasing a
+         beat that was never one. */
+      if (ctx.level >= 14){
+        const flickerAt = gapAt(0) + (gapAt(need-1) - gapAt(0)) * (0.25 + ctx.rnd()*0.5);
+        ctx.after(flickerAt, () => {
+          if (done) return;
+          ring.classList.add('flicker');
+          tone(700, 0.05, 'sawtooth', 0.03);
+          ctx.after(140, () => ring.classList.remove('flicker'));
+        });
+      }
+
       onTap(pad, () => {
         if (done) return;
         const ms = performance.now() - t0;
@@ -9855,6 +9879,21 @@ const MODES = {
       };
       raf2 = requestAnimationFrame(frame);
 
+      /* Past a point, the ring itself throws one in: a single flicker at a
+         moment that means nothing, in a colour the real pulse never wears.
+         It never touches the beat times in `at`, so it costs nothing to get
+         wrong — the only thing it can cost is a tap thrown off by chasing a
+         beat that was never one. */
+      if (ctx.level >= 14){
+        const flickerAt = at[LEAD] + (at[LEAD+need-1] - at[LEAD]) * (0.25 + ctx.rnd()*0.5);
+        ctx.after(flickerAt, () => {
+          if (done) return;
+          ring.classList.add('flicker');
+          tone(700, 0.05, 'sawtooth', 0.03);
+          ctx.after(140, () => ring.classList.remove('flicker'));
+        });
+      }
+
       onTap(pad, () => {
         if (done) return;
         const ms = performance.now() - t0;
@@ -9941,6 +9980,22 @@ const MODES = {
         raf2 = requestAnimationFrame(frame);
       };
       raf2 = requestAnimationFrame(frame);
+
+      /* Past a point, the ring itself throws one in: a single flicker at a
+         moment that means nothing, in a colour the real pulse never wears —
+         even here, dark and silent, where you would think there is nothing
+         left to fake. It never touches at(k), so it costs nothing to get
+         wrong — the only thing it can cost is a tap thrown off by chasing a
+         beat that was never one. */
+      if (ctx.level >= 14){
+        const flickerAt = at(LEAD) + (at(LEAD+need-1) - at(LEAD)) * (0.25 + ctx.rnd()*0.5);
+        ctx.after(flickerAt, () => {
+          if (done) return;
+          ring.classList.add('flicker');
+          tone(700, 0.05, 'sawtooth', 0.03);
+          ctx.after(140, () => ring.classList.remove('flicker'));
+        });
+      }
 
       onTap(pad, () => {
         if (done) return;
