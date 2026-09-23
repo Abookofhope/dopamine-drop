@@ -272,10 +272,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   display:flex;flex-direction:column;align-items:flex-start;gap:2px;
   padding:11px 12px 12px;border-radius:var(--r-lg);text-align:left;min-height:96px;
   border:1px solid var(--edge-soft);
-  border-left:3px solid color-mix(in srgb, var(--cink,var(--flare)) 70%, transparent);
-  background:linear-gradient(135deg,
-    color-mix(in srgb, var(--cink,var(--flare)) 10%, transparent), #ffffff05 60%);
-  transition:border-color var(--t-fast),transform var(--t-fast);
+  border-left:2px solid color-mix(in srgb, var(--cink,var(--flare)) 45%, transparent);
+  background:#ffffff05;
+  transition:border-color var(--t-fast),transform var(--t-fast),background var(--t-fast);
 }
 .todaycard:active{transform:scale(.97)}
 .todaycard .g{display:block;width:24px;height:24px;color:var(--cink,var(--flare));margin-bottom:3px}
@@ -285,6 +284,23 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .todaycard b{font-family:var(--f-disp);font-size:clamp(15px,4.4vw,18px);line-height:1.1;
   color:var(--cream)}
 .todaycard small{font-size:11px;color:var(--haze);line-height:1.25}
+/* Daily Drop is the one ritual on this tab — the same puzzle for everyone
+   today, gone tomorrow, worth coming back for. Carry On is a shortcut back
+   into something of your own, not a destination in its own right — both sat
+   in identical cards, so neither read as more than the other. This is the
+   stronger "this one matters" treatment; Carry On keeps the plain one above,
+   which is what it always was. */
+.todaycard.event{
+  border-color:color-mix(in srgb, var(--cink,var(--flare)) 40%, transparent);
+  border-left-width:4px;
+  background:linear-gradient(135deg,
+    color-mix(in srgb, var(--cink,var(--flare)) 20%, transparent), #ffffff05 65%);
+}
+.todaycard.event .g{
+  width:32px;height:32px;padding:5px;margin-bottom:4px;border-radius:10px;
+  background:color-mix(in srgb, var(--cink,var(--flare)) 16%, transparent);
+  border:1px solid color-mix(in srgb, var(--cink,var(--flare)) 34%, transparent);
+}
 .todaycard.streaking{border-left-color:var(--cink,var(--cool))}
 /* ── The perk chip ─────────────────────────────────────────────────────── */
 /* It rides the section label, which exists whether or not a perk is waiting. */
@@ -2624,7 +2640,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
             <b id="carryName"></b>
             <small id="carryMeta"></small>
           </button>
-          <button class="todaycard" id="dailyBtn" type="button" style="--cink:#33E6C8">
+          <button class="todaycard event" id="dailyBtn" type="button" style="--cink:#33E6C8">
             <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
             <span class="eyebrow" data-i18n="daily.title">Daily Drop</span>
             <b id="dailyLine"></b>
