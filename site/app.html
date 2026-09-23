@@ -2212,6 +2212,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.given.on{background:var(--flare);border-color:var(--flare)}
 .cell.mcell{background:#ffffff08;border-color:var(--edge-soft)}
 .cell.mcell.on{background:var(--cool);border-color:var(--cool)}
+.cell.mcell.tempt{border-color:var(--flare);box-shadow:inset 0 0 0 1px var(--flare)}
+.cell.mcell.tempt.on{border-color:var(--cool);box-shadow:none}
 .riser{position:absolute;border-radius:50%;transform:translate(-50%,-50%);background:var(--flare);border:2px solid var(--zap)}
 .cell.empty{background:#ffffff05;border-color:transparent}
 .cell.corridor{background:#33e6c814;border-color:#33e6c84d}
@@ -2263,6 +2265,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .ltile{width:50px;height:54px;border-radius:var(--r-md);background:var(--ink-3);border:1px solid var(--edge);color:var(--cream);font-family:var(--f-data);font-weight:700;font-size:20px;transition:transform var(--t-fast),opacity var(--t-fast)}
 .ltile:active{transform:scale(.92)}
 .ltile.used{opacity:.25;pointer-events:none}
+.ltile.bait{border-color:var(--flare);box-shadow:0 0 0 1px var(--flare),0 0 12px #ff5b3955}
 
 /* Phrase Wheel */
 .wheelwrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;height:100%;justify-content:center}
@@ -5210,6 +5213,19 @@ const MODES = {
         ctx.after(i*(flashOn+gap), () => { pads[v].classList.add('lit'); tone(420 + v*90, 0.11, 'sine', 0.045); });
         ctx.after(i*(flashOn+gap) + flashOn, () => pads[v].classList.remove('lit'));
       });
+      /* Past a point, watching is not the whole test. A second pad lights up
+         at the exact same instant as the real sequence's last one, in a
+         different colour and pitch — noise you have to set aside while it is
+         still on screen, not after. It rides the last beat rather than
+         adding one, so the round's own clock — already tight at a ten-tap
+         sequence — never has to pay for it. */
+      const ghost = ctx.level >= 14 ? pick(
+        Array.from({length:n*n},(_,i)=>i).filter(i => i !== seq[len-1]), ctx.rnd) : -1;
+      if (ghost >= 0){
+        const lastAt = (len-1)*(flashOn+gap);
+        ctx.after(lastAt, () => { pads[ghost].classList.add('ghost'); tone(220, 0.11, 'square', 0.04); });
+        ctx.after(lastAt + flashOn, () => pads[ghost].classList.remove('ghost'));
+      }
       ctx.after(len*(flashOn+gap) + 120, () => {
         live = true;
         pads.forEach(p => { p.disabled = false; });
@@ -5499,6 +5515,12 @@ const MODES = {
       }));
       const placed = new Set();
       const budget = moveBudget(ctx, wanted.size);
+      /* Past a point, one cell on the input side gets a faint highlight that
+         has nothing to do with the real reflection — a nudge toward
+         including it that the mirror itself never asked for. */
+      const rightIdx = [];
+      for (let y=0;y<h;y++) for (let x=half;x<w;x++) rightIdx.push(y*w+x);
+      const tempt = ctx.level >= 14 ? pick(rightIdx.filter(i => !wanted.has(i)), ctx.rnd) : -1;
 
       const g = gridEl(w);
       g.style.aspectRatio = '1';
@@ -5510,7 +5532,7 @@ const MODES = {
           g.appendChild(d);
           continue;
         }
-        const b = mk('button','cell mcell'); b.type='button';
+        const b = mk('button','cell mcell' + (idx === tempt ? ' tempt' : '')); b.type='button';
         b.setAttribute('aria-label', t('a.colRow', { x: x+1, y: y+1 }));
         onTap(b, () => {
           if (placed.has(idx)){ placed.delete(idx); b.classList.remove('on'); }
@@ -5987,9 +6009,16 @@ const MODES = {
       const pool = new Set(answer);
       while (pool.size < 4 + holes) pool.add('ABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(ctx.rnd()*26)]);
 
+      /* Past a point the rack holds a letter dressed to look chosen — a
+         glow that means nothing about whether it belongs. Following what
+         looks right instead of what the word actually needs now costs a
+         miss the same as any other wrong tile. */
+      const distractors = Array.from(pool).filter(ch => !answer.includes(ch));
+      const bait = ctx.level >= 14 && distractors.length ? pick(distractors, ctx.rnd) : null;
+
       const rack = mk('div','rack');
       shuffle(Array.from(pool), ctx.rnd).forEach(ch => {
-        const b = mk('button','ltile'); b.type='button'; b.textContent = ch;
+        const b = mk('button','ltile' + (ch === bait ? ' bait' : '')); b.type='button'; b.textContent = ch;
         b.setAttribute('aria-label', ch);
         onTap(b, () => {
           if (b.classList.contains('used')) return;
