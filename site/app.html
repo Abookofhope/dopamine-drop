@@ -2733,6 +2733,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
               <b data-i18n="mix.title">Mixtape</b>
               <small id="mixMeta">Your own rotation</small>
             </button>
+            <button class="qcard" id="reflexRushBtn" type="button" style="--acc:#FF3D6E">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="currentColor" stroke="none"/></svg>
+              <b data-i18n="reflexrush.title">Reflex Rush</b>
+              <small id="reflexRushMeta">All 8 reflex modes, back to back</small>
+            </button>
             <button class="qcard" id="zenBtn" type="button" style="--acc:#7BE38A">
               <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><circle cx="12" cy="12" r="3"/></svg>
               <b data-i18n="zen.title">Fidget Loop</b>
@@ -3213,7 +3218,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.54.0';
+const VERSION_TAG = 'v0.55.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3226,7 +3231,7 @@ const KEY = 'dd.v1';
 const QUARANTINE = 'dd.v1.unreadable';
 const SCHEMA = 10;
 const defaults = {
-  pbBlitz:0, pbStreak:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
+  pbBlitz:0, pbStreak:0, pbReflexRush:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
   lifetime:0, perks:[], perkLv:{}, tokens:0,
@@ -3678,6 +3683,7 @@ const STRINGS = {
     'play.guidedTitle':'What do you want to do?', 'play.guidedSub':'Three questions, not sixty-six modes at once.',
     'play.justPlay':'Just play', 'play.myStuff':'My stuff', 'play.myStuffSub':'Favorites, Mixtape, Marathon',
     'mix.title':'Mixtape', 'mix.tapToChoose':'Tap to choose your modes',
+    'reflexrush.title':'Reflex Rush', 'reflexrush.sub':'All 8 reflex modes, back to back',
     'mix.nChosen':'{n} modes chosen', 'mix.build':'Build your rotation',
     'mix.note':'Pick the modes you actually like. <b>Mixtape</b> shuffles only those. Two or more to make a rotation — <b>{n} chosen</b>.',
     'mix.pickNote':'Pick the modes you actually like — Mixtape shuffles only those. Two or more makes a rotation.', 'mix.all':'All', 'mix.none':'None', 'mix.clear':'Clear', 'mix.chosen':'{n} chosen', 'mix.selectAll':'Select all', 'mix.done':'Done',
@@ -3846,6 +3852,7 @@ const STRINGS = {
     'play.guidedTitle':'Que voulez-vous faire ?', 'play.guidedSub':'Trois questions, pas soixante-six modes d’un coup.',
     'play.justPlay':'Jouer', 'play.myStuff':'Mes affaires', 'play.myStuffSub':'Favoris, Mixtape, Marathon',
     'mix.title':'Playlist', 'mix.tapToChoose':'Touchez pour choisir vos modes',
+    'reflexrush.title':'Ruée réflexe', 'reflexrush.sub':'Les 8 modes réflexe, à la suite',
     'mix.nChosen':'{n} modes choisis', 'mix.build':'Composez votre rotation',
     'mix.note':'Choisissez les modes que vous aimez vraiment. <b>Playlist</b> ne mélange que ceux-là. Deux au minimum — <b>{n} choisis</b>.',
     'mix.pickNote':'Choisissez les modes que vous aimez vraiment — la playlist ne mélange que ceux-là. Deux au minimum pour une rotation.', 'mix.all':'Tous', 'mix.none':'Aucun', 'mix.clear':'Vider', 'mix.chosen':'{n} choisis', 'mix.selectAll':'Tout choisir', 'mix.done':'Terminé',
@@ -4014,6 +4021,7 @@ const STRINGS = {
     'play.guidedTitle':'¿Qué quieres hacer?', 'play.guidedSub':'Tres preguntas, no sesenta y seis modos a la vez.',
     'play.justPlay':'Jugar', 'play.myStuff':'Lo mío', 'play.myStuffSub':'Favoritos, Mixtape, Maratón',
     'mix.title':'Lista', 'mix.tapToChoose':'Toca para elegir tus modos',
+    'reflexrush.title':'Ráfaga refleja', 'reflexrush.sub':'Los 8 modos de reflejos, seguidos',
     'mix.nChosen':'{n} modos elegidos', 'mix.build':'Arma tu rotación',
     'mix.note':'Elige los modos que de verdad te gustan. <b>Lista</b> solo mezcla esos. Dos o más para una rotación — <b>{n} elegidos</b>.',
     'mix.pickNote':'Elige los modos que de verdad te gustan: la lista solo mezcla esos. Dos o más forman una rotación.', 'mix.all':'Todos', 'mix.none':'Ninguno', 'mix.clear':'Vaciar', 'mix.chosen':'{n} elegidos', 'mix.selectAll':'Elegir todos', 'mix.done':'Listo',
@@ -4182,6 +4190,7 @@ const STRINGS = {
     'play.guidedTitle':'Was möchtest du tun?', 'play.guidedSub':'Drei Fragen, nicht sechsundsechzig Modi auf einmal.',
     'play.justPlay':'Loslegen', 'play.myStuff':'Meine Sachen', 'play.myStuffSub':'Favoriten, Mixtape, Marathon',
     'mix.title':'Playlist', 'mix.tapToChoose':'Tippen, um Modi zu wählen',
+    'reflexrush.title':'Reflex-Rausch', 'reflexrush.sub':'Alle 8 Reflex-Modi im Wechsel',
     'mix.nChosen':'{n} Modi gewählt', 'mix.build':'Stelle deine Rotation zusammen',
     'mix.note':'Wähle die Modi, die dir wirklich gefallen. <b>Playlist</b> mischt nur diese. Mindestens zwei — <b>{n} gewählt</b>.',
     'mix.pickNote':'Wähle die Modi, die dir wirklich gefallen — die Playlist mischt nur diese. Ab zwei wird es eine Rotation.', 'mix.all':'Alle', 'mix.none':'Keine', 'mix.clear':'Leeren', 'mix.chosen':'{n} gewählt', 'mix.selectAll':'Alle wählen', 'mix.done':'Fertig',
@@ -4444,6 +4453,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.55.0', date:'2026-09-24', items:[
+    'A new way to play: Reflex Rush, in My Stuff. Instead of any of the 66 in rotation, it draws only from the eight reflex-family modes — pattern recall, colour-under-pressure, moving targets — back to back on a tighter 40-second clock with a harsher miss penalty. Difficulty climbs faster within a run than anywhere else in the game, on top of the level curve every mode already has, so a good run visibly speeds up rather than settling into one pace. Its own personal-best line, separate from Shuffle’s.',
+  ] },
   { v:'0.54.0', date:'2026-09-23', items:[
     'The tab bar already cross-fades on every switch; two spots inside a tab still snapped instantly between two different screens’ worth of content — My Stuff opening over the Play tab’s guided choices, and drilling into a family on the Modes tab. Both now cross-fade the same way, so the whole app reads as one consistent motion language instead of the top level getting it and everything nested inside not.',
   ] },
@@ -12481,6 +12493,13 @@ window.requestAnimationFrame = function(fn){
 const KINDS = {
   shuffle:  { label:'Shuffle',     key:'hero.title',     timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
   mix:      { label:'Mixtape',     key:'mix.title',      timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
+  /* A dedicated home for the reflex family rather than a seventh puzzle genre
+     bolted on — those eight modes are already exactly what the brief asked
+     for (pattern recognition, colour-under-pressure, moving targets), just
+     never given a session of their own. Shorter clock, harder penalty: a
+     miss should cost more here than in a 60-second Shuffle where any one
+     family is one-tenth of what you'll see. */
+  reflexrush:{ label:'Reflex Rush', key:'reflexrush.title', timed:true, cap:40000, start:40000, penalty:3000, scored:true },
   /* The card promised twelve rounds and a 90-second clock, and the two were in
      conflict: twelve rounds at the median mode's par is 126 seconds of play,
      and twelve perfect solves earn back at most 35. Nobody was reaching round
@@ -12945,7 +12964,12 @@ function nextRound(){
      three-quarters of a second, before anyone has told you the belt shifts.
      The first round of anything is played at the shallow end, whatever the
      player's level. It is one round, and it is the round the rules arrive in. */
-  const full = Prog.effectiveLevel(run.solved, run.playerLevel);
+  /* Reflex Rush earns its name on top of the level curve every mode already
+     has, not instead of it — three extra levels of ramp per solve, so the
+     eight reflex modes visibly speed up within one session rather than
+     sitting at whatever pace the player's overall level already set. */
+  const full = Prog.effectiveLevel(run.solved, run.playerLevel)
+    + (run.kind === 'reflexrush' ? Math.floor(run.solved/3) : 0);
   run.lvl = firstMeet ? Math.min(6, full) : full;
   /* Generous on purpose: par is how long the mode expects to take, and this is
      more than twice that, easing further as the player's level raises pressure.
@@ -13140,7 +13164,7 @@ function startRun(kind, modeId){
     xpAtStart: save.xp,
     playerLevel: lvl,
     pressure: Prog.pressure(lvl),
-    pool: kind === 'mix' ? mixModes() : MODE_IDS.slice(),
+    pool: kind === 'mix' ? mixModes() : kind === 'reflexrush' ? idsInCat('reflex') : MODE_IDS.slice(),
     rnd: kind === 'daily' ? mulberry32(hashStr(todayKey())) : Math.random
   };
   /* pickMode only reshuffles when the bag is empty, so a bag handed over here
@@ -13299,6 +13323,7 @@ function endRun(){
   let best = false;
   if (k.scored){
     if ((r.kind === 'shuffle' || r.kind === 'mix') && r.score > save.pbBlitz){ save.pbBlitz = r.score; best = true; }
+    if (r.kind === 'reflexrush' && r.score > (save.pbReflexRush || 0)){ save.pbReflexRush = r.score; best = true; }
     if (r.kind === 'marathon'){
       const prev = save.marathon[r.mode] || 0;
       if (r.score > prev){ save.marathon[r.mode] = r.score; best = true; }
@@ -13390,6 +13415,7 @@ function endRun(){
   $('stAcc').textContent = attempts ? Math.round(r.solved/attempts*100) + '%' : '—';
 
   const target = (r.kind === 'shuffle' || r.kind === 'mix') ? save.pbBlitz
+    : r.kind === 'reflexrush' ? (save.pbReflexRush || 0)
     : r.kind === 'marathon' ? (save.marathon[r.mode]||0) : (save.daily[todayKey()]||0);
   $('againSub').textContent = k.scored
     ? (best ? t('over.twice') : t('over.beat', { n: fmt(target) }))
@@ -13580,6 +13606,9 @@ function paintPlay(){
   $('mixMeta').textContent = chosen.length >= 2
     ? t('mix.metaTape', { name: tapeName(tape, tapeIndex(tape)), n: chosen.length })
     : t('mix.tapToChoose');
+  $('reflexRushMeta').textContent = save.pbReflexRush
+    ? t('play.carryBest', { n: fmt(save.pbReflexRush) })
+    : t('reflexrush.sub');
 
   const dv = save.daily[todayKey()], dSt = dailyStreak();
   const dLine = dSt ? t('daily.streakN', { n: dSt }) : dv ? t('daily.done') : t('daily.today');
@@ -14384,6 +14413,7 @@ $('pickModeBtn').addEventListener('click', () => goTab('Modes'));
 $('myStuffBtn').addEventListener('click', () => { setPlayView('myStuff'); sfx.tap(); });
 $('myStuffBack').addEventListener('click', () => { setPlayView('home'); sfx.tap(); });
 $('statsBtn').addEventListener('click', () => goTab('Stats'));
+$('reflexRushBtn').addEventListener('click', () => startRun('reflexrush'));
 $('dailyStatus').addEventListener('click', () => startRun('daily'));
 $('mixBtn').addEventListener('click', () => {
   /* First tap opens the editor, because a Mixtape nobody has built is just
