@@ -3317,7 +3317,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.68.0';
+const VERSION_TAG = 'v0.69.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3857,6 +3857,11 @@ const STRINGS = {
     'ach.fortune':'Deep Pockets', 'ach.fortune.d':'1,000,000 lifetime points.',
     'ach.curator':'Curator', 'ach.curator.d':'Favorite 5 modes.',
     'ach.dj':'Mixologist', 'ach.dj.d':'Build a mixtape of 5 modes or more.',
+    'ach.rushfive':'Full Tilt', 'ach.rushfive.d':'Reach ×5 combo in Reflex Rush.',
+    'ach.cascadefive':'Chain Reaction', 'ach.cascadefive.d':'Reach ×5 combo in Puzzle Cascade.',
+    'ach.bossdown':'Boss Down', 'ach.bossdown.d':'Clear a boss wave in Survival Protocol.',
+    'ach.wildcard':'Wildcard', 'ach.wildcard.d':'Solve a round under a Chaos Gauntlet modifier.',
+    'ach.stillwater':'Still Water', 'ach.stillwater.d':'Solve 15 puzzles in one Fidget Loop session.',
     'set.feedback':'Feedback', 'set.sound':'Sound', 'set.soundSub':'Taps and streak chimes — each family in its own key',
     'set.vib':'Vibration', 'set.vibSub':'A short pulse on every answer',
     'set.motion':'Reduce motion', 'set.motionSub':'No particles, no screen shake',
@@ -4032,6 +4037,11 @@ const STRINGS = {
     'ach.fortune':'Fortune faite', 'ach.fortune.d':'1 000 000 de points cumulés.',
     'ach.curator':'Curateur', 'ach.curator.d':'Mettez 5 modes en favoris.',
     'ach.dj':'DJ', 'ach.dj.d':'Composez une Mixtape d’au moins 5 modes.',
+    'ach.rushfive':'Plein régime', 'ach.rushfive.d':'Atteignez un combo ×5 dans Ruée réflexe.',
+    'ach.cascadefive':'Réaction en chaîne', 'ach.cascadefive.d':'Atteignez un combo ×5 dans Cascade de puzzles.',
+    'ach.bossdown':'Boss vaincu', 'ach.bossdown.d':'Terminez une vague boss dans Protocole de survie.',
+    'ach.wildcard':'Carte folle', 'ach.wildcard.d':'Résolvez une manche sous un modificateur du Gant du chaos.',
+    'ach.stillwater':'Eau calme', 'ach.stillwater.d':'Résolvez 15 casse-têtes en une session de Boucle calme.',
     'set.feedback':'Retours', 'set.sound':'Son', 'set.soundSub':'Touches et séries — chaque famille dans sa tonalité',
     'set.vib':'Vibration', 'set.vibSub':'Une brève impulsion à chaque réponse',
     'set.motion':'Réduire les animations', 'set.motionSub':'Ni particules, ni secousses',
@@ -4207,6 +4217,11 @@ const STRINGS = {
     'ach.fortune':'Un tesoro', 'ach.fortune.d':'1.000.000 de puntos acumulados.',
     'ach.curator':'Curador', 'ach.curator.d':'Marca 5 modos como favoritos.',
     'ach.dj':'DJ', 'ach.dj.d':'Crea una Mixtape de 5 modos o más.',
+    'ach.rushfive':'A tope', 'ach.rushfive.d':'Consigue un combo ×5 en Ráfaga refleja.',
+    'ach.cascadefive':'Reacción en cadena', 'ach.cascadefive.d':'Consigue un combo ×5 en Cascada de puzles.',
+    'ach.bossdown':'Jefe derrotado', 'ach.bossdown.d':'Supera una oleada jefe en Protocolo de supervivencia.',
+    'ach.wildcard':'Comodín', 'ach.wildcard.d':'Resuelve una ronda bajo un modificador del Guantelete del caos.',
+    'ach.stillwater':'Aguas tranquilas', 'ach.stillwater.d':'Resuelve 15 puzles en una sesión de Modo calma.',
     'set.feedback':'Respuesta', 'set.sound':'Sonido', 'set.soundSub':'Toques y rachas — cada familia en su tono',
     'set.vib':'Vibración', 'set.vibSub':'Un pulso breve en cada respuesta',
     'set.motion':'Reducir movimiento', 'set.motionSub':'Sin partículas ni sacudidas',
@@ -4382,6 +4397,11 @@ const STRINGS = {
     'ach.fortune':'Tiefe Taschen', 'ach.fortune.d':'1.000.000 Punkte auf Lebenszeit.',
     'ach.curator':'Kurator', 'ach.curator.d':'Favorisiere 5 Modi.',
     'ach.dj':'DJ', 'ach.dj.d':'Stelle eine Playlist mit 5 oder mehr Modi zusammen.',
+    'ach.rushfive':'Vollgas', 'ach.rushfive.d':'Erreiche einen ×5-Kombo im Reflex-Rausch.',
+    'ach.cascadefive':'Kettenreaktion', 'ach.cascadefive.d':'Erreiche einen ×5-Kombo in der Rätsel-Kaskade.',
+    'ach.bossdown':'Boss besiegt', 'ach.bossdown.d':'Schließe eine Bosswelle im Überlebensprotokoll ab.',
+    'ach.wildcard':'Wildcard', 'ach.wildcard.d':'Löse eine Runde unter einem Modifikator im Chaos-Parcours.',
+    'ach.stillwater':'Stilles Wasser', 'ach.stillwater.d':'Löse 15 Rätsel in einer Ruhemodus-Sitzung.',
     'set.feedback':'Rückmeldung', 'set.sound':'Ton', 'set.soundSub':'Tippen und Serien — jede Familie in eigener Tonart',
     'set.vib':'Vibration', 'set.vibSub':'Ein kurzer Impuls bei jeder Antwort',
     'set.motion':'Bewegung reduzieren', 'set.motionSub':'Keine Partikel, kein Wackeln',
@@ -4614,6 +4634,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.69.0', date:'2026-09-24', items:[
+    'The five new ways to play only ever fed into the same generic streak and score achievements everything else does — nothing rewarded what makes each of them different. Five new ones: Full Tilt and Chain Reaction for a ×5 combo in Reflex Rush and Puzzle Cascade, Boss Down for clearing a Survival Protocol boss wave, Wildcard for solving a round under a Chaos Gauntlet modifier, and Still Water for fifteen puzzles in one unhurried Fidget Loop session.',
+  ] },
   { v:'0.68.0', date:'2026-09-24', items:[
     'Settings was one long column of rows, told apart only by a label every so often — nothing said where a group actually started or ended. Every labelled group (Feedback, Victory color, Accessibility, Language, About, Data) is its own raised panel now. Stats’ tiles — Progress, Lifetime, Achievements — picked up the same lift, so the two busiest tabs in the app finally look like the rest of it.',
   ] },
@@ -12595,6 +12618,27 @@ const ACHIEVEMENTS = [
   { id:'dj', ink:'#9C7BFF',
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M4 12h16M4 17h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="7" r="2.4" fill="currentColor"/><circle cx="15" cy="17" r="2.4" fill="currentColor"/></svg>',
     goal: () => (save.mix || []).length >= 5 },
+  /* The five new kinds each earn one achievement of their own, tied to
+     something only that kind can do — not a reused score/streak number
+     with a new label on it. maxTier already persists on the run object for
+     every kind; everBoss/everModifier are new, set at the one moment each
+     event can happen (nextRound's boss-wave check, resolve's win branch
+     while run.modifier still reflects the round just solved). */
+  { id:'rushfive', ink:'#FF3D6E',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 9v4.4l3 1.8M9 2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
+    goal: (r) => !!(r && r.kind === 'reflexrush' && r.maxTier >= 5) },
+  { id:'cascadefive', ink:'#C08BFF',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="14" width="6" height="7" rx="1.4" fill="currentColor"/><rect x="9" y="9" width="6" height="12" rx="1.4" fill="currentColor" opacity=".7"/><rect x="16" y="4" width="6" height="17" rx="1.4" fill="currentColor" opacity=".4"/></svg>',
+    goal: (r) => !!(r && r.kind === 'puzzlecascade' && r.maxTier >= 5) },
+  { id:'bossdown', ink:'#FF5B39',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8z" fill="currentColor"/><circle cx="12" cy="5" r="1.4" fill="currentColor"/></svg>',
+    goal: (r) => !!(r && r.kind === 'survival' && r.everBoss) },
+  { id:'wildcard', ink:'#9C7BFF',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/><circle cx="16" cy="8" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8" cy="16" r="1.6" fill="currentColor"/><circle cx="16" cy="16" r="1.6" fill="currentColor"/></svg>',
+    goal: (r) => !!(r && r.kind === 'chaos' && r.everModifier) },
+  { id:'stillwater', ink:'#7BE38A',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".5"/><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".25"/></svg>',
+    goal: (r) => !!(r && r.kind === 'zen' && r.solved >= 15) },
 ];
 const ACH_BY_ID = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));
 
@@ -13218,6 +13262,7 @@ function nextRound(){
       : run.kind === 'puzzlecascade' ? Math.floor(run.solved/6)
       : bossWave ? 6 : 0);
   run.lvl = firstMeet ? Math.min(6, full) : full;
+  run.thisRoundBoss = bossWave;
   if (bossWave){
     announceToast({ ink:'#FF3D6E',
       glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7z"/><path d="M9 12l2 2 4-4" stroke-width="1.8"/></svg>',
@@ -13304,6 +13349,8 @@ function resolve(ok, node){
     const speed = clamp(1 - elapsed / (parOf(mode, run.lvl) * run.pressure), 0, 1);
     const mult = multiplier();
     const pts = Math.round((100 + 130*speed) * mult * (run.modifier === 'x2' ? 2 : 1));
+    if (run.modifier) run.everModifier = true;
+    if (run.thisRoundBoss) run.everBoss = true;
     run.solved++; run.streak++;
     run.bestStreak = Math.max(run.bestStreak, run.streak);
     if (k.scored){
