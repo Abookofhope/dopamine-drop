@@ -1635,7 +1635,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    to work with, and overflow-wrap:anywhere took that as permission to break
    every word onto its own line, one letter at a time. It has its own row
    now, so nothing competes with the title for width at any size. */
-.mcard.inmix .top{padding-right:24px}
+.mcard.badged .top{padding-right:24px}
 .mcard .glyph{width:22px;height:22px;flex:none;margin-top:-1px}
 .mcard .glyph svg{width:100%;height:100%;display:block}
 /* Names wrap rather than truncate. A clipped name is unreadable, and at 320px
@@ -1662,6 +1662,16 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   display:grid;place-items:center;font-size:11px;font-weight:800;
   background:var(--flare);color:#1A0A04;
 }
+/* A like is filled and bright, the same corner the mix pin uses everywhere
+   the pin does not — the family strip already teaches "solid circle, top
+   right" as "this is marked". A dislike stays an outline in the same spot:
+   still a clear no, without reading as an error state on the whole card. */
+.mcard .verdict{
+  position:absolute;top:9px;right:9px;width:20px;height:20px;border-radius:50%;
+  display:grid;place-items:center;font-size:11px;font-weight:800;line-height:1;
+}
+.mcard .verdict.like{background:var(--cool);color:#04211C}
+.mcard .verdict.dislike{background:transparent;color:var(--bad);box-shadow:inset 0 0 0 1.5px var(--bad)}
 
 /* ── Mixtapes ────────────────────────────────────────────────────────────── */
 .tapestrip{
@@ -2684,6 +2694,23 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .mpvfavbtn.on{color:var(--flare)}
 .mpvfavbtn.on svg path{fill:currentColor}
 .mpvblurb{margin:0;font-size:14px;line-height:1.5;color:var(--cream)}
+/* The same verdict Taste Test collects, readable from the one screen that
+   already tells you everything else about a mode — and tappable, since
+   "you won't be asked again" should not also mean "and can never change
+   your mind". Two colour treatments only, like the card badge's own: solid
+   for a like, outlined for a dislike, so a whole row of these never reads
+   as a row of errors. */
+.mpvverdict{
+  display:flex;align-items:center;gap:7px;align-self:flex-start;
+  margin:2px 0 0;padding:6px 12px 6px 8px;border-radius:99px;
+  font-size:12px;font-weight:700;
+  transition:background var(--t-fast),border-color var(--t-fast);
+}
+.mpvverdict i{width:18px;height:18px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:10px;font-weight:800;line-height:1}
+.mpvverdict.like{background:#33e6c81a;border:1px solid #33e6c855;color:var(--cool)}
+.mpvverdict.like i{background:var(--cool);color:#04211C}
+.mpvverdict.dislike{background:#ff3d6e14;border:1px solid #ff3d6e55;color:var(--bad)}
+.mpvverdict.dislike i{background:transparent;color:var(--bad);box-shadow:inset 0 0 0 1.5px var(--bad)}
 .mpvgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .mpvcell{
   padding:11px 13px;border-radius:var(--r-md);
@@ -3300,6 +3327,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
       </button>
     </div>
     <p class="mpvblurb" id="mpvBlurb"></p>
+    <button class="mpvverdict" id="mpvVerdict" type="button" hidden></button>
     <div class="mpvgrid">
       <div class="mpvcell"><b id="mpvBest">—</b><small data-i18n="mpv.best">Your best</small></div>
       <div class="mpvcell"><span class="stars" id="mpvStars"><i></i><i></i><i></i></span><small data-i18n="mpv.mastery">Mastery</small></div>
@@ -3386,7 +3414,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.73.0';
+const VERSION_TAG = 'v0.74.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3789,6 +3817,20 @@ function toggleFav(id){
   persist();
 }
 
+/* Taste Test's verdict, and the only thing that ever writes one — whether
+   given there or by changing your mind later from a mode's own card. A like
+   still folds into favorites the same way either path always has; a dislike
+   never un-favorites, since that heart is its own separate decision. */
+function setVerdict(id, verdict){
+  const v = save.verdict || (save.verdict = {});
+  v[id] = verdict;
+  if (verdict === 'like'){
+    const favs = save.favs || (save.favs = []);
+    if (!favs.includes(id)) favs.push(id);
+  }
+  persist();
+}
+
 /* ═══ Custom rotation ═════════════════════════════════════════════════════ */
 /* ── Mixtapes ─────────────────────────────────────────────────────────────
    One anonymous list of modes was the whole feature. You could not keep a
@@ -4032,7 +4074,7 @@ const STRINGS = {
     'how.forage':'tap a berry to send a swarm at its colour; it comes in through the bare gaps and eats only what it can reach, then waits in the basket until you send it again. Tap a waiting swarm to call it home', 'how.first':'First time — taking it gently.', 'how.sift':'tap a colour to drop that bucket on the BACK of the belt; the belt shifts one slot every grain, so you are placing for a grain further down the chute, not the one falling. Tap the front bucket to knock it off',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
-    'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.favAdd':'Add to favorites', 'a.favRemove':'Remove from favorites', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetDouble':'Double target, worth two', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
+    'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.favAdd':'Add to favorites', 'a.favRemove':'Remove from favorites', 'a.verdictChange':'Tap to change your rating','a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetDouble':'Double target, worth two', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
     'over.ribbon':'{a} of {b} rounds solved',
     'p.saved':'Streak held', 'perk.title':'Perks', 'perk.used':'{a} of {b} slots', 'perk.toSlot':'{n} points to the next slot', 'perk.toToken':'{n} points to the next token', 'perk.equipped':'equipped, level {n}', 'perk.notEquipped':'not equipped', 'perk.upgrade':'Spend a token on {p}', 'perk.tokensLeft':'{n} tokens to spend', 'perk.spare':'Spare Life', 'perk.spare.d':'Start a Marathon with {n} more lives', 'perk.spare.d1':'Start a Marathon with one more life', 'perk.shield':'Streak Shield', 'perk.shield.d':'Keep your streak through {n} misses a run', 'perk.shield.d1':'Keep your streak through one miss a run', 'perk.patience':'Long Fuse', 'perk.patience.d':'{n}% longer on the round clock', 'perk.zeal':'Zeal', 'perk.zeal.d':'The multiplier climbs sooner (rank {n})', 'perk.steady':'Steady Hands', 'perk.steady.d':'{n} more moves where moves are counted', 'perk.rally':'Rally', 'perk.rally.d':'Timed runs start {n} seconds longer',
     'p.leash':'Hold it for {n} more seconds', 'leash.moth':'The moth', 'leash.box':'Press and keep your finger on the moth', 'm.leash':'Leash|Keep your finger on it — it does not want you to',
@@ -4217,7 +4259,7 @@ const STRINGS = {
     'how.forage':'touchez une baie pour lancer un essaim sur sa couleur ; il entre par les trous, ne mange que ce qu’il atteint, puis attend dans le panier que vous le relanciez. Touchez un essaim en attente pour le rappeler', 'how.first':'Première fois — on y va doucement.', 'how.sift':'touchez une couleur pour poser ce seau à l’ARRIÈRE du tapis ; le tapis avance d’un cran à chaque grain, donc vous posez pour un grain plus loin dans la trémie, pas pour celui qui tombe. Touchez le seau de tête pour le faire tomber',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
-    'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.favAdd':'Ajouter aux favoris', 'a.favRemove':'Retirer des favoris', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetDouble':'Cible double, vaut deux', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
+    'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.favAdd':'Ajouter aux favoris', 'a.favRemove':'Retirer des favoris', 'a.verdictChange':'Touchez pour changer votre avis','a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetDouble':'Cible double, vaut deux', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
     'over.ribbon':'{a} manches sur {b} réussies',
     'p.saved':'Série gardée', 'perk.title':'Atouts', 'perk.used':'{a} sur {b} emplacements', 'perk.toSlot':'{n} points avant le prochain emplacement', 'perk.toToken':'{n} points avant le prochain jeton', 'perk.equipped':'équipé, niveau {n}', 'perk.notEquipped':'non équipé', 'perk.upgrade':'Dépenser un jeton sur {p}', 'perk.tokensLeft':'{n} jetons à dépenser', 'perk.spare':'Vie en plus', 'perk.spare.d':'Commencez un Marathon avec {n} vies de plus', 'perk.spare.d1':'Commencez un Marathon avec une vie de plus', 'perk.shield':'Bouclier de série', 'perk.shield.d':'Gardez votre série malgré {n} échecs par partie', 'perk.shield.d1':'Gardez votre série malgré un échec par partie', 'perk.patience':'Mèche longue', 'perk.patience.d':'{n}% de temps en plus par manche', 'perk.zeal':'Ferveur', 'perk.zeal.d':'Le multiplicateur monte plus tôt (rang {n})', 'perk.steady':'Main sûre', 'perk.steady.d':'{n} coups de plus là où les coups comptent', 'perk.rally':'Élan', 'perk.rally.d':'Les parties chronométrées durent {n} secondes de plus',
     'p.leash':'Tenez-le encore {n} secondes', 'leash.moth':'Le papillon', 'leash.box':'Appuyez et gardez le doigt sur le papillon', 'm.leash':'Laisse|Gardez le doigt dessus — il ne veut pas',
@@ -4402,7 +4444,7 @@ const STRINGS = {
     'how.forage':'toca una baya para lanzar un enjambre a su color; entra por los huecos, come solo lo que alcanza y luego espera en la cesta a que lo vuelvas a lanzar. Toca un enjambre en espera para llamarlo', 'how.first':'Primera vez: vamos con calma.', 'how.sift':'toca un color para poner ese cubo al FINAL de la cinta; la cinta avanza un hueco con cada grano, así que colocas para un grano más adelante en la tolva, no para el que cae. Toca el cubo delantero para tirarlo',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
-    'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.favAdd':'Añadir a favoritos', 'a.favRemove':'Quitar de favoritos', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetDouble':'Objetivo doble, vale dos', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
+    'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.favAdd':'Añadir a favoritos', 'a.favRemove':'Quitar de favoritos', 'a.verdictChange':'Toca para cambiar tu valoración','a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetDouble':'Objetivo doble, vale dos', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
     'over.ribbon':'{a} de {b} rondas resueltas',
     'p.saved':'Racha mantenida', 'perk.title':'Ventajas', 'perk.used':'{a} de {b} ranuras', 'perk.toSlot':'{n} puntos para la próxima ranura', 'perk.toToken':'{n} puntos para la próxima ficha', 'perk.equipped':'equipada, nivel {n}', 'perk.notEquipped':'no equipada', 'perk.upgrade':'Gastar una ficha en {p}', 'perk.tokensLeft':'{n} fichas por gastar', 'perk.spare':'Vida extra', 'perk.spare.d':'Empieza un Maratón con {n} vidas más', 'perk.spare.d1':'Empieza un Maratón con una vida más', 'perk.shield':'Escudo de racha', 'perk.shield.d':'Conserva tu racha pese a {n} fallos por partida', 'perk.shield.d1':'Conserva tu racha pese a un fallo por partida', 'perk.patience':'Mecha larga', 'perk.patience.d':'{n}% más de tiempo por ronda', 'perk.zeal':'Fervor', 'perk.zeal.d':'El multiplicador sube antes (rango {n})', 'perk.steady':'Pulso firme', 'perk.steady.d':'{n} movimientos más donde se cuentan', 'perk.rally':'Empuje', 'perk.rally.d':'Las partidas con reloj empiezan {n} segundos más largas',
     'p.leash':'Sujétala {n} segundos más', 'leash.moth':'La polilla', 'leash.box':'Pulsa y mantén el dedo sobre la polilla', 'm.leash':'Correa|Mantén el dedo encima — ella no quiere',
@@ -4587,7 +4629,7 @@ const STRINGS = {
     'how.forage':'tippe eine Beere an, um einen Schwarm auf ihre Farbe zu schicken; er kommt durch die Lücken herein, frisst nur, was er erreicht, und wartet dann im Korb, bis du ihn erneut schickst. Tippe einen wartenden Schwarm an, um ihn zurückzurufen', 'how.first':'Zum ersten Mal — wir fangen sanft an.', 'how.sift':'tippe eine Farbe an, um den Eimer HINTEN aufs Band zu stellen; das Band rückt bei jedem Korn einen Platz vor, du stellst also für ein Korn weiter oben im Schacht, nicht für das fallende. Tippe den vordersten Eimer an, um ihn herunterzustoßen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
-    'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.favAdd':'Zu Favoriten hinzufügen', 'a.favRemove':'Aus Favoriten entfernen', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetDouble':'Doppeltes Ziel, zählt zwei', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
+    'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.favAdd':'Zu Favoriten hinzufügen', 'a.favRemove':'Aus Favoriten entfernen', 'a.verdictChange':'Tippen, um deine Bewertung zu ändern','a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetDouble':'Doppeltes Ziel, zählt zwei', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
     'over.ribbon':'{a} von {b} Runden gelöst',
     'p.saved':'Serie gehalten', 'perk.title':'Boni', 'perk.used':'{a} von {b} Plätzen', 'perk.toSlot':'{n} Punkte bis zum nächsten Platz', 'perk.toToken':'{n} Punkte bis zur nächsten Marke', 'perk.equipped':'ausgerüstet, Stufe {n}', 'perk.notEquipped':'nicht ausgerüstet', 'perk.upgrade':'Eine Marke für {p} ausgeben', 'perk.tokensLeft':'{n} Marken übrig', 'perk.spare':'Extraleben', 'perk.spare.d':'Starte einen Marathon mit {n} Leben mehr', 'perk.spare.d1':'Starte einen Marathon mit einem Leben mehr', 'perk.shield':'Serienschild', 'perk.shield.d':'Behalte deine Serie trotz {n} Fehlern pro Lauf', 'perk.shield.d1':'Behalte deine Serie trotz einem Fehler pro Lauf', 'perk.patience':'Lange Lunte', 'perk.patience.d':'{n}% mehr Zeit pro Runde', 'perk.zeal':'Eifer', 'perk.zeal.d':'Der Multiplikator steigt früher (Rang {n})', 'perk.steady':'Ruhige Hand', 'perk.steady.d':'{n} Züge mehr, wo Züge zählen', 'perk.rally':'Aufholjagd', 'perk.rally.d':'Zeitläufe starten {n} Sekunden länger',
     'p.leash':'Halte ihn noch {n} Sekunden', 'leash.moth':'Die Motte', 'leash.box':'Drücken und den Finger auf der Motte halten', 'm.leash':'Leine|Finger drauf halten — sie will das nicht',
@@ -4728,6 +4770,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.74.0', date:'2026-09-24', items:[
+    'Taste Test wrote down a verdict on every mode but never showed it back to you — liked and disliked looked exactly the same everywhere you actually browse modes. Every card now carries a small mark once it has one: a filled check for liked, an outlined cross for not-for-you, in the roster, in Favorites, wherever the card appears. Open a mode’s own preview and the same verdict shows as a tappable pill, in case Taste Test called it wrong — one tap flips it.',
+  ] },
   { v:'0.73.0', date:'2026-09-24', items:[
     'The score and streak used to sit in a box sized to a third of the screen, centred around a number that only needed a tenth of that — every round opened on more empty space around the score than board underneath it. That box is sized to its content now, the board picked up a wider margin to grow into, and a solve’s score actually jumps when it lands — bigger, and on an overshoot curve, instead of the barely-there nudge it used to get.',
   ] },
@@ -13700,13 +13745,7 @@ function showRateStep(){
 
   const choose = verdict => {
     sfx.tap(); buzz('tap');
-    const v = save.verdict || (save.verdict = {});
-    v[id] = verdict;
-    if (verdict === 'like'){
-      const favs = save.favs || (save.favs = []);
-      if (!favs.includes(id)) favs.push(id);
-    }
-    persist();
+    setVerdict(id, verdict);
     box.remove();
     if (!run) return;
     run.rating = false;
@@ -14079,7 +14118,8 @@ function modeCard(id, opts){
       '<span class="top"><span class="glyph">' + m.glyph + '</span><b></b></span>' +
       '<small></small>' +
       '<span class="foot"><span class="stars"><i></i><i></i><i></i></span><span class="pb"></span></span>' +
-      '<span class="pin" hidden>✓</span>';
+      '<span class="pin" hidden>✓</span>' +
+      '<span class="verdict" hidden></span>';
     /* The card's own id, so anything that needs to find one mode among sixty
        can ask for it by name rather than by its translated title. */
     card.dataset.id = id;
@@ -14102,8 +14142,22 @@ function modeCard(id, opts){
   const best = save.marathon[id] || 0;
   card.querySelector('.pb').textContent = best ? String(best) : '';
   const inMix = tapeModes().includes(id);
-  card.classList.toggle('inmix', opts.mode === 'mix' && inMix);
-  card.querySelector('.pin').hidden = !(opts.mode === 'mix' && inMix);
+  const showPin = opts.mode === 'mix' && inMix;
+  card.classList.toggle('inmix', showPin);
+  card.querySelector('.pin').hidden = !showPin;
+  /* A liked or disliked mode wears the verdict Taste Test (or the preview
+     sheet's own toggle) gave it, everywhere the card shows up — the pin
+     badge is the only other thing that ever sits in this corner, and it
+     only ever appears in the mix picker, so the two never collide. */
+  const verdict = (save.verdict || {})[id];
+  const showVerdict = !!verdict && !showPin;
+  const vEl = card.querySelector('.verdict');
+  vEl.hidden = !showVerdict;
+  vEl.classList.toggle('like', verdict === 'like');
+  vEl.classList.toggle('dislike', verdict === 'dislike');
+  vEl.textContent = verdict === 'like' ? '✓' : verdict === 'dislike' ? '✕' : '';
+  if (verdict) vEl.setAttribute('aria-label', t(verdict === 'like' ? 'discover.yes' : 'discover.no'));
+  card.classList.toggle('badged', showPin || showVerdict);
   card.onclick = opts.onTap;
   return card;
 }
@@ -14981,6 +15035,7 @@ function openModePreview(id){
     ? t('mpv.mastered')
     : t('mpv.toNext', { n: fmt(STAR_AT[stars] - best) });
   paintFavBtn(id);
+  paintMpvVerdict(id);
   $('modeSheet').hidden = false;
   sfx.tap();
   $('mpvPlay').focus();
@@ -14991,6 +15046,24 @@ function paintFavBtn(id){
   btn.classList.toggle('on', on);
   btn.setAttribute('aria-pressed', String(on));
   btn.setAttribute('aria-label', t(on ? 'a.favRemove' : 'a.favAdd'));
+}
+/* Nothing here until Taste Test (or a previous visit to this same panel)
+   has given the mode a verdict — most modes never get one, so silence is
+   the right default, not a third "unrated" pill nobody asked to see. Once
+   there is one, tapping it flips like/dislike in place; there is no way
+   back to unrated from here since that would put the mode back into Taste
+   Test's queue, which is a bigger decision than a mind change deserves. */
+function paintMpvVerdict(id){
+  const verdict = (save.verdict || {})[id];
+  const btn = $('mpvVerdict');
+  btn.hidden = !verdict;
+  if (!verdict) return;
+  btn.classList.toggle('like', verdict === 'like');
+  btn.classList.toggle('dislike', verdict === 'dislike');
+  btn.innerHTML = '<i aria-hidden="true">' + (verdict === 'like' ? '✓' : '✕') + '</i><span></span>';
+  btn.querySelector('span').textContent = t(verdict === 'like' ? 'discover.yes' : 'discover.no');
+  btn.setAttribute('aria-label',
+    t(verdict === 'like' ? 'discover.yes' : 'discover.no') + ' — ' + t('a.verdictChange'));
 }
 function closeModePreview(){ $('modeSheet').hidden = true; mpvId = null; }
 $('mpvClose').addEventListener('click', closeModePreview);
@@ -15004,6 +15077,17 @@ $('mpvFavBtn').addEventListener('click', () => {
   paintFavBtn(mpvId);
   sfx.tap();
   paintPlay();
+});
+$('mpvVerdict').addEventListener('click', () => {
+  if (!mpvId) return;
+  const cur = (save.verdict || {})[mpvId];
+  if (!cur) return;
+  setVerdict(mpvId, cur === 'like' ? 'dislike' : 'like');
+  paintMpvVerdict(mpvId);
+  paintFavBtn(mpvId);
+  sfx.tap();
+  paintPlay();
+  paintModes();
 });
 $('modeSheet').addEventListener('click', ev => {
   if (ev.target === $('modeSheet')) closeModePreview();
