@@ -2095,6 +2095,31 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .pauseswrow{display:flex;align-items:center;gap:9px;padding:8px;cursor:pointer}
 .pauseswrow small{font-size:11px;color:var(--haze);font-weight:600}
 
+/* ── Taste Test's rate step ─────────────────────────────────────────────── */
+.ratebox{
+  position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;padding:22px;
+  background:#0D0918f2;text-align:center;
+}
+.ratebox .rglyph{width:48px;height:48px;color:var(--fam,var(--flare));margin-bottom:2px}
+.ratebox .rglyph svg{width:100%;height:100%;display:block}
+.ratebox b{font-family:var(--f-disp);font-weight:800;font-size:clamp(22px,6.5vw,28px);color:var(--cream)}
+.ratebox > small{font-size:12px;color:var(--haze);line-height:1.4;max-width:30ch;margin-bottom:4px}
+.ratebox .rq{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--haze);margin-top:6px}
+.ratebox .rbtns{display:flex;gap:18px;margin-top:8px}
+.ratebox .rbtn{
+  width:72px;height:72px;border-radius:50%;display:grid;place-items:center;
+  border:2px solid var(--edge);background:var(--ink-2);box-shadow:var(--lift);
+  transition:transform var(--t-fast),border-color var(--t-fast),background var(--t-fast),box-shadow var(--t-fast);
+}
+.ratebox .rbtn svg{width:30px;height:30px}
+.ratebox .rbtn:active{transform:scale(.88);box-shadow:var(--lift-press)}
+.ratebox .rbtn.yes{color:var(--cool)}
+.ratebox .rbtn.yes:active{border-color:var(--cool);background:color-mix(in srgb, var(--cool) 16%, var(--ink-2))}
+.ratebox .rbtn.no{color:var(--haze)}
+.ratebox .rbtn.no:active{border-color:var(--bad);background:color-mix(in srgb, var(--bad) 14%, var(--ink-2))}
+.ratebox .rprogress{font-family:var(--f-data);font-size:11px;color:var(--haze);margin-top:12px}
+
 /* ── The mode changed ─────────────────────────────────────────────────── */
 .swap{
   position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;
@@ -2847,6 +2872,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
               <b data-i18n="zen.title">Fidget Loop</b>
               <small data-i18n="zen.sub">No timer, no score</small>
             </button>
+            <button class="qcard" id="discoverBtn" type="button" style="--acc:#33E6C8">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>
+              <b data-i18n="discover.title">Taste Test</b>
+              <small id="discoverMeta">Try every mode, rate it as you go</small>
+            </button>
             <button class="qcard" id="marathonBtn" type="button" style="--acc:#9C7BFF">
               <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 20V9M10 20V4M16 20v-8M22 20h-20"/></svg>
               <b data-i18n="marathon.title">Marathon</b>
@@ -3335,7 +3365,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.71.0';
+const VERSION_TAG = 'v0.72.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3365,6 +3395,11 @@ const defaults = {
      true — a record of when, not just whether, with room to sort or show
      a date later without another migration. */
   achieve:{},
+  /* A verdict on a mode, given once and kept — 'like' or 'dislike', set by
+     Taste Test. Liking one also favorites it; disliking one changes
+     nothing else, since undoing a favorite the player set deliberately for
+     their own reason isn't this feature's call to make. */
+  verdict:{},
   /* The win colour a level buys — 'teal' is the colour every run has
      always used, so this changes nothing for a save that never opens it. */
   cosmetic:'teal'
@@ -3852,6 +3887,10 @@ const STRINGS = {
     'daily.bonusEyebrow':'Streak bonus', 'daily.bonusTitle':'{n}-day streak!', 'daily.bonusXp':'+{n} XP',
     'daily.best':'Today’s best: {n}',
     'zen.title':'Fidget Loop', 'zen.sub':'No timer, no score',
+    'discover.title':'Taste Test', 'discover.left':'{n} left to try', 'discover.doneTitle':'All rated',
+    'discover.doneDesc':'Every one of the 66 has a verdict now.', 'discover.ask':'Did you like it?',
+    'discover.yes':'Liked it', 'discover.no':'Not for me', 'discover.progress':'{n} more to try',
+    'discover.lastOne':'Last one',
     'marathon.title':'Marathon', 'marathon.sub':'One mode, three lives',
     'modes.header':'All {n} modes · nothing locked',
     'modes.note':'Every mode is available from the first launch. Levels measure how far you have taken each one, they do not decide which ones you are allowed to see.',
@@ -3880,6 +3919,7 @@ const STRINGS = {
     'ach.bossdown':'Boss Down', 'ach.bossdown.d':'Clear a boss wave in Survival Protocol.',
     'ach.wildcard':'Wildcard', 'ach.wildcard.d':'Solve a round under a Chaos Gauntlet modifier.',
     'ach.stillwater':'Still Water', 'ach.stillwater.d':'Solve 15 puzzles in one Fidget Loop session.',
+    'ach.tastemaker':'Tastemaker', 'ach.tastemaker.d':'Give every mode a verdict.',
     'set.feedback':'Feedback', 'set.sound':'Sound', 'set.soundSub':'Taps and streak chimes — each family in its own key',
     'set.vib':'Vibration', 'set.vibSub':'A short pulse on every answer',
     'set.motion':'Reduce motion', 'set.motionSub':'No particles, no screen shake',
@@ -4032,6 +4072,10 @@ const STRINGS = {
     'daily.bonusEyebrow':'Bonus de série', 'daily.bonusTitle':'Série de {n} jours !', 'daily.bonusXp':'+{n} XP',
     'daily.best':'Record du jour : {n}',
     'zen.title':'Boucle calme', 'zen.sub':'Sans chrono, sans score',
+    'discover.title':'Dégustation', 'discover.left':'{n} restants à essayer', 'discover.doneTitle':'Tout noté',
+    'discover.doneDesc':'Les 66 ont chacun un avis, maintenant.', 'discover.ask':'Vous avez aimé ?',
+    'discover.yes':'Aimé', 'discover.no':'Pas pour moi', 'discover.progress':'{n} de plus à essayer',
+    'discover.lastOne':'Dernier',
     'marathon.title':'Marathon', 'marathon.sub':'Un seul mode, trois vies',
     'modes.header':'Les {n} modes · rien n’est verrouillé',
     'modes.note':'Tous les modes sont disponibles dès le premier lancement. Les niveaux mesurent jusqu’où vous êtes allé, ils ne décident pas de ce que vous avez le droit de voir.',
@@ -4060,6 +4104,7 @@ const STRINGS = {
     'ach.bossdown':'Boss vaincu', 'ach.bossdown.d':'Terminez une vague boss dans Protocole de survie.',
     'ach.wildcard':'Carte folle', 'ach.wildcard.d':'Résolvez une manche sous un modificateur du Gant du chaos.',
     'ach.stillwater':'Eau calme', 'ach.stillwater.d':'Résolvez 15 casse-têtes en une session de Boucle calme.',
+    'ach.tastemaker':'Fin gourmet', 'ach.tastemaker.d':'Donnez un avis sur chaque mode.',
     'set.feedback':'Retours', 'set.sound':'Son', 'set.soundSub':'Touches et séries — chaque famille dans sa tonalité',
     'set.vib':'Vibration', 'set.vibSub':'Une brève impulsion à chaque réponse',
     'set.motion':'Réduire les animations', 'set.motionSub':'Ni particules, ni secousses',
@@ -4212,6 +4257,10 @@ const STRINGS = {
     'daily.bonusEyebrow':'Bono de racha', 'daily.bonusTitle':'¡Racha de {n} días!', 'daily.bonusXp':'+{n} XP',
     'daily.best':'Récord de hoy: {n}',
     'zen.title':'Modo calma', 'zen.sub':'Sin reloj, sin puntos',
+    'discover.title':'Cata', 'discover.left':'{n} por probar', 'discover.doneTitle':'Todo valorado',
+    'discover.doneDesc':'Los 66 ya tienen un veredicto.', 'discover.ask':'¿Te ha gustado?',
+    'discover.yes':'Me gustó', 'discover.no':'No es para mí', 'discover.progress':'{n} más por probar',
+    'discover.lastOne':'El último',
     'marathon.title':'Maratón', 'marathon.sub':'Un modo, tres vidas',
     'modes.header':'Los {n} modos · nada bloqueado',
     'modes.note':'Todos los modos están disponibles desde el primer momento. Los niveles miden hasta dónde has llegado, no deciden qué puedes ver.',
@@ -4240,6 +4289,7 @@ const STRINGS = {
     'ach.bossdown':'Jefe derrotado', 'ach.bossdown.d':'Supera una oleada jefe en Protocolo de supervivencia.',
     'ach.wildcard':'Comodín', 'ach.wildcard.d':'Resuelve una ronda bajo un modificador del Guantelete del caos.',
     'ach.stillwater':'Aguas tranquilas', 'ach.stillwater.d':'Resuelve 15 puzles en una sesión de Modo calma.',
+    'ach.tastemaker':'Paladar fino', 'ach.tastemaker.d':'Da tu veredicto sobre cada modo.',
     'set.feedback':'Respuesta', 'set.sound':'Sonido', 'set.soundSub':'Toques y rachas — cada familia en su tono',
     'set.vib':'Vibración', 'set.vibSub':'Un pulso breve en cada respuesta',
     'set.motion':'Reducir movimiento', 'set.motionSub':'Sin partículas ni sacudidas',
@@ -4392,6 +4442,10 @@ const STRINGS = {
     'daily.bonusEyebrow':'Serien-Bonus', 'daily.bonusTitle':'{n} Tage in Folge!', 'daily.bonusXp':'+{n} XP',
     'daily.best':'Heutiger Rekord: {n}',
     'zen.title':'Ruhemodus', 'zen.sub':'Ohne Uhr, ohne Punkte',
+    'discover.title':'Kostprobe', 'discover.left':'Noch {n} zum Ausprobieren', 'discover.doneTitle':'Alles bewertet',
+    'discover.doneDesc':'Alle 66 haben jetzt ein Urteil.', 'discover.ask':'Hat es dir gefallen?',
+    'discover.yes':'Gefällt mir', 'discover.no':'Nichts für mich', 'discover.progress':'Noch {n} zum Ausprobieren',
+    'discover.lastOne':'Der Letzte',
     'marathon.title':'Marathon', 'marathon.sub':'Ein Modus, drei Leben',
     'modes.header':'Alle {n} Modi · nichts gesperrt',
     'modes.note':'Alle Modi sind vom ersten Start an verfügbar. Level messen, wie weit du gekommen bist — sie entscheiden nicht, was du sehen darfst.',
@@ -4420,6 +4474,7 @@ const STRINGS = {
     'ach.bossdown':'Boss besiegt', 'ach.bossdown.d':'Schließe eine Bosswelle im Überlebensprotokoll ab.',
     'ach.wildcard':'Wildcard', 'ach.wildcard.d':'Löse eine Runde unter einem Modifikator im Chaos-Parcours.',
     'ach.stillwater':'Stilles Wasser', 'ach.stillwater.d':'Löse 15 Rätsel in einer Ruhemodus-Sitzung.',
+    'ach.tastemaker':'Feinschmecker', 'ach.tastemaker.d':'Gib jedem Modus ein Urteil.',
     'set.feedback':'Rückmeldung', 'set.sound':'Ton', 'set.soundSub':'Tippen und Serien — jede Familie in eigener Tonart',
     'set.vib':'Vibration', 'set.vibSub':'Ein kurzer Impuls bei jeder Antwort',
     'set.motion':'Bewegung reduzieren', 'set.motionSub':'Keine Partikel, kein Wackeln',
@@ -4652,7 +4707,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
-  { v:'0.71.0', date:'2026-09-24', items:[
+  { v:'0.72.0', date:'2026-09-24', items:[
+    'A new way to play, in My Stuff: Taste Test deals one round of every mode you haven’t given a verdict on yet — no clock, no lives, no score, since whether you liked it isn’t something speed should be able to buy. Solve it or don’t, then say so with a tap: liked ones join your favorites, and either way you won’t be asked about that mode again. A new achievement for reaching the end of all 66.',
+  ] },
+  { v:'0.70.0', date:'2026-09-24', items:[
     'Four surfaces the depth pass missed the first time round now match the rest of the app: Mixtape’s mode rows, the language picker’s rows, perk cards, and — the one that actually mattered — every bottom sheet (language, changelog, mode preview), which had no lift of its own at all despite floating over a dimmed screen.',
   ] },
   { v:'0.70.0', date:'2026-09-24', items:[
@@ -12733,6 +12791,9 @@ const ACHIEVEMENTS = [
   { id:'stillwater', ink:'#7BE38A',
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".5"/><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".25"/></svg>',
     goal: (r) => !!(r && r.kind === 'zen' && r.solved >= 15) },
+  { id:'tastemaker', ink:'#33E6C8',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    goal: () => MODE_IDS.every(id => (save.verdict || {})[id]) },
 ];
 const ACH_BY_ID = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));
 
@@ -12878,7 +12939,15 @@ const KINDS = {
      cutting it short. */
   daily:    { label:'Daily Drop',  key:'daily.title',    timed:false, scored:true, rounds:12, roundClock:true },
   marathon: { label:'Marathon',    key:'marathon.title', timed:false, lives:3,   scored:true, roundClock:true },
-  zen:      { label:'Fidget Loop', key:'zen.title',      timed:false, scored:false }
+  zen:      { label:'Fidget Loop', key:'zen.title',      timed:false, scored:false },
+  /* One round of every mode you haven't given a verdict yet, in whatever
+     order the bag deals them — no clock, no lives, no score, because
+     "did you like it" isn't a thing speed or a streak should be able to
+     buy. A win or a miss both lead to the same next step: say so, then
+     move on. Shaped exactly like Fidget Loop's own unscored, untimed,
+     lives-less kind — the closest existing precedent — deliberately, not
+     by coincidence. */
+  discover: { label:'Taste Test',  key:'discover.title', timed:false, scored:false }
 };
 const kindName = kind => t(KINDS[kind].key);
 
@@ -13539,7 +13608,7 @@ function resolve(ok, node){
         eyebrow: t('survival.wave', { n: run.solved }), title: t('survival.extraLife'), desc: t('survival.extraLifeDesc') });
     }
     renderHud();
-    later(400, nextRound);
+    later(400, run.kind === 'discover' ? showRateStep : nextRound);
   } else {
     run.missed++;
     /* A shield keeps the streak, not the round. The miss still costs a life or
@@ -13569,14 +13638,75 @@ function resolve(ok, node){
     renderHud();
     if (k.lives && run.lives <= 0) return later(520, endRun);
     if (k.timed && run.time <= 0) return later(340, endRun);
-    later(560, nextRound);
+    later(560, run.kind === 'discover' ? showRateStep : nextRound);
   }
+}
+
+/* Taste Test's between-rounds beat: the round just resolved (win or miss,
+   it doesn't matter which — the question isn't "did you win", it's "did
+   you like it") and the shell needs one verdict before it deals the next
+   mode. Modeled on pauseRun()'s own full-screen box, since both are places
+   the run legitimately stops and waits on the player rather than a timer. */
+function showRateStep(){
+  if (!run || run.kind !== 'discover') return;
+  const id = run.shownMode;
+  run.rating = true;
+  clearBoard();
+  el.prompt.textContent = ''; el.prompt.className = 'prompt';
+  const box = mk('div','ratebox');
+  box.style.setProperty('--fam', CAT_INK[catOf(id)] || 'var(--flare)');
+  const gl = mk('div','rglyph'); gl.innerHTML = MODES[id].glyph;
+  const h = mk('b'); h.textContent = modeName(id);
+  const sub = mk('small'); sub.textContent = modeBlurb(id);
+  const q = mk('div','rq'); q.textContent = t('discover.ask');
+  const btns = mk('div','rbtns');
+  const no = mk('button','rbtn no'); no.type = 'button';
+  no.setAttribute('aria-label', t('discover.no'));
+  no.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  const yes = mk('button','rbtn yes'); yes.type = 'button';
+  yes.setAttribute('aria-label', t('discover.yes'));
+  yes.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>';
+  btns.appendChild(no); btns.appendChild(yes);
+  const remaining = run.bag ? run.bag.length : 0;
+  const prog = mk('div','rprogress');
+  prog.textContent = remaining > 0 ? t('discover.progress', { n: remaining }) : t('discover.lastOne');
+  box.appendChild(gl); box.appendChild(h); box.appendChild(sub);
+  box.appendChild(q); box.appendChild(btns); box.appendChild(prog);
+  el.stage.appendChild(box);
+
+  const choose = verdict => {
+    sfx.tap(); buzz('tap');
+    const v = save.verdict || (save.verdict = {});
+    v[id] = verdict;
+    if (verdict === 'like'){
+      const favs = save.favs || (save.favs = []);
+      if (!favs.includes(id)) favs.push(id);
+    }
+    persist();
+    box.remove();
+    if (!run) return;
+    run.rating = false;
+    if (!run.bag || run.bag.length === 0) endRun(); else nextRound();
+  };
+  onTap(yes, () => choose('like'));
+  onTap(no, () => choose('dislike'));
+  yes.focus();
 }
 
 /* ═══ Runs ════════════════════════════════════════════════════════════════ */
 function startRun(kind, modeId){
   const k = KINDS[kind];
   const lvl = playerLevel();
+  /* Nothing left to try. pickMode()'s bag would shuffle an empty pool and
+     hand back undefined, which is a crash three calls later rather than
+     here — so this is checked before anything about the run exists, not
+     discovered mid-round. */
+  if (kind === 'discover' && MODE_IDS.every(id => (save.verdict || {})[id])){
+    announceToast({ ink:'#33E6C8',
+      glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      eyebrow: t('discover.title'), title: t('discover.doneTitle'), desc: t('discover.doneDesc') });
+    return;
+  }
   run = {
     kind, mode: modeId || null, curMode: null, lastMode: null, bag: null,
     score:0, solved:0, missed:0, streak:0, bestStreak:0, maxTier:1, log:[],
@@ -13593,6 +13723,7 @@ function startRun(kind, modeId){
     pool: kind === 'mix' ? mixModes()
       : kind === 'reflexrush' ? idsInCat('reflex')
       : kind === 'puzzlecascade' ? idsInCat('make')
+      : kind === 'discover' ? MODE_IDS.filter(id => !(save.verdict || {})[id])
       : MODE_IDS.slice(),
     rnd: kind === 'daily' ? mulberry32(hashStr(todayKey())) : Math.random
   };
@@ -13655,6 +13786,16 @@ function countIn(then){
    price, and you lose nothing else. */
 function pauseRun(){
   if (!run || run.paused || !run.started) return;
+  /* The round that was live is already decided by the time the rate step is
+     up — there's nothing left to pause, only to end. Quitting here removes
+     the rate box itself rather than leaving it stacked under a second
+     full-screen overlay pauseRun would otherwise open on top of it. */
+  if (run.rating){
+    const rb = el.stage.querySelector('.ratebox');
+    if (rb) rb.remove();
+    run.rating = false;
+    return endRun();
+  }
   run.paused = true;
   roundLive = false;
   clearTimers();
@@ -14060,6 +14201,10 @@ function paintPlay(){
   $('chaosMeta').textContent = save.pbChaos
     ? t('play.carryBest', { n: fmt(save.pbChaos) })
     : t('chaos.sub');
+  {
+    const left = MODE_IDS.filter(id => !(save.verdict || {})[id]).length;
+    $('discoverMeta').textContent = left === 0 ? t('discover.doneTitle') : t('discover.left', { n: left });
+  }
 
   const dv = save.daily[todayKey()], dSt = dailyStreak();
   const dLine = dSt ? t('daily.streakN', { n: dSt }) : dv ? t('daily.done') : t('daily.today');
@@ -14868,6 +15013,7 @@ $('reflexRushBtn').addEventListener('click', () => startRun('reflexrush'));
 $('puzzleCascadeBtn').addEventListener('click', () => startRun('puzzlecascade'));
 $('survivalBtn').addEventListener('click', () => startRun('survival'));
 $('chaosBtn').addEventListener('click', () => startRun('chaos'));
+$('discoverBtn').addEventListener('click', () => startRun('discover'));
 $('dailyStatus').addEventListener('click', () => startRun('daily'));
 $('mixBtn').addEventListener('click', () => {
   /* First tap opens the editor, because a Mixtape nobody has built is just
