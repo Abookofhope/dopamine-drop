@@ -3243,7 +3243,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.59.0';
+const VERSION_TAG = 'v0.60.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4540,6 +4540,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.60.0', date:'2026-09-24', items:[
+    'Gather’s eggs were invisible for the whole time they were actually falling — a class name it shared by accident with an unrelated mode (Sift’s chute grain, which starts hidden until its own reveal animation), so every egg went transparent the moment it started moving and never came back. Fixed by giving Gather’s own falling state its own name.',
+    'Descent could put the first gap under a second of travel from a standing start at the top of the level range — not enough time to read which side was open, let alone get a thumb there. The run-in to the first gate is roughly twice as long now; nothing else about the gap width, drift or fall speed changed.',
+  ] },
   { v:'0.59.0', date:'2026-09-24', items:[
     'The fifth and last new way to play: Chaos Gauntlet, in My Stuff. All 66 modes in rotation like Shuffle, except about a third of rounds carry a modifier rolled fresh each round and called out the moment it lands — double points, or a fog that blurs the board without hiding or disabling anything on it. Reversed controls from the original wishlist didn’t make it in: the 66 modes split across taps, drags and holds with no single shared input layer to flip it at, and getting that wrong per-mode felt like a worse bug than not having the modifier.',
   ] },
@@ -8256,7 +8260,15 @@ const MODES = {
       ctx.surface.appendChild(sky);
 
       /* Bars are spaced evenly below the start so the first one is never on top
-         of the star — there has to be room to read the gap before reaching it. */
+         of the star — there has to be room to read the gap before reaching it.
+         That room used to be the same 34 as the gap between every other pair,
+         which at the top of the level range put the first bar under a second
+         of travel from a standing start — read the gap, pick a side, get a
+         thumb there, all inside a beat too short to do any of it. LEAD pushes
+         the whole sequence down without touching the spacing between bars, the
+         gap width or the fall speed, so nothing about the difficulty curve
+         changes except having a fair look at the first gate. */
+      const LEAD = 20;
       const bars = [];
       for (let i=0;i<gates;i++){
         const e = mk('div','dbar');
@@ -8266,7 +8278,7 @@ const MODES = {
         e.setAttribute('aria-label', t('a.gap', { a: i+1, b: gates }));
         sky.appendChild(e);
         bars.push({ e, left, right,
-                    y: 34 + i*26,
+                    y: 34 + LEAD + i*26,
                     gx: 20 + ctx.rnd()*60,
                     dir: ctx.rnd() < 0.5 ? -1 : 1,
                     passed: false });
@@ -9019,7 +9031,12 @@ const MODES = {
           if (age < 0){ continue; }
           const y = -8 + (age/fall) * (RIM + 8);
           d.e.style.top = y + '%';
-          if (!d.live){ d.live = true; d.e.classList.add('falling'); }
+          /* Not 'falling' — that class already belongs to Sift's chute grain,
+             which starts at opacity:0 until its own .go animation reveals it.
+             Gather's eggs collided with that rule and were invisible for
+             their entire drop, since nothing in Gather's own lifecycle
+             (landed/fell/splat) ever restores opacity to 1. */
+          if (!d.live){ d.live = true; d.e.classList.add('gfall'); }
           if (y >= RIM){
             d.gone = true;
             const caught = Math.abs(d.x - px) < CATCH/2;
