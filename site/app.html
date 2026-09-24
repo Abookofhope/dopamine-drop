@@ -49,7 +49,16 @@
    for instance — comes out of this box rather than being added to it. */
 html{-webkit-text-size-adjust:100%;height:100%}
 body{
-  margin:0;background:var(--ink);color:var(--cream);
+  margin:0;color:var(--cream);
+  /* Two soft, static blooms rather than a flat fill — the rest of the app is
+     nearly edge-to-edge, so this mostly shows through the gaps between cards
+     and behind the header, but it's the difference between a screen and a
+     void. Static, not animated: no cost, nothing for reduced-motion to
+     fight, and never competing with anything that actually moves. */
+  background:
+    radial-gradient(85% 55% at 12% -8%, color-mix(in srgb, var(--flare) 12%, transparent), transparent 62%),
+    radial-gradient(65% 50% at 105% 108%, color-mix(in srgb, var(--cool) 9%, transparent), transparent 60%),
+    var(--ink);
   font-family:var(--f-body);font-size:16px;line-height:1.45;
   /* 100dvh so the column tracks a phone's collapsing URL bar, capped at the
      root's content box so it can never exceed the room an ancestor left it.
@@ -3263,7 +3272,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.64.0';
+const VERSION_TAG = 'v0.65.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4560,6 +4569,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.65.0', date:'2026-09-24', items:[
+    'The screen behind everything was flat black, edge to edge, the whole app long. Two soft, static colour blooms now sit behind it — nothing that moves, nothing that costs a frame, just the difference between a screen and a void in the gaps between cards.',
+  ] },
   { v:'0.64.0', date:'2026-09-24', items:[
     'Ten mode icons redrawn: Descent’s was a sparkle with no relation to falling through a gap — now it is one. Word Snap and Phrase Wheel had never actually drawn a letter or a wheel; Peril didn’t look dangerous; Off Beat didn’t look like rhythm; Rising Tap’s targets didn’t look like they were about to vanish. Also brought every one of the ten onto its own family’s accent colour, where several had been carrying an unrelated colour from a different family by accident.',
   ] },
