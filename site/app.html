@@ -2743,6 +2743,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
               <b data-i18n="puzzlecascade.title">Puzzle Cascade</b>
               <small id="puzzleCascadeMeta">All 6 make modes, longer and deeper</small>
             </button>
+            <button class="qcard" id="survivalBtn" type="button" style="--acc:#FFC53D">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 20 6v6c0 4.4-3.3 8-8 9-4.7-1-8-4.6-8-9V6z" fill="currentColor" stroke="none"/></svg>
+              <b data-i18n="survival.title">Survival Protocol</b>
+              <small id="survivalMeta">Any mode, three lives, waves of ten</small>
+            </button>
             <button class="qcard" id="zenBtn" type="button" style="--acc:#7BE38A">
               <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><circle cx="12" cy="12" r="3"/></svg>
               <b data-i18n="zen.title">Fidget Loop</b>
@@ -3223,7 +3228,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.56.0';
+const VERSION_TAG = 'v0.57.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3236,7 +3241,7 @@ const KEY = 'dd.v1';
 const QUARANTINE = 'dd.v1.unreadable';
 const SCHEMA = 10;
 const defaults = {
-  pbBlitz:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
+  pbBlitz:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
   lifetime:0, perks:[], perkLv:{}, tokens:0,
@@ -3690,6 +3695,9 @@ const STRINGS = {
     'mix.title':'Mixtape', 'mix.tapToChoose':'Tap to choose your modes',
     'reflexrush.title':'Reflex Rush', 'reflexrush.sub':'All 8 reflex modes, back to back',
     'puzzlecascade.title':'Puzzle Cascade', 'puzzlecascade.sub':'All 6 make modes, longer and deeper',
+    'survival.title':'Survival Protocol', 'survival.sub':'Any mode, three lives, waves of ten',
+    'survival.wave':'Wave {n}', 'survival.boss':'Boss wave', 'survival.bossDesc':'Harder than usual — just this once',
+    'survival.extraLife':'Extra life', 'survival.extraLifeDesc':'Wave cleared',
     'mix.nChosen':'{n} modes chosen', 'mix.build':'Build your rotation',
     'mix.note':'Pick the modes you actually like. <b>Mixtape</b> shuffles only those. Two or more to make a rotation — <b>{n} chosen</b>.',
     'mix.pickNote':'Pick the modes you actually like — Mixtape shuffles only those. Two or more makes a rotation.', 'mix.all':'All', 'mix.none':'None', 'mix.clear':'Clear', 'mix.chosen':'{n} chosen', 'mix.selectAll':'Select all', 'mix.done':'Done',
@@ -3860,6 +3868,9 @@ const STRINGS = {
     'mix.title':'Playlist', 'mix.tapToChoose':'Touchez pour choisir vos modes',
     'reflexrush.title':'Ruée réflexe', 'reflexrush.sub':'Les 8 modes réflexe, à la suite',
     'puzzlecascade.title':'Cascade de puzzles', 'puzzlecascade.sub':'Les 6 modes Créer, plus longs et plus profonds',
+    'survival.title':'Protocole de survie', 'survival.sub':'N’importe quel mode, trois vies, vagues de dix',
+    'survival.wave':'Vague {n}', 'survival.boss':'Vague de boss', 'survival.bossDesc':'Plus dure que d’habitude — juste cette fois',
+    'survival.extraLife':'Vie supplémentaire', 'survival.extraLifeDesc':'Vague nettoyée',
     'mix.nChosen':'{n} modes choisis', 'mix.build':'Composez votre rotation',
     'mix.note':'Choisissez les modes que vous aimez vraiment. <b>Playlist</b> ne mélange que ceux-là. Deux au minimum — <b>{n} choisis</b>.',
     'mix.pickNote':'Choisissez les modes que vous aimez vraiment — la playlist ne mélange que ceux-là. Deux au minimum pour une rotation.', 'mix.all':'Tous', 'mix.none':'Aucun', 'mix.clear':'Vider', 'mix.chosen':'{n} choisis', 'mix.selectAll':'Tout choisir', 'mix.done':'Terminé',
@@ -4030,6 +4041,9 @@ const STRINGS = {
     'mix.title':'Lista', 'mix.tapToChoose':'Toca para elegir tus modos',
     'reflexrush.title':'Ráfaga refleja', 'reflexrush.sub':'Los 8 modos de reflejos, seguidos',
     'puzzlecascade.title':'Cascada de puzles', 'puzzlecascade.sub':'Los 6 modos Crear, más largos y profundos',
+    'survival.title':'Protocolo de supervivencia', 'survival.sub':'Cualquier modo, tres vidas, oleadas de diez',
+    'survival.wave':'Oleada {n}', 'survival.boss':'Oleada de jefe', 'survival.bossDesc':'Más difícil de lo normal — solo esta vez',
+    'survival.extraLife':'Vida extra', 'survival.extraLifeDesc':'Oleada superada',
     'mix.nChosen':'{n} modos elegidos', 'mix.build':'Arma tu rotación',
     'mix.note':'Elige los modos que de verdad te gustan. <b>Lista</b> solo mezcla esos. Dos o más para una rotación — <b>{n} elegidos</b>.',
     'mix.pickNote':'Elige los modos que de verdad te gustan: la lista solo mezcla esos. Dos o más forman una rotación.', 'mix.all':'Todos', 'mix.none':'Ninguno', 'mix.clear':'Vaciar', 'mix.chosen':'{n} elegidos', 'mix.selectAll':'Elegir todos', 'mix.done':'Listo',
@@ -4200,6 +4214,9 @@ const STRINGS = {
     'mix.title':'Playlist', 'mix.tapToChoose':'Tippen, um Modi zu wählen',
     'reflexrush.title':'Reflex-Rausch', 'reflexrush.sub':'Alle 8 Reflex-Modi im Wechsel',
     'puzzlecascade.title':'Rätsel-Kaskade', 'puzzlecascade.sub':'Alle 6 Bauen-Modi, länger und tiefer',
+    'survival.title':'Überlebensprotokoll', 'survival.sub':'Jeder Modus, drei Leben, Wellen zu zehnt',
+    'survival.wave':'Welle {n}', 'survival.boss':'Bosswelle', 'survival.bossDesc':'Schwerer als sonst — nur dieses eine Mal',
+    'survival.extraLife':'Extra-Leben', 'survival.extraLifeDesc':'Welle geschafft',
     'mix.nChosen':'{n} Modi gewählt', 'mix.build':'Stelle deine Rotation zusammen',
     'mix.note':'Wähle die Modi, die dir wirklich gefallen. <b>Playlist</b> mischt nur diese. Mindestens zwei — <b>{n} gewählt</b>.',
     'mix.pickNote':'Wähle die Modi, die dir wirklich gefallen — die Playlist mischt nur diese. Ab zwei wird es eine Rotation.', 'mix.all':'Alle', 'mix.none':'Keine', 'mix.clear':'Leeren', 'mix.chosen':'{n} gewählt', 'mix.selectAll':'Alle wählen', 'mix.done':'Fertig',
@@ -4462,6 +4479,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.57.0', date:'2026-09-24', items:[
+    'A third new way to play: Survival Protocol. Marathon’s shape — three lives, one miss costs one — but shuffling across all 66 modes instead of one chosen mode, so a survivor never knows what the next wave is. Clearing five waves banks an extra life; the tenth, twentieth and every one after is a boss wave, called out the moment it lands, noticeably harder than the one before or after it. Its own personal-best line.',
+  ] },
   { v:'0.56.0', date:'2026-09-24', items:[
     'A second new way to play: Puzzle Cascade, beside Reflex Rush in My Stuff. Draws only from the six make-family modes — fitting parts together, matching a pattern, filling a mould — on a longer 90-second clock sized for their length rather than reusing a Shuffle-length timer that would fit barely two of them. Difficulty ramps too, at half Reflex Rush’s rate: these are spatial-reasoning puzzles, not a reflex test, so a chain rewards staying with it rather than turning into a speed run. Its own personal-best line.',
   ] },
@@ -12516,6 +12536,10 @@ const KINDS = {
      typical Shuffle mode — so the clock scales with them rather than reusing
      Shuffle's 60s, which would fit barely two puzzles per run. */
   puzzlecascade:{ label:'Puzzle Cascade', key:'puzzlecascade.title', timed:true, cap:120000, start:90000, penalty:6000, scored:true },
+  /* Marathon's shape (lives, a per-round clock, one miss costs one life) but
+     across all 66 modes shuffled rather than one chosen mode — a survivor
+     never knows what the next wave is. */
+  survival: { label:'Survival Protocol', key:'survival.title', lives:3, timed:false, scored:true, roundClock:true },
   /* The card promised twelve rounds and a 90-second clock, and the two were in
      conflict: twelve rounds at the median mode's par is 126 seconds of play,
      and twelve perfect solves earn back at most 35. Nobody was reaching round
@@ -12986,10 +13010,19 @@ function nextRound(){
      within one session. Puzzle Cascade ramps at half that: these six modes
      are about spatial reasoning, not reflexes, so a chain should reward
      sustained play rather than turning into a speed test. */
+  /* Survival's boss wave: every tenth round is a harder single spike rather
+     than a lasting ramp, called out the same moment it lands. */
+  const bossWave = run.kind === 'survival' && run.roundIdx > 0 && run.roundIdx % 10 === 0;
   const full = Prog.effectiveLevel(run.solved, run.playerLevel)
     + (run.kind === 'reflexrush' ? Math.floor(run.solved/3)
-      : run.kind === 'puzzlecascade' ? Math.floor(run.solved/6) : 0);
+      : run.kind === 'puzzlecascade' ? Math.floor(run.solved/6)
+      : bossWave ? 6 : 0);
   run.lvl = firstMeet ? Math.min(6, full) : full;
+  if (bossWave){
+    announceToast({ ink:'#FF3D6E',
+      glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7z"/><path d="M9 12l2 2 4-4" stroke-width="1.8"/></svg>',
+      eyebrow: t('survival.wave', { n: run.roundIdx }), title: t('survival.boss'), desc: t('survival.bossDesc') });
+  }
   /* Generous on purpose: par is how long the mode expects to take, and this is
      more than twice that, easing further as the player's level raises pressure.
      It is a floor under dawdling, not a second difficulty dial. */
@@ -13131,6 +13164,17 @@ function resolve(ok, node){
           setTimeout(() => el.surface.classList.remove('tierglow'), 700);
         }
       }
+    }
+    /* Survival's wave-clear reward: an extra life every five waves. The
+       brief's "upgrade choice between waves" simplified to a grant rather
+       than a pick — this shell has no screen between rounds to spend a
+       choice on — but it's the same beat: clearing a wave banks something
+       real for the waves after it, not just points. */
+    if (run.kind === 'survival' && run.solved % 5 === 0){
+      run.lives++; run.livesMax = (run.livesMax || run.lives - 1) + 1;
+      announceToast({ ink:'#33E6C8',
+        glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 20S4 14.5 4 9.4A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8 2.4C20 14.5 12 20 12 20z" fill="currentColor"/></svg>',
+        eyebrow: t('survival.wave', { n: run.solved }), title: t('survival.extraLife'), desc: t('survival.extraLifeDesc') });
     }
     renderHud();
     later(400, nextRound);
@@ -13347,6 +13391,7 @@ function endRun(){
     if ((r.kind === 'shuffle' || r.kind === 'mix') && r.score > save.pbBlitz){ save.pbBlitz = r.score; best = true; }
     if (r.kind === 'reflexrush' && r.score > (save.pbReflexRush || 0)){ save.pbReflexRush = r.score; best = true; }
     if (r.kind === 'puzzlecascade' && r.score > (save.pbPuzzleCascade || 0)){ save.pbPuzzleCascade = r.score; best = true; }
+    if (r.kind === 'survival' && r.score > (save.pbSurvival || 0)){ save.pbSurvival = r.score; best = true; }
     if (r.kind === 'marathon'){
       const prev = save.marathon[r.mode] || 0;
       if (r.score > prev){ save.marathon[r.mode] = r.score; best = true; }
@@ -13440,6 +13485,7 @@ function endRun(){
   const target = (r.kind === 'shuffle' || r.kind === 'mix') ? save.pbBlitz
     : r.kind === 'reflexrush' ? (save.pbReflexRush || 0)
     : r.kind === 'puzzlecascade' ? (save.pbPuzzleCascade || 0)
+    : r.kind === 'survival' ? (save.pbSurvival || 0)
     : r.kind === 'marathon' ? (save.marathon[r.mode]||0) : (save.daily[todayKey()]||0);
   $('againSub').textContent = k.scored
     ? (best ? t('over.twice') : t('over.beat', { n: fmt(target) }))
@@ -13636,6 +13682,9 @@ function paintPlay(){
   $('puzzleCascadeMeta').textContent = save.pbPuzzleCascade
     ? t('play.carryBest', { n: fmt(save.pbPuzzleCascade) })
     : t('puzzlecascade.sub');
+  $('survivalMeta').textContent = save.pbSurvival
+    ? t('play.carryBest', { n: fmt(save.pbSurvival) })
+    : t('survival.sub');
 
   const dv = save.daily[todayKey()], dSt = dailyStreak();
   const dLine = dSt ? t('daily.streakN', { n: dSt }) : dv ? t('daily.done') : t('daily.today');
@@ -14442,6 +14491,7 @@ $('myStuffBack').addEventListener('click', () => { setPlayView('home'); sfx.tap(
 $('statsBtn').addEventListener('click', () => goTab('Stats'));
 $('reflexRushBtn').addEventListener('click', () => startRun('reflexrush'));
 $('puzzleCascadeBtn').addEventListener('click', () => startRun('puzzlecascade'));
+$('survivalBtn').addEventListener('click', () => startRun('survival'));
 $('dailyStatus').addEventListener('click', () => startRun('daily'));
 $('mixBtn').addEventListener('click', () => {
   /* First tap opens the editor, because a Mixtape nobody has built is just
