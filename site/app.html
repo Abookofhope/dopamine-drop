@@ -3243,7 +3243,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.61.0';
+const VERSION_TAG = 'v0.62.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4540,6 +4540,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.62.0', date:'2026-09-24', items:[
+    'The back button — a browser back press, an Android back gesture, anything that isn’t one of the app’s own controls — used to leave the app outright from anywhere, mid-round included, because none of the screen changes here ever told the browser they’d happened. Every one of those presses is caught now: it closes whichever sheet or screen is actually on top the same way its own button would (a live round pauses, a paused one resumes, a drill-down backs out to the family list), all the way down to the main menu, where it simply stops rather than leaving.',
+  ] },
   { v:'0.61.0', date:'2026-09-24', items:[
     'Rising Tap could spawn its very first target already on a countdown too short to react to — as low as half a second at high difficulty, with nothing on screen yet to react to. Every round now gives the opening target a floor on how long it stays, so the difficulty ramp still bites once you’re actually tracking the board, just not before you’ve had a chance to look at it. Checked the rest of the roster for the same shape of bug; nothing else on it starts a hazard close enough to be unfair.',
   ] },
@@ -14896,6 +14899,47 @@ $('resetGone').addEventListener('click', () => {
   sfx.bad(); buzz('bad');
 });
 
+/* ═══ Back button ═════════════════════════════════════════════════════════
+   Every screen change above lives entirely in JS state — show(), setPlayView,
+   catFilter — with nothing ever pushed to the History API, so a hardware or
+   browser back press had nothing of the app's own to step back through and
+   fell straight out of the page, from anywhere, mid-round included. One
+   guard entry absorbs that press; each time it's consumed, this closes
+   whatever's actually on top — a sheet, a paused or live run, a drill-down,
+   My Stuff — the same way its own close control would, then re-arms itself
+   so the next press is caught too. At the true floor (Play tab, home view,
+   nothing open) there is nothing left to close, so the press is simply
+   absorbed rather than leaving the app; the app switcher is how you exit an
+   installed game, not a back gesture from its own main menu. */
+function armBackGuard(){
+  history.pushState({ ddGuard: true }, '', location.href);
+}
+
+function closeTopLayer(){
+  if (!$('modeSheet').hidden) return closeModePreview();
+  if (!$('logSheet').hidden) return $('logClose').click();
+  if (!$('langSheet').hidden) return $('langClose').click();
+  if (!$('welcome').hidden) return closeWelcome();
+  if (!$('resetConfirm').hidden){ $('resetConfirm').hidden = true; $('resetRow').hidden = false; return; }
+  /* Already paused: dismissing the sheet resumes rather than ends the run —
+     the same safe default Escape and every other "close this overlay"
+     path in the app uses. */
+  if (el.stage.querySelector('.pausebox')) return resumeRun();
+  /* A live run, count-in included: the quit button already knows exactly
+     what "back out of this" means at every stage (pause if started, clean
+     exit if not, ask first if something's actually at stake) — reuse it
+     rather than re-deriving the same rules here. */
+  if (run) return $('quitBtn').click();
+  if (screen === 'over') return $('homeBtn').click();
+  if (screen === 'Modes' && catFilter !== 'pick')
+    return withTransition(() => { catFilter = 'pick'; paintModes(); });
+  if (screen === 'Play' && playView === 'myStuff') return setPlayView('home');
+  if (screen !== 'Play') return goTab('Play');
+  /* True floor. Nothing to close. */
+}
+
+window.addEventListener('popstate', () => { closeTopLayer(); armBackGuard(); });
+
 /* ═══ Boot ════════════════════════════════════════════════════════════════ */
 function boot(){
   if (!save.lang) save.lang = detectLang();
@@ -14907,6 +14951,7 @@ function boot(){
   show('Play');
   paintAll();
   watchForUpdates();
+  armBackGuard();
 
   /* Counted, not spelled out: the copy said "Fifty-two" for as long as there
      were fifty-two, and then for a while after there were not. */
