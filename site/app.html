@@ -1973,6 +1973,16 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 #surface.shake{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
 @keyframes shake{10%,90%{transform:translateX(-3px)}20%,80%{transform:translateX(5px)}30%,50%,70%{transform:translateX(-8px)}40%,60%{transform:translateX(8px)}}
+/* A miss that snaps an active streak should read as a bigger loss than a
+   fresh one with nothing on the line yet — same shake, wider amplitude. */
+#surface.shake-big{animation:shake-big .38s cubic-bezier(.36,.07,.19,.97)}
+@keyframes shake-big{10%,90%{transform:translateX(-5px)}20%,80%{transform:translateX(8px)}30%,50%,70%{transform:translateX(-13px)}40%,60%{transform:translateX(13px)}}
+/* The ring burst() adds at the top of the tier range, alongside the sparks:
+   a stroke-only circle expanding out from the tap and fading, one extra beat
+   of impact on the solves that already earn the biggest spark count. */
+.ring{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
+  border:2px solid currentColor;pointer-events:none;animation:ringout 480ms cubic-bezier(.15,.7,.3,1) forwards}
+@keyframes ringout{0%{opacity:.8;transform:scale(.3)}100%{opacity:0;transform:scale(3.6)}}
 /* A new round used to just appear, mid-tap. Every mode's board is a direct
    child of #surface (one append per round, whatever wrapper it uses), so
    this one rule marks the moment for all sixty-six without any of them
@@ -3272,7 +3282,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.65.0';
+const VERSION_TAG = 'v0.66.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4569,6 +4579,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.66.0', date:'2026-09-24', items:[
+    'The top of a combo already threw more sparks; it throws a ring now too, expanding out from the same tap. And losing an active streak shakes the board harder than a fresh miss with nothing on the line — a bigger loss reads as one.',
+  ] },
   { v:'0.65.0', date:'2026-09-24', items:[
     'The screen behind everything was flat black, edge to edge, the whole app long. Two soft, static colour blooms now sit behind it — nothing that moves, nothing that costs a frame, just the difference between a screen and a void in the gaps between cards.',
   ] },
@@ -12774,6 +12787,15 @@ function burst(target, color, tier){
     el.surface.appendChild(s);
     setTimeout(() => s.remove(), 600);
   }
+  /* One extra beat only where the sparks already got extra: a ring expanding
+     out from the same point, on the same tap, not a separate occasion. */
+  if (hot){
+    const ring = mk('span', 'ring');
+    ring.style.left = cx+'px'; ring.style.top = cy+'px';
+    ring.style.color = color;
+    el.surface.appendChild(ring);
+    setTimeout(() => ring.remove(), 500);
+  }
 }
 function floatPts(target, text, tier){
   if (motionOff()) return;
@@ -13353,8 +13375,9 @@ function resolve(ok, node){
     if (k.lives) run.lives--;
     flash('flash-bad');
     if (!motionOff()){
-      el.surface.classList.add('shake');
-      setTimeout(() => el.surface.classList.remove('shake'), 360);
+      const shakeCls = (!saved && multWas > 1) ? 'shake-big' : 'shake';
+      el.surface.classList.add(shakeCls);
+      setTimeout(() => el.surface.classList.remove(shakeCls), 400);
     }
     sfx.bad(); buzz('bad');
     el.prompt.textContent = saved ? t('p.saved')
