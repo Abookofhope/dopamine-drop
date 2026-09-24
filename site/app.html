@@ -1961,6 +1961,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    a bigger event than an ordinary win. */
 #surface.tierglow::after{background:var(--flare);animation:tierglowpulse 700ms cubic-bezier(.2,.8,.3,1)}
 @keyframes tierglowpulse{0%{opacity:0}30%{opacity:.4}100%{opacity:0}}
+/* Fidget Loop has no timer, no score, nothing counting — the one mode this
+   whole shell has where the board itself can afford to move on its own.
+   A slow breathe, matched loosely to the ambient pad's own fade-in. */
+#surface.zenflow{animation:zenbreathe 6s ease-in-out infinite}
+@keyframes zenbreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.012)}}
 /* The moment the lid lifts: the meter is where the news is, so that is where
    it is said. */
 #stage.lidup #hudMeter{box-shadow:0 0 0 2px var(--zap),0 0 18px -4px var(--zap)}
@@ -3228,7 +3233,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.57.0';
+const VERSION_TAG = 'v0.58.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3506,6 +3511,44 @@ const sfx = {
     const notes = [660, 880, 1100, 1320].slice(0, t - 1);
     notes.forEach((f,i) => setTimeout(() => tone(f * s, 0.11, 'square', 0.045), i*70)); }
 };
+
+/* ═══ Ambient (Fidget Loop) ═══════════════════════════════════════════════
+   Everywhere else, sound is a one-shot reaction to a tap. Fidget Loop has no
+   timer and no score to react to — a held, breathing pad is the only sound
+   that makes sense for a mode built to have nothing to react to. Three
+   sine tones a fifth and an octave apart, in the mode's own family key like
+   every other sound this run, faded in and out rather than switched, so it
+   never clicks. */
+let ambient = null;
+function startAmbient(){
+  if (!save.sound || ambient) return;
+  const ac = audio();
+  if (!ac) return;
+  const bus = ac.createGain();
+  bus.gain.setValueAtTime(0.0001, ac.currentTime);
+  bus.gain.exponentialRampToValueAtTime(0.05, ac.currentTime + 1.4);
+  bus.connect(master || ac.destination);
+  const oscs = [220, 330, 440].map((f,i) => {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(f * toneShift, ac.currentTime);
+    g.gain.setValueAtTime(0.6 - i*0.15, ac.currentTime);
+    o.connect(g); g.connect(bus); o.start();
+    return o;
+  });
+  ambient = { bus, oscs };
+}
+function stopAmbient(){
+  if (!ambient) return;
+  const { bus, oscs } = ambient;
+  ambient = null;
+  const ac = audio();
+  if (!ac){ oscs.forEach(o => { try { o.stop(); } catch(e){} }); return; }
+  const t0 = ac.currentTime;
+  bus.gain.cancelScheduledValues(t0);
+  bus.gain.setValueAtTime(bus.gain.value, t0);
+  bus.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.7);
+  setTimeout(() => oscs.forEach(o => { try { o.stop(); } catch(e){} }), 800);
+}
 /* Twenty-odd call sites had each picked their own number — 6, 8, 10, 12, 14,
    20, [20,30,20] — so the same event buzzed differently depending on which
    mode you were in. These five are the whole vocabulary; the numbers behind
@@ -4479,6 +4522,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.58.0', date:'2026-09-24', items:[
+    'Fidget Loop already had no timer and no score — the one mode built to have nothing to react to. It had no sound and no motion of its own either, which on a mode that quiet read as broken rather than calm. It now fades in a held, breathing pad — three soft tones in the mode’s own key, the only sustained sound anywhere in the app — and the board itself takes a slow, barely-there breath. Both fade out the instant you pause or step away, and stay off entirely with reduce motion on.',
+  ] },
   { v:'0.57.0', date:'2026-09-24', items:[
     'A third new way to play: Survival Protocol. Marathon’s shape — three lives, one miss costs one — but shuffling across all 66 modes instead of one chosen mode, so a survivor never knows what the next wave is. Clearing five waves banks an extra life; the tenth, twentieth and every one after is a boss wave, called out the moment it lands, noticeably harder than the one before or after it. Its own personal-best line.',
   ] },
@@ -13256,6 +13302,7 @@ function startRun(kind, modeId){
     run.started = true;
     lastTs = performance.now();
     if (!raf) raf = rawRAF(tick);
+    if (kind === 'zen'){ startAmbient(); if (!motionOff()) el.surface.classList.add('zenflow'); }
     nextRound();
   });
 }
@@ -13294,6 +13341,8 @@ function pauseRun(){
   run.paused = true;
   roundLive = false;
   clearTimers();
+  stopAmbient();
+  el.surface.classList.remove('zenflow');
   /* Come back to the same puzzle at the same round number, not a new one. */
   run.forceMode = run.curMode ? modeIdOf(run.curMode) : null;
   run.roundIdx = Math.max(0, run.roundIdx - 1);
@@ -13369,7 +13418,9 @@ function resumeRun(){
   run.paused = false;
   clearBoard();
   el.prompt.textContent = t('p.ready');
-  countIn(() => { lastTs = performance.now(); if (!raf) raf = rawRAF(tick); nextRound(); });
+  countIn(() => { lastTs = performance.now(); if (!raf) raf = rawRAF(tick);
+    if (run.kind === 'zen'){ startAmbient(); if (!motionOff()) el.surface.classList.add('zenflow'); }
+    nextRound(); });
 }
 
 function endRun(){
@@ -13377,6 +13428,8 @@ function endRun(){
   clearTimers();
   if (raf){ rawCAF(raf); raf = 0; }
   roundLive = false;
+  stopAmbient();
+  el.surface.classList.remove('zenflow');
   const k = KINDS[run.kind], r = run;
   run = null;
   /* The last board stayed in the DOM behind the results screen — invisible,
