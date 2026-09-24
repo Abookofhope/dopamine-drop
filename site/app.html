@@ -1200,6 +1200,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:transform var(--t-fast)}
 .needleitem .shp{padding:16%;box-sizing:border-box;width:100%;height:100%}
 .needleitem:active{transform:translate(-50%,-50%) scale(.86)}
+/* The third axis, once it's in play: faint on purpose — colour and size are
+   still what the field actually reads as at a glance, this is the one thing
+   left to actually check before tapping. */
+.needleitem.ring, .refchip.ring{box-shadow:inset 0 0 0 2px #ffffff55}
 
 /* ── Bruise ───────────────────────────────────────────────────────────── */
 .cell.hole{background:var(--ink-3);border:1px solid var(--edge);border-radius:50%;position:relative;overflow:hidden}
@@ -2307,6 +2311,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .bub.bait.done{border-color:var(--cool);box-shadow:none}
 .stroopwrap{display:flex;flex-direction:column;gap:24px;align-items:center;width:100%;border-radius:var(--r-lg);
   background:radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--fam,transparent) 8%, transparent), transparent 75%)}
+/* A second, quieter cue alongside the prompt text for a reversed round —
+   the word itself gets underlined, since that's the thing to read now. */
+.stroopwrap.reversed .stroopword{text-decoration:underline;text-underline-offset:8px;text-decoration-thickness:3px}
 .stroopline{display:flex;align-items:center;justify-content:center;gap:12px;width:100%}
 .stroopword{font-family:var(--f-disp);font-weight:800;font-size:clamp(44px,16vw,68px);line-height:1;text-transform:uppercase}
 .wordshape{width:42px;height:42px;flex:none}
@@ -2351,6 +2358,12 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.mcell.tempt{border-color:var(--flare);box-shadow:inset 0 0 0 1px var(--flare)}
 .cell.mcell.tempt.on{border-color:var(--cool);box-shadow:none}
 .riser{position:absolute;border-radius:50%;transform:translate(-50%,-50%);background:var(--flare);border:2px solid var(--zap)}
+/* Worth two toward the goal, decays faster than a normal target — going
+   for it over whatever else is live is a real bet, not a reflex tap, so it
+   has to read as different at a glance, not just be worth more silently. */
+.riser.double{background:var(--zap);border-color:var(--flare)}
+.riser .val{position:absolute;inset:0;display:grid;place-items:center;
+  font-family:var(--f-data);font-weight:800;font-size:11px;color:var(--ink);pointer-events:none}
 .cell.empty{background:#ffffff05;border-color:transparent}
 .cell.corridor{background:#33e6c814;border-color:#33e6c84d}
 .cell.corridor.clear{background:#33e6c84d}
@@ -3317,7 +3330,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.69.0';
+const VERSION_TAG = 'v0.70.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3917,9 +3930,9 @@ const STRINGS = {
     'm.beat':'Off Beat|Find the dot that is out of time',
     'm.sort':'Sort Drop|Sort by the rule — it changes',
     'p.odd':'Tap the odd one out', 'p.order':'Tap 1 to {n} in order',
-    'p.stroop':'Tap the colour it is printed in', 'p.echoWatch':'Watch…',
+    'p.stroop':'Tap the colour it is printed in', 'p.stroopRev':'Reversed — tap the colour it names', 'p.echoWatch':'Watch…',
     'p.echoGo':'Now repeat it — {n} taps', 'p.rewire':'Connect orange to teal',
-    'p.sum':'Tap two that add to {n}', 'p.count':'How many {x}?',
+    'p.sum':'Tap two that add to {n}', 'p.sumDiff':'Tap two that differ by {n}', 'p.count':'How many {x}?',
     'p.mirror':'Mirror it to the right', 'p.rising':'Catch {n} — {m} to go',
     'p.blinkWatch':'Remember these…', 'p.blinkGo':'Tap the {n} you saw',
     'p.tooSlow':'Too slow',
@@ -3953,7 +3966,7 @@ const STRINGS = {
     'how.forage':'tap a berry to send a swarm at its colour; it comes in through the bare gaps and eats only what it can reach, then waits in the basket until you send it again. Tap a waiting swarm to call it home', 'how.first':'First time — taking it gently.', 'how.sift':'tap a colour to drop that bucket on the BACK of the belt; the belt shifts one slot every grain, so you are placing for a grain further down the chute, not the one falling. Tap the front bucket to knock it off',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
-    'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.favAdd':'Add to favorites', 'a.favRemove':'Remove from favorites', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
+    'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.pad':'Pad {n}', 'a.cell':'Cell {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.favAdd':'Add to favorites', 'a.favRemove':'Remove from favorites', 'a.bin':'Bin {n}', 'a.coin':'Coin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.cardDown':'Face down card {n}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.target':'Target', 'a.targetDouble':'Double target, worth two', 'a.targetBin':'Target bin', 'a.shape':'Shape', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.matched':'Matched', 'a.skimNow':'Skim now', 'a.wayOut':'Way out', 'a.youHere':'You are here', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'a.tileStraight':'Tile {n}, straight', 'a.tileTurns':'Tile {n}, {k} turns from straight', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
     'over.ribbon':'{a} of {b} rounds solved',
     'p.saved':'Streak held', 'perk.title':'Perks', 'perk.used':'{a} of {b} slots', 'perk.toSlot':'{n} points to the next slot', 'perk.toToken':'{n} points to the next token', 'perk.equipped':'equipped, level {n}', 'perk.notEquipped':'not equipped', 'perk.upgrade':'Spend a token on {p}', 'perk.tokensLeft':'{n} tokens to spend', 'perk.spare':'Spare Life', 'perk.spare.d':'Start a Marathon with {n} more lives', 'perk.spare.d1':'Start a Marathon with one more life', 'perk.shield':'Streak Shield', 'perk.shield.d':'Keep your streak through {n} misses a run', 'perk.shield.d1':'Keep your streak through one miss a run', 'perk.patience':'Long Fuse', 'perk.patience.d':'{n}% longer on the round clock', 'perk.zeal':'Zeal', 'perk.zeal.d':'The multiplier climbs sooner (rank {n})', 'perk.steady':'Steady Hands', 'perk.steady.d':'{n} more moves where moves are counted', 'perk.rally':'Rally', 'perk.rally.d':'Timed runs start {n} seconds longer',
     'p.leash':'Hold it for {n} more seconds', 'leash.moth':'The moth', 'leash.box':'Press and keep your finger on the moth', 'm.leash':'Leash|Keep your finger on it — it does not want you to',
@@ -3977,7 +3990,7 @@ const STRINGS = {
     'p.hauntLook':'{n} of them — watch closely', 'p.hauntPick':'{n} still to find', 'm.haunt':'Haunt|Watch the swaps — where did the ghosts end up?',
     'p.mint':'Build one worth {n}', 'mint.next':'Next', 'm.mint':'Mint|Drop coins, merge matches, reach the big one',
     'p.pivot':'{n} still crooked', 'm.pivot':'Pivot|Each tap turns two — straighten the whole pattern',
-    'p.needle':'Find it', 'needle.big':'the LARGE {c}', 'needle.small':'the SMALL {c}', 'needle.lgs':'large', 'needle.sms':'small', 'm.needle':'Needle|Find the one that is both — nothing here stands out',
+    'p.needle':'Find it', 'needle.big':'the LARGE {c}', 'needle.small':'the SMALL {c}', 'needle.lgs':'large', 'needle.sms':'small', 'needle.ringed':'ringed', 'needle.plain':'plain', 'm.needle':'Needle|Find the one that is both — nothing here stands out',
     'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Bruise|Finish the hurt ones before they slip away',
     'p.skim':'{n} skips to go', 'm.skim':'Skim|Tap as it crosses — the window narrows each time',
     'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble|Pair them off faster than the drum refills',
@@ -3985,7 +3998,7 @@ const STRINGS = {
     'p.arc':'{n} left to reach', 'p.umbraLook':'Remember this shape', 'p.umbraPick':'Which one was it?', 'p.stroke':'{n} nodes to go', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Arc|Chain every node before the charge dies',  'm.umbra':'Umbra|Remember the shape, pick it from its near-misses',  'm.stroke':'Single Stroke|One line through every node, no lifting',  'm.slack':'Slack|Drag the nodes until no rope crosses',  'm.tide':'Tide Breath|Hold to swell, release to ebb — stay in the band',  'm.plink':'Drop Odds|Pull one peg, then drop into the lit bin',  'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 'p.word':'Spell the {n}-letter word',
     'p.wheel':'Guess the phrase', 'p.gap1':'Fill the gap', 'p.gap2':'Fill both gaps, left to right',
     'p.beat':'Tap the dot that is out of time', 'p.sort':'Sorted {a} of {b}',
-    'p.target':'Target',
+    'p.target':'Target', 'p.diffLabel':'Difference',
     'c.RED':'RED','c.BLUE':'BLUE','c.GREEN':'GREEN','c.YELLOW':'YELLOW','c.PURPLE':'PURPLE','c.ORANGE':'ORANGE',
     's.circle':'circles','s.square':'squares','s.triangle':'triangles','s.diamond':'diamonds','s.cross':'crosses','s.chevron':'arrows',
     'sort.colour':'SORT BY COLOUR','sort.size':'SORT BY SIZE','sort.small':'SMALL','sort.big':'BIG',
@@ -4097,9 +4110,9 @@ const STRINGS = {
     'm.beat':'Hors Rythme|Trouvez le point qui bat à contretemps',
     'm.sort':'Tri Rapide|Triez selon la règle — elle change',
     'p.odd':'Touchez l’intrus', 'p.order':'Touchez 1 à {n} dans l’ordre',
-    'p.stroop':'Touchez la couleur de l’encre', 'p.echoWatch':'Regardez…',
+    'p.stroop':'Touchez la couleur de l’encre', 'p.stroopRev':'Inversé — touchez la couleur qu’il nomme', 'p.echoWatch':'Regardez…',
     'p.echoGo':'Répétez — {n} touches', 'p.rewire':'Reliez l’orange au turquoise',
-    'p.sum':'Touchez deux nombres faisant {n}', 'p.count':'Combien de {x} ?',
+    'p.sum':'Touchez deux nombres faisant {n}', 'p.sumDiff':'Touchez deux nombres dont la différence fait {n}', 'p.count':'Combien de {x} ?',
     'p.mirror':'Reflétez vers la droite', 'p.rising':'Attrapez-en {n} — encore {m}',
     'p.blinkWatch':'Mémorisez…', 'p.blinkGo':'Touchez les {n} vus',
     'p.tooSlow':'Trop lent',
@@ -4133,7 +4146,7 @@ const STRINGS = {
     'how.forage':'touchez une baie pour lancer un essaim sur sa couleur ; il entre par les trous, ne mange que ce qu’il atteint, puis attend dans le panier que vous le relanciez. Touchez un essaim en attente pour le rappeler', 'how.first':'Première fois — on y va doucement.', 'how.sift':'touchez une couleur pour poser ce seau à l’ARRIÈRE du tapis ; le tapis avance d’un cran à chaque grain, donc vous posez pour un grain plus loin dans la trémie, pas pour celui qui tombe. Touchez le seau de tête pour le faire tomber',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
-    'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.favAdd':'Ajouter aux favoris', 'a.favRemove':'Retirer des favoris', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
+    'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.pad':'Touche {n}', 'a.cell':'Case {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.favAdd':'Ajouter aux favoris', 'a.favRemove':'Retirer des favoris', 'a.bin':'Bac {n}', 'a.coin':'Pièce {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.cardDown':'Carte face cachée {n}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.target':'Cible', 'a.targetDouble':'Cible double, vaut deux', 'a.targetBin':'Bac cible', 'a.shape':'Forme', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.matched':'Appariée', 'a.skimNow':'Touchez maintenant', 'a.wayOut':'Sortie', 'a.youHere':'Vous êtes ici', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'a.tileStraight':'Tuile {n}, droite', 'a.tileTurns':'Tuile {n}, à {k} quarts de tour', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
     'over.ribbon':'{a} manches sur {b} réussies',
     'p.saved':'Série gardée', 'perk.title':'Atouts', 'perk.used':'{a} sur {b} emplacements', 'perk.toSlot':'{n} points avant le prochain emplacement', 'perk.toToken':'{n} points avant le prochain jeton', 'perk.equipped':'équipé, niveau {n}', 'perk.notEquipped':'non équipé', 'perk.upgrade':'Dépenser un jeton sur {p}', 'perk.tokensLeft':'{n} jetons à dépenser', 'perk.spare':'Vie en plus', 'perk.spare.d':'Commencez un Marathon avec {n} vies de plus', 'perk.spare.d1':'Commencez un Marathon avec une vie de plus', 'perk.shield':'Bouclier de série', 'perk.shield.d':'Gardez votre série malgré {n} échecs par partie', 'perk.shield.d1':'Gardez votre série malgré un échec par partie', 'perk.patience':'Mèche longue', 'perk.patience.d':'{n}% de temps en plus par manche', 'perk.zeal':'Ferveur', 'perk.zeal.d':'Le multiplicateur monte plus tôt (rang {n})', 'perk.steady':'Main sûre', 'perk.steady.d':'{n} coups de plus là où les coups comptent', 'perk.rally':'Élan', 'perk.rally.d':'Les parties chronométrées durent {n} secondes de plus',
     'p.leash':'Tenez-le encore {n} secondes', 'leash.moth':'Le papillon', 'leash.box':'Appuyez et gardez le doigt sur le papillon', 'm.leash':'Laisse|Gardez le doigt dessus — il ne veut pas',
@@ -4157,7 +4170,7 @@ const STRINGS = {
     'p.hauntLook':'{n} fantômes — regardez bien', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Hantise|Suivez les échanges — où sont-ils passés ?',
     'p.mint':'Atteignez {n}', 'mint.next':'Suivant', 'm.mint':'Monnaie|Posez, fusionnez, atteignez la grosse pièce',
     'p.pivot':'{n} encore de travers', 'm.pivot':'Pivot|Chaque touche en tourne deux — redressez tout',
-    'p.needle':'Trouvez-le', 'needle.big':'le GRAND {c}', 'needle.small':'le PETIT {c}', 'needle.lgs':'grand', 'needle.sms':'petit', 'm.needle':'Aiguille|Trouvez celui qui est les deux à la fois',
+    'p.needle':'Trouvez-le', 'needle.big':'le GRAND {c}', 'needle.small':'le PETIT {c}', 'needle.lgs':'grand', 'needle.sms':'petit', 'needle.ringed':'cerclé', 'needle.plain':'uni', 'm.needle':'Aiguille|Trouvez celui qui est les deux à la fois',
     'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Bleu|Achevez les blessés avant qu’ils filent',
     'p.skim':'Encore {n} ricochets', 'm.skim':'Ricochet|Touchez au passage — la fenêtre rétrécit',
     'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Tambour|Appariez plus vite que le remplissage',
@@ -4165,7 +4178,7 @@ const STRINGS = {
     'p.arc':'{n} à relier', 'p.umbraLook':'Retenez cette forme', 'p.umbraPick':'Laquelle était-ce ?', 'p.stroke':'{n} nœuds restants', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Arc|Reliez tous les nœuds avant la panne',  'm.umbra':'Umbra|Retenez la forme, puis reconnaissez-la',  'm.stroke':'Trait Unique|Une seule ligne par tous les nœuds',  'm.slack':'Démêlage|Déplacez les nœuds jusqu’à zéro croisement',  'm.tide':'Souffle|Tenez pour gonfler, relâchez pour dégonfler',  'm.plink':'Chute|Retirez un clou, puis visez le bac éclairé',  'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 'p.word':'Écrivez le mot de {n} lettres',
     'p.wheel':'Devinez la phrase', 'p.gap1':'Complétez le trou', 'p.gap2':'Complétez les deux trous, de gauche à droite',
     'p.beat':'Touchez le point à contretemps', 'p.sort':'{a} sur {b} triés',
-    'p.target':'Cible',
+    'p.target':'Cible', 'p.diffLabel':'Différence',
     'c.RED':'ROUGE','c.BLUE':'BLEU','c.GREEN':'VERT','c.YELLOW':'JAUNE','c.PURPLE':'VIOLET','c.ORANGE':'ORANGE',
     's.circle':'cercles','s.square':'carrés','s.triangle':'triangles','s.diamond':'losanges','s.cross':'croix','s.chevron':'flèches',
     'sort.colour':'TRIER PAR COULEUR','sort.size':'TRIER PAR TAILLE','sort.small':'PETIT','sort.big':'GRAND',
@@ -4277,9 +4290,9 @@ const STRINGS = {
     'm.beat':'A Destiempo|Encuentra el punto fuera de ritmo',
     'm.sort':'Clasifica|Clasifica según la regla — cambia',
     'p.odd':'Toca el distinto', 'p.order':'Toca del 1 al {n} en orden',
-    'p.stroop':'Toca el color de la tinta', 'p.echoWatch':'Mira…',
+    'p.stroop':'Toca el color de la tinta', 'p.stroopRev':'Invertido — toca el color que nombra', 'p.echoWatch':'Mira…',
     'p.echoGo':'Ahora repite — {n} toques', 'p.rewire':'Conecta naranja con turquesa',
-    'p.sum':'Toca dos que sumen {n}', 'p.count':'¿Cuántos {x}?',
+    'p.sum':'Toca dos que sumen {n}', 'p.sumDiff':'Toca dos que difieran en {n}', 'p.count':'¿Cuántos {x}?',
     'p.mirror':'Refléjalo a la derecha', 'p.rising':'Atrapa {n} — faltan {m}',
     'p.blinkWatch':'Memoriza…', 'p.blinkGo':'Toca los {n} que viste',
     'p.tooSlow':'Demasiado lento',
@@ -4313,7 +4326,7 @@ const STRINGS = {
     'how.forage':'toca una baya para lanzar un enjambre a su color; entra por los huecos, come solo lo que alcanza y luego espera en la cesta a que lo vuelvas a lanzar. Toca un enjambre en espera para llamarlo', 'how.first':'Primera vez: vamos con calma.', 'how.sift':'toca un color para poner ese cubo al FINAL de la cinta; la cinta avanza un hueco con cada grano, así que colocas para un grano más adelante en la tolva, no para el que cae. Toca el cubo delantero para tirarlo',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
-    'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.favAdd':'Añadir a favoritos', 'a.favRemove':'Quitar de favoritos', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
+    'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.pad':'Tecla {n}', 'a.cell':'Celda {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.favAdd':'Añadir a favoritos', 'a.favRemove':'Quitar de favoritos', 'a.bin':'Cubo {n}', 'a.coin':'Moneda {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.cardDown':'Carta boca abajo {n}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.target':'Objetivo', 'a.targetDouble':'Objetivo doble, vale dos', 'a.targetBin':'Cubo objetivo', 'a.shape':'Forma', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.matched':'Emparejada', 'a.skimNow':'Toca ahora', 'a.wayOut':'Salida', 'a.youHere':'Estás aquí', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'a.tileStraight':'Casilla {n}, recta', 'a.tileTurns':'Casilla {n}, a {k} cuartos de vuelta', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
     'over.ribbon':'{a} de {b} rondas resueltas',
     'p.saved':'Racha mantenida', 'perk.title':'Ventajas', 'perk.used':'{a} de {b} ranuras', 'perk.toSlot':'{n} puntos para la próxima ranura', 'perk.toToken':'{n} puntos para la próxima ficha', 'perk.equipped':'equipada, nivel {n}', 'perk.notEquipped':'no equipada', 'perk.upgrade':'Gastar una ficha en {p}', 'perk.tokensLeft':'{n} fichas por gastar', 'perk.spare':'Vida extra', 'perk.spare.d':'Empieza un Maratón con {n} vidas más', 'perk.spare.d1':'Empieza un Maratón con una vida más', 'perk.shield':'Escudo de racha', 'perk.shield.d':'Conserva tu racha pese a {n} fallos por partida', 'perk.shield.d1':'Conserva tu racha pese a un fallo por partida', 'perk.patience':'Mecha larga', 'perk.patience.d':'{n}% más de tiempo por ronda', 'perk.zeal':'Fervor', 'perk.zeal.d':'El multiplicador sube antes (rango {n})', 'perk.steady':'Pulso firme', 'perk.steady.d':'{n} movimientos más donde se cuentan', 'perk.rally':'Empuje', 'perk.rally.d':'Las partidas con reloj empiezan {n} segundos más largas',
     'p.leash':'Sujétala {n} segundos más', 'leash.moth':'La polilla', 'leash.box':'Pulsa y mantén el dedo sobre la polilla', 'm.leash':'Correa|Mantén el dedo encima — ella no quiere',
@@ -4337,7 +4350,7 @@ const STRINGS = {
     'p.hauntLook':'{n} fantasmas — fíjate bien', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Embrujo|Sigue los cambios — ¿dónde acabaron?',
     'p.mint':'Llega a {n}', 'mint.next':'Siguiente', 'm.mint':'Moneda|Coloca, fusiona y llega a la grande',
     'p.pivot':'{n} aún torcidas', 'm.pivot':'Pivote|Cada toque gira dos — endereza el dibujo',
-    'p.needle':'Encuéntralo', 'needle.big':'el {c} GRANDE', 'needle.small':'el {c} PEQUEÑO', 'needle.lgs':'grande', 'needle.sms':'pequeño', 'm.needle':'Aguja|Encuentra el que cumple las dos cosas',
+    'p.needle':'Encuéntralo', 'needle.big':'el {c} GRANDE', 'needle.small':'el {c} PEQUEÑO', 'needle.lgs':'grande', 'needle.sms':'pequeño', 'needle.ringed':'con anillo', 'needle.plain':'liso', 'm.needle':'Aguja|Encuentra el que cumple las dos cosas',
     'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Moratón|Remata a los heridos antes de que huyan',
     'p.skim':'Faltan {n} rebotes', 'm.skim':'Rebote|Toca al cruzar — la ventana se estrecha',
     'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Tambor|Empareja más rápido de lo que se llena',
@@ -4345,7 +4358,7 @@ const STRINGS = {
     'p.arc':'Faltan {n}', 'p.umbraLook':'Recuerda esta forma', 'p.umbraPick':'¿Cuál era?', 'p.stroke':'Faltan {n} nodos', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Arco|Conecta todos los nodos antes de quedarte sin carga',  'm.umbra':'Umbra|Recuerda la forma y reconócela',  'm.stroke':'Trazo Único|Una línea por todos los nodos, sin levantar',  'm.slack':'Desenredo|Mueve los nodos hasta que nada se cruce',  'm.tide':'Respiro|Mantén para crecer, suelta para menguar',  'm.plink':'Caída|Quita un clavo y lanza a la casilla encendida',  'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 'p.word':'Escribe la palabra de {n} letras',
     'p.wheel':'Adivina la frase', 'p.gap1':'Completa el hueco', 'p.gap2':'Completa los dos huecos, de izquierda a derecha',
     'p.beat':'Toca el punto fuera de ritmo', 'p.sort':'{a} de {b} clasificados',
-    'p.target':'Objetivo',
+    'p.target':'Objetivo', 'p.diffLabel':'Diferencia',
     'c.RED':'ROJO','c.BLUE':'AZUL','c.GREEN':'VERDE','c.YELLOW':'AMARILLO','c.PURPLE':'MORADO','c.ORANGE':'NARANJA',
     's.circle':'círculos','s.square':'cuadrados','s.triangle':'triángulos','s.diamond':'rombos','s.cross':'cruces','s.chevron':'flechas',
     'sort.colour':'CLASIFICA POR COLOR','sort.size':'CLASIFICA POR TAMAÑO','sort.small':'PEQUEÑO','sort.big':'GRANDE',
@@ -4457,9 +4470,9 @@ const STRINGS = {
     'm.beat':'Aus dem Takt|Finde den Punkt, der aus dem Takt ist',
     'm.sort':'Sortieren|Sortiere nach der Regel — sie wechselt',
     'p.odd':'Tippe den Ausreißer', 'p.order':'Tippe 1 bis {n} der Reihe nach',
-    'p.stroop':'Tippe die Tintenfarbe', 'p.echoWatch':'Sieh zu…',
+    'p.stroop':'Tippe die Tintenfarbe', 'p.stroopRev':'Umgekehrt — tippe die genannte Farbe', 'p.echoWatch':'Sieh zu…',
     'p.echoGo':'Jetzt wiederholen — {n} Tipps', 'p.rewire':'Verbinde Orange mit Türkis',
-    'p.sum':'Tippe zwei, die {n} ergeben', 'p.count':'Wie viele {x}?',
+    'p.sum':'Tippe zwei, die {n} ergeben', 'p.sumDiff':'Tippe zwei, deren Differenz {n} ist', 'p.count':'Wie viele {x}?',
     'p.mirror':'Spiegle es nach rechts', 'p.rising':'Fange {n} — noch {m}',
     'p.blinkWatch':'Merke dir das…', 'p.blinkGo':'Tippe die {n}, die du sahst',
     'p.tooSlow':'Zu langsam',
@@ -4493,7 +4506,7 @@ const STRINGS = {
     'how.forage':'tippe eine Beere an, um einen Schwarm auf ihre Farbe zu schicken; er kommt durch die Lücken herein, frisst nur, was er erreicht, und wartet dann im Korb, bis du ihn erneut schickst. Tippe einen wartenden Schwarm an, um ihn zurückzurufen', 'how.first':'Zum ersten Mal — wir fangen sanft an.', 'how.sift':'tippe eine Farbe an, um den Eimer HINTEN aufs Band zu stellen; das Band rückt bei jedem Korn einen Platz vor, du stellst also für ein Korn weiter oben im Schacht, nicht für das fallende. Tippe den vordersten Eimer an, um ihn herunterzustoßen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
-    'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.favAdd':'Zu Favoriten hinzufügen', 'a.favRemove':'Aus Favoriten entfernen', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
+    'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.pad':'Taste {n}', 'a.cell':'Zelle {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.favAdd':'Zu Favoriten hinzufügen', 'a.favRemove':'Aus Favoriten entfernen', 'a.bin':'Behälter {n}', 'a.coin':'Münze {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.cardDown':'Verdeckte Karte {n}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.target':'Ziel', 'a.targetDouble':'Doppeltes Ziel, zählt zwei', 'a.targetBin':'Zielbehälter', 'a.shape':'Form', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.matched':'Gefunden', 'a.skimNow':'Jetzt tippen', 'a.wayOut':'Ausgang', 'a.youHere':'Du bist hier', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'a.tileStraight':'Feld {n}, gerade', 'a.tileTurns':'Feld {n}, {k} Vierteldrehungen daneben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
     'over.ribbon':'{a} von {b} Runden gelöst',
     'p.saved':'Serie gehalten', 'perk.title':'Boni', 'perk.used':'{a} von {b} Plätzen', 'perk.toSlot':'{n} Punkte bis zum nächsten Platz', 'perk.toToken':'{n} Punkte bis zur nächsten Marke', 'perk.equipped':'ausgerüstet, Stufe {n}', 'perk.notEquipped':'nicht ausgerüstet', 'perk.upgrade':'Eine Marke für {p} ausgeben', 'perk.tokensLeft':'{n} Marken übrig', 'perk.spare':'Extraleben', 'perk.spare.d':'Starte einen Marathon mit {n} Leben mehr', 'perk.spare.d1':'Starte einen Marathon mit einem Leben mehr', 'perk.shield':'Serienschild', 'perk.shield.d':'Behalte deine Serie trotz {n} Fehlern pro Lauf', 'perk.shield.d1':'Behalte deine Serie trotz einem Fehler pro Lauf', 'perk.patience':'Lange Lunte', 'perk.patience.d':'{n}% mehr Zeit pro Runde', 'perk.zeal':'Eifer', 'perk.zeal.d':'Der Multiplikator steigt früher (Rang {n})', 'perk.steady':'Ruhige Hand', 'perk.steady.d':'{n} Züge mehr, wo Züge zählen', 'perk.rally':'Aufholjagd', 'perk.rally.d':'Zeitläufe starten {n} Sekunden länger',
     'p.leash':'Halte ihn noch {n} Sekunden', 'leash.moth':'Die Motte', 'leash.box':'Drücken und den Finger auf der Motte halten', 'm.leash':'Leine|Finger drauf halten — sie will das nicht',
@@ -4517,7 +4530,7 @@ const STRINGS = {
     'p.hauntLook':'{n} Geister — gut hinsehen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Spuk|Verfolge die Tausche — wo sind sie gelandet?',
     'p.mint':'Baue eine {n}', 'mint.next':'Nächste', 'm.mint':'Münze|Legen, verschmelzen, die grosse erreichen',
     'p.pivot':'Noch {n} schief', 'm.pivot':'Drehpunkt|Ein Tipp dreht zwei — richte alles aus',
-    'p.needle':'Finde ihn', 'needle.big':'der GROSSE {c}', 'needle.small':'der KLEINE {c}', 'needle.lgs':'gross', 'needle.sms':'klein', 'm.needle':'Nadel|Finde den, auf den beides zutrifft',
+    'p.needle':'Finde ihn', 'needle.big':'der GROSSE {c}', 'needle.small':'der KLEINE {c}', 'needle.lgs':'gross', 'needle.sms':'klein', 'needle.ringed':'beringt', 'needle.plain':'schlicht', 'm.needle':'Nadel|Finde den, auf den beides zutrifft',
     'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Blauer Fleck|Erledige die Angeschlagenen, bevor sie weg sind',
     'p.skim':'Noch {n} Sprünge', 'm.skim':'Sprung|Tippe beim Kreuzen — das Fenster wird enger',
     'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Trommel|Paare schneller, als es sich füllt',
@@ -4525,7 +4538,7 @@ const STRINGS = {
     'p.arc':'Noch {n}', 'p.umbraLook':'Merke dir diese Form', 'p.umbraPick':'Welche war es?', 'p.stroke':'Noch {n} Knoten', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Bogen|Verbinde alle Knoten, bevor der Strom ausgeht',  'm.umbra':'Umbra|Merke dir die Form und erkenne sie wieder',  'm.stroke':'Ein Strich|Eine Linie durch alle Knoten, ohne abzusetzen',  'm.slack':'Entwirren|Zieh die Knoten, bis nichts mehr kreuzt',  'm.tide':'Atemzug|Halten zum Wachsen, loslassen zum Schrumpfen',  'm.plink':'Fallen|Zieh einen Stift, dann ziel auf das helle Fach',  'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 'p.word':'Schreibe das Wort mit {n} Buchstaben',
     'p.wheel':'Errate den Satz', 'p.gap1':'Fülle die Lücke', 'p.gap2':'Fülle beide Lücken, von links nach rechts',
     'p.beat':'Tippe den Punkt aus dem Takt', 'p.sort':'{a} von {b} sortiert',
-    'p.target':'Ziel',
+    'p.target':'Ziel', 'p.diffLabel':'Differenz',
     'c.RED':'ROT','c.BLUE':'BLAU','c.GREEN':'GRÜN','c.YELLOW':'GELB','c.PURPLE':'LILA','c.ORANGE':'ORANGE',
     's.circle':'Kreise','s.square':'Quadrate','s.triangle':'Dreiecke','s.diamond':'Rauten','s.cross':'Kreuze','s.chevron':'Pfeile',
     'sort.colour':'NACH FARBE','sort.size':'NACH GRÖSSE','sort.small':'KLEIN','sort.big':'GROSS',
@@ -4634,6 +4647,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.70.0', date:'2026-09-24', items:[
+    'Five of the plainest modes get a real second layer at high level, on top of the difficulty they already had rather than instead of it. Odd One Out occasionally hides the odd tile in lightness instead of hue, same colour as the rest. Sum Snap occasionally asks for a difference instead of a sum. Color Trap occasionally reverses — match the word, not the ink, said outright in the prompt. Needle occasionally adds a third, quieter property nothing else calls out. And Rising Tap now spawns the odd double target worth two, decaying faster than a normal one — reach for it or play it safe.',
+  ] },
   { v:'0.69.0', date:'2026-09-24', items:[
     'The five new ways to play only ever fed into the same generic streak and score achievements everything else does — nothing rewarded what makes each of them different. Five new ones: Full Tilt and Chain Reaction for a ×5 combo in Reflex Rush and Puzzle Cascade, Boss Down for clearing a Survival Protocol boss wave, Wildcard for solving a round under a Chaos Gauntlet modifier, and Still Water for fifteen puzzles in one unhurried Fidget Loop session.',
   ] },
@@ -5379,6 +5395,18 @@ function hueForDistance(hue, want, sat, light, dir){
   }
   return (hue + dir*180 + 360) % 360;
 }
+/* Same walk, along lightness instead of hue — same hue as everything else,
+   a different shade of it. Clamped well short of black/white: a tile at
+   either extreme reads as "broken", not "different colour". */
+function lightForDistance(hue, want, sat, light, dir){
+  const base = oklab(hue, sat, light);
+  for (let step = 1; step <= 50; step++){
+    const l = clamp(light + dir*step, 4, 96);
+    if (okDist(base, oklab(hue, sat, l)) >= want) return l;
+    if (l <= 4 || l >= 96) break;
+  }
+  return clamp(light + dir*50, 4, 96);
+}
 
 /* The same deck idea as the mode picker, one level down. Picking a word at
    random out of fifty still shows you the same word twice in an evening —
@@ -5548,7 +5576,13 @@ const MODES = {
       const want = Math.max(0.040, 0.21 - ctx.level*0.0085);
       const light = assistOn() ? clamp(20 - ctx.level*0.6, 8.5, 20) : 0;
       const hue = Math.floor(ctx.rnd()*360);
-      const oddHue = hueForDistance(hue, want, 68, 58, ctx.rnd() < 0.5 ? 1 : -1);
+      /* Past a point, "different colour" is a habit — the eye locks onto a
+         hue shift and stops actually checking. Occasionally the odd tile
+         keeps the same hue and differs in lightness instead, so the rule
+         has to be re-read each round rather than run on reflex. */
+      const byLight = ctx.level >= 20 && ctx.rnd() < 0.5;
+      const oddHue = byLight ? hue : hueForDistance(hue, want, 68, 58, ctx.rnd() < 0.5 ? 1 : -1);
+      const oddBaseLight = byLight ? lightForDistance(hue, want, 68, 58, ctx.rnd() < 0.5 ? 1 : -1) : 58;
       const odd = Math.floor(ctx.rnd()*n*n);
       /* Past a point the grid is big enough to hide a second kind of
          different: a tile the same colour as everything else, just a touch
@@ -5562,7 +5596,7 @@ const MODES = {
         const b = mk('button','cell tile' + (i===sizeDecoy ? ' bigtile' : ''));
         b.type = 'button';
         b.style.background = 'hsl(' + (i===odd ? oddHue : hue)
-          + ' 68% ' + (i===odd ? 58+light : 58) + '%)';
+          + ' 68% ' + (i===odd ? oddBaseLight+light : 58) + '%)';
         b.setAttribute('aria-label', t('a.tile', { n: i+1 }));
         onTap(b, () => i===odd ? ctx.win(b) : ctx.miss(b));
         g.appendChild(b);
@@ -5645,8 +5679,17 @@ const MODES = {
       const ink = pool[Math.floor(ctx.rnd()*pool.length)];
       const others = pool.filter(c => c !== ink);
       const word = others.length ? others[Math.floor(ctx.rnd()*others.length)] : ink;
+      /* Past a point, "tap the ink" is a habit run without reading the word
+         at all — which defeats the whole point of a Stroop task. Rarely,
+         the rule flips: match what the word says, ignore how it's
+         printed. Said outright in the prompt, not left as a visual
+         easter egg — a rule change is exactly the kind of thing that has
+         to reach a screen reader too, not just a border that looks
+         different. */
+      const reversed = ctx.level >= 16 && ctx.rnd() < 0.28;
+      const correct = reversed ? word : ink;
 
-      const wrap = mk('div','stroopwrap');
+      const wrap = mk('div','stroopwrap' + (reversed ? ' reversed' : ''));
       const line = mk('div','stroopline');
       const w = mk('div','stroopword');
       w.textContent = word.name;
@@ -5667,12 +5710,12 @@ const MODES = {
         b.style.background = c.hex;
         if (assistOn()) b.innerHTML = shapeSvg(c.shape, 'var(--ink)');
         b.setAttribute('aria-label', inkName(c));
-        onTap(b, () => c === ink ? ctx.win(b) : ctx.miss(b));
+        onTap(b, () => c === correct ? ctx.win(b) : ctx.miss(b));
         row.appendChild(b);
       });
       wrap.appendChild(row);
       ctx.surface.appendChild(wrap);
-      ctx.prompt(t('p.stroop'));
+      ctx.prompt(t(reversed ? 'p.stroopRev' : 'p.stroop'));
     }
   },
 
@@ -5881,12 +5924,19 @@ const MODES = {
       const a = Math.floor(ctx.rnd()*n*n);
       let b = Math.floor(ctx.rnd()*n*n);
       while (b === a) b = Math.floor(ctx.rnd()*n*n);
-      const target = vals[a] + vals[b];
+      /* Past a point, "add these two" is a habit the grid runs on without
+         being read. Occasionally the target is a difference instead of a
+         sum — same grid, same two-tap gesture, but the arithmetic itself
+         has to be re-decided each round. A difference of zero is a
+         degenerate ask ("find any matching pair"), so it falls back to a
+         sum round rather than shipping that. */
+      const isDiff = ctx.level >= 16 && ctx.rnd() < 0.4 && vals[a] !== vals[b];
+      const target = isDiff ? Math.abs(vals[a] - vals[b]) : vals[a] + vals[b];
 
       const col = mk('div','sumcol');
-      const head = mk('div','target');
-      head.innerHTML = '<small></small><b>' + target + '</b>';
-      head.querySelector('small').textContent = t('p.target');
+      const head = mk('div', 'target' + (isDiff ? ' diffmode' : ''));
+      head.innerHTML = '<small></small><b>' + (isDiff ? '− ' : '') + target + '</b>';
+      head.querySelector('small').textContent = t(isDiff ? 'p.diffLabel' : 'p.target');
       col.appendChild(head);
 
       const g = gridEl(n);
@@ -5898,15 +5948,16 @@ const MODES = {
         onTap(btn, () => {
           if (pick === btn){ pick = null; btn.classList.remove('sel'); sfx.tap(); return; }
           if (!pick){ pick = btn; btn.classList.add('sel'); sfx.tap(); buzz('tap'); return; }
-          const total = Number(pick.textContent) + v;
-          if (total === target){ btn.classList.add('sel'); ctx.win(btn); }
+          const pv = Number(pick.textContent);
+          const hit = isDiff ? Math.abs(pv - v) === target : pv + v === target;
+          if (hit){ btn.classList.add('sel'); ctx.win(btn); }
           else { pick.classList.remove('sel'); pick = null; ctx.miss(btn); }
         });
         g.appendChild(btn);
       });
       col.appendChild(g);
       ctx.surface.appendChild(col);
-      ctx.prompt(t('p.sum', { n: target }));
+      ctx.prompt(t(isDiff ? 'p.sumDiff' : 'p.sum', { n: target }));
     }
   }
 ,
@@ -6078,18 +6129,29 @@ const MODES = {
           y = R + ctx.rnd()*(100-2*R);
           if (live.every(t => Math.hypot(t.x-x, t.y-y) > R*2.2)) break;
         }
-        const e = mk('button','riser'); e.type='button';
-        e.setAttribute('aria-label', t('a.target'));
+        /* Past a point every target is worth the same, so there is nothing
+           to actually decide — just react to whichever one is closest. A
+           double, once in a while, counts for 2 toward the goal but decays
+           faster than a normal target at the same level: worth reaching
+           for over whatever else is live is a real bet now, not a reflex
+           check. Never the opening target of a round (that one keeps its
+           unconditional floor), and never two live at once. */
+        const isDouble = ctx.level >= 6 && !first && !live.some(d => d.value === 2) && ctx.rnd() < 0.22;
+        const e = mk('button', 'riser' + (isDouble ? ' double' : '')); e.type='button';
+        e.setAttribute('aria-label', t(isDouble ? 'a.targetDouble' : 'a.target'));
         e.style.left = x+'%'; e.style.top = y+'%';
         e.style.width = (2*R)+'%'; e.style.height = (2*R)+'%';
-        const target = { x, y, el:e, born: performance.now(), life: first ? Math.max(life, FIRST_LIFE) : life };
+        if (isDouble) e.innerHTML = '<span class="val" aria-hidden="true">×2</span>';
+        const baseLife = first ? Math.max(life, FIRST_LIFE) : life;
+        const target = { x, y, el:e, born: performance.now(),
+          life: isDouble ? Math.max(340, baseLife*0.6) : baseLife, value: isDouble ? 2 : 1 };
         first = false;
         onTap(e, () => {
           if (done) return;
           const i = live.indexOf(target); if (i < 0) return;
-          live.splice(i,1); e.remove(); caught++;
+          live.splice(i,1); e.remove(); caught += target.value;
           sfx.tap(); buzz('tap');
-          ctx.prompt(t('p.rising', { n: need, m: need-caught }));
+          ctx.prompt(t('p.rising', { n: need, m: Math.max(0, need-caught) }));
           if (caught >= need){ done = true; cancelAnimationFrame(raf); ctx.win(e); }
         });
         live.push(target); box.appendChild(e);
@@ -7511,28 +7573,50 @@ const MODES = {
       const wantInk = pal[Math.floor(ctx.rnd()*2)];
       const wantSize = Math.floor(ctx.rnd()*2);
       const otherInk = pal.find(p => p !== wantInk);
+      /* Past a point, two axes is a habit: colour and size are the whole
+         search and the eye learns to skip straight to "matches both".
+         A third, quieter axis — a faint ring, easy to miss unless you're
+         actually checking — makes the conjunction genuinely three-way
+         without changing what a pop-out would look like: still nothing
+         stands out, there's just one more thing to have actually checked
+         before tapping. */
+      const useRing = ctx.level >= 22;
+      const wantRing = useRing && ctx.rnd() < 0.5;
 
       const wrap = mk('div','needlewrap');
       const ref = mk('div','needleref');
-      const chip = mk('span','refchip');
+      const chip = mk('span','refchip' + (wantRing ? ' ring' : ''));
       chip.style.background = wantInk.hex;
       chip.style.width = chip.style.height = (SIZES[wantSize]*2.4) + 'px';
       if (assistOn()) chip.innerHTML = shapeSvg(wantInk.shape, 'var(--ink)');
       ref.appendChild(chip);
       const lbl = mk('small');
-      lbl.textContent = t(wantSize ? 'needle.big' : 'needle.small', { c: inkName(wantInk) });
+      lbl.textContent = t(wantSize ? 'needle.big' : 'needle.small', { c: inkName(wantInk) })
+        + (useRing ? ', ' + t(wantRing ? 'needle.ringed' : 'needle.plain') : '');
       ref.appendChild(lbl);
       wrap.appendChild(ref);
 
       const field = mk('div','needlefield');
-      /* Every distractor matches the target on exactly one axis, never both and
-         never neither: a distractor sharing nothing would be a second thing
-         that pops out and hand the search back to the easy strategy. */
-      const items = [{ ink: wantInk, size: wantSize, answer: true }];
+      /* Every distractor matches the target on all but exactly one axis,
+         never all of them and never fewer than all-but-one: a distractor
+         sharing nothing would be a second thing that pops out and hand the
+         search back to the easy strategy. With the ring in play, "all but
+         one" means picking which single axis to flip rather than always
+         picking between two fixed shapes. */
+      const items = [{ ink: wantInk, size: wantSize, ring: wantRing, answer: true }];
       for (let i=1;i<total;i++){
-        items.push(ctx.rnd() < 0.5
-          ? { ink: wantInk,  size: 1 - wantSize }
-          : { ink: otherInk, size: wantSize });
+        if (!useRing){
+          items.push(ctx.rnd() < 0.5
+            ? { ink: wantInk,  size: 1 - wantSize, ring: false }
+            : { ink: otherInk, size: wantSize, ring: false });
+        } else {
+          const flip = Math.floor(ctx.rnd()*3);
+          items.push({
+            ink: flip === 0 ? otherInk : wantInk,
+            size: flip === 1 ? 1 - wantSize : wantSize,
+            ring: flip === 2 ? !wantRing : wantRing,
+          });
+        }
       }
       shuffle(items, ctx.rnd);
 
@@ -7569,8 +7653,10 @@ const MODES = {
         b.style.left = spot.x+'%'; b.style.top = spot.y+'%';
         b.style.width = b.style.height = (r*2)+'%';
         b.style.background = it.ink.hex;
+        if (it.ring) b.classList.add('ring');
         if (assistOn()) b.innerHTML = shapeSvg(it.ink.shape, 'var(--ink)');
-        b.setAttribute('aria-label', inkName(it.ink) + ', ' + t(it.size ? 'needle.lgs' : 'needle.sms'));
+        b.setAttribute('aria-label', inkName(it.ink) + ', ' + t(it.size ? 'needle.lgs' : 'needle.sms')
+          + (useRing ? ', ' + t(it.ring ? 'needle.ringed' : 'needle.plain') : ''));
         onTap(b, () => it.answer ? ctx.win(b) : ctx.miss(b));
         field.appendChild(b);
       });
