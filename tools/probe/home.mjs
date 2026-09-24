@@ -103,13 +103,13 @@ for (const [label, extra] of PROFILES){
       }));
       const rowsDistinct = new Set(stuffInfo.rows).size === stuffInfo.rows.length;
       const stuffOk = !stuff.hscroll && !stuff.clipped.length && stuff.minTap >= 30
-        && stuffInfo.rows.length === 7 && rowsDistinct && !errs.length;
+        && stuffInfo.rows.length === 8 && rowsDistinct && !errs.length;
       if (!stuffOk) bad++;
       console.log(`${stuffOk ? 'ok  ' : 'FAIL'} ${label.padEnd(8)} ${vw}x${vh} ${lang}  my-stuff`
         + `  rows "${stuffInfo.rows.join('/')}"  favs ${stuffInfo.favCount}`
         + `  ${stuff.clipped.length ? 'clipped ' + stuff.clipped.join(',') : ''}${stuff.hscroll ? ' H-SCROLL' : ''}`
         + `  smallest tap ${stuff.minTap}px (${stuff.minWho})`);
-      floorOrDie(`${label} my-stuff rows`, stuffInfo.rows.length, 7);
+      floorOrDie(`${label} my-stuff rows`, stuffInfo.rows.length, 8);
 
       if (vw === 400 && lang === 'en'){
         const vHome = await axeOn(page, '#playHome');

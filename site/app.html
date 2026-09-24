@@ -1966,6 +1966,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    A slow breathe, matched loosely to the ambient pad's own fade-in. */
 #surface.zenflow{animation:zenbreathe 6s ease-in-out infinite}
 @keyframes zenbreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.012)}}
+/* Chaos Gauntlet's fog modifier: a challenge to reading the board, not to
+   using it — nothing here changes hit-testing, tab order or what's in the
+   DOM, only how the same board looks for one round. Clears the instant the
+   next round starts, whatever the round's own outcome was. */
+#surface.fog > *{filter:blur(3px);transition:filter 240ms ease}
 /* The moment the lid lifts: the meter is where the news is, so that is where
    it is said. */
 #stage.lidup #hudMeter{box-shadow:0 0 0 2px var(--zap),0 0 18px -4px var(--zap)}
@@ -2753,6 +2758,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
               <b data-i18n="survival.title">Survival Protocol</b>
               <small id="survivalMeta">Any mode, three lives, waves of ten</small>
             </button>
+            <button class="qcard" id="chaosBtn" type="button" style="--acc:#9C7BFF">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.4" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.4" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.4" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+              <b data-i18n="chaos.title">Chaos Gauntlet</b>
+              <small id="chaosMeta">All 66, with the occasional twist</small>
+            </button>
             <button class="qcard" id="zenBtn" type="button" style="--acc:#7BE38A">
               <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><circle cx="12" cy="12" r="3"/></svg>
               <b data-i18n="zen.title">Fidget Loop</b>
@@ -3233,7 +3243,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.58.0';
+const VERSION_TAG = 'v0.59.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3246,7 +3256,7 @@ const KEY = 'dd.v1';
 const QUARANTINE = 'dd.v1.unreadable';
 const SCHEMA = 10;
 const defaults = {
-  pbBlitz:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
+  pbBlitz:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
   lifetime:0, perks:[], perkLv:{}, tokens:0,
@@ -3741,6 +3751,8 @@ const STRINGS = {
     'survival.title':'Survival Protocol', 'survival.sub':'Any mode, three lives, waves of ten',
     'survival.wave':'Wave {n}', 'survival.boss':'Boss wave', 'survival.bossDesc':'Harder than usual — just this once',
     'survival.extraLife':'Extra life', 'survival.extraLifeDesc':'Wave cleared',
+    'chaos.title':'Chaos Gauntlet', 'chaos.sub':'All 66, with the occasional twist', 'chaos.modifier':'Modifier',
+    'chaos.x2':'Double points', 'chaos.x2Desc':'This round only', 'chaos.fog':'Fog', 'chaos.fogDesc':'The board just got harder to read',
     'mix.nChosen':'{n} modes chosen', 'mix.build':'Build your rotation',
     'mix.note':'Pick the modes you actually like. <b>Mixtape</b> shuffles only those. Two or more to make a rotation — <b>{n} chosen</b>.',
     'mix.pickNote':'Pick the modes you actually like — Mixtape shuffles only those. Two or more makes a rotation.', 'mix.all':'All', 'mix.none':'None', 'mix.clear':'Clear', 'mix.chosen':'{n} chosen', 'mix.selectAll':'Select all', 'mix.done':'Done',
@@ -3914,6 +3926,8 @@ const STRINGS = {
     'survival.title':'Protocole de survie', 'survival.sub':'N’importe quel mode, trois vies, vagues de dix',
     'survival.wave':'Vague {n}', 'survival.boss':'Vague de boss', 'survival.bossDesc':'Plus dure que d’habitude — juste cette fois',
     'survival.extraLife':'Vie supplémentaire', 'survival.extraLifeDesc':'Vague nettoyée',
+    'chaos.title':'Gant du chaos', 'chaos.sub':'Les 66, avec parfois un twist', 'chaos.modifier':'Modificateur',
+    'chaos.x2':'Points doublés', 'chaos.x2Desc':'Cette manche seulement', 'chaos.fog':'Brouillard', 'chaos.fogDesc':'Le plateau est plus dur à lire maintenant',
     'mix.nChosen':'{n} modes choisis', 'mix.build':'Composez votre rotation',
     'mix.note':'Choisissez les modes que vous aimez vraiment. <b>Playlist</b> ne mélange que ceux-là. Deux au minimum — <b>{n} choisis</b>.',
     'mix.pickNote':'Choisissez les modes que vous aimez vraiment — la playlist ne mélange que ceux-là. Deux au minimum pour une rotation.', 'mix.all':'Tous', 'mix.none':'Aucun', 'mix.clear':'Vider', 'mix.chosen':'{n} choisis', 'mix.selectAll':'Tout choisir', 'mix.done':'Terminé',
@@ -4087,6 +4101,8 @@ const STRINGS = {
     'survival.title':'Protocolo de supervivencia', 'survival.sub':'Cualquier modo, tres vidas, oleadas de diez',
     'survival.wave':'Oleada {n}', 'survival.boss':'Oleada de jefe', 'survival.bossDesc':'Más difícil de lo normal — solo esta vez',
     'survival.extraLife':'Vida extra', 'survival.extraLifeDesc':'Oleada superada',
+    'chaos.title':'Guantelete del caos', 'chaos.sub':'Los 66, con algún giro de vez en cuando', 'chaos.modifier':'Modificador',
+    'chaos.x2':'Puntos dobles', 'chaos.x2Desc':'Solo esta ronda', 'chaos.fog':'Niebla', 'chaos.fogDesc':'El tablero ahora cuesta más de leer',
     'mix.nChosen':'{n} modos elegidos', 'mix.build':'Arma tu rotación',
     'mix.note':'Elige los modos que de verdad te gustan. <b>Lista</b> solo mezcla esos. Dos o más para una rotación — <b>{n} elegidos</b>.',
     'mix.pickNote':'Elige los modos que de verdad te gustan: la lista solo mezcla esos. Dos o más forman una rotación.', 'mix.all':'Todos', 'mix.none':'Ninguno', 'mix.clear':'Vaciar', 'mix.chosen':'{n} elegidos', 'mix.selectAll':'Elegir todos', 'mix.done':'Listo',
@@ -4260,6 +4276,8 @@ const STRINGS = {
     'survival.title':'Überlebensprotokoll', 'survival.sub':'Jeder Modus, drei Leben, Wellen zu zehnt',
     'survival.wave':'Welle {n}', 'survival.boss':'Bosswelle', 'survival.bossDesc':'Schwerer als sonst — nur dieses eine Mal',
     'survival.extraLife':'Extra-Leben', 'survival.extraLifeDesc':'Welle geschafft',
+    'chaos.title':'Chaos-Parcours', 'chaos.sub':'Alle 66, mit gelegentlichem Twist', 'chaos.modifier':'Modifikator',
+    'chaos.x2':'Doppelte Punkte', 'chaos.x2Desc':'Nur diese Runde', 'chaos.fog':'Nebel', 'chaos.fogDesc':'Das Feld ist jetzt schwerer zu lesen',
     'mix.nChosen':'{n} Modi gewählt', 'mix.build':'Stelle deine Rotation zusammen',
     'mix.note':'Wähle die Modi, die dir wirklich gefallen. <b>Playlist</b> mischt nur diese. Mindestens zwei — <b>{n} gewählt</b>.',
     'mix.pickNote':'Wähle die Modi, die dir wirklich gefallen — die Playlist mischt nur diese. Ab zwei wird es eine Rotation.', 'mix.all':'Alle', 'mix.none':'Keine', 'mix.clear':'Leeren', 'mix.chosen':'{n} gewählt', 'mix.selectAll':'Alle wählen', 'mix.done':'Fertig',
@@ -4522,6 +4540,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.59.0', date:'2026-09-24', items:[
+    'The fifth and last new way to play: Chaos Gauntlet, in My Stuff. All 66 modes in rotation like Shuffle, except about a third of rounds carry a modifier rolled fresh each round and called out the moment it lands — double points, or a fog that blurs the board without hiding or disabling anything on it. Reversed controls from the original wishlist didn’t make it in: the 66 modes split across taps, drags and holds with no single shared input layer to flip it at, and getting that wrong per-mode felt like a worse bug than not having the modifier.',
+  ] },
   { v:'0.58.0', date:'2026-09-24', items:[
     'Fidget Loop already had no timer and no score — the one mode built to have nothing to react to. It had no sound and no motion of its own either, which on a mode that quiet read as broken rather than calm. It now fades in a held, breathing pad — three soft tones in the mode’s own key, the only sustained sound anywhere in the app — and the board itself takes a slow, barely-there breath. Both fade out the instant you pause or step away, and stay off entirely with reduce motion on.',
   ] },
@@ -12586,6 +12607,9 @@ const KINDS = {
      across all 66 modes shuffled rather than one chosen mode — a survivor
      never knows what the next wave is. */
   survival: { label:'Survival Protocol', key:'survival.title', lives:3, timed:false, scored:true, roundClock:true },
+  /* All 66, like Shuffle, with one addition: about a third of rounds carry a
+     modifier rolled fresh each round. */
+  chaos:    { label:'Chaos Gauntlet', key:'chaos.title', timed:true, cap:70000, start:70000, penalty:4500, scored:true },
   /* The card promised twelve rounds and a 90-second clock, and the two were in
      conflict: twelve rounds at the median mode's par is 126 seconds of play,
      and twelve perfect solves earn back at most 35. Nobody was reaching round
@@ -13069,6 +13093,27 @@ function nextRound(){
       glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7z"/><path d="M9 12l2 2 4-4" stroke-width="1.8"/></svg>',
       eyebrow: t('survival.wave', { n: run.roundIdx }), title: t('survival.boss'), desc: t('survival.bossDesc') });
   }
+  /* Chaos Gauntlet: about a third of rounds carry a modifier, rolled fresh
+     each round and cleared the moment the round resolves either way — a
+     modifier is a property of the round it landed on, never carried over.
+     Only two, both reversible at the shell level without touching any of
+     the 66 modes' own logic: doubled points, and a blur that challenges
+     reading the board rather than hiding or disabling any part of it.
+     "Reversed controls" from the brief was left out — the 66 modes split
+     across taps, drags and holds with no single shared input layer to flip
+     it at, and getting that wrong per-mode is a worse bug than not having
+     the modifier at all. */
+  el.surface.classList.remove('fog');
+  run.modifier = null;
+  if (run.kind === 'chaos' && run.rnd() < 0.35){
+    run.modifier = run.rnd() < 0.5 ? 'x2' : 'fog';
+    if (run.modifier === 'fog') el.surface.classList.add('fog');
+    announceToast({ ink:'#9C7BFF',
+      glyph: run.modifier === 'x2'
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="currentColor" stroke="none"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h18M3 13h18M3 18h12"/></svg>',
+      eyebrow: t('chaos.modifier'), title: t('chaos.' + run.modifier), desc: t('chaos.' + run.modifier + 'Desc') });
+  }
   /* Generous on purpose: par is how long the mode expects to take, and this is
      more than twice that, easing further as the player's level raises pressure.
      It is a floor under dawdling, not a second difficulty dial. */
@@ -13128,7 +13173,7 @@ function resolve(ok, node){
     const elapsed = performance.now() - roundStart;
     const speed = clamp(1 - elapsed / (parOf(mode, run.lvl) * run.pressure), 0, 1);
     const mult = multiplier();
-    const pts = Math.round((100 + 130*speed) * mult);
+    const pts = Math.round((100 + 130*speed) * mult * (run.modifier === 'x2' ? 2 : 1));
     run.solved++; run.streak++;
     run.bestStreak = Math.max(run.bestStreak, run.streak);
     if (k.scored){
@@ -13445,6 +13490,7 @@ function endRun(){
     if (r.kind === 'reflexrush' && r.score > (save.pbReflexRush || 0)){ save.pbReflexRush = r.score; best = true; }
     if (r.kind === 'puzzlecascade' && r.score > (save.pbPuzzleCascade || 0)){ save.pbPuzzleCascade = r.score; best = true; }
     if (r.kind === 'survival' && r.score > (save.pbSurvival || 0)){ save.pbSurvival = r.score; best = true; }
+    if (r.kind === 'chaos' && r.score > (save.pbChaos || 0)){ save.pbChaos = r.score; best = true; }
     if (r.kind === 'marathon'){
       const prev = save.marathon[r.mode] || 0;
       if (r.score > prev){ save.marathon[r.mode] = r.score; best = true; }
@@ -13539,6 +13585,7 @@ function endRun(){
     : r.kind === 'reflexrush' ? (save.pbReflexRush || 0)
     : r.kind === 'puzzlecascade' ? (save.pbPuzzleCascade || 0)
     : r.kind === 'survival' ? (save.pbSurvival || 0)
+    : r.kind === 'chaos' ? (save.pbChaos || 0)
     : r.kind === 'marathon' ? (save.marathon[r.mode]||0) : (save.daily[todayKey()]||0);
   $('againSub').textContent = k.scored
     ? (best ? t('over.twice') : t('over.beat', { n: fmt(target) }))
@@ -13738,6 +13785,9 @@ function paintPlay(){
   $('survivalMeta').textContent = save.pbSurvival
     ? t('play.carryBest', { n: fmt(save.pbSurvival) })
     : t('survival.sub');
+  $('chaosMeta').textContent = save.pbChaos
+    ? t('play.carryBest', { n: fmt(save.pbChaos) })
+    : t('chaos.sub');
 
   const dv = save.daily[todayKey()], dSt = dailyStreak();
   const dLine = dSt ? t('daily.streakN', { n: dSt }) : dv ? t('daily.done') : t('daily.today');
@@ -14545,6 +14595,7 @@ $('statsBtn').addEventListener('click', () => goTab('Stats'));
 $('reflexRushBtn').addEventListener('click', () => startRun('reflexrush'));
 $('puzzleCascadeBtn').addEventListener('click', () => startRun('puzzlecascade'));
 $('survivalBtn').addEventListener('click', () => startRun('survival'));
+$('chaosBtn').addEventListener('click', () => startRun('chaos'));
 $('dailyStatus').addEventListener('click', () => startRun('daily'));
 $('mixBtn').addEventListener('click', () => {
   /* First tap opens the editor, because a Mixtape nobody has built is just
