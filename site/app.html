@@ -1903,6 +1903,12 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 .icobtn svg{width:17px;height:17px;display:block}
 .kind{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--haze);font-weight:600}
+/* Which of the ten families the current mode belongs to, at a glance — the
+   same colour already tinting the board and the card that launched it, not
+   a new signal to learn. Sits with the mode name rather than replacing it:
+   the name says what, the dot says what kind of what. */
+.famdot{width:7px;height:7px;border-radius:50%;flex:none;margin-right:-4px;
+  background:var(--fam,transparent);box-shadow:0 0 6px var(--fam,transparent)}
 .score{
   font-family:var(--f-data);font-weight:700;font-size:25px;letter-spacing:-.05em;
   font-variant-numeric:tabular-nums;line-height:1;color:var(--cream);
@@ -3030,6 +3036,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <button class="icobtn" id="quitBtn" type="button" aria-label="End run">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
           </button>
+          <i class="famdot" aria-hidden="true"></i>
           <span class="kind" id="hudKind">Shuffle</span>
           <span class="sp" style="flex:1"></span>
           <div class="lives" id="hudLives" hidden></div>
@@ -3282,7 +3289,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.66.0';
+const VERSION_TAG = 'v0.67.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4579,6 +4586,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.67.0', date:'2026-09-24', items:[
+    'The mode name in the header during a round now carries a small dot in its family colour — the same colour already on that mode’s card and tinting the board, not a new thing to learn. Shuffle, Mixtape and every other kind that changes puzzles round to round now say which family you’re in, not just which of the 66 you’re looking at.',
+  ] },
   { v:'0.66.0', date:'2026-09-24', items:[
     'The top of a combo already threw more sparks; it throws a ring now too, expanding out from the same tap. And losing an active streak shakes the board harder than a fresh miss with nothing on the line — a bigger loss reads as one.',
   ] },
