@@ -1818,12 +1818,14 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    line taller than the other and the numbers on two different baselines. */
 .stat small{hyphens:auto}
 .stat{
-  border:1px solid var(--edge-soft);border-radius:var(--r-md);background:#ffffff05;
+  border:1px solid var(--edge-soft);border-radius:var(--r-md);
+  background:linear-gradient(180deg,#ffffff08,#ffffff02 60%);box-shadow:var(--lift);
   padding:11px 10px;display:flex;flex-direction:column;gap:1px;align-items:center;
 }
 .stat b{font-family:var(--f-data);font-weight:700;font-size:17px;color:var(--zap);letter-spacing:-.04em}
 .stat small{font-size:8.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--haze);text-align:center}
-.xpwrap{flex:none;border:1px solid var(--edge-soft);border-radius:var(--r-md);background:#ffffff05;padding:12px}
+.xpwrap{flex:none;border:1px solid var(--edge-soft);border-radius:var(--r-md);
+  background:linear-gradient(180deg,#ffffff08,#ffffff02 60%);box-shadow:var(--lift);padding:12px}
 .xpwrap .top{display:flex;align-items:baseline;gap:7px;margin-bottom:8px}
 .xpwrap .top b{font-family:var(--f-data);font-size:22px;font-weight:800;color:var(--zap);letter-spacing:-.05em}
 .xpwrap .top .sp{flex:1}
@@ -1836,7 +1838,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .achcard{
   --ink:var(--zap);
   position:relative;border:1px solid var(--edge-soft);border-radius:var(--r-md);
-  background:#ffffff05;padding:12px 8px 10px;
+  background:linear-gradient(180deg,#ffffff08,#ffffff02 60%);box-shadow:var(--lift);
+  padding:12px 8px 10px;
   display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;
 }
 .achcard .g{
@@ -2216,6 +2219,19 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .ghost{border:1px solid var(--edge);border-radius:var(--r-md);background:#ffffff06;padding:12px;font-weight:600;font-size:14px;width:100%}
 
 /* ── Settings ────────────────────────────────────────────────────────────── */
+/* Every row used to sit directly on the background, told apart only by a
+   hairline under each one and a label every so often — one long column with
+   nothing to say where a group started or ended. Each labelled group is its
+   own raised panel now, using the same lift as every other surface in the
+   app rather than a settings-specific idea of depth. */
+.setcard{
+  border:1px solid var(--edge-soft);border-radius:var(--r-lg);
+  padding:2px 14px 6px;margin:0 0 16px;
+  background:linear-gradient(180deg,#ffffff07,#ffffff02 55%);
+  box-shadow:var(--lift);
+}
+.setcard .seclbl{margin-top:14px}
+.setcard .setrow:last-child{border-bottom:none}
 .setrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--edge-soft)}
 .setrow .txt{flex:1;min-width:0}
 .setrow .txt b{display:block;font-size:14px;font-weight:650}
@@ -2945,6 +2961,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
     <!-- ── SETTINGS ────────────────────────────────────────────────── -->
     <section class="screen" id="tabSettings" hidden>
       <div class="scroll">
+        <div class="setcard">
         <div class="seclbl"><span data-i18n="set.feedback">Feedback</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.sound">Sound</b><small data-i18n="set.soundSub">Taps and streak chimes — each family in its own key</small></span>
@@ -2958,13 +2975,17 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <span class="txt"><b data-i18n="set.motion">Reduce motion</b><small data-i18n="set.motionSub">No particles, no screen shake</small></span>
           <button class="sw" id="swMotion" role="switch" aria-checked="false" aria-label="Reduce motion"></button>
         </div>
+        </div>
 
         <!-- Locked swatches stay in the row rather than vanishing — the level
              they unlock at is the whole point of showing them at all. -->
+        <div class="setcard">
         <div class="seclbl"><span data-i18n="set.cosmetic">Victory color</span></div>
         <p class="note" id="cosmeticSub" data-i18n="set.cosmeticSub">The colour every solve bursts in.</p>
         <div class="swrow" id="cosmeticRow"></div>
+        </div>
 
+        <div class="setcard">
         <div class="seclbl"><span data-i18n="set.access">Accessibility</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.assist">Colour assist</b><small data-i18n="set.assistSub">Adds shapes and brightness so no puzzle depends on telling two colours apart</small></span>
@@ -2984,13 +3005,17 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <button class="seg" type="button" data-sp="relaxed"><span data-i18n="set.speedRelaxed">Relaxed</span></button>
           <button class="seg" type="button" data-sp="slow"><span data-i18n="set.speedSlow">Slow</span></button>
         </div>
+        </div>
 
+        <div class="setcard">
         <div class="seclbl"><span data-i18n="set.lang">Language</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.lang">Language</b><small data-i18n="lang.sub">The whole game, including the word puzzles.</small></span>
           <button class="ghost" id="langBtn2" type="button"><span id="langName">English</span></button>
         </div>
+        </div>
 
+        <div class="setcard">
         <div class="seclbl"><span data-i18n="set.about">About</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
@@ -3000,7 +3025,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <span class="txt"><b data-i18n="set.version">Version</b><small id="setVerSub"></small></span>
           <button class="ghost" id="updCheck" type="button" data-i18n="set.checkUpd">Check</button>
         </div>
+        </div>
 
+        <div class="setcard">
         <div class="seclbl"><span data-i18n="set.data">Data</span></div>
         <div class="setrow">
           <span class="txt"><b data-i18n="set.backup">Back up progress</b><small data-i18n="set.backupSub">Save a file you can move to another phone</small></span>
@@ -3021,6 +3048,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
           <span data-i18n="dlg.reset">This erases every score and level on this device. Settings are kept.</span>
           <button class="no" type="button" id="resetKeep" data-i18n="dlg.resetKeep">Keep it</button>
           <button class="yes" type="button" id="resetGone" data-i18n="dlg.resetGone">Erase</button>
+        </div>
         </div>
         <p class="note">
           Progress is saved on this device only. There is no account, and nothing
@@ -3289,7 +3317,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.67.0';
+const VERSION_TAG = 'v0.68.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4586,6 +4614,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.68.0', date:'2026-09-24', items:[
+    'Settings was one long column of rows, told apart only by a label every so often — nothing said where a group actually started or ended. Every labelled group (Feedback, Victory color, Accessibility, Language, About, Data) is its own raised panel now. Stats’ tiles — Progress, Lifetime, Achievements — picked up the same lift, so the two busiest tabs in the app finally look like the rest of it.',
+  ] },
   { v:'0.67.0', date:'2026-09-24', items:[
     'The mode name in the header during a round now carries a small dot in its family colour — the same colour already on that mode’s card and tinting the board, not a new thing to learn. Shuffle, Mixtape and every other kind that changes puzzles round to round now say which family you’re in, not just which of the 66 you’re looking at.',
   ] },
