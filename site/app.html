@@ -3243,7 +3243,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.60.0';
+const VERSION_TAG = 'v0.61.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4540,6 +4540,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.61.0', date:'2026-09-24', items:[
+    'Rising Tap could spawn its very first target already on a countdown too short to react to — as low as half a second at high difficulty, with nothing on screen yet to react to. Every round now gives the opening target a floor on how long it stays, so the difficulty ramp still bites once you’re actually tracking the board, just not before you’ve had a chance to look at it. Checked the rest of the roster for the same shape of bug; nothing else on it starts a hazard close enough to be unfair.',
+  ] },
   { v:'0.60.0', date:'2026-09-24', items:[
     'Gather’s eggs were invisible for the whole time they were actually falling — a class name it shared by accident with an unrelated mode (Sift’s chute grain, which starts hidden until its own reveal animation), so every egg went transparent the moment it started moving and never came back. Fixed by giving Gather’s own falling state its own name.',
     'Descent could put the first gap under a second of travel from a standing start at the top of the level range — not enough time to read which side was open, let alone get a thumb there. The run-in to the first gate is roughly twice as long now; nothing else about the gap width, drift or fall speed changed.',
@@ -5939,8 +5942,13 @@ const MODES = {
       const box = mk('div','orderbox');
       ctx.surface.appendChild(box);
 
-      let caught = 0, done = false, raf = 0;
+      let caught = 0, done = false, raf = 0, first = true;
       const live = [];
+      /* life floors at 520ms at high level — fine once a player is already
+         tracking the board, but the very first target of a round used that
+         same floor with nothing to orient on. Only the opening target gets
+         a floor bump; the ramp everywhere else is untouched. */
+      const FIRST_LIFE = 900;
 
       function spawn(){
         if (done) return;
@@ -5956,7 +5964,8 @@ const MODES = {
         e.setAttribute('aria-label', t('a.target'));
         e.style.left = x+'%'; e.style.top = y+'%';
         e.style.width = (2*R)+'%'; e.style.height = (2*R)+'%';
-        const target = { x, y, el:e, born: performance.now() };
+        const target = { x, y, el:e, born: performance.now(), life: first ? Math.max(life, FIRST_LIFE) : life };
+        first = false;
         onTap(e, () => {
           if (done) return;
           const i = live.indexOf(target); if (i < 0) return;
@@ -5973,7 +5982,7 @@ const MODES = {
         if (done) return;
         const now = performance.now();
         for (const dot of live.slice()){
-          const age = (now - dot.born) / life;
+          const age = (now - dot.born) / dot.life;
           if (age >= 1){
             done = true; cancelAnimationFrame(raf);
             return ctx.miss(dot.el);
