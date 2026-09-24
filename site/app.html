@@ -3263,7 +3263,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.63.0';
+const VERSION_TAG = 'v0.64.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4560,6 +4560,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.64.0', date:'2026-09-24', items:[
+    'Ten mode icons redrawn: Descent’s was a sparkle with no relation to falling through a gap — now it is one. Word Snap and Phrase Wheel had never actually drawn a letter or a wheel; Peril didn’t look dangerous; Off Beat didn’t look like rhythm; Rising Tap’s targets didn’t look like they were about to vanish. Also brought every one of the ten onto its own family’s accent colour, where several had been carrying an unrelated colour from a different family by accident.',
+  ] },
   { v:'0.63.0', date:'2026-09-24', items:[
     'Every card in the menu — mode cards, family cards, My Stuff rows, the three guided buttons, the round itself — was a flat wash with a hairline border and nothing else, on the one layer of the app that never got the glow treatment its own game pieces have. They all sit above the background now: a soft lift and a top highlight, pressing down on tap. The tab bar picked up the same thing, plus a blur so it reads as above the content scrolling under it rather than just another flat bar. Nothing about layout, size or colour changed — this is depth only.',
   ] },
@@ -5546,7 +5549,7 @@ const MODES = {
     /* The interference only bites once you are going fast, and one word is
        over before that happens. */
     stages: lvl => clamp(3 + Math.floor(lvl/10), 3, 5),
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="10" r="6" fill="#FF5B39" opacity=".85"/><circle cx="15" cy="14" r="6" fill="#33E6C8" opacity=".8"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="#FF5B39"/><rect x="9" y="14" width="12" height="7" rx="3.5" fill="none" stroke="#6C6191" stroke-width="2"/></svg>',
     build(ctx){
       const k = clamp(3 + Math.floor(ctx.level/6), 3, 6);
       const pool = shuffle(INKS.slice(), ctx.rnd).slice(0, k);
@@ -5959,7 +5962,7 @@ const MODES = {
   /* ── 9. Rising Tap — the only mode where doing nothing is a mistake ──── */
   rising: {
     name:'Rising Tap', blurb:'Catch the targets before they vanish', cat:'reflex', par:5200, bonus:1800,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="5" fill="#FF5B39"/><circle cx="16" cy="16" r="3" fill="#FF5B39" opacity=".5"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="16" r="5" fill="#FF3D6E"/><circle cx="16" cy="8" r="3.4" fill="none" stroke="#FF3D6E" stroke-width="1.8" opacity=".55"/><circle cx="16" cy="8" r="1.3" fill="#FF3D6E" opacity=".35"/></svg>',
     build(ctx){
       const need = clamp(3 + Math.floor(ctx.level/3), 3, 10);
       const life = clamp(1500 - ctx.level*55, 520, 1500);
@@ -6256,7 +6259,7 @@ const MODES = {
   /* ── 12. Word Snap — the verbal axis, and the only localisation blocker ─ */
   word: {
     name:'Word Snap', blurb:'Unscramble the word, letter by letter', cat:'words', par:6500, bonus:2000,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="7" height="8" rx="1.5" fill="#FF5B39"/><rect x="14" y="8" width="7" height="8" rx="1.5" fill="#6C6191"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="7" height="9" rx="1.6" fill="#4BC0FF"/><rect x="10.5" y="8" width="7" height="9" rx="1.6" fill="#6C6191" transform="rotate(-8 14 12.5)"/><rect x="18" y="10" width="4.5" height="7" rx="1.4" fill="#4BC0FF" opacity=".5"/></svg>',
     build(ctx){
       const len = ctx.level < 8 ? 4 : ctx.level < 18 ? 5 : 6;
       const w = ctx.deal(wordBank()[len], 'word:' + save.lang + ':' + len);
@@ -6323,7 +6326,7 @@ const MODES = {
      about trivia, and a phrase nobody recognises is not harder, just worse. */
   wheel: {
     name:'Phrase Wheel', blurb:'Guess letters to reveal the phrase', cat:'words', par:14000, bonus:3600,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="5" height="6" rx="1.5" fill="#FF5B39"/><rect x="9.5" y="9" width="5" height="6" rx="1.5" fill="#6C6191"/><rect x="17" y="9" width="5" height="6" rx="1.5" fill="#FFC53D"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#4BC0FF" stroke-width="2"/><path d="M12 3v9l7.5 4.3" stroke="#4BC0FF" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M12 12 4.5 16.3" stroke="#6C6191" stroke-width="1.8" stroke-linecap="round" opacity=".6"/></svg>',
     build(ctx){
       const entry = ctx.deal(phraseBank(), 'phrase:' + save.lang);
       const phrase = entry.text.toUpperCase();
@@ -6454,7 +6457,7 @@ const MODES = {
   /* ── 15. Off Beat — timing, which nothing else in the roster tests ────── */
   beat: {
     name:'Off Beat', blurb:'Find the dot that is out of time', cat:'rhythm', par:6000, bonus:2000,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2.6" fill="#6C6191"/><circle cx="12" cy="12" r="2.6" fill="#6C6191"/><circle cx="19" cy="12" r="4" fill="#FF5B39"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 17h20" stroke="#FF8AD8" stroke-width="1.6" stroke-linecap="round" opacity=".4"/><circle cx="5" cy="17" r="2.4" fill="#FF8AD8"/><circle cx="12" cy="9" r="2.4" fill="#FF8AD8"/><circle cx="19" cy="17" r="2.4" fill="#FF8AD8"/></svg>',
     build(ctx){
       const n = clamp(3 + Math.floor(ctx.level/4), 3, 8);
       const period = clamp(900 - ctx.level*22, 420, 900);
@@ -7047,7 +7050,7 @@ const MODES = {
      you twice. */
   peril: {
     name:'Peril', blurb:'Read the tell, pick the counter, win the duel', cat:'logic', par:9000, bonus:2800,
-    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19 19 5M14 5h5v5"/><path d="M5 5l4 4" stroke="#FF5B39"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="#33E6C8" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9.5v5" stroke="#33E6C8" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.15" fill="#33E6C8"/></svg>',
     build(ctx){
       const TELLS = {
         swing:  { beats:'parry',  ico:'M5 19 19 5M14 5h5v5' },
@@ -7150,7 +7153,7 @@ const MODES = {
      tempo against the fill, which is the only currency here. */
   tumble: {
     name:'Tumble', blurb:'Pair them off faster than the drum refills', cat:'focus', par:9000, bonus:2600,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="7" height="7" rx="2" fill="#FF5B39"/><rect x="14" y="4" width="7" height="7" rx="2" fill="#FF5B39"/><rect x="3" y="14" width="7" height="7" rx="2" fill="#6C6191"/><rect x="14" y="14" width="7" height="7" rx="2" fill="#33E6C8"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="8" fill="none" stroke="#FF5B39" stroke-width="1.8"/><rect x="8" y="9" width="5" height="5" rx="1.3" fill="#FF5B39" transform="rotate(18 10.5 11.5)"/><rect x="13" y="10.5" width="4" height="4" rx="1.1" fill="#33E6C8" transform="rotate(-14 15 12.5)"/></svg>',
     build(ctx){
       const g = ctx.level < 8 ? 4 : 5;
       const cells = g*g;
@@ -7561,7 +7564,7 @@ const MODES = {
      cascade, so one well-placed coin can walk a corner of the board upward. */
   mint: {
     name:'Mint', blurb:'Drop coins, merge matches, reach the big one', cat:'numbers', par:11000, bonus:3000,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="5" fill="#FFC53D"/><circle cx="16" cy="15" r="6.5" fill="#FF9A3D"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="6" fill="#FFC53D" opacity=".55"/><circle cx="14" cy="9" r="8" fill="#FFC53D"/><path d="M14 4.5v9M10.5 9h7" stroke="#0D0918" stroke-width="1.4" stroke-linecap="round" opacity=".4"/></svg>',
     build(ctx){
       const g = ctx.level < 6 ? 3 : 4;
       const n = g*g;
@@ -8282,7 +8285,7 @@ const MODES = {
      so a late correction cannot save a bad one. */
   descent: {
     name:'Descent', blurb:'Steer the falling star through every gap', input:'drag', cat:'reflex', par:9000, bonus:2800,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 5.2L20 8l-4 4 1 6-5-2.8L7 18l1-6-4-4 5.8-.8z" fill="#FFC53D"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="3" width="8.5" height="3.6" rx="1.4" fill="#FF3D6E"/><rect x="14" y="3" width="8.5" height="3.6" rx="1.4" fill="#FF3D6E"/><path d="M12 8v4.5" stroke="#FF3D6E" stroke-width="1.6" stroke-linecap="round" opacity=".45"/><path d="M12 13l2.3 4h-4.6z" fill="#FF3D6E"/></svg>',
     build(ctx){
       const gates = clamp(3 + Math.floor(ctx.level/3), 3, 9);
       const fall  = 0.30 + Math.min(0.42, ctx.level*0.018);
@@ -9529,7 +9532,7 @@ const MODES = {
      which is a thing no other mode in the roster rewards. */
   tell: {
     name:'Tell', blurb:'Guess the row — every wrong guess tells you something', cat:'logic', par:18000, bonus:4600,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="7" r="2.6" fill="#33E6C8"/><circle cx="12" cy="7" r="2.6" fill="#33E6C8" opacity=".55"/><circle cx="18.5" cy="7" r="2.6" fill="#33E6C8" opacity=".3"/><circle cx="6" cy="16" r="1.5" fill="#33E6C8"/><circle cx="11" cy="16" r="1.5" fill="none" stroke="#33E6C8" stroke-width="1.2"/><circle cx="16" cy="16" r="1.5" fill="none" stroke="#33E6C8" stroke-width="1.2" opacity=".5"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="9" r="2.6" fill="#33E6C8"/><circle cx="12" cy="9" r="2.6" fill="#33E6C8" opacity=".55"/><circle cx="19" cy="9" r="2.6" fill="#33E6C8" opacity=".3"/><circle cx="8" cy="17" r="1.4" fill="#33E6C8"/><circle cx="12.4" cy="17" r="1.4" fill="none" stroke="#33E6C8" stroke-width="1.3"/><circle cx="16.8" cy="17" r="1.4" fill="#33E6C8" opacity=".4"/></svg>',
     build(ctx){
       const k    = ctx.level < 10 ? 3 : 4;                      /* pegs in the row */
       const c    = clamp(4 + Math.floor(ctx.level/8), 4, 6);    /* colours in play */
