@@ -325,7 +325,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 /* ── Cairn ────────────────────────────────────────────────────────────── */
 .cairnwrap{position:relative;width:100%;height:100%;touch-action:none;overflow:hidden;
   border-radius:12px;background:#ffffff05}
-.clayer,.cmove{position:absolute;display:block;border-radius:4px}
+.clayer,.cmove{position:absolute;display:block;border-radius:7px}
+/* Stacked folds of knitting rather than slabs: the same crosshatch the loose
+   pieces wear, over whatever colour the layer is given. */
+.clayer::after,.cmove::after{content:"";position:absolute;inset:0;pointer-events:none;
+  border-radius:inherit;
+  background:repeating-linear-gradient(45deg,  #ffffff1a 0 2px, transparent 2px 5px),
+             repeating-linear-gradient(-45deg, #00000014 0 2px, transparent 2px 5px)}
 .clayer{background:linear-gradient(180deg,#5de8d0,#2bb79f);box-shadow:inset 0 -3px 0 #00000026}
 .clayer.flush{background:linear-gradient(180deg,#9cf6e6,#33e6c8);box-shadow:0 0 10px #33e6c855}
 .cmove{background:linear-gradient(180deg,#b8a9ff,#7d6ad6);box-shadow:inset 0 -3px 0 #00000026}
@@ -2033,7 +2039,22 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.pad.lit{background:var(--zap)}
 .cell.pad.ok{background:var(--cool)}
 .cell.pad.ghost{background:var(--flare)}
-.cell.pipe{background:#ffffff07;border-color:#ffffff0d}
+.cell.pipe{position:relative;background:#ffffff07;border-color:#ffffff0d}
+/* The thread starts at a ball of wool and ends at the cat waiting for it.
+   These sit outside the rotating svg on purpose: the strand turns when you
+   tap, the ball and the cat should not spin with it. */
+.cell.pipe.src::before,.cell.pipe.snk::before{
+  content:"";position:absolute;inset:11%;pointer-events:none;opacity:.5;
+  background:no-repeat center/contain}
+/* The strand sits over them, so the cell reads as a thread passing through
+   a ball rather than two drawings stacked on each other. */
+.cell.pipe svg{position:relative;z-index:1}
+.cell.pipe.src::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23FF5B39' stroke-width='9' stroke-linecap='round'%3E%3Ccircle cx='50' cy='52' r='22'/%3E%3Cpath d='M31 43 Q50 60 69 45'/%3E%3Cpath d='M33 62 Q52 45 68 61'/%3E%3C/g%3E%3C/svg%3E")}
+.cell.pipe.snk::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%2333E6C8' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='50' cy='56' r='20'/%3E%3Cpath d='M32 43 L29 24 L45 34'/%3E%3Cpath d='M68 43 L71 24 L55 34'/%3E%3C/g%3E%3C/svg%3E")}
+/* The twist itself: butt-capped dashes riding the strand. */
+.cell.pipe .wire.twist{stroke:#ffffff4d;stroke-width:4;stroke-dasharray:2.5 7;
+  stroke-linecap:butt;transition:stroke var(--t-med)}
+.cell.pipe.on .wire.twist,.cell.pipe.snk .wire.twist{stroke:#0d091859}
 .cell.pipe svg{width:100%;height:100%;display:block;transition:transform 180ms cubic-bezier(.2,.8,.3,1)}
 .cell.pipe .wire{stroke:var(--haze);stroke-width:11;stroke-linecap:round;fill:none;transition:stroke var(--t-med)}
 .cell.pipe.src{background:#ff5b3914;border-color:#ff5b3945}
@@ -3066,7 +3087,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.81.0';
+const VERSION_TAG = 'v0.83.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3673,25 +3694,25 @@ const STRINGS = {
     'ask.restore':'Restore level {n} and its scores?\n\nWhat is on this device will be replaced.',
     'alert.bad':'That does not look like a Dopamine Drop backup.',
     'alert.ok':'Restored. Welcome back to level {n}.',
-    'm.odd':'Odd One Out|Spot the tile that doesn’t match',
-    'm.order':'Snap Order|Tap the numbers in order, fast',
-    'm.stroop':'Color Trap|Match the ink colour, ignore the word',
+    'm.odd':'Odd Skein|Spot the skein that does not match',
+    'm.order':'Count the Stitches|Tap the stitches in order, fast',
+    'm.stroop':'Dye Trap|Match the dye, ignore the label',
 
-    'm.rewire':'Rewire|Rotate the pipes until current flows',
-    'm.sum':'Sum Snap|Find two numbers that hit the target',
-    'm.count':'Count Fast|Count the target before the clock does',
-    'm.mirror':'Mirror|Reflect the pattern across the line',
+    'm.rewire':'Untangle|Turn the knots until the thread reaches the cat',
+    'm.sum':'Stitch Count|Find two counts that hit the target',
+    'm.count':'Quick Count|Count them before the clock does',
+    'm.mirror':'Mirror Stitch|Reflect the pattern across the fold',
 
     
-    'm.slide':'Slide Path|Clear the corridor so the car can leave',
+    'm.slide':'Let the Cat Out|Clear the way so the cat can get out',
 
-    'm.wheel':'Phrase Wheel|Guess letters to reveal the phrase',
+    'm.wheel':'Stitch Sampler|Guess letters to finish the sampler',
 
-    'm.beat':'Off Beat|Find the dot that is out of time',
-    'm.sort':'Sort Drop|Sort by the rule — it changes',
+    'm.beat':'Off Beat|Find the paw that is out of time',
+    'm.sort':'Sorting Basket|Sort by the rule — it changes',
     'p.odd':'Tap the odd one out', 'p.order':'Tap 1 to {n} in order',
     'p.stroop':'Tap the colour it is printed in', 'p.stroopRev':'Reversed — tap the colour it names', 
-    'p.rewire':'Connect orange to teal',
+    'p.rewire':'Run the thread from the ball to the cat',
     'p.sum':'Tap two that add to {n}', 'p.sumDiff':'Tap two that differ by {n}', 'p.count':'How many {x}?',
     'p.mirror':'Mirror it to the right', 
 
@@ -3699,19 +3720,19 @@ const STRINGS = {
     'modes.families':'Families', 'modes.played':'{n} of {m} played', 'modes.allCard':'All {n} modes', 'modes.allSub':'One long list, every family', 'modes.hold':'Hold a card to read what a mode is before you start it.', 'mpv.best':'Your best', 'mpv.mastery':'Mastery', 'mpv.play':'Play', 'mpv.mastered':'Mastered — all three stars', 'mpv.toNext':'{n} more points for the next star',
     'daily.streak':'{n}-day streak', 'daily.streak1':'Streak started today', 'daily.share':'Dopamine Drop — Daily Drop {d}: {a}/{b} solved for {n} points, day {s} of my streak.', 'btn.share':'Share', 'daily.copied':'Copied',
     'stats.filter':'Filter the mode list', 'stats.fAll':'All', 'stats.fPlayed':'Played', 'stats.fNew':'Not tried', 'stats.allPlayed':'You have played every mode at least once.', 'stats.noneYet':'Nothing here yet — play a Marathon and a score appears.',
-    'p.bridge':'{n} planks laid — reach the far bank', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Open water, column {x} row {y}, tap to lay a plank', 'bridge.plank':'A plank, column {x} row {y}, tap to lift it', 'm.bridge':'Bridge|Lay planks bank to bank — you have only so many', 
+    'p.bridge':'{n} stitches laid — reach the far edge', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Open water, column {x} row {y}, tap to lay a plank', 'bridge.plank':'A plank, column {x} row {y}, tap to lift it', 'm.bridge':'Darning|Lay stitches edge to edge — you have only so many', 
     'play.pickMode':'Pick a mode', 'play.pickSub':'All {n}, by family', 'daily.subShort':'One from every family', 'daily.today':'Today’s twelve', 'daily.done':'Played today', 'daily.streakN':'{n}-day streak', 'play.carryBest':'Your best {n}',
     'wc.lead':'{n} small puzzles. The one in front of you changes every round.', 'wc.p1':'Sixty seconds a run', 'wc.p2':'A different puzzle every round', 'wc.p3':'A miss costs time — a streak pays', 'wc.change':'Change', 'wc.start':'Start your first run', 'wc.look':'Look around first',
     'mix.tapes':'Your mixtapes', 'mix.name':'Name this mixtape', 'mix.share':'Share this mixtape', 'mix.delete':'Delete this mixtape', 'mix.untitled':'Mixtape {n}', 'mix.newTape':'+ New', 'mix.paste':'Paste a code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Delete “{name}”?', 'mix.keep':'Keep', 'mix.deleteIt':'Delete', 'mix.shareText':'My Dopamine Drop mixtape “{name}” — {n} modes. Paste this code into the Mix tab: {code}', 'mix.importTitle':'Add a mixtape', 'mix.importSub':'Paste a code someone sent you. It carries a name and a list of modes, nothing else.', 'mix.importAdd':'Add it', 'mix.importBad':'No mixtape code in that. Paste the whole message — the code starts with DD1.', 'mix.importOk':'Added “{name}”.', 'mix.importN':'{n} modes.', 'mix.importN1':'One mode.', 'mix.importDropped':'{n} of its modes are not in this version and were left out.', 'mix.importDropped1':'One of its modes is not in this version and was left out.',
 
     
 
-    'p.latch':'{n} rows still off the line', 'latch.row':'Row {n}, notch at position {c}', 'latch.left':'Turn row {n} left', 'latch.right':'Turn row {n} right', 'm.latch':'Latch|Turn the rows until every notch lines up',
-    'p.splice':'{n} words still in pieces', 'splice.head':'Beginning: {s}', 'splice.tail':'Ending: {s}', 'm.splice':'Splice|Put the beginnings back on the right endings',
-    'p.trace':'{n} more to reach — stay on the line', 'trace.box':'Drag along the line from the bright dot to the ring', 'm.trace':'Trace|Follow the line to the end — no hurry',
+    'p.latch':'{n} rows still off the line', 'latch.row':'Row {n}, notch at position {c}', 'latch.left':'Turn row {n} left', 'latch.right':'Turn row {n} right', 'm.latch':'Latch Hook|Turn the rows until every hook lines up',
+    'p.splice':'{n} words still in pieces', 'splice.head':'Beginning: {s}', 'splice.tail':'Ending: {s}', 'm.splice':'Splice|Join each loose end to the right beginning',
+    'p.trace':'{n} more to reach — stay on the line', 'trace.box':'Drag along the line from the bright dot to the ring', 'm.trace':'Follow the Thread|Follow the thread to its end — no hurry',
     'set.version':'Version', 'set.checkUpd':'Check', 'set.checking':'Checking…', 'set.upToDate':'Up to date', 'set.updating':'Updating…',
-    'p.halve':'{n} apart', 'halve.chip':'{v}, in tray {s}', 'm.halve':'Halve|Move pieces until both trays total the same',
-    'p.lever':'Slide the wedge, let go to test', 'lever.wedge':'The wedge — drag it along the beam', 'lever.loadL':'Weight {w}, {d} to the left', 'lever.loadR':'Weight {w}, {d} to the right', 'm.lever':'Lever|Find the balance point by eye, then test it',
+    'p.halve':'{n} apart', 'halve.chip':'{v}, in tray {s}', 'm.halve':'Even Skeins|Move skeins until both baskets weigh the same',
+    'p.lever':'Slide the wedge, let go to test', 'lever.wedge':'The wedge — drag it along the beam', 'lever.loadL':'Weight {w}, {d} to the left', 'lever.loadR':'Weight {w}, {d} to the right', 'm.lever':'Balance|Find the balance point by eye, then test it',
     'perk.callSlot1':'A slot is free — pick a perk', 'perk.callSlot':'{n} slots free — pick a perk', 'perk.callToken1':'A token to spend — make a perk stronger', 'perk.callToken':'{n} tokens to spend — make a perk stronger',
 
     'set.vibNone':'This phone has no vibration for a web app to use',
@@ -3719,43 +3740,43 @@ const STRINGS = {
     'how.drag':'drag a finger across the board', 'how.tapdrag':'tap first, then drag to aim',
 
     
-    'p.forage':'{n} berries left', 'forage.cell':'{k}, row {r} column {c}', 'forage.gone':'Eaten, row {r} column {c}', 'forage.slot':'Swarm waiting on {k}, {n} left', 'forage.free':'Empty basket slot', 'forage.full':'Basket full — call a swarm home, or open the way for one', 'm.forage':'Forage|Send a swarm at a colour — only so many can be out at once',
-    'p.meld':'{n} more to take', 'meld.cell':'Jelly {v}, worth {p}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'meld.band':'Level {v} pays {p} today', 'meld.selling':'Tap again to sell the {v} for {p}', 'm.meld':'Meld|Merge jellies up, sell them off, reach the day’s takings', 'how.meld':'drag a jelly onto its twin to squash them into one; tap a jelly, then tap it again to sell it. One level pays triple today, and merging past it loses money',
-    'p.volley':'{n} squares still bare', 'volley.cell':'{k}, row {r} column {c}', 'volley.blank':'Wants {k}, row {r} column {c}', 'volley.gunL':'{k} cannon, fires right along row {n}', 'volley.gunR':'{k} cannon, fires left along row {n}', 'volley.gunT':'{k} cannon, fires down column {n}', 'volley.gunB':'{k} cannon, fires up column {n}', 'volley.stuck':'Every cannon is spent or wrong — wind a shot back', 'm.volley':'Volley|Fire the cannons in an order that paints the picture', 'how.volley':'tap a cannon to fire it; the ball paints the bare squares it crosses and stops at the first one already painted. Tap a square the last shot painted to wind it back',
-    'p.sift':'{n} more to catch', 'sift.slot':'Belt slot {n}, {k} bucket', 'sift.bare':'Belt slot {n}, empty', 'sift.put':'Put a {k} bucket on the belt', 'sift.jam':'Belt is full — knock the front bucket off to make room', 'm.sift':'Sift|Put buckets on the belt before their sand falls',
-    'how.forage':'tap a berry to send a swarm at its colour; it comes in through the bare gaps and eats only what it can reach, then waits in the basket until you send it again. Tap a waiting swarm to call it home', 'how.first':'First time — taking it gently.', 'how.sift':'tap a colour to drop that bucket on the BACK of the belt; the belt shifts one slot every grain, so you are placing for a grain further down the chute, not the one falling. Tap the front bucket to knock it off',
+    'p.forage':'{n} berries left', 'forage.cell':'{k}, row {r} column {c}', 'forage.gone':'Eaten, row {r} column {c}', 'forage.slot':'Swarm waiting on {k}, {n} left', 'forage.free':'Empty basket slot', 'forage.full':'Basket full — call a swarm home, or open the way for one', 'm.forage':'Kittens Out|Send the kittens at a colour — only so many out at once',
+    'p.meld':'{n} more to take', 'meld.cell':'Jelly {v}, worth {p}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'meld.band':'Level {v} pays {p} today', 'meld.selling':'Tap again to sell the {v} for {p}', 'm.meld':'Yarn Shop|Merge the balls up, sell them on, reach the day’s takings', 'how.meld':'drag a ball onto its twin to squash them into one; tap a ball, then tap it again to sell it. One level pays triple today, and merging past it loses money',
+    'p.volley':'{n} squares still bare', 'volley.cell':'{k}, row {r} column {c}', 'volley.blank':'Wants {k}, row {r} column {c}', 'volley.gunL':'{k} cannon, fires right along row {n}', 'volley.gunR':'{k} cannon, fires left along row {n}', 'volley.gunT':'{k} cannon, fires down column {n}', 'volley.gunB':'{k} cannon, fires up column {n}', 'volley.stuck':'Every cannon is spent or wrong — wind a shot back', 'm.volley':'Spool Shots|Fire the spools in an order that paints the picture', 'how.volley':'tap a spool to fire it; the ball paints the bare squares it crosses and stops at the first one already painted. Tap a square the last shot painted to wind it back',
+    'p.sift':'{n} more to catch', 'sift.slot':'Belt slot {n}, {k} bucket', 'sift.bare':'Belt slot {n}, empty', 'sift.put':'Put a {k} bucket on the belt', 'sift.jam':'Belt is full — knock the front bucket off to make room', 'm.sift':'Spool Belt|Put spools on the belt before their thread runs out',
+    'how.forage':'tap a kitten to send the kittens at its colour; it comes in through the bare gaps and eats only what it can reach, then waits in the basket until you send it again. Tap a waiting swarm to call it home', 'how.first':'First time — taking it gently.', 'how.sift':'tap a colour to drop that spool on the BACK of the belt; the belt shifts one slot every grain, so you are placing for a grain further down the chute, not the one falling. Tap the front spool to knock it off',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'p.paused':'Paused', 'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
-    'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.favAdd':'Add to favorites', 'a.favRemove':'Remove from favorites', 'a.verdictChange':'Tap to change your rating','a.bin':'Bin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Power source, tap to rotate', 'a.sink':'Target, tap to rotate', 'a.pipe':'Pipe, tap to rotate', 'a.targetBin':'Target bin', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.skimNow':'Skim now', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
+    'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.favAdd':'Add to favorites', 'a.favRemove':'Remove from favorites', 'a.verdictChange':'Tap to change your rating','a.bin':'Bin {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Ball of yarn, tap to turn', 'a.sink':'The cat, tap to turn', 'a.pipe':'Knot, tap to turn', 'a.targetBin':'Target bin', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.skimNow':'Skim now', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
     'over.ribbon':'{a} of {b} rounds solved',
     'p.saved':'Streak held', 'perk.title':'Perks', 'perk.used':'{a} of {b} slots', 'perk.toSlot':'{n} points to the next slot', 'perk.toToken':'{n} points to the next token', 'perk.equipped':'equipped, level {n}', 'perk.notEquipped':'not equipped', 'perk.upgrade':'Spend a token on {p}', 'perk.tokensLeft':'{n} tokens to spend', 'perk.spare':'Spare Life', 'perk.spare.d':'Start a Marathon with {n} more lives', 'perk.spare.d1':'Start a Marathon with one more life', 'perk.shield':'Streak Shield', 'perk.shield.d':'Keep your streak through {n} misses a run', 'perk.shield.d1':'Keep your streak through one miss a run', 'perk.patience':'Long Fuse', 'perk.patience.d':'{n}% longer on the round clock', 'perk.zeal':'Zeal', 'perk.zeal.d':'The multiplier climbs sooner (rank {n})', 'perk.steady':'Steady Hands', 'perk.steady.d':'{n} more moves where moves are counted', 'perk.rally':'Rally', 'perk.rally.d':'Timed runs start {n} seconds longer',
 
     
 
-    'p.heft':'Which side weighs more?', 'heft.pile':'A pile of {n} pieces', 'm.heft':'Heft|Which pile weighs more? Counting will not tell you',
-    'p.forge':'{n} squares of the mould still open', 'forge.hole':'Mould, column {x} row {y}', 'forge.solid':'Solid, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Forge|Fit every part into the mould — nothing left over',
-    'p.gather':'{n} more to catch — let the dark ones fall', 'gather.pail':'Your pail', 'gather.keep':'A ripe one, worth catching', 'gather.dud':'A dud, let it fall', 'm.gather':'Gather|Catch the ripe ones, let the rest fall',
-    'p.chalk':'Draw a ramp — lift your finger to drop the ball', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball', 'chalk.basket':'The basket', 'm.chalk':'Chalk|Draw the ramp, then watch — no second chances',
-    'p.drift':'Two are on a collision course — tap them both', 'drift.dot':'Drifting dot {n}', 'm.drift':'Drift|Two of these will meet — find them before they do',
-    'p.cairn':'{n} more to stack', 'cairn.tap':'Tap to drop the stone', 'm.cairn':'Cairn|Stack the stones — every overhang is gone for good',
+    'p.heft':'Which side weighs more?', 'heft.pile':'A pile of {n} pieces', 'm.heft':'Heft|Which basket weighs more? Counting will not tell you',
+    'p.forge':'{n} squares of the pattern still bare', 'forge.hole':'Mould, column {x} row {y}', 'forge.solid':'Solid, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Patchwork|Fit every patch into the pattern — nothing left over',
+    'p.gather':'{n} more to catch — let the dark ones fall', 'gather.pail':'Your pail', 'gather.keep':'A ripe one, worth catching', 'gather.dud':'A dud, let it fall', 'm.gather':'Catch the Balls|Catch the good ones, let the tangles fall',
+    'p.chalk':'Draw a ramp — lift your finger to drop the ball', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball', 'chalk.basket':'The basket', 'm.chalk':'Chalk Line|Draw the ramp, then watch — no second chances',
+    'p.drift':'Two are on a collision course — tap them both', 'drift.dot':'Drifting dot {n}', 'm.drift':'Tangle Watch|Two of these will meet — find them before they tangle',
+    'p.cairn':'{n} more to stack', 'cairn.tap':'Tap to drop the stone', 'm.cairn':'Folds|Stack the knits — every overhang is gone for good',
 
-    'p.siphon':'{n} jars still empty', 'sip.source':'source', 'sip.wants':'Jar wanting {c}', 'sip.done':'jar, filled', 'sip.empty':'source, emptied', 'm.siphon':'Siphon|Pour each colour into the jar that wants it',
-    'p.descent':'{n} gaps below', 'm.descent':'Descent|Steer the falling star through every gap',
-    'p.ripple':'{n} gates to drift through', 'm.ripple':'Ripple|Tap the water — the waves carry the leaf',
-    'p.slice':'{n} more to cut', 'slice.good':'Ripe', 'slice.rotten':'Rotten — do not cut', 'm.slice':'Slice|One stroke cuts all it crosses — miss the rotten',
-
-    
-    'p.glimmer':'{n} lamps still dark', 'm.glimmer':'Glimmer|Carry the light until every lamp is lit',
-    'p.tidy':'{n} left on the floor', 'm.tidy':'Tidy|Drag the mess into the right bins',
-    'p.hauntLook':'{n} of them — watch closely', 'p.hauntTrack':'Follow them', 'p.hauntPick':'{n} still to find', 'm.haunt':'Haunt|Watch the swaps — where did the ghosts end up?',
+    'p.siphon':'{n} jars still empty', 'sip.source':'source', 'sip.wants':'Jar wanting {c}', 'sip.done':'jar, filled', 'sip.empty':'source, emptied', 'm.siphon':'Dye Pots|Pour each dye into the pot that wants it',
+    'p.descent':'{n} gaps below', 'm.descent':'Dropped Stitch|Steer the falling bobbin through every gap',
+    'p.ripple':'{n} gates to drift through', 'm.ripple':'Ripples|Tap the water — the ripples carry the leaf',
+    'p.slice':'{n} more to cut', 'slice.good':'Ripe', 'slice.rotten':'Rotten — do not cut', 'm.slice':'Snip|One snip cuts every thread it crosses — miss the knots',
 
     
+    'p.glimmer':'{n} lamps still dark', 'm.glimmer':'Cat’s Eyes|Carry the light until every lamp is lit',
+    'p.tidy':'{n} left on the floor', 'm.tidy':'Tidy Up|Drag the mess into the right baskets',
+    'p.hauntLook':'{n} of them — watch closely', 'p.hauntTrack':'Follow them', 'p.hauntPick':'{n} still to find', 'm.haunt':'Haunt|Watch the baskets — where did the cats end up?',
 
-    'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Bruise|Finish the hurt ones before they slip away',
-    'p.skim':'{n} skips to go', 'm.skim':'Skim|Tap as it crosses — the window narrows each time',
-    'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble|Pair them off faster than the drum refills',
-    'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Peril|Read the tell, pick the counter, win the duel',
-    'p.arc':'{n} left to reach', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Arc|Chain every node before the charge dies',  'm.slack':'Slack|Drag the nodes until no rope crosses',  'm.tide':'Tide Breath|Hold to swell, release to ebb — stay in the band',  'm.plink':'Drop Odds|Pull one peg, then drop into the lit bin',  'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 
+    
+
+    'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Mending|Finish the frayed ones before they unravel',
+    'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
+    'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble Dryer|Pair the socks faster than the drum refills',
+    'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Cat Fight|Read the tell, pick the counter, win the scrap',
+    'p.arc':'{n} left to reach', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Cat’s Cradle|Loop every peg before the thread goes slack',  'm.slack':'No Crossing|Drag the pegs until no thread crosses',  'm.tide':'Purr|Hold to swell, let go to settle — stay in the band',  'm.plink':'Basket Drop|Pull one peg, then drop into the lit basket',  'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 
     'p.wheel':'Guess the phrase', 
     'p.beat':'Tap the dot that is out of time', 'p.sort':'Sorted {a} of {b}',
     'p.target':'Target', 'p.diffLabel':'Difference',
@@ -3858,25 +3879,25 @@ const STRINGS = {
     'ask.restore':'Restaurer le niveau {n} et ses scores ?\n\nCe qui est sur cet appareil sera remplacé.',
     'alert.bad':'Ce fichier ne ressemble pas à une sauvegarde Dopamine Drop.',
     'alert.ok':'Restauré. Bon retour au niveau {n}.',
-    'm.odd':'L’Intrus|Trouvez la tuile qui ne va pas',
-    'm.order':'Dans l’Ordre|Touchez les nombres dans l’ordre, vite',
-    'm.stroop':'Piège de Couleur|Touchez la couleur de l’encre, ignorez le mot',
+    'm.odd':'Intrus de Laine|Trouvez la pelote qui ne va pas',
+    'm.order':'Compter les Mailles|Touchez les mailles dans l’ordre, vite',
+    'm.stroop':'Piège de Teinture|Touchez la teinture, ignorez l’étiquette',
 
-    'm.rewire':'Recâblage|Tournez les tuyaux jusqu’au passage du courant',
-    'm.sum':'Somme Éclair|Trouvez deux nombres qui font la cible',
-    'm.count':'Compte Vite|Comptez la cible avant le chrono',
-    'm.mirror':'Miroir|Reflétez le motif de l’autre côté',
+    'm.rewire':'Démêlage|Tournez les nœuds jusqu’au chat',
+    'm.sum':'Compte de Mailles|Trouvez deux comptes qui font la cible',
+    'm.count':'Compte Vite|Comptez-les avant le chrono',
+    'm.mirror':'Point Miroir|Reflétez le motif de l’autre côté du pli',
 
     
-    'm.slide':'Dégage la Voie|Libérez le couloir pour la voiture',
+    'm.slide':'Laissez Sortir le Chat|Dégagez le passage pour que le chat sorte',
 
-    'm.wheel':'Roue des Mots|Devinez les lettres pour révéler la phrase',
+    'm.wheel':'Abécédaire|Devinez les lettres pour finir la broderie',
 
-    'm.beat':'Hors Rythme|Trouvez le point qui bat à contretemps',
-    'm.sort':'Tri Rapide|Triez selon la règle — elle change',
+    'm.beat':'Hors Rythme|Trouvez la patte qui bat à contretemps',
+    'm.sort':'Panier de Tri|Triez selon la règle — elle change',
     'p.odd':'Touchez l’intrus', 'p.order':'Touchez 1 à {n} dans l’ordre',
     'p.stroop':'Touchez la couleur de l’encre', 'p.stroopRev':'Inversé — touchez la couleur qu’il nomme', 
-    'p.rewire':'Reliez l’orange au turquoise',
+    'p.rewire':'Menez le fil de la pelote au chat',
     'p.sum':'Touchez deux nombres faisant {n}', 'p.sumDiff':'Touchez deux nombres dont la différence fait {n}', 'p.count':'Combien de {x} ?',
     'p.mirror':'Reflétez vers la droite', 
 
@@ -3884,19 +3905,19 @@ const STRINGS = {
     'modes.families':'Familles', 'modes.played':'{n} sur {m} joués', 'modes.allCard':'Les {n} modes', 'modes.allSub':'Une seule longue liste, toutes familles', 'modes.hold':'Maintenez une carte pour lire ce qu’est un mode avant de le lancer.', 'mpv.best':'Votre record', 'mpv.mastery':'Maîtrise', 'mpv.play':'Jouer', 'mpv.mastered':'Maîtrisé — les trois étoiles', 'mpv.toNext':'Encore {n} points pour la prochaine étoile',
     'daily.streak':'Série de {n} jours', 'daily.streak1':'Série commencée aujourd’hui', 'daily.share':'Dopamine Drop — Tirage du jour {d} : {a}/{b} réussis pour {n} points, {s}ᵉ jour de ma série.', 'btn.share':'Partager', 'daily.copied':'Copié',
     'stats.filter':'Filtrer la liste des modes', 'stats.fAll':'Tout', 'stats.fPlayed':'Joués', 'stats.fNew':'Jamais essayés', 'stats.allPlayed':'Vous avez joué à tous les modes au moins une fois.', 'stats.noneYet':'Rien ici — jouez un Marathon et un score apparaîtra.',
-    'p.bridge':'{n} planches posées — atteignez l’autre rive', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Eau libre, colonne {x} ligne {y}, touchez pour poser une planche', 'bridge.plank':'Une planche, colonne {x} ligne {y}, touchez pour la retirer', 'm.bridge':'Pont|Posez des planches d’une rive à l’autre — elles sont comptées', 
+    'p.bridge':'{n} points posés — atteignez l’autre bord', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Eau libre, colonne {x} ligne {y}, touchez pour poser une planche', 'bridge.plank':'Une planche, colonne {x} ligne {y}, touchez pour la retirer', 'm.bridge':'Reprise|Posez les points d’un bord à l’autre — ils sont comptés', 
     'play.pickMode':'Choisir un mode', 'play.pickSub':'Les {n}, par famille', 'daily.subShort':'Une de chaque famille', 'daily.today':'Les douze du jour', 'daily.done':'Fait aujourd’hui', 'daily.streakN':'Série de {n} jours', 'play.carryBest':'Votre record {n}',
     'wc.lead':'{n} petits casse-têtes. Celui qui est devant vous change à chaque manche.', 'wc.p1':'Soixante secondes par partie', 'wc.p2':'Un casse-tête différent à chaque manche', 'wc.p3':'Une erreur coûte du temps — une série rapporte', 'wc.change':'Changer', 'wc.start':'Lancer votre première partie', 'wc.look':'Jeter un œil d’abord',
     'mix.tapes':'Vos playlists', 'mix.name':'Nommer cette playlist', 'mix.share':'Partager cette playlist', 'mix.delete':'Supprimer cette playlist', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Nouvelle', 'mix.paste':'Coller un code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Supprimer « {name} » ?', 'mix.keep':'Garder', 'mix.deleteIt':'Supprimer', 'mix.shareText':'Ma playlist Dopamine Drop « {name} » — {n} modes. Collez ce code dans l’onglet Mix : {code}', 'mix.importTitle':'Ajouter une playlist', 'mix.importSub':'Collez un code qu’on vous a envoyé. Il contient un nom et une liste de modes, rien d’autre.', 'mix.importAdd':'Ajouter', 'mix.importBad':'Aucun code de playlist là-dedans. Collez tout le message — le code commence par DD1.', 'mix.importOk':'« {name} » ajoutée.', 'mix.importN':'{n} modes.', 'mix.importN1':'Un mode.', 'mix.importDropped':'{n} de ses modes n’existent pas dans cette version et ont été écartés.', 'mix.importDropped1':'Un de ses modes n’existe pas dans cette version et a été écarté.',
 
     
 
-    'p.latch':'Encore {n} rangées hors de l’axe', 'latch.row':'Rangée {n}, encoche en position {c}', 'latch.left':'Tourner la rangée {n} vers la gauche', 'latch.right':'Tourner la rangée {n} vers la droite', 'm.latch':'Loquet|Tournez les rangées jusqu’à aligner toutes les encoches',
-    'p.splice':'Encore {n} mots en morceaux', 'splice.head':'Début : {s}', 'splice.tail':'Fin : {s}', 'm.splice':'Recoller|Remettez chaque début sur la bonne fin',
-    'p.trace':'Encore {n} à atteindre — restez sur la ligne', 'trace.box':'Glissez le long de la ligne, du point lumineux jusqu’à l’anneau', 'm.trace':'Tracer|Suivez la ligne jusqu’au bout — rien ne presse',
+    'p.latch':'Encore {n} rangées hors de l’axe', 'latch.row':'Rangée {n}, encoche en position {c}', 'latch.left':'Tourner la rangée {n} vers la gauche', 'latch.right':'Tourner la rangée {n} vers la droite', 'm.latch':'Crochet|Tournez les rangs jusqu’à aligner tous les crochets',
+    'p.splice':'Encore {n} mots en morceaux', 'splice.head':'Début : {s}', 'splice.tail':'Fin : {s}', 'm.splice':'Raccord|Reliez chaque bout libre au bon début',
+    'p.trace':'Encore {n} à atteindre — restez sur la ligne', 'trace.box':'Glissez le long de la ligne, du point lumineux jusqu’à l’anneau', 'm.trace':'Suivre le Fil|Suivez le fil jusqu’au bout — sans hâte',
     'set.version':'Version', 'set.checkUpd':'Vérifier', 'set.checking':'Vérification…', 'set.upToDate':'À jour', 'set.updating':'Mise à jour…',
-    'p.halve':'Écart de {n}', 'halve.chip':'{v}, dans le plateau {s}', 'm.halve':'Partage|Déplacez des pièces jusqu’à égaliser les deux plateaux',
-    'p.lever':'Glissez le coin, lâchez pour tester', 'lever.wedge':'Le coin — glissez-le le long de la barre', 'lever.loadL':'Poids {w}, {d} à gauche', 'lever.loadR':'Poids {w}, {d} à droite', 'm.lever':'Levier|Trouvez le point d’équilibre à l’œil, puis testez',
+    'p.halve':'Écart de {n}', 'halve.chip':'{v}, dans le plateau {s}', 'm.halve':'Pelotes Égales|Déplacez les pelotes jusqu’à équilibrer les paniers',
+    'p.lever':'Glissez le coin, lâchez pour tester', 'lever.wedge':'Le coin — glissez-le le long de la barre', 'lever.loadL':'Poids {w}, {d} à gauche', 'lever.loadR':'Poids {w}, {d} à droite', 'm.lever':'Équilibre|Trouvez le point d’équilibre à l’œil, puis testez',
     'perk.callSlot1':'Un emplacement libre — choisissez un atout', 'perk.callSlot':'{n} emplacements libres — choisissez un atout', 'perk.callToken1':'Un jeton à dépenser — renforcez un atout', 'perk.callToken':'{n} jetons à dépenser — renforcez un atout',
 
     'set.vibNone':'Ce téléphone n’offre pas de vibration à une application web',
@@ -3904,43 +3925,43 @@ const STRINGS = {
     'how.drag':'glissez un doigt sur le plateau', 'how.tapdrag':'touchez d’abord, puis glissez pour viser',
 
     
-    'p.forage':'{n} baies restantes', 'forage.cell':'{k}, ligne {r} colonne {c}', 'forage.gone':'Mangée, ligne {r} colonne {c}', 'forage.slot':'Essaim en attente de {k}, {n} restantes', 'forage.free':'Emplacement libre', 'forage.full':'Panier plein — rappelez un essaim, ou dégagez-lui le passage', 'm.forage':'Cueillette|Lancez un essaim sur une couleur — peu peuvent sortir à la fois',
-    'p.meld':'Encore {n} à encaisser', 'meld.cell':'Gelée {v}, valant {p}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'meld.band':'Le niveau {v} rapporte {p} aujourd’hui', 'meld.selling':'Touchez encore pour vendre la {v} à {p}', 'm.meld':'Fusion|Fusionnez, revendez, atteignez la recette du jour', 'how.meld':'glissez une gelée sur sa jumelle pour n’en faire qu’une ; touchez une gelée, puis touchez-la encore pour la vendre. Un niveau rapporte triple aujourd’hui, et fusionner au-delà fait perdre de l’argent',
-    'p.volley':'{n} cases encore vides', 'volley.cell':'{k}, ligne {r} colonne {c}', 'volley.blank':'Attend {k}, ligne {r} colonne {c}', 'volley.gunL':'Canon {k}, tire vers la droite sur la ligne {n}', 'volley.gunR':'Canon {k}, tire vers la gauche sur la ligne {n}', 'volley.gunT':'Canon {k}, tire vers le bas sur la colonne {n}', 'volley.gunB':'Canon {k}, tire vers le haut sur la colonne {n}', 'volley.stuck':'Tous les canons sont épuisés ou faux — annulez un tir', 'm.volley':'Volée|Tirez au canon dans l’ordre qui peint l’image', 'how.volley':'touchez un canon pour tirer ; la bille peint les cases vides qu’elle traverse et s’arrête à la première déjà peinte. Touchez une case du dernier tir pour l’annuler',
-    'p.sift':'Encore {n} à attraper', 'sift.slot':'Emplacement {n}, seau {k}', 'sift.bare':'Emplacement {n}, vide', 'sift.put':'Poser un seau {k} sur le tapis', 'sift.jam':'Tapis plein — faites tomber le seau de tête pour faire de la place', 'm.sift':'Tamis|Posez les seaux avant que leur sable ne tombe',
+    'p.forage':'{n} baies restantes', 'forage.cell':'{k}, ligne {r} colonne {c}', 'forage.gone':'Mangée, ligne {r} colonne {c}', 'forage.slot':'Essaim en attente de {k}, {n} restantes', 'forage.free':'Emplacement libre', 'forage.full':'Panier plein — rappelez un essaim, ou dégagez-lui le passage', 'm.forage':'Lâchez les Chatons|Envoyez les chatons sur une couleur — pas trop à la fois',
+    'p.meld':'Encore {n} à encaisser', 'meld.cell':'Gelée {v}, valant {p}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'meld.band':'Le niveau {v} rapporte {p} aujourd’hui', 'meld.selling':'Touchez encore pour vendre la {v} à {p}', 'm.meld':'Boutique de Laine|Fusionnez les pelotes, vendez-les, faites la recette du jour', 'how.meld':'glissez une gelée sur sa jumelle pour n’en faire qu’une ; touchez une gelée, puis touchez-la encore pour la vendre. Un niveau rapporte triple aujourd’hui, et fusionner au-delà fait perdre de l’argent',
+    'p.volley':'{n} cases encore vides', 'volley.cell':'{k}, ligne {r} colonne {c}', 'volley.blank':'Attend {k}, ligne {r} colonne {c}', 'volley.gunL':'Canon {k}, tire vers la droite sur la ligne {n}', 'volley.gunR':'Canon {k}, tire vers la gauche sur la ligne {n}', 'volley.gunT':'Canon {k}, tire vers le bas sur la colonne {n}', 'volley.gunB':'Canon {k}, tire vers le haut sur la colonne {n}', 'volley.stuck':'Tous les canons sont épuisés ou faux — annulez un tir', 'm.volley':'Tirs de Bobines|Tirez les bobines dans l’ordre qui peint l’image', 'how.volley':'touchez un canon pour tirer ; la bille peint les cases vides qu’elle traverse et s’arrête à la première déjà peinte. Touchez une case du dernier tir pour l’annuler',
+    'p.sift':'Encore {n} à attraper', 'sift.slot':'Emplacement {n}, seau {k}', 'sift.bare':'Emplacement {n}, vide', 'sift.put':'Poser un seau {k} sur le tapis', 'sift.jam':'Tapis plein — faites tomber le seau de tête pour faire de la place', 'm.sift':'Tapis à Bobines|Posez les bobines avant que leur fil ne file',
     'how.forage':'touchez une baie pour lancer un essaim sur sa couleur ; il entre par les trous, ne mange que ce qu’il atteint, puis attend dans le panier que vous le relanciez. Touchez un essaim en attente pour le rappeler', 'how.first':'Première fois — on y va doucement.', 'how.sift':'touchez une couleur pour poser ce seau à l’ARRIÈRE du tapis ; le tapis avance d’un cran à chaque grain, donc vous posez pour un grain plus loin dans la trémie, pas pour celui qui tombe. Touchez le seau de tête pour le faire tomber',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'p.paused':'En pause', 'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
-    'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.favAdd':'Ajouter aux favoris', 'a.favRemove':'Retirer des favoris', 'a.verdictChange':'Touchez pour changer votre avis','a.bin':'Bac {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Source, touchez pour tourner', 'a.sink':'Cible, touchez pour tourner', 'a.pipe':'Tuyau, touchez pour tourner', 'a.targetBin':'Bac cible', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.skimNow':'Touchez maintenant', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
+    'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.favAdd':'Ajouter aux favoris', 'a.favRemove':'Retirer des favoris', 'a.verdictChange':'Touchez pour changer votre avis','a.bin':'Bac {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Pelote, touchez pour tourner', 'a.sink':'Le chat, touchez pour tourner', 'a.pipe':'Nœud, touchez pour tourner', 'a.targetBin':'Bac cible', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.skimNow':'Touchez maintenant', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
     'over.ribbon':'{a} manches sur {b} réussies',
     'p.saved':'Série gardée', 'perk.title':'Atouts', 'perk.used':'{a} sur {b} emplacements', 'perk.toSlot':'{n} points avant le prochain emplacement', 'perk.toToken':'{n} points avant le prochain jeton', 'perk.equipped':'équipé, niveau {n}', 'perk.notEquipped':'non équipé', 'perk.upgrade':'Dépenser un jeton sur {p}', 'perk.tokensLeft':'{n} jetons à dépenser', 'perk.spare':'Vie en plus', 'perk.spare.d':'Commencez un Marathon avec {n} vies de plus', 'perk.spare.d1':'Commencez un Marathon avec une vie de plus', 'perk.shield':'Bouclier de série', 'perk.shield.d':'Gardez votre série malgré {n} échecs par partie', 'perk.shield.d1':'Gardez votre série malgré un échec par partie', 'perk.patience':'Mèche longue', 'perk.patience.d':'{n}% de temps en plus par manche', 'perk.zeal':'Ferveur', 'perk.zeal.d':'Le multiplicateur monte plus tôt (rang {n})', 'perk.steady':'Main sûre', 'perk.steady.d':'{n} coups de plus là où les coups comptent', 'perk.rally':'Élan', 'perk.rally.d':'Les parties chronométrées durent {n} secondes de plus',
 
     
 
-    'p.heft':'Quel côté pèse le plus ?', 'heft.pile':'Un tas de {n} pièces', 'm.heft':'Poids|Quel tas pèse le plus ? Compter ne vous dira rien',
-    'p.forge':'Encore {n} cases du moule', 'forge.hole':'Moule, colonne {x} ligne {y}', 'forge.solid':'Plein, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Forge|Placez chaque pièce dans le moule — rien en trop',
-    'p.gather':'Encore {n} à attraper — laissez tomber les sombres', 'gather.pail':'Votre seau', 'gather.keep':'Un mûr, à attraper', 'gather.dud':'Un gâté, laissez-le tomber', 'm.gather':'Récolte|Attrapez les mûrs, laissez tomber le reste',
-    'p.chalk':'Tracez une rampe — relâchez pour lâcher la bille', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La bille', 'chalk.basket':'Le panier', 'm.chalk':'Craie|Tracez la rampe, puis regardez — sans reprise',
-    'p.drift':'Deux vont se percuter — touchez-les tous les deux', 'drift.dot':'Point dérivant {n}', 'm.drift':'Dérive|Deux vont se rencontrer — trouvez-les avant',
-    'p.cairn':'Encore {n} à empiler', 'cairn.tap':'Touchez pour poser la pierre', 'm.cairn':'Cairn|Empilez les pierres — tout débord est perdu',
+    'p.heft':'Quel côté pèse le plus ?', 'heft.pile':'Un tas de {n} pièces', 'm.heft':'Soupeser|Quel panier pèse le plus ? Compter n’y suffit pas',
+    'p.forge':'Encore {n} cases du motif', 'forge.hole':'Moule, colonne {x} ligne {y}', 'forge.solid':'Plein, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Patchwork|Placez chaque pièce dans le motif — rien en trop',
+    'p.gather':'Encore {n} à attraper — laissez tomber les sombres', 'gather.pail':'Votre seau', 'gather.keep':'Un mûr, à attraper', 'gather.dud':'Un gâté, laissez-le tomber', 'm.gather':'Attrapez les Pelotes|Attrapez les bonnes, laissez tomber les nœuds',
+    'p.chalk':'Tracez une rampe — relâchez pour lâcher la bille', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La bille', 'chalk.basket':'Le panier', 'm.chalk':'Trait de Craie|Tracez la pente, puis regardez — un seul essai',
+    'p.drift':'Deux vont se percuter — touchez-les tous les deux', 'drift.dot':'Point dérivant {n}', 'm.drift':'Guet des Nœuds|Deux vont se croiser — trouvez-les avant le nœud',
+    'p.cairn':'Encore {n} à empiler', 'cairn.tap':'Touchez pour poser la pierre', 'm.cairn':'Pliage|Empilez les tricots — tout débord est perdu',
 
-    'p.siphon':'{n} bocaux vides', 'sip.source':'source', 'sip.wants':'Bocal attendant {c}', 'sip.done':'bocal, rempli', 'sip.empty':'source, vidée', 'm.siphon':'Transvase|Versez chaque couleur dans le bon bocal',
-    'p.descent':'{n} passages plus bas', 'm.descent':'Descente|Guidez l’étoile à travers chaque ouverture',
-    'p.ripple':'{n} anneaux à franchir', 'm.ripple':'Ondes|Touchez l’eau — les vagues portent la feuille',
-    'p.slice':'Encore {n} à trancher', 'slice.good':'Mûr', 'slice.rotten':'Pourri — à éviter', 'm.slice':'Tranche|Un geste coupe tout sur son passage — évitez le pourri',
-
-    
-    'p.glimmer':'{n} lampes éteintes', 'm.glimmer':'Lueur|Portez la lumière jusqu’à la dernière lampe',
-    'p.tidy':'{n} encore au sol', 'm.tidy':'Rangement|Glissez le désordre dans les bons bacs',
-    'p.hauntLook':'{n} fantômes — regardez bien', 'p.hauntTrack':'Suivez-les', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Hantise|Suivez les échanges — où sont-ils passés ?',
+    'p.siphon':'{n} bocaux vides', 'sip.source':'source', 'sip.wants':'Bocal attendant {c}', 'sip.done':'bocal, rempli', 'sip.empty':'source, vidée', 'm.siphon':'Pots de Teinture|Versez chaque teinture dans le bon pot',
+    'p.descent':'{n} passages plus bas', 'm.descent':'Maille Filée|Guidez la bobine qui tombe dans chaque trou',
+    'p.ripple':'{n} anneaux à franchir', 'm.ripple':'Ondes|Touchez l’eau — les ondes portent la feuille',
+    'p.slice':'Encore {n} à trancher', 'slice.good':'Mûr', 'slice.rotten':'Pourri — à éviter', 'm.slice':'Coup de Ciseaux|Un coup coupe tous les fils croisés — évitez les nœuds',
 
     
+    'p.glimmer':'{n} lampes éteintes', 'm.glimmer':'Yeux de Chat|Portez la lueur jusqu’à allumer chaque lampe',
+    'p.tidy':'{n} encore au sol', 'm.tidy':'Rangement|Glissez le désordre dans les bons paniers',
+    'p.hauntLook':'{n} fantômes — regardez bien', 'p.hauntTrack':'Suivez-les', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Hantise|Suivez les paniers — où sont passés les chats ?',
 
-    'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Bleu|Achevez les blessés avant qu’ils filent',
-    'p.skim':'Encore {n} ricochets', 'm.skim':'Ricochet|Touchez au passage — la fenêtre rétrécit',
-    'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Tambour|Appariez plus vite que le remplissage',
-    'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Duel|Lisez son geste, choisissez la parade',
-    'p.arc':'{n} à relier', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Arc|Reliez tous les nœuds avant la panne',  'm.slack':'Démêlage|Déplacez les nœuds jusqu’à zéro croisement',  'm.tide':'Souffle|Tenez pour gonfler, relâchez pour dégonfler',  'm.plink':'Chute|Retirez un clou, puis visez le bac éclairé',  'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 
+    
+
+    'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Raccommodage|Finissez les effilochés avant qu’ils ne filent',
+    'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
+    'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Sèche-Linge|Appariez les chaussettes plus vite que le tambour',
+    'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Bagarre|Lisez l’indice, choisissez la parade, gagnez la bagarre',
+    'p.arc':'{n} à relier', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Jeu de Ficelle|Bouclez chaque piquet avant que le fil ne mollisse',  'm.slack':'Sans Croisement|Déplacez les piquets jusqu’à ce qu’aucun fil ne se croise',  'm.tide':'Ronron|Maintenez pour enfler, lâchez pour calmer — restez dans la bande',  'm.plink':'Chute au Panier|Retirez un piquet, puis tombez dans le panier allumé',  'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 
     'p.wheel':'Devinez la phrase', 
     'p.beat':'Touchez le point à contretemps', 'p.sort':'{a} sur {b} triés',
     'p.target':'Cible', 'p.diffLabel':'Différence',
@@ -4043,25 +4064,25 @@ const STRINGS = {
     'ask.restore':'¿Restaurar el nivel {n} y sus puntuaciones?\n\nLo que hay en este dispositivo será reemplazado.',
     'alert.bad':'Eso no parece una copia de Dopamine Drop.',
     'alert.ok':'Restaurado. Bienvenido de vuelta al nivel {n}.',
-    'm.odd':'El Distinto|Encuentra la casilla que no encaja',
-    'm.order':'En Orden|Toca los números en orden, rápido',
-    'm.stroop':'Trampa de Color|Toca el color de la tinta, ignora la palabra',
+    'm.odd':'Ovillo Distinto|Encuentra el ovillo que no encaja',
+    'm.order':'Cuenta Puntos|Toca los puntos en orden, rápido',
+    'm.stroop':'Trampa de Tinte|Toca el tinte, ignora la etiqueta',
 
-    'm.rewire':'Recableado|Gira las tuberías hasta que pase la corriente',
-    'm.sum':'Suma Rápida|Encuentra dos números que den el objetivo',
-    'm.count':'Cuenta Rápido|Cuenta el objetivo antes que el reloj',
-    'm.mirror':'Espejo|Refleja el patrón al otro lado',
+    'm.rewire':'Desenredo|Gira los nudos hasta llegar al gato',
+    'm.sum':'Cuenta de Puntos|Encuentra dos cuentas que den el objetivo',
+    'm.count':'Cuenta Rápido|Cuéntalos antes que el reloj',
+    'm.mirror':'Punto Espejo|Refleja el patrón al otro lado del pliegue',
 
     
-    'm.slide':'Abre Paso|Despeja el pasillo para que salga el coche',
+    'm.slide':'Deja Salir al Gato|Despeja el paso para que salga el gato',
 
-    'm.wheel':'Rueda de Frases|Adivina letras para revelar la frase',
+    'm.wheel':'Dechado|Adivina letras para terminar el bordado',
 
-    'm.beat':'A Destiempo|Encuentra el punto fuera de ritmo',
-    'm.sort':'Clasifica|Clasifica según la regla — cambia',
+    'm.beat':'A Destiempo|Encuentra la pata fuera de ritmo',
+    'm.sort':'Cesta de Orden|Clasifica según la regla — cambia',
     'p.odd':'Toca el distinto', 'p.order':'Toca del 1 al {n} en orden',
     'p.stroop':'Toca el color de la tinta', 'p.stroopRev':'Invertido — toca el color que nombra', 
-    'p.rewire':'Conecta naranja con turquesa',
+    'p.rewire':'Lleva el hilo del ovillo al gato',
     'p.sum':'Toca dos que sumen {n}', 'p.sumDiff':'Toca dos que difieran en {n}', 'p.count':'¿Cuántos {x}?',
     'p.mirror':'Refléjalo a la derecha', 
 
@@ -4069,19 +4090,19 @@ const STRINGS = {
     'modes.families':'Familias', 'modes.played':'{n} de {m} jugados', 'modes.allCard':'Los {n} modos', 'modes.allSub':'Una sola lista, todas las familias', 'modes.hold':'Mantén pulsada una tarjeta para leer qué es un modo antes de empezar.', 'mpv.best':'Tu récord', 'mpv.mastery':'Dominio', 'mpv.play':'Jugar', 'mpv.mastered':'Dominado — las tres estrellas', 'mpv.toNext':'{n} puntos más para la siguiente estrella',
     'daily.streak':'Racha de {n} días', 'daily.streak1':'Racha empezada hoy', 'daily.share':'Dopamine Drop — Reto diario {d}: {a}/{b} resueltos por {n} puntos, día {s} de mi racha.', 'btn.share':'Compartir', 'daily.copied':'Copiado',
     'stats.filter':'Filtrar la lista de modos', 'stats.fAll':'Todos', 'stats.fPlayed':'Jugados', 'stats.fNew':'Sin probar', 'stats.allPlayed':'Has jugado todos los modos al menos una vez.', 'stats.noneYet':'Aquí no hay nada — juega un Maratón y aparecerá una puntuación.',
-    'p.bridge':'{n} tablones puestos — llega a la otra orilla', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Agua abierta, columna {x} fila {y}, toca para poner un tablón', 'bridge.plank':'Un tablón, columna {x} fila {y}, toca para quitarlo', 'm.bridge':'Puente|Pon tablones de orilla a orilla — están contados', 
+    'p.bridge':'{n} puntadas puestas — llega al otro borde', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Agua abierta, columna {x} fila {y}, toca para poner un tablón', 'bridge.plank':'Un tablón, columna {x} fila {y}, toca para quitarlo', 'm.bridge':'Zurcido|Pon puntadas de borde a borde — son contadas', 
     'play.pickMode':'Elige un modo', 'play.pickSub':'Los {n}, por familia', 'daily.subShort':'Uno de cada familia', 'daily.today':'Los doce de hoy', 'daily.done':'Jugado hoy', 'daily.streakN':'Racha de {n} días', 'play.carryBest':'Tu récord {n}',
     'wc.lead':'{n} pequeños rompecabezas. El que tienes delante cambia en cada ronda.', 'wc.p1':'Sesenta segundos por partida', 'wc.p2':'Un rompecabezas distinto cada ronda', 'wc.p3':'Un fallo cuesta tiempo — una racha paga', 'wc.change':'Cambiar', 'wc.start':'Empieza tu primera partida', 'wc.look':'Echar un vistazo primero',
     'mix.tapes':'Tus listas', 'mix.name':'Nombra esta lista', 'mix.share':'Compartir esta lista', 'mix.delete':'Borrar esta lista', 'mix.untitled':'Lista {n}', 'mix.newTape':'+ Nueva', 'mix.paste':'Pegar un código', 'mix.metaTape':'{name} · {n} modos', 'mix.delConfirm':'¿Borrar «{name}»?', 'mix.keep':'Conservar', 'mix.deleteIt':'Borrar', 'mix.shareText':'Mi lista de Dopamine Drop «{name}» — {n} modos. Pega este código en la pestaña Mix: {code}', 'mix.importTitle':'Añadir una lista', 'mix.importSub':'Pega un código que te hayan enviado. Lleva un nombre y una lista de modos, nada más.', 'mix.importAdd':'Añadirla', 'mix.importBad':'Ahí no hay ningún código de lista. Pega el mensaje entero — el código empieza por DD1.', 'mix.importOk':'Añadida «{name}».', 'mix.importN':'{n} modos.', 'mix.importN1':'Un modo.', 'mix.importDropped':'{n} de sus modos no están en esta versión y se han dejado fuera.', 'mix.importDropped1':'Uno de sus modos no está en esta versión y se ha dejado fuera.',
 
     
 
-    'p.latch':'Quedan {n} filas fuera de la línea', 'latch.row':'Fila {n}, muesca en la posición {c}', 'latch.left':'Girar la fila {n} a la izquierda', 'latch.right':'Girar la fila {n} a la derecha', 'm.latch':'Pestillo|Gira las filas hasta alinear todas las muescas',
-    'p.splice':'Quedan {n} palabras partidas', 'splice.head':'Principio: {s}', 'splice.tail':'Final: {s}', 'm.splice':'Empalme|Vuelve a unir cada principio con su final',
-    'p.trace':'Quedan {n} por alcanzar — no te salgas de la línea', 'trace.box':'Arrastra por la línea desde el punto brillante hasta el anillo', 'm.trace':'Trazo|Sigue la línea hasta el final — sin prisa',
+    'p.latch':'Quedan {n} filas fuera de la línea', 'latch.row':'Fila {n}, muesca en la posición {c}', 'latch.left':'Girar la fila {n} a la izquierda', 'latch.right':'Girar la fila {n} a la derecha', 'm.latch':'Ganchillo|Gira las filas hasta alinear cada gancho',
+    'p.splice':'Quedan {n} palabras partidas', 'splice.head':'Principio: {s}', 'splice.tail':'Final: {s}', 'm.splice':'Empalme|Une cada cabo suelto con su principio',
+    'p.trace':'Quedan {n} por alcanzar — no te salgas de la línea', 'trace.box':'Arrastra por la línea desde el punto brillante hasta el anillo', 'm.trace':'Sigue el Hilo|Sigue el hilo hasta el final — sin prisa',
     'set.version':'Versión', 'set.checkUpd':'Comprobar', 'set.checking':'Comprobando…', 'set.upToDate':'Actualizado', 'set.updating':'Actualizando…',
-    'p.halve':'{n} de diferencia', 'halve.chip':'{v}, en la bandeja {s}', 'm.halve':'Mitades|Mueve piezas hasta que las dos bandejas sumen igual',
-    'p.lever':'Desliza la cuña y suelta para probar', 'lever.wedge':'La cuña — deslízala por la barra', 'lever.loadL':'Peso {w}, {d} a la izquierda', 'lever.loadR':'Peso {w}, {d} a la derecha', 'm.lever':'Palanca|Encuentra el punto de equilibrio a ojo y pruébalo',
+    'p.halve':'{n} de diferencia', 'halve.chip':'{v}, en la bandeja {s}', 'm.halve':'Ovillos Iguales|Mueve ovillos hasta igualar las cestas',
+    'p.lever':'Desliza la cuña y suelta para probar', 'lever.wedge':'La cuña — deslízala por la barra', 'lever.loadL':'Peso {w}, {d} a la izquierda', 'lever.loadR':'Peso {w}, {d} a la derecha', 'm.lever':'Equilibrio|Encuentra el punto de equilibrio a ojo y pruébalo',
     'perk.callSlot1':'Una ranura libre — elige una ventaja', 'perk.callSlot':'{n} ranuras libres — elige una ventaja', 'perk.callToken1':'Una ficha por gastar — mejora una ventaja', 'perk.callToken':'{n} fichas por gastar — mejora una ventaja',
 
     'set.vibNone':'Este teléfono no ofrece vibración a una aplicación web',
@@ -4089,43 +4110,43 @@ const STRINGS = {
     'how.drag':'desliza un dedo por el tablero', 'how.tapdrag':'toca primero y luego desliza para apuntar',
 
     
-    'p.forage':'Quedan {n} bayas', 'forage.cell':'{k}, fila {r} columna {c}', 'forage.gone':'Comida, fila {r} columna {c}', 'forage.slot':'Enjambre esperando {k}, quedan {n}', 'forage.free':'Hueco libre en la cesta', 'forage.full':'Cesta llena — llama a un enjambre, o ábrele el paso', 'm.forage':'Recolecta|Lanza un enjambre a un color — pocos pueden estar fuera a la vez',
-    'p.meld':'Faltan {n} para la caja', 'meld.cell':'Gelatina {v}, vale {p}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'meld.band':'El nivel {v} paga {p} hoy', 'meld.selling':'Toca otra vez para vender la {v} por {p}', 'm.meld':'Fusión|Fusiona, vende y llega a la caja del día', 'how.meld':'arrastra una gelatina sobre su gemela para hacerlas una; toca una gelatina y tócala otra vez para venderla. Un nivel paga el triple hoy, y fusionar más allá pierde dinero',
-    'p.volley':'{n} casillas aún vacías', 'volley.cell':'{k}, fila {r} columna {c}', 'volley.blank':'Quiere {k}, fila {r} columna {c}', 'volley.gunL':'Cañón {k}, dispara a la derecha por la fila {n}', 'volley.gunR':'Cañón {k}, dispara a la izquierda por la fila {n}', 'volley.gunT':'Cañón {k}, dispara hacia abajo por la columna {n}', 'volley.gunB':'Cañón {k}, dispara hacia arriba por la columna {n}', 'volley.stuck':'Todos los cañones están gastados o son erróneos — deshaz un disparo', 'm.volley':'Volea|Dispara los cañones en el orden que pinta el dibujo', 'how.volley':'toca un cañón para disparar; la bola pinta las casillas vacías que cruza y se para en la primera ya pintada. Toca una casilla del último disparo para deshacerlo',
-    'p.sift':'Faltan {n} por atrapar', 'sift.slot':'Hueco {n}, cubo {k}', 'sift.bare':'Hueco {n}, vacío', 'sift.put':'Poner un cubo {k} en la cinta', 'sift.jam':'Cinta llena — tira el cubo delantero para hacer sitio', 'm.sift':'Criba|Pon los cubos antes de que caiga su arena',
+    'p.forage':'Quedan {n} bayas', 'forage.cell':'{k}, fila {r} columna {c}', 'forage.gone':'Comida, fila {r} columna {c}', 'forage.slot':'Enjambre esperando {k}, quedan {n}', 'forage.free':'Hueco libre en la cesta', 'forage.full':'Cesta llena — llama a un enjambre, o ábrele el paso', 'm.forage':'Suelta los Gatitos|Manda gatitos a un color — solo unos pocos a la vez',
+    'p.meld':'Faltan {n} para la caja', 'meld.cell':'Gelatina {v}, vale {p}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'meld.band':'El nivel {v} paga {p} hoy', 'meld.selling':'Toca otra vez para vender la {v} por {p}', 'm.meld':'Tienda de Lanas|Fusiona los ovillos, véndelos, alcanza la caja del día', 'how.meld':'arrastra una gelatina sobre su gemela para hacerlas una; toca una gelatina y tócala otra vez para venderla. Un nivel paga el triple hoy, y fusionar más allá pierde dinero',
+    'p.volley':'{n} casillas aún vacías', 'volley.cell':'{k}, fila {r} columna {c}', 'volley.blank':'Quiere {k}, fila {r} columna {c}', 'volley.gunL':'Cañón {k}, dispara a la derecha por la fila {n}', 'volley.gunR':'Cañón {k}, dispara a la izquierda por la fila {n}', 'volley.gunT':'Cañón {k}, dispara hacia abajo por la columna {n}', 'volley.gunB':'Cañón {k}, dispara hacia arriba por la columna {n}', 'volley.stuck':'Todos los cañones están gastados o son erróneos — deshaz un disparo', 'm.volley':'Disparo de Carretes|Dispara los carretes en el orden que pinta el dibujo', 'how.volley':'toca un cañón para disparar; la bola pinta las casillas vacías que cruza y se para en la primera ya pintada. Toca una casilla del último disparo para deshacerlo',
+    'p.sift':'Faltan {n} por atrapar', 'sift.slot':'Hueco {n}, cubo {k}', 'sift.bare':'Hueco {n}, vacío', 'sift.put':'Poner un cubo {k} en la cinta', 'sift.jam':'Cinta llena — tira el cubo delantero para hacer sitio', 'm.sift':'Cinta de Carretes|Pon carretes antes de que se acabe su hilo',
     'how.forage':'toca una baya para lanzar un enjambre a su color; entra por los huecos, come solo lo que alcanza y luego espera en la cesta a que lo vuelvas a lanzar. Toca un enjambre en espera para llamarlo', 'how.first':'Primera vez: vamos con calma.', 'how.sift':'toca un color para poner ese cubo al FINAL de la cinta; la cinta avanza un hueco con cada grano, así que colocas para un grano más adelante en la tolva, no para el que cae. Toca el cubo delantero para tirarlo',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'p.paused':'En pausa', 'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
-    'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.favAdd':'Añadir a favoritos', 'a.favRemove':'Quitar de favoritos', 'a.verdictChange':'Toca para cambiar tu valoración','a.bin':'Cubo {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Fuente, toca para girar', 'a.sink':'Destino, toca para girar', 'a.pipe':'Tubería, toca para girar', 'a.targetBin':'Cubo objetivo', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.skimNow':'Toca ahora', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
+    'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.favAdd':'Añadir a favoritos', 'a.favRemove':'Quitar de favoritos', 'a.verdictChange':'Toca para cambiar tu valoración','a.bin':'Cubo {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Ovillo, toca para girar', 'a.sink':'El gato, toca para girar', 'a.pipe':'Nudo, toca para girar', 'a.targetBin':'Cubo objetivo', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.skimNow':'Toca ahora', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
     'over.ribbon':'{a} de {b} rondas resueltas',
     'p.saved':'Racha mantenida', 'perk.title':'Ventajas', 'perk.used':'{a} de {b} ranuras', 'perk.toSlot':'{n} puntos para la próxima ranura', 'perk.toToken':'{n} puntos para la próxima ficha', 'perk.equipped':'equipada, nivel {n}', 'perk.notEquipped':'no equipada', 'perk.upgrade':'Gastar una ficha en {p}', 'perk.tokensLeft':'{n} fichas por gastar', 'perk.spare':'Vida extra', 'perk.spare.d':'Empieza un Maratón con {n} vidas más', 'perk.spare.d1':'Empieza un Maratón con una vida más', 'perk.shield':'Escudo de racha', 'perk.shield.d':'Conserva tu racha pese a {n} fallos por partida', 'perk.shield.d1':'Conserva tu racha pese a un fallo por partida', 'perk.patience':'Mecha larga', 'perk.patience.d':'{n}% más de tiempo por ronda', 'perk.zeal':'Fervor', 'perk.zeal.d':'El multiplicador sube antes (rango {n})', 'perk.steady':'Pulso firme', 'perk.steady.d':'{n} movimientos más donde se cuentan', 'perk.rally':'Empuje', 'perk.rally.d':'Las partidas con reloj empiezan {n} segundos más largas',
 
     
 
-    'p.heft':'¿Qué lado pesa más?', 'heft.pile':'Un montón de {n} piezas', 'm.heft':'Peso|¿Qué montón pesa más? Contar no te lo dirá',
-    'p.forge':'Quedan {n} casillas del molde', 'forge.hole':'Molde, columna {x} fila {y}', 'forge.solid':'Macizo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Fragua|Encaja cada pieza en el molde — sin sobras',
-    'p.gather':'{n} más que atrapar — deja caer los oscuros', 'gather.pail':'Tu cubo', 'gather.keep':'Uno maduro, para atrapar', 'gather.dud':'Uno malo, déjalo caer', 'm.gather':'Cosecha|Atrapa los maduros, deja caer el resto',
-    'p.chalk':'Dibuja una rampa — suelta para lanzar la bola', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'La bola', 'chalk.basket':'La cesta', 'm.chalk':'Tiza|Dibuja la rampa y mira — sin segundas oportunidades',
-    'p.drift':'Dos van a chocar — toca los dos', 'drift.dot':'Punto a la deriva {n}', 'm.drift':'Deriva|Dos van a encontrarse — encuéntralos antes',
-    'p.cairn':'{n} más para apilar', 'cairn.tap':'Toca para soltar la piedra', 'm.cairn':'Mojón|Apila las piedras — lo que sobresale se pierde',
+    'p.heft':'¿Qué lado pesa más?', 'heft.pile':'Un montón de {n} piezas', 'm.heft':'Sopesar|¿Qué cesta pesa más? Contar no te lo dirá',
+    'p.forge':'Quedan {n} casillas del patrón', 'forge.hole':'Molde, columna {x} fila {y}', 'forge.solid':'Macizo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Retales|Encaja cada retal en el patrón — sin sobras',
+    'p.gather':'{n} más que atrapar — deja caer los oscuros', 'gather.pail':'Tu cubo', 'gather.keep':'Uno maduro, para atrapar', 'gather.dud':'Uno malo, déjalo caer', 'm.gather':'Atrapa Ovillos|Atrapa los buenos, deja caer los enredos',
+    'p.chalk':'Dibuja una rampa — suelta para lanzar la bola', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'La bola', 'chalk.basket':'La cesta', 'm.chalk':'Línea de Tiza|Dibuja la rampa y mira — sin segunda oportunidad',
+    'p.drift':'Dos van a chocar — toca los dos', 'drift.dot':'Punto a la deriva {n}', 'm.drift':'Vigila el Enredo|Dos se van a cruzar — encuéntralos antes del nudo',
+    'p.cairn':'{n} más para apilar', 'cairn.tap':'Toca para soltar la piedra', 'm.cairn':'Pliegues|Apila los tejidos — lo que sobresale se pierde',
 
-    'p.siphon':'{n} frascos vacíos', 'sip.source':'fuente', 'sip.wants':'Frasco que pide {c}', 'sip.done':'frasco, lleno', 'sip.empty':'fuente, vacía', 'm.siphon':'Trasvase|Vierte cada color en su frasco',
-    'p.descent':'{n} huecos más abajo', 'm.descent':'Caída|Guía la estrella por cada hueco',
-    'p.ripple':'Faltan {n} aros', 'm.ripple':'Onda|Toca el agua — las olas llevan la hoja',
-    'p.slice':'Corta {n} más', 'slice.good':'Maduro', 'slice.rotten':'Podrido — no cortar', 'm.slice':'Corte|Un trazo corta todo lo que cruza — evita lo podrido',
-
-    
-    'p.glimmer':'{n} lámparas apagadas', 'm.glimmer':'Destello|Lleva la luz hasta encenderlas todas',
-    'p.tidy':'Quedan {n} en el suelo', 'm.tidy':'Orden|Arrastra el desorden a su cubo',
-    'p.hauntLook':'{n} fantasmas — fíjate bien', 'p.hauntTrack':'Síguelos', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Embrujo|Sigue los cambios — ¿dónde acabaron?',
+    'p.siphon':'{n} frascos vacíos', 'sip.source':'fuente', 'sip.wants':'Frasco que pide {c}', 'sip.done':'frasco, lleno', 'sip.empty':'fuente, vacía', 'm.siphon':'Tintes|Vierte cada tinte en el bote que lo pide',
+    'p.descent':'{n} huecos más abajo', 'm.descent':'Punto Caído|Guía la bobina que cae por cada hueco',
+    'p.ripple':'Faltan {n} aros', 'm.ripple':'Ondas|Toca el agua — las ondas llevan la hoja',
+    'p.slice':'Corta {n} más', 'slice.good':'Maduro', 'slice.rotten':'Podrido — no cortar', 'm.slice':'Tijeretazo|Un corte siega todo hilo que cruza — evita los nudos',
 
     
+    'p.glimmer':'{n} lámparas apagadas', 'm.glimmer':'Ojos de Gato|Lleva la luz hasta encender cada lámpara',
+    'p.tidy':'Quedan {n} en el suelo', 'm.tidy':'A Recoger|Arrastra el desorden a las cestas correctas',
+    'p.hauntLook':'{n} fantasmas — fíjate bien', 'p.hauntTrack':'Síguelos', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Embrujo|Sigue las cestas — ¿dónde acabaron los gatos?',
 
-    'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Moratón|Remata a los heridos antes de que huyan',
-    'p.skim':'Faltan {n} rebotes', 'm.skim':'Rebote|Toca al cruzar — la ventana se estrecha',
-    'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Tambor|Empareja más rápido de lo que se llena',
-    'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Duelo|Lee su gesto y elige la respuesta',
-    'p.arc':'Faltan {n}', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Arco|Conecta todos los nodos antes de quedarte sin carga',  'm.slack':'Desenredo|Mueve los nodos hasta que nada se cruce',  'm.tide':'Respiro|Mantén para crecer, suelta para menguar',  'm.plink':'Caída|Quita un clavo y lanza a la casilla encendida',  'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 
+    
+
+    'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Remiendo|Termina los deshilachados antes de que se suelten',
+    'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
+    'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Secadora|Empareja los calcetines más rápido que el tambor',
+    'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Riña de Gatos|Lee la señal, elige la réplica, gana la riña',
+    'p.arc':'Faltan {n}', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Cuna de Gato|Enlaza cada clavija antes de que afloje el hilo',  'm.slack':'Sin Cruces|Mueve las clavijas hasta que ningún hilo se cruce',  'm.tide':'Ronroneo|Mantén para crecer, suelta para calmar — quédate en la banda',  'm.plink':'Caída al Cesto|Quita una clavija y cae en la cesta encendida',  'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 
     'p.wheel':'Adivina la frase', 
     'p.beat':'Toca el punto fuera de ritmo', 'p.sort':'{a} de {b} clasificados',
     'p.target':'Objetivo', 'p.diffLabel':'Diferencia',
@@ -4228,25 +4249,25 @@ const STRINGS = {
     'ask.restore':'Level {n} und die Punkte wiederherstellen?\n\nWas auf diesem Gerät ist, wird ersetzt.',
     'alert.bad':'Das sieht nicht nach einer Dopamine-Drop-Sicherung aus.',
     'alert.ok':'Geladen. Willkommen zurück auf Level {n}.',
-    'm.odd':'Der Ausreißer|Finde die Kachel, die nicht passt',
-    'm.order':'Der Reihe nach|Tippe die Zahlen der Reihe nach, schnell',
-    'm.stroop':'Farbfalle|Tippe die Tintenfarbe, ignoriere das Wort',
+    'm.odd':'Fremdes Knäuel|Finde das Knäuel, das nicht passt',
+    'm.order':'Maschen Zählen|Tippe die Maschen der Reihe nach, schnell',
+    'm.stroop':'Färbefalle|Tippe die Farbe, ignoriere das Etikett',
 
-    'm.rewire':'Neu Verdrahtet|Drehe die Rohre, bis Strom fließt',
-    'm.sum':'Summe Fix|Finde zwei Zahlen, die das Ziel ergeben',
-    'm.count':'Schnell Zählen|Zähle das Ziel, bevor die Uhr es tut',
-    'm.mirror':'Spiegel|Spiegle das Muster auf die andere Seite',
+    'm.rewire':'Entwirren|Dreh die Knoten, bis der Faden die Katze erreicht',
+    'm.sum':'Maschenprobe|Finde zwei Zahlen, die das Ziel ergeben',
+    'm.count':'Schnell Zählen|Zähle sie, bevor die Uhr es tut',
+    'm.mirror':'Spiegelmasche|Spiegle das Muster über die Falte',
 
     
-    'm.slide':'Weg Frei|Räume den Korridor für das Auto',
+    'm.slide':'Lass die Katze Raus|Räume den Weg, damit die Katze rauskommt',
 
-    'm.wheel':'Satzrad|Errate Buchstaben, um den Satz aufzudecken',
+    'm.wheel':'Stickmustertuch|Errate Buchstaben, um das Tuch zu vollenden',
 
-    'm.beat':'Aus dem Takt|Finde den Punkt, der aus dem Takt ist',
-    'm.sort':'Sortieren|Sortiere nach der Regel — sie wechselt',
+    'm.beat':'Aus dem Takt|Finde die Pfote, die aus dem Takt ist',
+    'm.sort':'Sortierkorb|Sortiere nach der Regel — sie wechselt',
     'p.odd':'Tippe den Ausreißer', 'p.order':'Tippe 1 bis {n} der Reihe nach',
     'p.stroop':'Tippe die Tintenfarbe', 'p.stroopRev':'Umgekehrt — tippe die genannte Farbe', 
-    'p.rewire':'Verbinde Orange mit Türkis',
+    'p.rewire':'Führe den Faden vom Knäuel zur Katze',
     'p.sum':'Tippe zwei, die {n} ergeben', 'p.sumDiff':'Tippe zwei, deren Differenz {n} ist', 'p.count':'Wie viele {x}?',
     'p.mirror':'Spiegle es nach rechts', 
 
@@ -4254,19 +4275,19 @@ const STRINGS = {
     'modes.families':'Familien', 'modes.played':'{n} von {m} gespielt', 'modes.allCard':'Alle {n} Modi', 'modes.allSub':'Eine lange Liste, alle Familien', 'modes.hold':'Halte eine Karte gedrückt, um vor dem Start zu lesen, was ein Modus ist.', 'mpv.best':'Dein Bestwert', 'mpv.mastery':'Meisterschaft', 'mpv.play':'Spielen', 'mpv.mastered':'Gemeistert — alle drei Sterne', 'mpv.toNext':'Noch {n} Punkte bis zum nächsten Stern',
     'daily.streak':'{n} Tage in Folge', 'daily.streak1':'Serie heute begonnen', 'daily.share':'Dopamine Drop — Tagesrunde {d}: {a}/{b} gelöst für {n} Punkte, Tag {s} meiner Serie.', 'btn.share':'Teilen', 'daily.copied':'Kopiert',
     'stats.filter':'Modusliste filtern', 'stats.fAll':'Alle', 'stats.fPlayed':'Gespielt', 'stats.fNew':'Ungespielt', 'stats.allPlayed':'Du hast jeden Modus mindestens einmal gespielt.', 'stats.noneYet':'Hier ist noch nichts — spiel einen Marathon und ein Wert erscheint.',
-    'p.bridge':'{n} Planken gelegt — erreiche das andere Ufer', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Offenes Wasser, Spalte {x} Zeile {y}, tippen zum Planken legen', 'bridge.plank':'Eine Planke, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Brücke|Lege Planken von Ufer zu Ufer — sie sind gezählt', 
+    'p.bridge':'{n} Stiche gelegt — erreiche den anderen Rand', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Offenes Wasser, Spalte {x} Zeile {y}, tippen zum Planken legen', 'bridge.plank':'Eine Planke, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Stopfen|Setze Stiche von Rand zu Rand — du hast nur so viele', 
     'play.pickMode':'Modus wählen', 'play.pickSub':'Alle {n}, nach Familie', 'daily.subShort':'Eins aus jeder Familie', 'daily.today':'Die zwölf von heute', 'daily.done':'Heute gespielt', 'daily.streakN':'{n} Tage in Folge', 'play.carryBest':'Dein Bestwert {n}',
     'wc.lead':'{n} kleine Rätsel. Das vor dir wechselt jede Runde.', 'wc.p1':'Sechzig Sekunden pro Runde', 'wc.p2':'Jede Runde ein anderes Rätsel', 'wc.p3':'Ein Fehler kostet Zeit — eine Serie zahlt sich aus', 'wc.change':'Ändern', 'wc.start':'Starte deine erste Runde', 'wc.look':'Erst mal umsehen',
     'mix.tapes':'Deine Playlists', 'mix.name':'Diese Playlist benennen', 'mix.share':'Diese Playlist teilen', 'mix.delete':'Diese Playlist löschen', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Neu', 'mix.paste':'Code einfügen', 'mix.metaTape':'{name} · {n} Modi', 'mix.delConfirm':'„{name}“ löschen?', 'mix.keep':'Behalten', 'mix.deleteIt':'Löschen', 'mix.shareText':'Meine Dopamine-Drop-Playlist „{name}“ — {n} Modi. Füge diesen Code im Mix-Tab ein: {code}', 'mix.importTitle':'Playlist hinzufügen', 'mix.importSub':'Füge einen Code ein, den dir jemand geschickt hat. Er enthält einen Namen und eine Modusliste, sonst nichts.', 'mix.importAdd':'Hinzufügen', 'mix.importBad':'Darin steckt kein Playlist-Code. Füge die ganze Nachricht ein — der Code beginnt mit DD1.', 'mix.importOk':'„{name}“ hinzugefügt.', 'mix.importN':'{n} Modi.', 'mix.importN1':'Ein Modus.', 'mix.importDropped':'{n} ihrer Modi gibt es in dieser Version nicht und wurden weggelassen.', 'mix.importDropped1':'Einen ihrer Modi gibt es in dieser Version nicht, er wurde weggelassen.',
 
     
 
-    'p.latch':'Noch {n} Reihen neben der Linie', 'latch.row':'Reihe {n}, Kerbe an Position {c}', 'latch.left':'Reihe {n} nach links drehen', 'latch.right':'Reihe {n} nach rechts drehen', 'm.latch':'Riegel|Dreh die Reihen, bis jede Kerbe auf einer Linie steht',
-    'p.splice':'Noch {n} Wörter in Teilen', 'splice.head':'Anfang: {s}', 'splice.tail':'Ende: {s}', 'm.splice':'Fügen|Setz jeden Anfang wieder auf sein richtiges Ende',
-    'p.trace':'Noch {n} zu erreichen — bleib auf der Linie', 'trace.box':'Zieh entlang der Linie vom hellen Punkt bis zum Ring', 'm.trace':'Nachziehen|Folge der Linie bis zum Ende — ganz in Ruhe',
+    'p.latch':'Noch {n} Reihen neben der Linie', 'latch.row':'Reihe {n}, Kerbe an Position {c}', 'latch.left':'Reihe {n} nach links drehen', 'latch.right':'Reihe {n} nach rechts drehen', 'm.latch':'Knüpfhaken|Dreh die Reihen, bis jeder Haken passt',
+    'p.splice':'Noch {n} Wörter in Teilen', 'splice.head':'Anfang: {s}', 'splice.tail':'Ende: {s}', 'm.splice':'Spleißen|Verbinde jedes lose Ende mit dem richtigen Anfang',
+    'p.trace':'Noch {n} zu erreichen — bleib auf der Linie', 'trace.box':'Zieh entlang der Linie vom hellen Punkt bis zum Ring', 'm.trace':'Dem Faden Folgen|Folge dem Faden bis zum Ende — ohne Eile',
     'set.version':'Version', 'set.checkUpd':'Prüfen', 'set.checking':'Prüfe…', 'set.upToDate':'Aktuell', 'set.updating':'Aktualisiere…',
-    'p.halve':'{n} Unterschied', 'halve.chip':'{v}, in Schale {s}', 'm.halve':'Hälften|Verschiebe Stücke, bis beide Schalen gleich viel ergeben',
-    'p.lever':'Keil schieben, loslassen zum Prüfen', 'lever.wedge':'Der Keil — schieb ihn über den Balken', 'lever.loadL':'Gewicht {w}, {d} nach links', 'lever.loadR':'Gewicht {w}, {d} nach rechts', 'm.lever':'Hebel|Finde den Gleichgewichtspunkt mit dem Auge und prüfe ihn',
+    'p.halve':'{n} Unterschied', 'halve.chip':'{v}, in Schale {s}', 'm.halve':'Gleiche Knäuel|Verschiebe Knäuel, bis beide Körbe gleich sind',
+    'p.lever':'Keil schieben, loslassen zum Prüfen', 'lever.wedge':'Der Keil — schieb ihn über den Balken', 'lever.loadL':'Gewicht {w}, {d} nach links', 'lever.loadR':'Gewicht {w}, {d} nach rechts', 'm.lever':'Gleichgewicht|Finde den Punkt nach Augenmaß und teste ihn',
     'perk.callSlot1':'Ein Platz ist frei — wähl einen Vorteil', 'perk.callSlot':'{n} Plätze frei — wähl einen Vorteil', 'perk.callToken1':'Eine Marke übrig — mach einen Vorteil stärker', 'perk.callToken':'{n} Marken übrig — mach einen Vorteil stärker',
 
     'set.vibNone':'Dieses Telefon bietet Web-Apps keine Vibration',
@@ -4274,43 +4295,43 @@ const STRINGS = {
     'how.drag':'zieh einen Finger über das Feld', 'how.tapdrag':'erst tippen, dann zum Zielen ziehen',
 
     
-    'p.forage':'Noch {n} Beeren', 'forage.cell':'{k}, Zeile {r} Spalte {c}', 'forage.gone':'Gefressen, Zeile {r} Spalte {c}', 'forage.slot':'Schwarm wartet auf {k}, noch {n}', 'forage.free':'Freier Korbplatz', 'forage.full':'Korb voll — ruf einen Schwarm zurück, oder mach ihm den Weg frei', 'm.forage':'Sammeln|Schick einen Schwarm auf eine Farbe — nur wenige dürfen draußen sein',
-    'p.meld':'Noch {n} bis zur Tageskasse', 'meld.cell':'Gelee {v}, {p} wert, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'meld.band':'Stufe {v} zahlt heute {p}', 'meld.selling':'Nochmal tippen, um die {v} für {p} zu verkaufen', 'm.meld':'Verschmelzen|Zusammendrücken, verkaufen, die Tageskasse erreichen', 'how.meld':'zieh ein Gelee auf sein Gegenstück, damit eins daraus wird; tippe ein Gelee an und dann nochmal, um es zu verkaufen. Eine Stufe zahlt heute das Dreifache, und darüber hinaus zu verschmelzen kostet Geld',
-    'p.volley':'Noch {n} leere Felder', 'volley.cell':'{k}, Zeile {r} Spalte {c}', 'volley.blank':'Will {k}, Zeile {r} Spalte {c}', 'volley.gunL':'{k}-Kanone, schießt nach rechts durch Zeile {n}', 'volley.gunR':'{k}-Kanone, schießt nach links durch Zeile {n}', 'volley.gunT':'{k}-Kanone, schießt nach unten durch Spalte {n}', 'volley.gunB':'{k}-Kanone, schießt nach oben durch Spalte {n}', 'volley.stuck':'Jede Kanone ist verbraucht oder falsch — nimm einen Schuss zurück', 'm.volley':'Salve|Schieß die Kanonen in der Reihenfolge, die das Bild malt', 'how.volley':'tippe eine Kanone an, um zu schießen; die Kugel malt die leeren Felder, die sie überquert, und hält am ersten bereits bemalten. Tippe ein Feld des letzten Schusses an, um ihn zurückzunehmen',
-    'p.sift':'Noch {n} zu fangen', 'sift.slot':'Bandplatz {n}, {k}-Eimer', 'sift.bare':'Bandplatz {n}, leer', 'sift.put':'Einen {k}-Eimer aufs Band stellen', 'sift.jam':'Band ist voll — stoß den vordersten Eimer herunter', 'm.sift':'Sieben|Stell die Eimer hin, bevor ihr Sand fällt',
+    'p.forage':'Noch {n} Beeren', 'forage.cell':'{k}, Zeile {r} Spalte {c}', 'forage.gone':'Gefressen, Zeile {r} Spalte {c}', 'forage.slot':'Schwarm wartet auf {k}, noch {n}', 'forage.free':'Freier Korbplatz', 'forage.full':'Korb voll — ruf einen Schwarm zurück, oder mach ihm den Weg frei', 'm.forage':'Kätzchen Los|Schick die Kätzchen auf eine Farbe — nur so viele auf einmal',
+    'p.meld':'Noch {n} bis zur Tageskasse', 'meld.cell':'Gelee {v}, {p} wert, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'meld.band':'Stufe {v} zahlt heute {p}', 'meld.selling':'Nochmal tippen, um die {v} für {p} zu verkaufen', 'm.meld':'Wollladen|Führe die Knäuel zusammen, verkaufe sie, schaff die Tageskasse', 'how.meld':'zieh ein Gelee auf sein Gegenstück, damit eins daraus wird; tippe ein Gelee an und dann nochmal, um es zu verkaufen. Eine Stufe zahlt heute das Dreifache, und darüber hinaus zu verschmelzen kostet Geld',
+    'p.volley':'Noch {n} leere Felder', 'volley.cell':'{k}, Zeile {r} Spalte {c}', 'volley.blank':'Will {k}, Zeile {r} Spalte {c}', 'volley.gunL':'{k}-Kanone, schießt nach rechts durch Zeile {n}', 'volley.gunR':'{k}-Kanone, schießt nach links durch Zeile {n}', 'volley.gunT':'{k}-Kanone, schießt nach unten durch Spalte {n}', 'volley.gunB':'{k}-Kanone, schießt nach oben durch Spalte {n}', 'volley.stuck':'Jede Kanone ist verbraucht oder falsch — nimm einen Schuss zurück', 'm.volley':'Spulenschüsse|Schieß die Spulen in der Reihenfolge, die das Bild malt', 'how.volley':'tippe eine Kanone an, um zu schießen; die Kugel malt die leeren Felder, die sie überquert, und hält am ersten bereits bemalten. Tippe ein Feld des letzten Schusses an, um ihn zurückzunehmen',
+    'p.sift':'Noch {n} zu fangen', 'sift.slot':'Bandplatz {n}, {k}-Eimer', 'sift.bare':'Bandplatz {n}, leer', 'sift.put':'Einen {k}-Eimer aufs Band stellen', 'sift.jam':'Band ist voll — stoß den vordersten Eimer herunter', 'm.sift':'Spulenband|Setz Spulen aufs Band, bevor ihr Faden ausgeht',
     'how.forage':'tippe eine Beere an, um einen Schwarm auf ihre Farbe zu schicken; er kommt durch die Lücken herein, frisst nur, was er erreicht, und wartet dann im Korb, bis du ihn erneut schickst. Tippe einen wartenden Schwarm an, um ihn zurückzurufen', 'how.first':'Zum ersten Mal — wir fangen sanft an.', 'how.sift':'tippe eine Farbe an, um den Eimer HINTEN aufs Band zu stellen; das Band rückt bei jedem Korn einen Platz vor, du stellst also für ein Korn weiter oben im Schacht, nicht für das fallende. Tippe den vordersten Eimer an, um ihn herunterzustoßen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'p.paused':'Pause', 'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
-    'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.favAdd':'Zu Favoriten hinzufügen', 'a.favRemove':'Aus Favoriten entfernen', 'a.verdictChange':'Tippen, um deine Bewertung zu ändern','a.bin':'Behälter {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Quelle, zum Drehen tippen', 'a.sink':'Ziel, zum Drehen tippen', 'a.pipe':'Rohr, zum Drehen tippen', 'a.targetBin':'Zielbehälter', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.skimNow':'Jetzt tippen', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
+    'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.favAdd':'Zu Favoriten hinzufügen', 'a.favRemove':'Aus Favoriten entfernen', 'a.verdictChange':'Tippen, um deine Bewertung zu ändern','a.bin':'Behälter {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Wollknäuel, zum Drehen tippen', 'a.sink':'Die Katze, zum Drehen tippen', 'a.pipe':'Knoten, zum Drehen tippen', 'a.targetBin':'Zielbehälter', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.skimNow':'Jetzt tippen', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
     'over.ribbon':'{a} von {b} Runden gelöst',
     'p.saved':'Serie gehalten', 'perk.title':'Boni', 'perk.used':'{a} von {b} Plätzen', 'perk.toSlot':'{n} Punkte bis zum nächsten Platz', 'perk.toToken':'{n} Punkte bis zur nächsten Marke', 'perk.equipped':'ausgerüstet, Stufe {n}', 'perk.notEquipped':'nicht ausgerüstet', 'perk.upgrade':'Eine Marke für {p} ausgeben', 'perk.tokensLeft':'{n} Marken übrig', 'perk.spare':'Extraleben', 'perk.spare.d':'Starte einen Marathon mit {n} Leben mehr', 'perk.spare.d1':'Starte einen Marathon mit einem Leben mehr', 'perk.shield':'Serienschild', 'perk.shield.d':'Behalte deine Serie trotz {n} Fehlern pro Lauf', 'perk.shield.d1':'Behalte deine Serie trotz einem Fehler pro Lauf', 'perk.patience':'Lange Lunte', 'perk.patience.d':'{n}% mehr Zeit pro Runde', 'perk.zeal':'Eifer', 'perk.zeal.d':'Der Multiplikator steigt früher (Rang {n})', 'perk.steady':'Ruhige Hand', 'perk.steady.d':'{n} Züge mehr, wo Züge zählen', 'perk.rally':'Aufholjagd', 'perk.rally.d':'Zeitläufe starten {n} Sekunden länger',
 
     
 
-    'p.heft':'Welche Seite wiegt mehr?', 'heft.pile':'Ein Haufen aus {n} Stücken', 'm.heft':'Gewicht|Welcher Haufen wiegt mehr? Zählen hilft nicht',
-    'p.forge':'Noch {n} Felder der Form offen', 'forge.hole':'Form, Spalte {x} Zeile {y}', 'forge.solid':'Massiv, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Schmiede|Füge jedes Teil in die Form — nichts bleibt übrig',
-    'p.gather':'Noch {n} zu fangen — die dunklen fallen lassen', 'gather.pail':'Dein Eimer', 'gather.keep':'Ein reifer, den fängst du', 'gather.dud':'Ein fauler, lass ihn fallen', 'm.gather':'Ernte|Fang die reifen, lass den Rest fallen',
-    'p.chalk':'Zeichne eine Rampe — loslassen lässt die Kugel fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Die Kugel', 'chalk.basket':'Der Korb', 'm.chalk':'Kreide|Zeichne die Rampe und schau zu — ohne zweiten Versuch',
-    'p.drift':'Zwei laufen aufeinander zu — tippe beide an', 'drift.dot':'Treibender Punkt {n}', 'm.drift':'Drift|Zwei treffen sich — finde sie vorher',
-    'p.cairn':'Noch {n} zu stapeln', 'cairn.tap':'Tippen, um den Stein zu setzen', 'm.cairn':'Steinmal|Staple die Steine — jeder Überhang ist für immer weg',
+    'p.heft':'Welche Seite wiegt mehr?', 'heft.pile':'Ein Haufen aus {n} Stücken', 'm.heft':'Wiegen|Welcher Korb wiegt mehr? Zählen hilft nicht',
+    'p.forge':'Noch {n} Felder des Musters frei', 'forge.hole':'Form, Spalte {x} Zeile {y}', 'forge.solid':'Massiv, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Flickwerk|Setz jeden Flicken ins Muster — nichts bleibt übrig',
+    'p.gather':'Noch {n} zu fangen — die dunklen fallen lassen', 'gather.pail':'Dein Eimer', 'gather.keep':'Ein reifer, den fängst du', 'gather.dud':'Ein fauler, lass ihn fallen', 'm.gather':'Knäuel Fangen|Fang die guten, lass die Knoten fallen',
+    'p.chalk':'Zeichne eine Rampe — loslassen lässt die Kugel fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Die Kugel', 'chalk.basket':'Der Korb', 'm.chalk':'Kreidestrich|Zeichne die Rampe und schau zu — nur ein Versuch',
+    'p.drift':'Zwei laufen aufeinander zu — tippe beide an', 'drift.dot':'Treibender Punkt {n}', 'm.drift':'Knotenwache|Zwei treffen sich — finde sie vor dem Knoten',
+    'p.cairn':'Noch {n} zu stapeln', 'cairn.tap':'Tippen, um den Stein zu setzen', 'm.cairn':'Falten|Staple die Strickstücke — jeder Überhang ist für immer weg',
 
-    'p.siphon':'Noch {n} Gläser leer', 'sip.source':'Quelle', 'sip.wants':'Glas will {c}', 'sip.done':'Glas, gefüllt', 'sip.empty':'Quelle, geleert', 'm.siphon':'Umfüllen|Giess jede Farbe in ihr Glas',
-    'p.descent':'Noch {n} Lücken', 'm.descent':'Sturz|Lenke den Stern durch jede Lücke',
-    'p.ripple':'Noch {n} Ringe', 'm.ripple':'Welle|Tippe aufs Wasser — die Wellen tragen das Blatt',
-    'p.slice':'Noch {n} schneiden', 'slice.good':'Reif', 'slice.rotten':'Faul — nicht schneiden', 'm.slice':'Schnitt|Ein Zug trifft alles auf dem Weg — meide das Faule',
-
-    
-    'p.glimmer':'Noch {n} Lampen dunkel', 'm.glimmer':'Schimmer|Trag das Licht zu jeder Lampe',
-    'p.tidy':'Noch {n} am Boden', 'm.tidy':'Aufräumen|Zieh das Chaos in die richtigen Kisten',
-    'p.hauntLook':'{n} Geister — gut hinsehen', 'p.hauntTrack':'Folge ihnen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Spuk|Verfolge die Tausche — wo sind sie gelandet?',
+    'p.siphon':'Noch {n} Gläser leer', 'sip.source':'Quelle', 'sip.wants':'Glas will {c}', 'sip.done':'Glas, gefüllt', 'sip.empty':'Quelle, geleert', 'm.siphon':'Färbetöpfe|Gieß jede Farbe in den passenden Topf',
+    'p.descent':'Noch {n} Lücken', 'm.descent':'Fallmasche|Lenke die fallende Spule durch jede Lücke',
+    'p.ripple':'Noch {n} Ringe', 'm.ripple':'Wellen|Tippe aufs Wasser — die Wellen tragen das Blatt',
+    'p.slice':'Noch {n} schneiden', 'slice.good':'Reif', 'slice.rotten':'Faul — nicht schneiden', 'm.slice':'Schnipp|Ein Schnitt trennt jeden Faden — meide die Knoten',
 
     
+    'p.glimmer':'Noch {n} Lampen dunkel', 'm.glimmer':'Katzenaugen|Trag das Licht, bis jede Lampe brennt',
+    'p.tidy':'Noch {n} am Boden', 'm.tidy':'Aufräumen|Zieh die Unordnung in die richtigen Körbe',
+    'p.hauntLook':'{n} Geister — gut hinsehen', 'p.hauntTrack':'Folge ihnen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Spuk|Verfolge die Körbe — wo sind die Katzen gelandet?',
 
-    'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Blauer Fleck|Erledige die Angeschlagenen, bevor sie weg sind',
-    'p.skim':'Noch {n} Sprünge', 'm.skim':'Sprung|Tippe beim Kreuzen — das Fenster wird enger',
-    'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Trommel|Paare schneller, als es sich füllt',
-    'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Duell|Lies die Geste, wähle die Antwort',
-    'p.arc':'Noch {n}', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Bogen|Verbinde alle Knoten, bevor der Strom ausgeht',  'm.slack':'Entwirren|Zieh die Knoten, bis nichts mehr kreuzt',  'm.tide':'Atemzug|Halten zum Wachsen, loslassen zum Schrumpfen',  'm.plink':'Fallen|Zieh einen Stift, dann ziel auf das helle Fach',  'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 
+    
+
+    'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Ausbessern|Flicke die Ausgefransten, bevor sie sich auflösen',
+    'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
+    'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Wäschetrockner|Paare die Socken schneller, als die Trommel füllt',
+    'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Katzenstreit|Lies das Zeichen, wähl die Antwort, gewinn den Streit',
+    'p.arc':'Noch {n}', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Fadenspiel|Schling jeden Stift, bevor der Faden erschlafft',  'm.slack':'Ohne Kreuzung|Zieh die Stifte, bis kein Faden kreuzt',  'm.tide':'Schnurren|Halten zum Anschwellen, loslassen zum Abklingen — bleib im Band',  'm.plink':'Korbwurf|Zieh einen Stift, dann fall in den erleuchteten Korb',  'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 
     'p.wheel':'Errate den Satz', 
     'p.beat':'Tippe den Punkt aus dem Takt', 'p.sort':'{a} von {b} sortiert',
     'p.target':'Ziel', 'p.diffLabel':'Differenz',
@@ -4422,6 +4443,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.83.0', date:'2026-09-25', items:[
+    'All forty-two modes live in the same place now: a cat’s craft room. Odd One Out is Odd Skein, Snap Order is Count the Stitches, Colour Trap is Dye Trap. Slide Path is Let the Cat Out, because that is what you are doing. Arc is Cat’s Cradle, Bruise is Mending, Slice is Snip, Descent is a Dropped Stitch, Forge is Patchwork, Bridge is Darning, Latch is a Latch Hook, Meld is the Yarn Shop, Tide Breath is a Purr. Names, blurbs and the lines the game says mid-round, in all four languages. Not one rule changed — every mode plays exactly as it did, it just stopped describing a board nobody was looking at.',
+  ] },
+  { v:'0.82.0', date:'2026-09-25', items:[
+    'Two modes that the theme had not reached. Rewire is Untangle now: the pipes are strands of wool, drawn with a twist along them, and the thing you are running the thread from is a ball of yarn while the thing waiting at the other end is a cat. Cairn is Folds: the stones are folded knitting, with the same stitch the loose pieces wear. Both keep exactly the puzzle they always were \u2014 the same rotations, the same stacking, the same difficulty \u2014 and say out loud what the board is actually showing you.',
+  ] },
   { v:'0.81.0', date:'2026-09-25', items:[
     'The boards stopped looking stretched. Filling the screen was right, but letting a grid take every pixel of it turned a 3x3\u2019s tiles into tall rectangles \u2014 on a phone the board is much taller than it is wide, so a grid that fills it is too. Grids may now run a fifth taller than they are wide and no more, and they sit centred in the board, so the tiles read as tiles again and the space around them reads as margin instead of something left over.',
     'Forge was drawing its mould wider than the board and losing a column off the right-hand edge. Nothing a mode draws can be wider than the board it is drawn in now, and every one of the 42 was checked for it.',
@@ -5411,7 +5438,7 @@ const MODES = {
 
   /* ── 1. Odd One Out — visual discrimination, ramps by hue delta ──────── */
   odd: {
-    name:'Odd One Out', blurb:'Spot the tile that doesn’t match', cat:'focus', par:2600, bonus:1200,
+    name:'Odd Skein', blurb:'Spot the skein that does not match', cat:'focus', par:2600, bonus:1200,
     /* One tap was not a round, it was a reflex test with a scoreboard. Three
        boards in a row is the same puzzle asked properly. */
     stages: lvl => clamp(2 + Math.floor(lvl/9), 2, 4),
@@ -5456,7 +5483,7 @@ const MODES = {
 
   /* ── 2. Snap Order — visual search under sequence pressure ───────────── */
   order: {
-    name:'Snap Order', blurb:'Tap the numbers in order, fast', cat:'focus', par:3800, bonus:1500,
+    name:'Count the Stitches', blurb:'Tap the stitches in order, fast', cat:'focus', par:3800, bonus:1500,
     /* This one was already long — three bubbles at level zero, twelve later —
        but par stayed at three bubbles' worth forever, so a twelve-bubble round
        was judged against a third of the time it takes. Par follows the board
@@ -5516,7 +5543,7 @@ const MODES = {
 
   /* ── 3. Color Trap — the Stroop task: read the ink, not the word ─────── */
   stroop: {
-    name:'Color Trap', blurb:'Match the ink colour, ignore the word', cat:'focus', par:2400, bonus:1200,
+    name:'Dye Trap', blurb:'Match the dye, ignore the label', cat:'focus', par:2400, bonus:1200,
     /* The interference only bites once you are going fast, and one word is
        over before that happens. */
     stages: lvl => clamp(3 + Math.floor(lvl/10), 3, 5),
@@ -5569,7 +5596,7 @@ const MODES = {
 
   /* ── 5. Rewire — a real puzzle; no wrong taps, only time spent ───────── */
   rewire: {
-    name:'Rewire', blurb:'Rotate the pipes until current flows', cat:'logic', par:8000, bonus:2600,
+    name:'Untangle', blurb:'Turn the knots until the thread reaches the cat', cat:'logic', par:8000, bonus:2600,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 12h6a2 2 0 0 0 2-2V4"/><path d="M12 20v-6a2 2 0 0 1 2-2h6" stroke="#6C6191"/></svg>',
     build(ctx){
       const n = ctx.level < 5 ? 3 : ctx.level < 20 ? 4 : 5;
@@ -5664,7 +5691,11 @@ const MODES = {
         if (c.base & 4) segs.push('M50 50 L50 100');
         if (c.base & 8) segs.push('M50 50 L0 50');
         const cap = (c.base===1||c.base===2||c.base===4||c.base===8) ? '<circle class="wire" cx="50" cy="50" r="14" style="fill:none"/>' : '';
-        b.innerHTML = '<svg viewBox="0 0 100 100" aria-hidden="true"><path class="wire" d="'+segs.join(' ')+'"/>'+cap+'</svg>';
+        /* Drawn twice: the strand, then the same line again as short ticks over
+           it, which is what makes a stroke read as spun wool instead of wire. */
+        b.innerHTML = '<svg viewBox="0 0 100 100" aria-hidden="true">'
+          + '<path class="wire" d="'+segs.join(' ')+'"/>'
+          + '<path class="wire twist" d="'+segs.join(' ')+'"/>' + cap + '</svg>';
         const svg = b.querySelector('svg');
         svg.style.transform = 'rotate(' + (c.turn*90) + 'deg)';
         onTap(b, () => {
@@ -5701,7 +5732,7 @@ const MODES = {
 
   /* ── 6. Sum Snap — light arithmetic, no wrong-answer spiral ──────────── */
   sum: {
-    name:'Sum Snap', blurb:'Find two numbers that hit the target', cat:'numbers', par:5000, bonus:1800,
+    name:'Stitch Count', blurb:'Find two counts that hit the target', cat:'numbers', par:5000, bonus:1800,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#FFC53D" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
     build(ctx){
       const n = ctx.level < 4 ? 3 : ctx.level < 18 ? 4 : 5;
@@ -5750,7 +5781,7 @@ const MODES = {
 
   /* ── 7. Count Fast — enumeration, an axis nothing else touches ───────── */
   count: {
-    name:'Count Fast', blurb:'Count the target before the clock does', cat:'numbers', par:4200, bonus:1600,
+    name:'Quick Count', blurb:'Count them before the clock does', cat:'numbers', par:4200, bonus:1600,
     stages: lvl => clamp(2 + Math.floor(lvl/14), 2, 3),
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="8" r="3" fill="#FF5B39"/><circle cx="16" cy="7" r="3" fill="#6C6191"/><circle cx="9" cy="16" r="3" fill="#6C6191"/><circle cx="17" cy="16" r="3" fill="#FF5B39"/></svg>',
     build(ctx){
@@ -5838,7 +5869,7 @@ const MODES = {
 
   /* ── 8. Mirror — spatial reflection. Taps toggle, so it costs time ───── */
   mirror: {
-    name:'Mirror', blurb:'Reflect the pattern across the line', cat:'logic', par:7500, bonus:2400,
+    name:'Mirror Stitch', blurb:'Reflect the pattern across the fold', cat:'logic', par:7500, bonus:2400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="7" height="14" rx="2" fill="#FF5B39"/><rect x="14" y="5" width="7" height="14" rx="2" fill="#33E6C8" opacity=".5"/></svg>',
     build(ctx){
       const half = ctx.level < 5 ? 2 : ctx.level < 20 ? 3 : 4;
@@ -5887,7 +5918,7 @@ const MODES = {
 
   /* ── 11. Slide Path — planning about order and space ─────────────────── */
   slide: {
-    name:'Slide Path', blurb:'Clear the corridor so the car can leave', cat:'logic', par:9000, bonus:2800,
+    name:'Let the Cat Out', blurb:'Clear the way so the cat can get out', cat:'logic', par:9000, bonus:2800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="10" width="9" height="4" rx="1.5" fill="#FF5B39"/><rect x="15" y="4" width="4" height="9" rx="1.5" fill="#6C6191"/></svg>',
     build(ctx){
       const n = ctx.level < 6 ? 4 : ctx.level < 20 ? 5 : 6;
@@ -6077,7 +6108,7 @@ const MODES = {
      thing. The category is always shown: this is a puzzle about pattern, not
      about trivia, and a phrase nobody recognises is not harder, just worse. */
   wheel: {
-    name:'Phrase Wheel', blurb:'Guess letters to reveal the phrase', cat:'words', par:14000, bonus:3600,
+    name:'Stitch Sampler', blurb:'Guess letters to finish the sampler', cat:'words', par:14000, bonus:3600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#4BC0FF" stroke-width="2"/><path d="M12 3v9l7.5 4.3" stroke="#4BC0FF" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M12 12 4.5 16.3" stroke="#6C6191" stroke-width="1.8" stroke-linecap="round" opacity=".6"/></svg>',
     build(ctx){
       const entry = ctx.deal(phraseBank(), 'phrase:' + save.lang);
@@ -6149,7 +6180,7 @@ const MODES = {
 
   /* ── 15. Off Beat — timing, which nothing else in the roster tests ────── */
   beat: {
-    name:'Off Beat', blurb:'Find the dot that is out of time', cat:'reflex', par:6000, bonus:2000,
+    name:'Off Beat', blurb:'Find the paw that is out of time', cat:'reflex', par:6000, bonus:2000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 17h20" stroke="#FF8AD8" stroke-width="1.6" stroke-linecap="round" opacity=".4"/><circle cx="5" cy="17" r="2.4" fill="#FF8AD8"/><circle cx="12" cy="9" r="2.4" fill="#FF8AD8"/><circle cx="19" cy="17" r="2.4" fill="#FF8AD8"/></svg>',
     build(ctx){
       const n = clamp(3 + Math.floor(ctx.level/4), 3, 8);
@@ -6182,7 +6213,7 @@ const MODES = {
 
   /* ── 16. Sort Drop — the rule flips mid-round, which nothing else does ── */
   sort: {
-    name:'Sort Drop', blurb:'Sort by the rule — it changes', cat:'focus', par:7000, bonus:2200,
+    name:'Sorting Basket', blurb:'Sort by the rule — it changes', cat:'focus', par:7000, bonus:2200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8" stroke="#6C6191" stroke-width="2.4" stroke-linecap="round"/><rect x="2" y="14" width="8" height="7" rx="2" fill="#FF5B39"/><rect x="14" y="14" width="8" height="7" rx="2" fill="#33E6C8"/></svg>',
     build(ctx){
       const rounds = clamp(3 + Math.floor(ctx.level/4), 3, 10);
@@ -6276,7 +6307,7 @@ const MODES = {
      with every jump, so the order you take the dots in is the whole puzzle:
      a greedy nearest-first run strands the far ones. */
   arc: {
-    name:'Arc', blurb:'Chain every node before the charge dies', cat:'reflex', par:6000, bonus:2000,
+    name:'Cat’s Cradle', blurb:'Loop every peg before the thread goes slack', cat:'reflex', par:6000, bonus:2000,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#FFC53D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
     build(ctx){
       const n = clamp(4 + Math.floor(ctx.level/3), 4, 11);
@@ -6376,7 +6407,7 @@ const MODES = {
      the count of remaining crossings is shown live, which turns flailing into
      a gradient you can actually descend. */
   slack: {
-    name:'Slack', blurb:'Drag the nodes until no rope crosses', input:'drag', cat:'logic', par:11000, bonus:3000,
+    name:'No Crossing', blurb:'Drag the pegs until no thread crosses', input:'drag', cat:'logic', par:11000, bonus:3000,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 6c6 4 10 8 16 12M20 6C14 10 10 14 4 18"/></svg>',
     build(ctx){
       const n = clamp(5 + Math.floor(ctx.level/4), 5, 9);
@@ -6478,7 +6509,7 @@ const MODES = {
      asks you to sit in drifts, so it is tracking rather than counting — and it
      is the only mode whose difficulty is being too fast. */
   tide: {
-    name:'Tide Breath', blurb:'Hold to swell, release to ebb — stay in the band', input:'drag', cat:'calm', par:12000, bonus:3000,
+    name:'Purr', blurb:'Hold to swell, let go to settle — stay in the band', input:'drag', cat:'calm', par:12000, bonus:3000,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#7BE38A" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9" opacity=".45"/></svg>',
     build(ctx){
       const need = clamp(2 + Math.floor(ctx.level/6), 2, 5);
@@ -6522,7 +6553,7 @@ const MODES = {
      to remove first, which turns a pure chance toy into a short read of the
      board — the bounce is still random, but you get to load the dice. */
   plink: {
-    name:'Drop Odds', blurb:'Pull one peg, then drop into the lit bin', input:'tapdrag', cat:'physics', par:8000, bonus:2400,
+    name:'Basket Drop', blurb:'Pull one peg, then drop into the lit basket', input:'tapdrag', cat:'physics', par:8000, bonus:2400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2.4" fill="#FF9A3D"/><circle cx="7" cy="11" r="1.6" fill="#6C6191"/><circle cx="17" cy="11" r="1.6" fill="#6C6191"/><circle cx="12" cy="16" r="1.6" fill="#6C6191"/><rect x="3" y="19" width="18" height="3" rx="1.4" fill="#33E6C8"/></svg>',
     build(ctx){
       const rows = clamp(3 + Math.floor(ctx.level/5), 3, 6);
@@ -6598,7 +6629,7 @@ const MODES = {
      Charge is the greedy trap — interrupting it hurts twice, missing it hurts
      you twice. */
   peril: {
-    name:'Peril', blurb:'Read the tell, pick the counter, win the duel', cat:'logic', par:9000, bonus:2800,
+    name:'Cat Fight', blurb:'Read the tell, pick the counter, win the scrap', cat:'logic', par:9000, bonus:2800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="#33E6C8" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9.5v5" stroke="#33E6C8" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.15" fill="#33E6C8"/></svg>',
     build(ctx){
       const TELLS = {
@@ -6701,7 +6732,7 @@ const MODES = {
      both for a moment instead of ending the round — the punishment is lost
      tempo against the fill, which is the only currency here. */
   tumble: {
-    name:'Tumble', blurb:'Pair them off faster than the drum refills', cat:'focus', par:9000, bonus:2600,
+    name:'Tumble Dryer', blurb:'Pair the socks faster than the drum refills', cat:'focus', par:9000, bonus:2600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="8" fill="none" stroke="#FF5B39" stroke-width="1.8"/><rect x="8" y="9" width="5" height="5" rx="1.3" fill="#FF5B39" transform="rotate(18 10.5 11.5)"/><rect x="13" y="10.5" width="4" height="4" rx="1.1" fill="#33E6C8" transform="rotate(-14 15 12.5)"/></svg>',
     build(ctx){
       const g = ctx.level < 8 ? 4 : 5;
@@ -6801,7 +6832,7 @@ const MODES = {
      window near the edge is slow and the approach to one in the middle is fast:
      where the window sits changes how hard it is, not just how wide it is. */
   skim: {
-    name:'Skim', blurb:'Tap as it crosses — the window narrows each time', cat:'reflex', par:6000, bonus:2200,
+    name:'Needle Pass', blurb:'Tap as the needle crosses — the gap narrows each time', cat:'reflex', par:6000, bonus:2200,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#4BC0FF" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M3 16c4-6 8 2 12-4M17 6l4 2-4 2"/></svg>',
     build(ctx){
       const need = clamp(3 + Math.floor(ctx.level/4), 3, 7);
@@ -6877,7 +6908,7 @@ const MODES = {
      three-hit blob is worth the same as a bruised one-hit blob, so the greedy
      play and the correct play come apart. Colour is the health bar. */
   bruise: {
-    name:'Bruise', blurb:'Finish the hurt ones before they slip away', cat:'reflex', par:7000, bonus:2400,
+    name:'Mending', blurb:'Finish the frayed ones before they unravel', cat:'reflex', par:7000, bonus:2400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="10" r="5" fill="#FF3D6E"/><circle cx="16" cy="15" r="4" fill="#9C7BFF"/></svg>',
     build(ctx){
       const g = ctx.level < 7 ? 3 : 4;
@@ -6958,7 +6989,7 @@ const MODES = {
      point, and it is still hard, which is a different feeling entirely —
      failing here is losing the thread rather than forgetting. */
   haunt: {
-    name:'Haunt', blurb:'Watch the swaps — where did the ghosts end up?', cat:'focus', par:8000, bonus:2600,
+    name:'Haunt', blurb:'Watch the baskets — where did the cats end up?', cat:'focus', par:8000, bonus:2600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.6 5.6 L6.3 1.4 L10.2 3.4 Z" fill="#9C7BFF"/><path d="M16.4 5.6 L17.7 1.4 L13.8 3.4 Z" fill="#9C7BFF"/><path d="M12 3a7 7 0 0 0-7 7v10l2.5-2 2.5 2 2-2 2 2 2.5-2 2.5 2V10a7 7 0 0 0-7-7z" fill="#9C7BFF"/><circle cx="9.5" cy="10" r="1.2" fill="#0D0918"/><circle cx="14.5" cy="10" r="1.2" fill="#0D0918"/></svg>',
     build(ctx){
       const g = ctx.level < 7 ? 3 : 4;
@@ -7069,7 +7100,7 @@ const MODES = {
      short is free and returns the item; only putting something in the wrong
      place is a mistake, because a drag that missed by ten pixels is not one. */
   tidy: {
-    name:'Tidy', blurb:'Drag the mess into the right bins', input:'drag', cat:'focus', par:11000, bonus:3000,
+    name:'Tidy Up', blurb:'Drag the mess into the right baskets', input:'drag', cat:'focus', par:11000, bonus:3000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2.6" fill="#FF5B39"/><circle cx="15" cy="7" r="2.6" fill="#33E6C8"/><circle cx="9" cy="11" r="2.6" fill="#33E6C8"/><rect x="2" y="16" width="8" height="6" rx="2" fill="#FF5B39" opacity=".5"/><rect x="14" y="16" width="8" height="6" rx="2" fill="#33E6C8" opacity=".5"/></svg>',
     build(ctx){
       const kinds = clamp(2 + Math.floor(ctx.level/8), 2, 4);
@@ -7179,7 +7210,7 @@ const MODES = {
      and widens your own glow a little, so the board opens up as you go instead
      of tightening. That arc is the mode: it gets easier, and it is meant to. */
   glimmer: {
-    name:'Glimmer', blurb:'Carry the light until every lamp is lit', input:'drag', cat:'calm', par:13000, bonus:3200,
+    name:'Cat’s Eyes', blurb:'Carry the light until every lamp is lit', input:'drag', cat:'calm', par:13000, bonus:3200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="#FFC53D"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="#FFC53D" stroke-width="1.4" opacity=".45"/><circle cx="19" cy="6" r="1.6" fill="#7BE38A"/><circle cx="5" cy="18" r="1.6" fill="#7BE38A"/></svg>',
     build(ctx){
       const lamps = clamp(3 + Math.floor(ctx.level/4), 3, 9);
@@ -7253,7 +7284,7 @@ const MODES = {
      being a scribble — a stroke that takes four good ones and one bad one is
      worse than a careful two. */
   slice: {
-    name:'Slice', blurb:'One stroke cuts all it crosses — miss the rotten', input:'drag', cat:'reflex', par:7000, bonus:2400,
+    name:'Snip', blurb:'One snip cuts every thread it crosses — miss the knots', input:'drag', cat:'reflex', par:7000, bonus:2400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="15" r="4" fill="#7BE38A"/><circle cx="16" cy="9" r="4.5" fill="#FF9A3D"/><path d="M3 20 21 4" stroke="#FFF3E6" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>',
     build(ctx){
       const need  = clamp(4 + Math.floor(ctx.level/2), 4, 14);
@@ -7342,7 +7373,7 @@ const MODES = {
      which means aiming where the leaf WILL be. That indirection is the mode;
      tapping the leaf itself does nothing at all. */
   ripple: {
-    name:'Ripple', blurb:'Tap the water — the waves carry the leaf', cat:'physics', par:17000, bonus:3600,
+    name:'Ripples', blurb:'Tap the water — the ripples carry the leaf', cat:'physics', par:17000, bonus:3600,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#4BC0FF" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="14" r="3"/><circle cx="9" cy="14" r="6.5" opacity=".5"/><path d="M15 6c2 1 3 3 3 5" stroke="#7BE38A" stroke-width="2.2" stroke-linecap="round"/></svg>',
     build(ctx){
       const gates = clamp(2 + Math.floor(ctx.level/5), 2, 5);
@@ -7434,7 +7465,7 @@ const MODES = {
      never the line you can see, and the star's sideways speed has weight to it
      so a late correction cannot save a bad one. */
   descent: {
-    name:'Descent', blurb:'Steer the falling star through every gap', input:'drag', cat:'reflex', par:9000, bonus:2800,
+    name:'Dropped Stitch', blurb:'Steer the falling bobbin through every gap', input:'drag', cat:'reflex', par:9000, bonus:2800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="3" width="8.5" height="3.6" rx="1.4" fill="#FF3D6E"/><rect x="14" y="3" width="8.5" height="3.6" rx="1.4" fill="#FF3D6E"/><path d="M12 8v4.5" stroke="#FF3D6E" stroke-width="1.6" stroke-linecap="round" opacity=".45"/><path d="M12 13l2.3 4h-4.6z" fill="#FF3D6E"/></svg>',
     build(ctx){
       const gates = clamp(3 + Math.floor(ctx.level/3), 3, 9);
@@ -7528,7 +7559,7 @@ const MODES = {
      only accepts what it is asking for, so the puzzle is matching sources to
      targets before you start rather than correcting as you go. */
   siphon: {
-    name:'Siphon', blurb:'Pour each colour into the jar that wants it', input:'drag', cat:'focus', par:10000, bonus:2800,
+    name:'Dye Pots', blurb:'Pour each dye into the pot that wants it', input:'drag', cat:'focus', par:10000, bonus:2800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h5v6l-3 10H6z" fill="#FF5B39"/><path d="M13 8h5v11h-5z" fill="#33E6C8" opacity=".55"/></svg>',
     build(ctx){
       const n = clamp(2 + Math.floor(ctx.level/6), 2, 5);
@@ -7624,7 +7655,7 @@ const MODES = {
      pays nothing back but costs nothing either, so a clean tower is the only
      way through a tall one. */
   cairn: {
-    name:'Cairn', blurb:'Stack the stones — every overhang is gone for good', cat:'physics', par:12000, bonus:3200,
+    name:'Folds', blurb:'Stack the knits — every overhang is gone for good', cat:'physics', par:12000, bonus:3200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="17" width="18" height="4" rx="1.6" fill="#33E6C8" opacity=".5"/><rect x="6" y="12" width="13" height="4" rx="1.6" fill="#33E6C8" opacity=".75"/><rect x="9" y="7" width="9" height="4" rx="1.6" fill="#33E6C8"/><rect x="11" y="2" width="6" height="4" rx="1.6" fill="#33E6C8" opacity=".55"/></svg>',
     build(ctx){
       const need  = 4 + Math.min(6, Math.floor(ctx.level/4));
@@ -7714,7 +7745,7 @@ const MODES = {
      window and rejected unless it stays clear. So there is always exactly one
      answer, and the near-misses get nearer as the level climbs. */
   drift: {
-    name:'Drift', blurb:'Two of these will meet — find them before they do', cat:'focus', par:13000, bonus:3400,
+    name:'Tangle Watch', blurb:'Two of these will meet — find them before they tangle', cat:'focus', par:13000, bonus:3400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6" r="2.6" fill="#FF5B39"/><circle cx="19" cy="18" r="2.6" fill="#FF5B39"/><circle cx="18" cy="6" r="2.2" fill="#FF5B39" opacity=".35"/><circle cx="6" cy="18" r="2.2" fill="#FF5B39" opacity=".35"/><path d="M7.4 7.6 16.6 16.4" stroke="#FF5B39" stroke-width="1.3" stroke-dasharray="2 2" fill="none"/></svg>',
     build(ctx){
       const R      = 6.4;
@@ -7851,7 +7882,7 @@ const MODES = {
      margin, and the blockers are re-rolled until that straight line is clear,
      so one stroke always exists that solves the board. */
   chalk: {
-    name:'Chalk', blurb:'Draw the ramp, then watch — no second chances', input:'drag', cat:'physics', par:14000, bonus:3600,
+    name:'Chalk Line', blurb:'Draw the ramp, then watch — no second chances', input:'drag', cat:'physics', par:14000, bonus:3600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="4.5" r="2.6" fill="#4BC0FF"/><path d="M3 11c4.5 0 9 2.4 11 7" stroke="#4BC0FF" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-dasharray="3 2.4"/><path d="M16 20h5v-3h-5z" fill="#4BC0FF" opacity=".55"/></svg>',
     build(ctx){
       const R  = 3.4;                                   /* ball radius, % of field */
@@ -8020,7 +8051,7 @@ const MODES = {
      same moment. The schedule is rejected and re-rolled until no such pair
      exists, which makes every round catchable by someone quick enough. */
   gather: {
-    name:'Gather', blurb:'Catch the ripe ones, let the rest fall', input:'drag', cat:'reflex', par:13000, bonus:3400,
+    name:'Catch the Balls', blurb:'Catch the good ones, let the tangles fall', input:'drag', cat:'reflex', par:13000, bonus:3400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="4" r="2" fill="#FF3D6E"/><circle cx="15" cy="8" r="2" fill="#FF3D6E" opacity=".4"/><circle cx="10" cy="11" r="2" fill="#FF3D6E"/><path d="M4 16h16l-2 5H6z" fill="none" stroke="#FF3D6E" stroke-width="1.8" stroke-linejoin="round"/></svg>',
     build(ctx){
       const EGG   = 8;                                      /* egg width, % of field */
@@ -8192,7 +8223,7 @@ const MODES = {
      laying the parts down, and what they cover becomes the hole. So a fit
      always exists, and the parts in the tray are exactly the parts it takes. */
   forge: {
-    name:'Forge', blurb:'Fit every part into the mould — nothing left over', cat:'make', par:16000, bonus:4200,
+    name:'Patchwork', blurb:'Fit every patch into the pattern — nothing left over', cat:'make', par:16000, bonus:4200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.4" fill="#C08BFF"/><rect x="13" y="3" width="8" height="4" rx="1.4" fill="#C08BFF" opacity=".5"/><rect x="3" y="13" width="4" height="8" rx="1.4" fill="#C08BFF" opacity=".5"/><rect x="9" y="13" width="12" height="8" rx="1.4" fill="none" stroke="#C08BFF" stroke-width="1.6" stroke-dasharray="2.4 2"/></svg>',
     build(ctx){
       /* The board stays five wide at every level. Six wide leaves squares under
@@ -8488,7 +8519,7 @@ const MODES = {
      target ratio precisely, and both sides shrink together until they pack — a
      shared scale changes nothing about which is heavier. */
   heft: {
-    name:'Heft', blurb:'Which pile weighs more? Counting will not tell you', cat:'numbers', par:9000, bonus:2800,
+    name:'Heft', blurb:'Which basket weighs more? Counting will not tell you', cat:'numbers', par:9000, bonus:2800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.5" cy="8" r="4" fill="#FFC53D"/><circle cx="16" cy="6" r="2.1" fill="#FFC53D" opacity=".6"/><circle cx="20" cy="10" r="2.1" fill="#FFC53D" opacity=".6"/><circle cx="16.5" cy="12.5" r="2.1" fill="#FFC53D" opacity=".6"/><path d="M3 19h18" stroke="#FFC53D" stroke-width="1.6" stroke-linecap="round"/></svg>',
     build(ctx){
       /* How much heavier the heavy side is. At the top of the curve six per
@@ -8597,7 +8628,7 @@ const MODES = {
 
   /* ── Bridge ───────────────────────────────────────────────────────────── */
   bridge: {
-    name:'Bridge', blurb:'Lay planks bank to bank — you have only so many', cat:'make', par:14000, bonus:4000,
+    name:'Darning', blurb:'Lay stitches edge to edge — you have only so many', cat:'make', par:14000, bonus:4000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 15h4M18 15h4" stroke="#C08BFF" stroke-width="2" stroke-linecap="round"/><rect x="7" y="13" width="4" height="4" rx="1" fill="#C08BFF"/><rect x="13" y="13" width="4" height="4" rx="1" fill="#C08BFF" opacity=".45"/><path d="M4 15v5M20 15v5" stroke="#C08BFF" stroke-width="1.6" stroke-linecap="round" opacity=".5"/><path d="M6 9h12" stroke="#C08BFF" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2.5 2.5" opacity=".6"/></svg>',
     build(ctx){
       /* The board used to be five wide forever, and the walk's own turns were
@@ -8718,7 +8749,7 @@ const MODES = {
 
   /* ── Latch ────────────────────────────────────────────────────────────── */
   latch: {
-    name:'Latch', blurb:'Turn the rows until every notch lines up', cat:'make', par:14000, bonus:4100,
+    name:'Latch Hook', blurb:'Turn the rows until every hook lines up', cat:'make', par:14000, bonus:4100,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="4" rx="2" fill="none" stroke="#C08BFF" stroke-width="1.5"/><rect x="3" y="10" width="18" height="4" rx="2" fill="none" stroke="#C08BFF" stroke-width="1.5"/><rect x="3" y="16" width="18" height="4" rx="2" fill="none" stroke="#C08BFF" stroke-width="1.5"/><rect x="8" y="4" width="4" height="4" rx="1.5" fill="#C08BFF"/><rect x="14" y="10" width="4" height="4" rx="1.5" fill="#C08BFF"/><rect x="8" y="16" width="4" height="4" rx="1.5" fill="#C08BFF"/></svg>',
     build(ctx){
       /* A lock, taken apart. Braid reorders a set and Weave flips one; this
@@ -8803,7 +8834,7 @@ const MODES = {
 
   /* ── Splice ───────────────────────────────────────────────────────────── */
   splice: {
-    name:'Splice', blurb:'Put the beginnings back on the right endings', cat:'words', par:14000, bonus:4000,
+    name:'Splice', blurb:'Join each loose end to the right beginning', cat:'words', par:14000, bonus:4000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="8" height="6" rx="2" fill="#4BC0FF"/><rect x="13.5" y="4" width="8" height="6" rx="2" fill="#4BC0FF" opacity=".45"/><rect x="2.5" y="14" width="8" height="6" rx="2" fill="#4BC0FF" opacity=".45"/><rect x="13.5" y="14" width="8" height="6" rx="2" fill="#4BC0FF"/><path d="M11 7h2M11 17h2" stroke="#4BC0FF" stroke-width="1.6" stroke-linecap="round"/></svg>',
     build(ctx){
       /* The three word modes all work on one word at a time. This one is about
@@ -8913,7 +8944,7 @@ const MODES = {
 
   /* ── Trace ────────────────────────────────────────────────────────────── */
   trace: {
-    name:'Trace', blurb:'Follow the line to the end — no hurry', input:'drag', cat:'calm', par:15000, bonus:3600,
+    name:'Follow the Thread', blurb:'Follow the thread to its end — no hurry', input:'drag', cat:'calm', par:15000, bonus:3600,
     glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#7BE38A" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M3 17c3 0 3-10 6-10s3 10 6 10 3-7 6-7"/><circle cx="3" cy="17" r="1.6" fill="#7BE38A"/><circle cx="21" cy="10" r="1.6" fill="#7BE38A"/></svg>',
     build(ctx){
       /* Calm had three modes and all three are about holding something steady.
@@ -9044,7 +9075,7 @@ const MODES = {
 
   /* ── Lever ────────────────────────────────────────────────────────────── */
   lever: {
-    name:'Lever', blurb:'Find the balance point by eye, then test it', input:'drag', cat:'physics', par:14000, bonus:3800,
+    name:'Balance', blurb:'Find the balance point by eye, then test it', input:'drag', cat:'physics', par:14000, bonus:3800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 11h19" stroke="#FF9A3D" stroke-width="2" stroke-linecap="round"/><path d="M12 12.5l3.2 5.5H8.8z" fill="none" stroke="#FF9A3D" stroke-width="1.5" stroke-linejoin="round"/><rect x="4" y="6.5" width="4" height="4" rx="1" fill="#FF9A3D" opacity=".75"/><rect x="17" y="8" width="2.6" height="2.6" rx=".8" fill="#FF9A3D" opacity=".75"/></svg>',
     build(ctx){
       /* Cairn is about where a stone will sit, Chalk about where one will roll.
@@ -9147,7 +9178,7 @@ const MODES = {
 
   /* ── Forage ───────────────────────────────────────────────────────────── */
   forage: {
-    name:'Forage', blurb:'Send a swarm at a colour — only so many can be out at once', input:'forage', cat:'logic', par:16000, bonus:4200,
+    name:'Kittens Out', blurb:'Send the kittens at a colour — only so many out at once', input:'forage', cat:'logic', par:16000, bonus:4200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="#33E6C8" opacity=".85"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="#33E6C8" opacity=".35"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="#33E6C8" opacity=".35"/><circle cx="17.5" cy="17.5" r="1.3" fill="#33E6C8"/><circle cx="20.5" cy="19.5" r="1.1" fill="#33E6C8"/><circle cx="15" cy="20" r="1.1" fill="#33E6C8"/></svg>',
     build(ctx){
       /* A patch of berries in colour blocks, and a swarm you send at a colour.
@@ -9444,7 +9475,7 @@ const MODES = {
 
   /* ── Meld ─────────────────────────────────────────────────────────────── */
   meld: {
-    name:'Meld', blurb:'Merge jellies up, sell them off, reach the day’s takings', input:'meld', cat:'make', par:17000, bonus:4400,
+    name:'Yarn Shop', blurb:'Merge the balls up, sell them on, reach the day’s takings', input:'meld', cat:'make', par:17000, bonus:4400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="#C08BFF" opacity=".45"/><circle cx="16" cy="15" r="5" fill="#C08BFF" opacity=".45"/><circle cx="12" cy="7" r="4" fill="#C08BFF"/><path d="M9.5 10.5L8 12M14.5 10.5L16 12" stroke="#C08BFF" stroke-width="1.4" stroke-linecap="round"/></svg>',
     build(ctx){
       /* A merge game is only a merge game for about a minute. What keeps one
@@ -9749,7 +9780,7 @@ const MODES = {
 
   /* ── Volley ───────────────────────────────────────────────────────────── */
   volley: {
-    name:'Volley', blurb:'Fire the cannons in an order that paints the picture', input:'volley', cat:'logic', par:18000, bonus:4600,
+    name:'Spool Shots', blurb:'Fire the spools in an order that paints the picture', input:'volley', cat:'logic', par:18000, bonus:4600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="13" height="4" rx="1" fill="#33E6C8" opacity=".8"/><rect x="8" y="9" width="13" height="4" rx="1" fill="#33E6C8" opacity=".4"/><rect x="8" y="15" width="13" height="4" rx="1" fill="#33E6C8" opacity=".6"/><path d="M2 5h4M2 11h4M2 17h4" stroke="#33E6C8" stroke-width="2" stroke-linecap="round"/></svg>',
     build(ctx){
       /* A picture, and a ring of cannons round it. Each cannon is one colour
@@ -9973,7 +10004,7 @@ const MODES = {
 
   /* ── Sift ─────────────────────────────────────────────────────────────── */
   sift: {
-    name:'Sift', blurb:'Put buckets on the belt before their sand falls', input:'sift', cat:'physics', par:20000, bonus:4800,
+    name:'Spool Belt', blurb:'Put spools on the belt before their thread runs out', input:'sift', cat:'physics', par:20000, bonus:4800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6l-1 5h-4z" fill="none" stroke="#FF9A3D" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="1" fill="#FF9A3D"/><circle cx="12" cy="12" r="1" fill="#FF9A3D" opacity=".6"/><rect x="3" y="15" width="7" height="5" rx="1" fill="none" stroke="#FF9A3D" stroke-width="1.5"/><rect x="13" y="15" width="7" height="5" rx="1" fill="none" stroke="#FF9A3D" stroke-width="1.5" opacity=".45"/><path d="M2 22h20" stroke="#FF9A3D" stroke-width="1.5" stroke-linecap="round"/></svg>',
     build(ctx){
       /* Sand falls one grain at a time, always in the same place, and the belt
@@ -10136,7 +10167,7 @@ const MODES = {
 
   /* ── Halve ────────────────────────────────────────────────────────────── */
   halve: {
-    name:'Halve', blurb:'Move pieces until both trays total the same', cat:'numbers', par:15000, bonus:4200,
+    name:'Even Skeins', blurb:'Move skeins until both baskets weigh the same', cat:'numbers', par:15000, bonus:4200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="9" width="8.5" height="10" rx="2" fill="none" stroke="#FFC53D" stroke-width="1.6"/><rect x="13" y="9" width="8.5" height="10" rx="2" fill="none" stroke="#FFC53D" stroke-width="1.6"/><path d="M4.5 5.5h5M14.5 5.5h5" stroke="#FFC53D" stroke-width="1.8" stroke-linecap="round"/><path d="M12 3v18" stroke="#FFC53D" stroke-width="1.2" stroke-dasharray="2 2" opacity=".6"/></svg>',
     build(ctx){
       /* Sum Snap is two numbers hitting a target and Count Fast is one number
