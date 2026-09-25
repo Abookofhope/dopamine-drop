@@ -3099,7 +3099,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.86.0';
+const VERSION_TAG = 'v0.87.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3616,7 +3616,7 @@ const STRINGS = {
   en: {
     'nav.sections':'Sections', 'nav.stats':'Your statistics', 'cat.all':'All', 'cat.focus':'Focus', 'cat.reflex':'Reflex', 'cat.logic':'Logic', 'cat.numbers':'Numbers', 'cat.words':'Words', 'cat.calm':'Calm', 'cat.physics':'Physics', 'cat.make':'Make', 'modes.filter':'Filter modes by kind', 'tab.Play':'Play', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Settings',
     'hero.eyebrow':'Every mode, on shuffle', 'hero.title':'Shuffle',
-    'hero.sub':'60 seconds. The puzzle changes every round.', 'run.lid':'+{n}s ceiling',
+    'hero.sub':'Ten minutes. The puzzle changes every round.', 'run.lid':'+{n}s ceiling',
     'play.other':'Other ways to play', 'play.favorites':'Favorites',
     'play.guidedTitle':'What do you want to do?', 'play.guidedSub':'Three questions, not sixty-six modes at once.',
     'play.justPlay':'Just play', 'play.myStuff':'My stuff', 'play.myStuffSub':'Favorites, Mixtape, Marathon',
@@ -3801,7 +3801,7 @@ const STRINGS = {
   fr: {
     'nav.sections':'Sections', 'nav.stats':'Vos statistiques', 'cat.all':'Tout', 'cat.focus':'Attention', 'cat.reflex':'Réflexes', 'cat.logic':'Logique', 'cat.numbers':'Nombres', 'cat.words':'Mots', 'cat.calm':'Calme', 'cat.physics':'Physique', 'cat.make':'Créer', 'modes.filter':'Filtrer les modes', 'tab.Play':'Jouer', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Réglages',
     'hero.eyebrow':'Tous les modes, en aléatoire', 'hero.title':'Mélange',
-    'hero.sub':'60 secondes. Le casse-tête change à chaque manche.', 'run.lid':'plafond +{n}s',
+    'hero.sub':'Dix minutes. Le casse-tête change à chaque manche.', 'run.lid':'plafond +{n}s',
     'play.other':'Autres façons de jouer', 'play.favorites':'Favoris',
     'play.guidedTitle':'Que voulez-vous faire ?', 'play.guidedSub':'Trois questions, pas soixante-six modes d’un coup.',
     'play.justPlay':'Jouer', 'play.myStuff':'Mes affaires', 'play.myStuffSub':'Favoris, Mixtape, Marathon',
@@ -3986,7 +3986,7 @@ const STRINGS = {
   es: {
     'nav.sections':'Secciones', 'nav.stats':'Tus estadísticas', 'cat.all':'Todo', 'cat.focus':'Atención', 'cat.reflex':'Reflejos', 'cat.logic':'Lógica', 'cat.numbers':'Números', 'cat.words':'Palabras', 'cat.calm':'Calma', 'cat.physics':'Física', 'cat.make':'Crear', 'modes.filter':'Filtrar modos', 'tab.Play':'Jugar', 'tab.Modes':'Modos', 'tab.Mix':'Mezcla', 'tab.Stats':'Datos', 'tab.Settings':'Ajustes',
     'hero.eyebrow':'Todos los modos, al azar', 'hero.title':'Mezcla',
-    'hero.sub':'60 segundos. El reto cambia en cada ronda.', 'run.lid':'techo +{n}s',
+    'hero.sub':'Diez minutos. El reto cambia en cada ronda.', 'run.lid':'techo +{n}s',
     'play.other':'Otras formas de jugar', 'play.favorites':'Favoritos',
     'play.guidedTitle':'¿Qué quieres hacer?', 'play.guidedSub':'Tres preguntas, no sesenta y seis modos a la vez.',
     'play.justPlay':'Jugar', 'play.myStuff':'Lo mío', 'play.myStuffSub':'Favoritos, Mixtape, Maratón',
@@ -4171,7 +4171,7 @@ const STRINGS = {
   de: {
     'nav.sections':'Bereiche', 'nav.stats':'Deine Werte', 'cat.all':'Alle', 'cat.focus':'Fokus', 'cat.reflex':'Reflexe', 'cat.logic':'Logik', 'cat.numbers':'Zahlen', 'cat.words':'Wörter', 'cat.calm':'Ruhe', 'cat.physics':'Physik', 'cat.make':'Bauen', 'modes.filter':'Modi filtern', 'tab.Play':'Spielen', 'tab.Modes':'Modi', 'tab.Mix':'Mix', 'tab.Stats':'Werte', 'tab.Settings':'Optionen',
     'hero.eyebrow':'Alle Modi, gemischt', 'hero.title':'Mix',
-    'hero.sub':'60 Sekunden. Das Rätsel wechselt jede Runde.', 'run.lid':'+{n}s Limit',
+    'hero.sub':'Zehn Minuten. Das Rätsel wechselt jede Runde.', 'run.lid':'+{n}s Limit',
     'play.other':'Andere Spielarten', 'play.favorites':'Favoriten',
     'play.guidedTitle':'Was möchtest du tun?', 'play.guidedSub':'Drei Fragen, nicht sechsundsechzig Modi auf einmal.',
     'play.justPlay':'Loslegen', 'play.myStuff':'Meine Sachen', 'play.myStuffSub':'Favoriten, Mixtape, Marathon',
@@ -4455,6 +4455,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.87.0', date:'2026-09-25', items:[
+    'Just Play runs for ten minutes now instead of one. A sixty-second run was over before a mode you had not met before stopped being a surprise, and with forty-two of them you could finish a whole run having properly played about four. Solves still buy time on top of that, up to a quarter of an hour.',
+  ] },
   { v:'0.86.0', date:'2026-09-25', items:[
     'The retheme reaches French, Spanish and German. The four how-to-play notes had only been rewritten in English, and another twenty lines — the ones the game reads aloud, and the ones it shows you when a board is stuck — still named jellies, cannons, buckets, swarms, planks and moulds in every language. All of it is wool, spools, kittens, stitches and baskets now, in all four. Written out rather than word-swapped, because those nouns carry gender and articles with them.',
   ] },
@@ -10576,7 +10579,11 @@ window.requestAnimationFrame = function(fn){
 /* Each kind's name is already translated for its card on the home screen, so
    the run carries the key rather than a second English copy of the word. */
 const KINDS = {
-  shuffle:  { label:'Shuffle',     key:'hero.title',     timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
+  /* Just Play's run. Ten minutes rather than one: a 60-second round was over
+     before a mode you had not seen before stopped being a surprise. Carries
+     its own ceiling because the shared one is three minutes, which would
+     have clamped this straight back down to it. */
+  shuffle:  { label:'Shuffle',     key:'hero.title',     timed:true,  cap:600000, start:600000, capMax:900000, penalty:4000, scored:true },
   mix:      { label:'Mixtape',     key:'mix.title',      timed:true,  cap:60000, start:60000, penalty:4000, scored:true },
   /* A dedicated home for the reflex family rather than a seventh puzzle genre
      bolted on — those eight modes are already exactly what the brief asked
@@ -10815,7 +10822,7 @@ const multiplier = () => run
    needs four in a row-ish — and a strong one can reach three minutes. */
 const CAP_EVERY = 4, CAP_STEP = 15000, CAP_MAX = 180000;
 const capOf = k => !k.timed ? 0
-  : Math.min(CAP_MAX, k.cap + Math.floor((run ? run.solved : 0) / CAP_EVERY) * CAP_STEP);
+  : Math.min(k.capMax || CAP_MAX, k.cap + Math.floor((run ? run.solved : 0) / CAP_EVERY) * CAP_STEP);
 const capTier = n => Math.floor(n / CAP_EVERY);
 
 /* What you chose on the Stats tab should be visible while it is doing its work.
