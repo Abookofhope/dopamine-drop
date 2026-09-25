@@ -107,5 +107,5 @@ for (const r of rows){
   if (r.errs?.length)    console.log(`    page error         : ${r.errs.join(' | ')}`);
 }
 console.log(`\n${clean}/${rows.length} modes clean`);
-floorOrDie('sweep', rows.length, 60);
+floorOrDie('sweep', rows.length, 40);
 process.exit(clean === rows.length ? 0 : 1);

@@ -20,11 +20,11 @@ const PROFILES = [
   ['fresh',   { xp: 0, solved: 0, runs: 0, onboarded: true }],
   ['playing', { xp: 9000, solved: 600, runs: 40, lastMode: 'cairn', pbBlitz: 3120,
                 marathon: { odd: 2400, echo: 1700, cairn: 700 },
-                mix: ['odd','echo','heft'], dailyStreak: 4, dailyLast: dayKey(-1),
-                favs: ['odd', 'echo'] }],
-  ['veteran', { xp: 400000, solved: 20000, runs: 900, lastMode: 'weave', pbBlitz: 9400,
-                marathon: mastered, mix: ['odd','echo'], dailyStreak: 31, dailyLast: dayKey(0),
-                favs: ['weave'] }],
+                mix: ['odd','order','heft'], dailyStreak: 4, dailyLast: dayKey(-1),
+                favs: ['odd', 'order'] }],
+  ['veteran', { xp: 400000, solved: 20000, runs: 900, lastMode: 'forge', pbBlitz: 9400,
+                marathon: mastered, mix: ['odd','order'], dailyStreak: 31, dailyLast: dayKey(0),
+                favs: ['forge'] }],
 ];
 
 /* Shared shape-and-reach measurement for whichever sub-screen is currently

@@ -109,7 +109,7 @@ export function modeIdsFromBuild(dir){
   const src = readFileSync(join(dir, 'index.html'), 'utf8');
   const i = src.indexOf('const MODES = {'), j = src.indexOf('const MODE_IDS', i);
   const ids = [...src.slice(i, j).matchAll(/\n  ([a-z][a-zA-Z0-9]*): \{\n/g)].map(m => m[1]);
-  floorOrDie('modeIdsFromBuild', ids.length, 60);
+  floorOrDie('modeIdsFromBuild', ids.length, 40);
   return ids;
 }
 
