@@ -472,7 +472,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 /* ── Forge ────────────────────────────────────────────────────────────── */
 .forgewrap{display:flex;flex-direction:column;gap:12px;width:100%;height:100%;
   align-items:center;justify-content:center;min-height:0}
-.fgrid{display:grid;gap:3px;flex:none}
+.fgrid{display:grid;gap:3px;flex:none;width:100%;min-width:0;max-width:100%}
+.fcell{min-width:0}
 .fcell{display:block;border-radius:5px;background:transparent;box-sizing:border-box;
   transition:background var(--t-fast),box-shadow var(--t-fast)}
 .fcell.mould{background:#ffffff0a;box-shadow:inset 0 0 0 2px var(--edge-soft)}
@@ -681,7 +682,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    surface on anything shorter than a large phone. */
 .brwrap{display:flex;flex-direction:column;width:100%;height:100%;
   min-height:0;min-width:0;max-width:100%;align-items:center;justify-content:center}
-.brgrid{display:grid;gap:6px;height:330px;max-width:100%;height:100%;
+.brgrid{display:grid;gap:8px;max-width:100%;width:100%;align-self:center;
+  aspect-ratio:var(--n,4) / calc(var(--n,4) * 1.2);max-height:100%;
   flex:0 1 auto;min-height:0;min-width:0;transition:filter var(--t-med)}
 .brcell{
   display:block;border-radius:9px;background:#ffffff07;border:1.5px solid var(--edge-soft);
@@ -1631,6 +1633,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   box-shadow:var(--lift-deep), inset 0 0 0 2px #ffffff09, inset 0 0 26px -10px #00000070;
   padding:14px;contain:layout paint;
 }
+/* Nothing a mode draws may be wider than the board it is drawn in. A grid
+   whose columns size themselves off their content can otherwise push its
+   wrapper past the board's padding and get clipped at the edge — which is
+   what Forge's mould did once the board stopped being a fixed square.
+   min-width:0 is the half that actually does the work: without it a grid
+   or flex child refuses to shrink below its min-content width. */
+#surface > *{max-width:100%;min-width:0}
 #surface.shake{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
 @keyframes shake{10%,90%{transform:translateX(-3px)}20%,80%{transform:translateX(5px)}30%,50%,70%{transform:translateX(-8px)}40%,60%{transform:translateX(8px)}}
 /* A miss that snaps an active streak should read as a bigger loss than a
@@ -1976,7 +1985,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   background:radial-gradient(circle at 33% 27%, #ffffff4d, transparent 52%),
              radial-gradient(circle at 72% 79%, #0000003d, transparent 58%);
 }
-.grid{display:grid;gap:8px;width:100%;height:100%}
+/* A grid fills the width and is allowed to run taller than it is wide, but
+   only by a fifth. Letting it take the whole board made a 3x3's cells 111
+   by 182 — they stopped reading as tiles and the board looked stretched.
+   align-self:center is what lets the ratio apply at all: a stretched grid
+   item has a definite height and aspect-ratio has nothing left to set. */
+.grid{display:grid;gap:10px;width:100%;align-self:center;
+  aspect-ratio:var(--n,3) / calc(var(--n,3) * 1.2);max-height:100%}
 /* The early roster shared these pieces flat grey regardless of which mode or
    family drew them — a tile, a pad, a number cell all looked identical to
    each other whether the mode was Odd One Out or Sum Snap. --fam is already
@@ -2029,7 +2044,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.pipe.nul{background:transparent;border-color:transparent;pointer-events:none}
 .sumcol{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;gap:10px;min-height:0;border-radius:var(--r-lg);
   background:radial-gradient(120% 70% at 50% 8%, color-mix(in srgb, var(--fam,transparent) 9%, transparent), transparent 72%)}
-.sumcol > .grid,.sumcol > .countfield{flex:1 1 auto;min-height:0;min-width:0;width:auto;height:auto;max-width:100%;height:100%;margin-inline:auto}
+.sumcol > .grid,.sumcol > .countfield{flex:0 1 auto;min-height:0;min-width:0;
+  width:100%;max-width:100%;max-height:100%;margin-inline:auto}
 .target{flex:none;display:flex;align-items:baseline;gap:9px;justify-content:center}
 .target small{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--haze);font-weight:600}
 .target b{font-family:var(--f-data);font-weight:800;font-size:30px;color:var(--zap);letter-spacing:-.05em}
@@ -3050,7 +3066,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.80.0';
+const VERSION_TAG = 'v0.81.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4406,6 +4422,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.81.0', date:'2026-09-25', items:[
+    'The boards stopped looking stretched. Filling the screen was right, but letting a grid take every pixel of it turned a 3x3\u2019s tiles into tall rectangles \u2014 on a phone the board is much taller than it is wide, so a grid that fills it is too. Grids may now run a fifth taller than they are wide and no more, and they sit centred in the board, so the tiles read as tiles again and the space around them reads as margin instead of something left over.',
+    'Forge was drawing its mould wider than the board and losing a column off the right-hand edge. Nothing a mode draws can be wider than the board it is drawn in now, and every one of the 42 was checked for it.',
+  ] },
   { v:'0.80.0', date:'2026-09-25', items:[
     'The pieces themselves are wool now. Every round thing you tap, drop, catch or carry \u2014 pegs, lamps, bubbles, falling fruit, the nodes you chain \u2014 is shaded like a soft ball rather than drawn as a flat disc. Haunt\u2019s ghosts have grown cat ears, which is as it should be. Drawn winding was tried first and thrown away: these pieces render at fifteen to thirty pixels, and at that size line detail reads as dirt on the screen rather than thread.',
   ] },
@@ -5381,6 +5401,9 @@ function onDrag(node, handlers){
 function gridEl(n){
   const g = mk('div','grid');
   g.style.gridTemplateColumns = 'repeat('+n+',1fr)';
+  /* The column count, so the stylesheet can work out how tall this grid is
+     allowed to get before its cells stop looking like tiles. */
+  g.style.setProperty('--n', n);
   return g;
 }
 
@@ -8621,6 +8644,7 @@ const MODES = {
       const wrap = mk('div','brwrap');
       const grid = mk('div','brgrid');
       grid.style.gridTemplateColumns = 'repeat(' + g + ',1fr)';
+      grid.style.setProperty('--n', g);
       const cells = [];
       for (let i = 0; i < g*g; i++){
         const c = mk('i','brcell');
