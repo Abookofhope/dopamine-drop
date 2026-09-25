@@ -83,7 +83,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    app scrolled with the bottom bar sliding off the screen with it. Internal
    scrolling is .scroll's job and always was; the shell should never move.
    100vh first as the fallback for anything without dvh. */
-.cab{
+.cab{justify-content:center;
   width:100%;max-width:460px;
   height:100%;max-height:100%;overflow:hidden;
   display:flex;flex-direction:column;position:relative;
@@ -1970,7 +1970,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .bub.done{background:var(--cool);border-color:var(--cool);color:#052A24;opacity:.5}
 .bub.bait{border-color:var(--flare);box-shadow:0 0 14px #ff5b3966}
 .bub.bait.done{border-color:var(--cool);box-shadow:none}
-.stroopwrap{display:flex;flex-direction:column;gap:24px;align-items:center;width:100%;border-radius:var(--r-lg);
+.stroopwrap{display:flex;flex-direction:column;gap:24px;align-items:center;justify-content:center;width:100%;border-radius:var(--r-lg);
   background:radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--fam,transparent) 8%, transparent), transparent 75%)}
 /* A second, quieter cue alongside the prompt text for a reversed round —
    the word itself gets underlined, since that's the thing to read now. */
@@ -2065,7 +2065,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:color var(--t-fast),border-color var(--t-fast),transform var(--t-fast);
 }
 .budget.low{color:var(--bad);border-color:var(--bad);transform:scale(1.06)}
-.wordcol{display:flex;flex-direction:column;align-items:center;gap:24px;width:100%;border-radius:var(--r-lg);
+.wordcol{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:24px;width:100%;border-radius:var(--r-lg);
   background:radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--fam,transparent) 8%, transparent), transparent 75%)}
 .slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
 .slot{width:36px;height:44px;border-radius:var(--r-sm);border:1px solid color-mix(in srgb, var(--fam,var(--edge-soft)) 26%, var(--edge-soft));background:#ffffff08;display:grid;place-items:center;font-family:var(--f-data);font-weight:700;font-size:18px;color:var(--cream);transition:border-color var(--t-med)}
@@ -3016,7 +3016,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.77.0';
+const VERSION_TAG = 'v0.78.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3710,7 +3710,7 @@ const STRINGS = {
     'p.beat':'Tap the dot that is out of time', 'p.sort':'Sorted {a} of {b}',
     'p.target':'Target', 'p.diffLabel':'Difference',
     'c.RED':'RED','c.BLUE':'BLUE','c.GREEN':'GREEN','c.YELLOW':'YELLOW','c.PURPLE':'PURPLE','c.ORANGE':'ORANGE',
-    's.circle':'circles','s.square':'squares','s.triangle':'triangles','s.diamond':'diamonds','s.cross':'crosses','s.chevron':'arrows',
+    's.yarn':'yarn balls','s.cat':'cats','s.paw':'paws','s.fish':'fish','s.bell':'bells','s.mouse':'mice',
     'sort.colour':'SORT BY COLOUR','sort.size':'SORT BY SIZE','sort.small':'SMALL','sort.big':'BIG',
     'budget.left':'{n} MOVES LEFT','sort.fill':'SORT BY FILL','sort.hollow':'HOLLOW','sort.solid':'SOLID'
   },
@@ -3895,7 +3895,7 @@ const STRINGS = {
     'p.beat':'Touchez le point à contretemps', 'p.sort':'{a} sur {b} triés',
     'p.target':'Cible', 'p.diffLabel':'Différence',
     'c.RED':'ROUGE','c.BLUE':'BLEU','c.GREEN':'VERT','c.YELLOW':'JAUNE','c.PURPLE':'VIOLET','c.ORANGE':'ORANGE',
-    's.circle':'cercles','s.square':'carrés','s.triangle':'triangles','s.diamond':'losanges','s.cross':'croix','s.chevron':'flèches',
+    's.yarn':'pelotes','s.cat':'chats','s.paw':'pattes','s.fish':'poissons','s.bell':'clochettes','s.mouse':'souris',
     'sort.colour':'TRIER PAR COULEUR','sort.size':'TRIER PAR TAILLE','sort.small':'PETIT','sort.big':'GRAND',
     'budget.left':'{n} COUPS RESTANTS','sort.fill':'TRIER PAR REMPLISSAGE','sort.hollow':'CREUX','sort.solid':'PLEIN'
   },
@@ -4080,7 +4080,7 @@ const STRINGS = {
     'p.beat':'Toca el punto fuera de ritmo', 'p.sort':'{a} de {b} clasificados',
     'p.target':'Objetivo', 'p.diffLabel':'Diferencia',
     'c.RED':'ROJO','c.BLUE':'AZUL','c.GREEN':'VERDE','c.YELLOW':'AMARILLO','c.PURPLE':'MORADO','c.ORANGE':'NARANJA',
-    's.circle':'círculos','s.square':'cuadrados','s.triangle':'triángulos','s.diamond':'rombos','s.cross':'cruces','s.chevron':'flechas',
+    's.yarn':'ovillos','s.cat':'gatos','s.paw':'patas','s.fish':'peces','s.bell':'cascabeles','s.mouse':'ratones',
     'sort.colour':'CLASIFICA POR COLOR','sort.size':'CLASIFICA POR TAMAÑO','sort.small':'PEQUEÑO','sort.big':'GRANDE',
     'budget.left':'{n} MOVIMIENTOS','sort.fill':'CLASIFICA POR RELLENO','sort.hollow':'HUECO','sort.solid':'LLENO'
   },
@@ -4265,7 +4265,7 @@ const STRINGS = {
     'p.beat':'Tippe den Punkt aus dem Takt', 'p.sort':'{a} von {b} sortiert',
     'p.target':'Ziel', 'p.diffLabel':'Differenz',
     'c.RED':'ROT','c.BLUE':'BLAU','c.GREEN':'GRÜN','c.YELLOW':'GELB','c.PURPLE':'LILA','c.ORANGE':'ORANGE',
-    's.circle':'Kreise','s.square':'Quadrate','s.triangle':'Dreiecke','s.diamond':'Rauten','s.cross':'Kreuze','s.chevron':'Pfeile',
+    's.yarn':'Wollknäuel','s.cat':'Katzen','s.paw':'Pfoten','s.fish':'Fische','s.bell':'Glöckchen','s.mouse':'Mäuse',
     'sort.colour':'NACH FARBE','sort.size':'NACH GRÖSSE','sort.small':'KLEIN','sort.big':'GROSS',
     'budget.left':'{n} ZUEGE UEBRIG','sort.fill':'NACH FÜLLUNG','sort.hollow':'HOHL','sort.solid':'VOLL'
   }
@@ -4372,6 +4372,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.78.0', date:'2026-09-25', items:[
+    'The pieces are characters now. The six colours each had a shape already \u2014 a circle, a square, a triangle \u2014 but those only ever appeared if you had switched colour assist on, so for everyone else the game really was nothing but one colour against another. The shapes are a ball of yarn, a cat, a paw, a fish, a bell and a mouse, and every piece wears one whether assist is on or not: with it off they all wear the same yarn ball in their own colour, so a board looks like a basket of wool rather than a grid of flat swatches, and the modes about telling colours apart are exactly as hard as they were. Switch assist on and each colour keeps its own character, the way it always did.',
+    'Some modes filled the board and then packed everything against the top of it, which is the same empty screen in a different place. What they draw sits in the middle of the space they own now.',
+  ] },
   { v:'0.77.0', date:'2026-09-25', items:[
     'Haunt is a shell game again. It picked both tiles of every swap at random out of the whole board, so with one ghost among sixteen tiles almost every swap moved nothing: the board flashed somewhere that did not matter and the ghost stayed where it was. There was no thread to lose, which is why it looked like the screen flashing at random. Every swap now moves a ghost, and you can see it go \u2014 the ghost crosses the board between the two tiles instead of both of them blinking at once, and the shuffle runs slightly slower so there is something to follow. Also fixed: a swapped tile briefly stretched to cover the entire board, because it shared a class name with the full-screen card that announces a new mode.',
   ] },
@@ -5005,6 +5009,13 @@ const modeName  = id => (t('m.'+id).split('|')[0]) || MODES[id].name;
 const modeBlurb = id => (t('m.'+id).split('|')[1]) || MODES[id].blurb;
 const inkName   = ink => t('c.'+ink.name);
 const shapeWord = shape => t('s.'+shape);
+/* Every piece wears a mark now, not only when colour assist is on. With assist
+   off they all wear the same yarn ball, so a board reads as a basket of wool
+   instead of a grid of flat swatches, and hue is still the only thing that
+   tells one piece from another — the modes built on colour distance stay
+   exactly as hard as they were. With assist on, each colour keeps its own
+   character and the shape is the answer, which is what it was always for. */
+const mark = (shape, stroke) => shapeSvg(assistOn() ? shape : 'yarn', stroke);
 const wordBank  = () => WORD_BANKS[save.lang] || WORD_BANKS.en;
 const phraseBank= () => PHRASE_BANKS[save.lang] || PHRASE_BANKS.en;
 
@@ -5077,20 +5088,22 @@ function levelSettingButtons(){
    vision. Red and green sit at opposite ends of the list on purpose: they are
    the pair most often confused, so they get the least similar outlines.   */
 const INKS = [
-  { name:'RED',    hex:'#FF3D4E', shape:'circle' },
-  { name:'BLUE',   hex:'#3D7BFF', shape:'square' },
-  { name:'GREEN',  hex:'#2ED66F', shape:'triangle' },
-  { name:'YELLOW', hex:'#FFC53D', shape:'diamond' },
-  { name:'PURPLE', hex:'#A75BFF', shape:'cross' },
-  { name:'ORANGE', hex:'#FF8A2B', shape:'chevron' }
+  { name:'RED',    hex:'#FF3D4E', shape:'yarn' },
+  { name:'BLUE',   hex:'#3D7BFF', shape:'cat' },
+  { name:'GREEN',  hex:'#2ED66F', shape:'paw' },
+  { name:'YELLOW', hex:'#FFC53D', shape:'fish' },
+  { name:'PURPLE', hex:'#A75BFF', shape:'bell' },
+  { name:'ORANGE', hex:'#FF8A2B', shape:'mouse' }
 ];
 const SHAPE_PATH = {
-  circle:   '<circle cx="50" cy="50" r="21"/>',
-  square:   '<rect x="30" y="30" width="40" height="40" rx="2"/>',
-  triangle: '<path d="M50 27 L73 67 L27 67 Z"/>',
-  diamond:  '<path d="M50 25 L73 50 L50 75 L27 50 Z"/>',
-  cross:    '<path d="M33 33 L67 67 M67 33 L33 67"/>',
-  chevron:  '<path d="M29 60 L50 35 L71 60"/>'
+  yarn:  '<circle cx="50" cy="52" r="22"/>'
+       + '<path d="M31 43 Q50 60 69 45"/><path d="M33 62 Q52 45 68 61"/>',
+  cat:   '<circle cx="50" cy="55" r="20"/><path d="M32 42 L29 23 L45 33"/><path d="M68 42 L71 23 L55 33"/>',
+  paw:   '<ellipse cx="50" cy="63" rx="16" ry="12"/><circle cx="31" cy="42" r="7"/>'
+       + '<circle cx="50" cy="34" r="7"/><circle cx="69" cy="42" r="7"/>',
+  fish:  '<path d="M26 50 Q45 31 64 50 Q45 69 26 50 Z"/><path d="M64 50 L80 38 L80 62 Z"/>',
+  bell:  '<path d="M34 61 Q34 30 50 30 Q66 30 66 61 Z"/><path d="M27 61 H73"/><path d="M50 69 v3"/>',
+  mouse: '<circle cx="45" cy="55" r="19"/><circle cx="33" cy="35" r="9"/><path d="M64 60 Q79 64 75 76"/>'
 };
 function shapeSvg(shape, stroke){
   return '<svg viewBox="0 0 100 100" aria-hidden="true" class="shp">'
@@ -5454,7 +5467,7 @@ const MODES = {
         const b = mk('button','swatch');
         b.type = 'button';
         b.style.background = c.hex;
-        if (assistOn()) b.innerHTML = shapeSvg(c.shape, 'var(--ink)');
+        b.innerHTML = mark(c.shape, 'var(--ink)');
         b.setAttribute('aria-label', inkName(c));
         onTap(b, () => c === correct ? ctx.win(b) : ctx.miss(b));
         row.appendChild(b);
@@ -6142,7 +6155,7 @@ const MODES = {
           dot.style.borderColor = item.ink.hex;
           dot.style.borderWidth = (item.big ? 10 : 7) + 'px';
         }
-        if (assistOn()) dot.innerHTML = shapeSvg(item.ink.shape, item.solid ? 'var(--ink)' : item.ink.hex);
+        dot.innerHTML = mark(item.ink.shape, item.solid ? 'var(--ink)' : item.ink.hex);
         stage.appendChild(dot);
 
         left.textContent  = rule === 'colour' ? inkName(pal[0]) : rule === 'size' ? t('sort.small') : t('sort.hollow');
@@ -6626,7 +6639,7 @@ const MODES = {
         e.classList.remove('sel','tangled');
         if (v){
           e.style.background = v.ink.hex;
-          e.innerHTML = assistOn() ? shapeSvg(v.ink.shape, 'var(--ink)') : '';
+          e.innerHTML = mark(v.ink.shape, 'var(--ink)');
           e.setAttribute('aria-label', inkName(v.ink));
         } else {
           e.style.background = '';
@@ -6983,7 +6996,7 @@ const MODES = {
         e.style.setProperty('--bink', ink.hex);
         e.setAttribute('role','img');
         e.setAttribute('aria-label', inkName(ink) + ' bin');
-        if (assistOn()) e.innerHTML = shapeSvg(ink.shape, ink.hex);
+        e.innerHTML = mark(ink.shape, ink.hex);
         binRow.appendChild(e);
         return { el:e, ink };
       });
@@ -7005,7 +7018,7 @@ const MODES = {
         e.style.background = ink.hex;
         e.setAttribute('role','button');
         e.setAttribute('aria-label', inkName(ink) + ' item');
-        if (assistOn()) e.innerHTML = shapeSvg(ink.shape, 'var(--ink)');
+        e.innerHTML = mark(ink.shape, 'var(--ink)');
         floor.appendChild(e);
         items.push({ el:e, ink, x, y, home:{x,y} });
       }
@@ -7443,7 +7456,7 @@ const MODES = {
         e.style.setProperty('--vk', ink.hex);
         e.setAttribute('role','button');
         e.setAttribute('aria-label', inkName(ink) + ' ' + t('sip.source'));
-        if (assistOn()) e.innerHTML = '<span class="shpwrap">' + shapeSvg(ink.shape, 'var(--ink)') + '</span>';
+        e.innerHTML = '<span class="shpwrap">' + mark(ink.shape, 'var(--ink)') + '</span>';
         top.appendChild(e);
         return { e, ink, spent:false };
       });
@@ -7452,7 +7465,7 @@ const MODES = {
         e.style.setProperty('--vk', ink.hex);
         e.setAttribute('role','button');
         e.setAttribute('aria-label', t('sip.wants', { c: inkName(ink) }));
-        if (assistOn()) e.innerHTML = '<span class="shpwrap">' + shapeSvg(ink.shape, ink.hex) + '</span>';
+        e.innerHTML = '<span class="shpwrap">' + mark(ink.shape, ink.hex) + '</span>';
         bottom.appendChild(e);
         return { e, ink, filled:false };
       });
@@ -9258,7 +9271,7 @@ const MODES = {
             + (v !== GONE && nbrs(i).some(j => g[j] === GONE) ? ' near' : '')
             + (v !== GONE && out.indexOf(v) >= 0 ? ' waited' : '');
           b.style.background = v === GONE ? '' : inks[v].hex;
-          b.innerHTML = v !== GONE && assistOn() ? shapeSvg(inks[v].shape, '#0D0918') : '';
+          b.innerHTML = v !== GONE ? mark(inks[v].shape, '#0D0918') : '';
           b.setAttribute('aria-label', v === GONE
             ? t('forage.gone', { r: Math.floor(i/N) + 1, c: (i % N) + 1 })
             : t('forage.cell', { k: inkName(inks[v]), r: Math.floor(i/N) + 1, c: (i % N) + 1 }));
@@ -9267,7 +9280,7 @@ const MODES = {
           const colour = out[x];
           d.className = 'antslot' + (colour === undefined ? ' free' : ' held');
           d.style.background = colour === undefined ? '' : inks[colour].hex;
-          d.innerHTML = colour !== undefined && assistOn() ? shapeSvg(inks[colour].shape, '#0D0918') : '';
+          d.innerHTML = colour !== undefined ? mark(inks[colour].shape, '#0D0918') : '';
           d.setAttribute('aria-label', colour === undefined ? t('forage.free')
             : t('forage.slot', { k: inkName(inks[colour]), n: left(colour) }));
         });
@@ -9763,7 +9776,7 @@ const MODES = {
         const b = mk('button','vgun v' + g.s);
         b.type = 'button';
         b.style.background = ink(tint[gi]).hex;
-        if (assistOn()) b.innerHTML = shapeSvg(ink(tint[gi]).shape, '#0D0918');
+        b.innerHTML = mark(ink(tint[gi]).shape, '#0D0918');
         if (g.s === 'L') place(b, 1, g.i + 2);
         else if (g.s === 'R') place(b, W + 2, g.i + 2);
         else if (g.s === 'T') place(b, g.i + 2, 1);
@@ -9784,7 +9797,7 @@ const MODES = {
           const v = grid[i], goal = target[i];
           b.className = 'vpix' + (v ? ' on' : ' bare') + (fresh.indexOf(i) >= 0 ? ' fresh' : '');
           b.style.background = ink(v || goal).hex;
-          b.innerHTML = assistOn() ? shapeSvg(ink(v || goal).shape, v ? '#0D0918' : '#ffffff59') : '';
+          b.innerHTML = mark(ink(v || goal).shape, v ? '#0D0918' : '#ffffff59');
           b.setAttribute('aria-label', v
             ? t('volley.cell',  { k: inkName(ink(v)),    r: Math.floor(i/W)+1, c: (i%W)+1 })
             : t('volley.blank', { k: inkName(ink(goal)), r: Math.floor(i/W)+1, c: (i%W)+1 }));
@@ -9911,7 +9924,7 @@ const MODES = {
       const btns = inks.map((c, ci) => { const b = mk('button','bkt');
         b.type = 'button';
         b.style.background = c.hex;
-        if (assistOn()) b.innerHTML = shapeSvg(c.shape, '#0D0918');
+        b.innerHTML = mark(c.shape, '#0D0918');
         b.setAttribute('aria-label', t('sift.put', { k: inkName(c) }));
         tray.appendChild(b); return b; });
       box.appendChild(tray);
@@ -9928,8 +9941,8 @@ const MODES = {
 
       const dress = (el, v) => {
         el.style.background = v === null || v === undefined ? '' : inks[v].hex;
-        el.innerHTML = (v !== null && v !== undefined && assistOn())
-          ? shapeSvg(inks[v].shape, '#0D0918') : '';
+        el.innerHTML = (v !== null && v !== undefined)
+          ? mark(inks[v].shape, '#0D0918') : '';
       };
 
       const paint = () => {
