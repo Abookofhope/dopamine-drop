@@ -803,8 +803,20 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.crypt.open .gh{opacity:1;transform:none}
 .cell.crypt.found{background:#9c7bff2e;border-color:#9C7BFF}
 .cell.crypt.wrong{background:#ff3d6e33;border-color:var(--bad)}
-.cell.crypt.swap{animation:cryptSwap .34s ease}
+/* Not .swap: that name already belongs to the full-screen "the mode changed"
+   card, which is position:absolute;inset:0. A cell wearing it inherited
+   both and stretched to cover the whole board on every shuffle. */
+.cell.crypt.crswap{animation:cryptSwap .34s ease}
 @keyframes cryptSwap{0%{transform:none}45%{transform:scale(.86) rotate(-4deg);background:#9c7bff22}100%{transform:none}}
+/* The ghost in transit. Absolute inside the grid, so it travels over the tiles
+   rather than between them, and lit so it stays the brightest thing on a board
+   that is otherwise all closed lids. */
+.grid.crypts{position:relative}
+.ghostdrift{position:absolute;display:grid;place-items:center;pointer-events:none;z-index:3;
+  transition:transform linear;will-change:transform}
+.ghostdrift svg{width:62%;aspect-ratio:1;display:block;fill:#9C7BFF;
+  filter:drop-shadow(0 0 9px #9c7bffcc)}
+.ghostdrift .eye{fill:var(--ink)}
 
 /* ── Bruise ───────────────────────────────────────────────────────────── */
 .cell.hole{background:var(--ink-3);border:1px solid var(--edge);border-radius:50%;position:relative;overflow:hidden}
@@ -3004,7 +3016,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.76.0';
+const VERSION_TAG = 'v0.77.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3685,7 +3697,7 @@ const STRINGS = {
     
     'p.glimmer':'{n} lamps still dark', 'm.glimmer':'Glimmer|Carry the light until every lamp is lit',
     'p.tidy':'{n} left on the floor', 'm.tidy':'Tidy|Drag the mess into the right bins',
-    'p.hauntLook':'{n} of them — watch closely', 'p.hauntPick':'{n} still to find', 'm.haunt':'Haunt|Watch the swaps — where did the ghosts end up?',
+    'p.hauntLook':'{n} of them — watch closely', 'p.hauntTrack':'Follow them', 'p.hauntPick':'{n} still to find', 'm.haunt':'Haunt|Watch the swaps — where did the ghosts end up?',
 
     
 
@@ -3870,7 +3882,7 @@ const STRINGS = {
     
     'p.glimmer':'{n} lampes éteintes', 'm.glimmer':'Lueur|Portez la lumière jusqu’à la dernière lampe',
     'p.tidy':'{n} encore au sol', 'm.tidy':'Rangement|Glissez le désordre dans les bons bacs',
-    'p.hauntLook':'{n} fantômes — regardez bien', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Hantise|Suivez les échanges — où sont-ils passés ?',
+    'p.hauntLook':'{n} fantômes — regardez bien', 'p.hauntTrack':'Suivez-les', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Hantise|Suivez les échanges — où sont-ils passés ?',
 
     
 
@@ -4055,7 +4067,7 @@ const STRINGS = {
     
     'p.glimmer':'{n} lámparas apagadas', 'm.glimmer':'Destello|Lleva la luz hasta encenderlas todas',
     'p.tidy':'Quedan {n} en el suelo', 'm.tidy':'Orden|Arrastra el desorden a su cubo',
-    'p.hauntLook':'{n} fantasmas — fíjate bien', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Embrujo|Sigue los cambios — ¿dónde acabaron?',
+    'p.hauntLook':'{n} fantasmas — fíjate bien', 'p.hauntTrack':'Síguelos', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Embrujo|Sigue los cambios — ¿dónde acabaron?',
 
     
 
@@ -4240,7 +4252,7 @@ const STRINGS = {
     
     'p.glimmer':'Noch {n} Lampen dunkel', 'm.glimmer':'Schimmer|Trag das Licht zu jeder Lampe',
     'p.tidy':'Noch {n} am Boden', 'm.tidy':'Aufräumen|Zieh das Chaos in die richtigen Kisten',
-    'p.hauntLook':'{n} Geister — gut hinsehen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Spuk|Verfolge die Tausche — wo sind sie gelandet?',
+    'p.hauntLook':'{n} Geister — gut hinsehen', 'p.hauntTrack':'Folge ihnen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Spuk|Verfolge die Tausche — wo sind sie gelandet?',
 
     
 
@@ -4360,6 +4372,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.77.0', date:'2026-09-25', items:[
+    'Haunt is a shell game again. It picked both tiles of every swap at random out of the whole board, so with one ghost among sixteen tiles almost every swap moved nothing: the board flashed somewhere that did not matter and the ghost stayed where it was. There was no thread to lose, which is why it looked like the screen flashing at random. Every swap now moves a ghost, and you can see it go \u2014 the ghost crosses the board between the two tiles instead of both of them blinking at once, and the shuffle runs slightly slower so there is something to follow. Also fixed: a swapped tile briefly stretched to cover the entire board, because it shared a class name with the full-screen card that announces a new mode.',
+  ] },
   { v:'0.76.0', date:'2026-09-25', items:[
     'Twenty-four modes are gone: Pivot, Needle, Rising Tap, Leash, Echo, Blink, Umbra, Facedown, Single Stroke, Shift, Tell, Mint, Word Snap, Letter Gap, Seek, Metronome, Chorus, Backbeat, Ramp, Keep, Pour, Thaw, Weave and Braid. Forty-two remain. Rhythm and Memory lost so much to that cut that they were down to one mode each, and a family you tap into to find a single game is not a family \u2014 so they are retired too, with Off Beat joining Reflex and Haunt joining Focus. Eight families now, every one of them with real depth. Their strings, styles and prompts went with them, which is about 150KB less to download.',
   ] },
@@ -6848,7 +6863,9 @@ const MODES = {
       const n = g*g;
       const ghosts = clamp(1 + Math.floor(ctx.level/5), 1, Math.max(1, Math.floor(n/4)));
       const swaps  = clamp(2 + Math.floor(ctx.level/2), 2, 9);
-      const pace   = clamp(560 - ctx.level*14, 190, 560);
+      /* Floor raised from 190ms: below about a quarter-second a ghost crossing
+         the board is a smear, and the whole mode is asking you to watch it. */
+      const pace   = clamp(620 - ctx.level*14, 300, 620);
 
       let where = shuffle(Array.from({length:n},(_,i)=>i), ctx.rnd).slice(0, ghosts);
       const picked = new Set();
@@ -6864,14 +6881,36 @@ const MODES = {
         b.setAttribute('aria-label', t('a.tile', { n: i+1 }));
         els.push(b); grid.appendChild(b);
       }
+      grid.classList.add('crypts');
       ctx.surface.appendChild(grid);
       const reveal = on => els.forEach((e,i) => e.classList.toggle('open', on && where.includes(i)));
+
+      /* A swap you cannot see is not a swap, it is a flash. This sends a ghost
+         across the gap between the two tiles at the pace of the round, so the
+         thing you are asked to track is a thing that visibly moves. */
+      const drift = (from, to) => {
+        if (motionOff()) return;
+        const gr = grid.getBoundingClientRect();
+        const ra = els[from].getBoundingClientRect(), rb = els[to].getBoundingClientRect();
+        const m = mk('span','ghostdrift');
+        m.innerHTML = els[from].querySelector('.gh').innerHTML;
+        m.style.left = (ra.left - gr.left) + 'px';
+        m.style.top  = (ra.top  - gr.top)  + 'px';
+        m.style.width = ra.width + 'px';
+        m.style.height = ra.height + 'px';
+        m.style.transitionDuration = Math.round(pace * 0.78) + 'ms';
+        grid.appendChild(m);
+        rawRAF(() => { m.style.transform =
+          'translate(' + (rb.left - ra.left) + 'px,' + (rb.top - ra.top) + 'px)'; });
+        ctx.after(pace + 140, () => m.remove());
+      };
 
       reveal(true);
       ctx.prompt(t('p.hauntLook', { n: ghosts }));
 
       ctx.after(clamp(1300 - ctx.level*25, 650, 1300), () => {
         reveal(false);
+        ctx.prompt(t('p.hauntTrack'));
         let k = 0;
         const step = () => {
           if (k++ >= swaps){
@@ -6879,18 +6918,25 @@ const MODES = {
             ctx.prompt(t('p.hauntPick', { n: ghosts }));
             return;
           }
-          /* Swap two tiles and say so on both, so the movement is legible on a
-             small screen rather than a flicker you have to have been staring at. */
-          const a = Math.floor(ctx.rnd()*n);
-          let b2 = Math.floor(ctx.rnd()*n);
-          while (b2 === a) b2 = Math.floor(ctx.rnd()*n);
-          where = where.map(w => w === a ? b2 : w === b2 ? a : w);
+          /* Move a tile that actually holds a ghost, into one that does not.
+             This used to pick both tiles at random out of all n, so with one
+             ghost in sixteen tiles almost every swap carried nothing: the board
+             flashed on a pair that did not matter and the ghost stayed put.
+             There was no thread to lose, which is why it read as the screen
+             flashing at random — it was. Every swap moves a ghost now. */
+          const from = where[Math.floor(ctx.rnd()*where.length)];
+          const free = [];
+          for (let i=0;i<n;i++) if (!where.includes(i)) free.push(i);
+          if (!free.length) return ctx.after(pace, step);
+          const to = free[Math.floor(ctx.rnd()*free.length)];
+          where = where.map(w => w === from ? to : w);
+          drift(from, to);
           /* Clear the marker after the animation. Left on, it accumulates across
              the sequence until most of the board is wearing it, and the swap
              stops being the one thing moving. */
-          [a,b2].forEach(i => {
-            els[i].classList.remove('swap'); void els[i].offsetWidth; els[i].classList.add('swap');
-            ctx.after(360, () => els[i].classList.remove('swap'));
+          [from,to].forEach(i => {
+            els[i].classList.remove('crswap'); void els[i].offsetWidth; els[i].classList.add('crswap');
+            ctx.after(360, () => els[i].classList.remove('crswap'));
           });
           sfx.tap();
           ctx.after(pace, step);
