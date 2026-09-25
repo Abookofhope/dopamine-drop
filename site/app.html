@@ -3087,7 +3087,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.83.0';
+const VERSION_TAG = 'v0.84.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4443,6 +4443,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.84.0', date:'2026-09-25', items:[
+    'Every mode card has a new icon. They were the last thing still drawn from the old game — Untangle wore two pipe elbows, Basket Drop wore a funnel, Spool Shots wore a cannon — and they are the most repeated art in the whole thing, on every card, in every preview and at the top of every round. All forty-two are redrawn as what the mode actually is now: skeins, stitches, dye pots, scissors, an embroidery hoop, a pair of cat eyes, a latch hook, a set of scales with a basket hanging off each end.',
+  ] },
   { v:'0.83.0', date:'2026-09-25', items:[
     'All forty-two modes live in the same place now: a cat’s craft room. Odd One Out is Odd Skein, Snap Order is Count the Stitches, Colour Trap is Dye Trap. Slide Path is Let the Cat Out, because that is what you are doing. Arc is Cat’s Cradle, Bruise is Mending, Slice is Snip, Descent is a Dropped Stitch, Forge is Patchwork, Bridge is Darning, Latch is a Latch Hook, Meld is the Yarn Shop, Tide Breath is a Purr. Names, blurbs and the lines the game says mid-round, in all four languages. Not one rule changed — every mode plays exactly as it did, it just stopped describing a board nobody was looking at.',
   ] },
@@ -5442,7 +5445,7 @@ const MODES = {
     /* One tap was not a round, it was a reflex test with a scoreboard. Three
        boards in a row is the same puzzle asked properly. */
     stages: lvl => clamp(2 + Math.floor(lvl/9), 2, 4),
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="13" y="3" width="8" height="8" rx="2" fill="#6C6191"/><rect x="3" y="13" width="8" height="8" rx="2" fill="#6C6191"/><rect x="13" y="13" width="8" height="8" rx="2" fill="#FF5B39"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#6C6191" stroke-width="2"><circle cx="6.5" cy="7.5" r="3.6"/><circle cx="17.5" cy="7.5" r="3.6"/></g><circle cx="12" cy="16.5" r="4.2" fill="none" stroke="#FF5B39" stroke-width="2.4"/><path d="M8.4 15.2 Q12 18.6 15.6 15.2" fill="none" stroke="#FF5B39" stroke-width="1.6"/></svg>',
     build(ctx){
       const n = clamp(2 + Math.floor(ctx.level/4), 2, 6);
       /* A perceptual target, not a hue offset — and floored well above the
@@ -5489,7 +5492,7 @@ const MODES = {
        was judged against a third of the time it takes. Par follows the board
        now, at the same 1.27s a bubble the original number implied. */
     parAt: lvl => 1270 * clamp(3 + Math.floor(lvl/2), 3, 12),
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="18" r="3.2" fill="#FF5B39"/><circle cx="12" cy="11" r="3.2" fill="#6C6191"/><circle cx="19" cy="5" r="3.2" fill="#6C6191"/><path d="M7 16.2 10.2 13M14 9.2 17 6.6" stroke="#6C6191" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#FF5B39" stroke-width="2.3" stroke-linecap="round"><path d="M4 16.5l2.4-3 2.4 3"/><path d="M9.6 13l2.4-3 2.4 3"/><path d="M15.2 9.5l2.4-3 2.4 3"/></g><path d="M3 20.5h18" stroke="#6C6191" stroke-width="1.8" stroke-linecap="round"/></svg>',
     build(ctx){
       const n = clamp(3 + Math.floor(ctx.level/2), 3, 12);
       /* Placement must never give up and drop a bubble in at random — that is
@@ -5547,7 +5550,7 @@ const MODES = {
     /* The interference only bites once you are going fast, and one word is
        over before that happens. */
     stages: lvl => clamp(3 + Math.floor(lvl/10), 3, 5),
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="#FF5B39"/><rect x="9" y="14" width="12" height="7" rx="3.5" fill="none" stroke="#6C6191" stroke-width="2"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v4l3 12H6L9 7z" fill="none" stroke="#6C6191" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="15" r="3.2" fill="#FF5B39"/></svg>',
     build(ctx){
       const k = clamp(3 + Math.floor(ctx.level/6), 3, 6);
       const pool = shuffle(INKS.slice(), ctx.rnd).slice(0, k);
@@ -5597,7 +5600,7 @@ const MODES = {
   /* ── 5. Rewire — a real puzzle; no wrong taps, only time spent ───────── */
   rewire: {
     name:'Untangle', blurb:'Turn the knots until the thread reaches the cat', cat:'logic', par:8000, bonus:2600,
-    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 12h6a2 2 0 0 0 2-2V4"/><path d="M12 20v-6a2 2 0 0 1 2-2h6" stroke="#6C6191"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5c5 0 5 9 10 9s6-4.5 6-4.5" fill="none" stroke="#33E6C8" stroke-width="2.3" stroke-linecap="round"/><path d="M4 16.5c5 0 5-9 10-9" fill="none" stroke="#6C6191" stroke-width="2.3" stroke-linecap="round"/></svg>',
     build(ctx){
       const n = ctx.level < 5 ? 3 : ctx.level < 20 ? 4 : 5;
       const minLen = clamp(3 + Math.floor(ctx.level/2), 3, n*n - 1);
@@ -5733,7 +5736,7 @@ const MODES = {
   /* ── 6. Sum Snap — light arithmetic, no wrong-answer spiral ──────────── */
   sum: {
     name:'Stitch Count', blurb:'Find two counts that hit the target', cat:'numbers', par:5000, bonus:1800,
-    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#FFC53D" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#FFC53D" stroke-width="2.4" stroke-linecap="round"><path d="M3.5 16l2.4-3 2.4 3"/><path d="M15.7 16l2.4-3 2.4 3"/></g><path d="M12 8.5v5M9.5 11h5" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/></svg>',
     build(ctx){
       const n = ctx.level < 4 ? 3 : ctx.level < 18 ? 4 : 5;
       const max = Math.round(6 + Math.min(30, ctx.level*1.6));
@@ -5783,7 +5786,7 @@ const MODES = {
   count: {
     name:'Quick Count', blurb:'Count them before the clock does', cat:'numbers', par:4200, bonus:1600,
     stages: lvl => clamp(2 + Math.floor(lvl/14), 2, 3),
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="8" r="3" fill="#FF5B39"/><circle cx="16" cy="7" r="3" fill="#6C6191"/><circle cx="9" cy="16" r="3" fill="#6C6191"/><circle cx="17" cy="16" r="3" fill="#FF5B39"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#FFC53D" stroke-width="2.2" stroke-linecap="round"><path d="M3 17l2-2.6 2 2.6"/><path d="M8 17l2-2.6 2 2.6"/></g><circle cx="17.2" cy="9" r="5" fill="none" stroke="#6C6191" stroke-width="2"/><path d="M17.2 6.2V9l2 1.4" fill="none" stroke="#6C6191" stroke-width="1.8" stroke-linecap="round"/></svg>',
     build(ctx){
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0,3);
       const target = pal[0];
@@ -5870,7 +5873,7 @@ const MODES = {
   /* ── 8. Mirror — spatial reflection. Taps toggle, so it costs time ───── */
   mirror: {
     name:'Mirror Stitch', blurb:'Reflect the pattern across the fold', cat:'logic', par:7500, bonus:2400,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="7" height="14" rx="2" fill="#FF5B39"/><rect x="14" y="5" width="7" height="14" rx="2" fill="#33E6C8" opacity=".5"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5v19" stroke="#6C6191" stroke-width="1.8" stroke-dasharray="3 3"/><path d="M4 9.5l3-3 3 3" fill="none" stroke="#33E6C8" stroke-width="2.3" stroke-linecap="round"/><path d="M20 14.5l-3 3-3-3" fill="none" stroke="#33E6C8" stroke-width="2.3" stroke-linecap="round"/></svg>',
     build(ctx){
       const half = ctx.level < 5 ? 2 : ctx.level < 20 ? 3 : 4;
       const w = half*2, h = half*2;
@@ -5919,7 +5922,7 @@ const MODES = {
   /* ── 11. Slide Path — planning about order and space ─────────────────── */
   slide: {
     name:'Let the Cat Out', blurb:'Clear the way so the cat can get out', cat:'logic', par:9000, bonus:2800,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="10" width="9" height="4" rx="1.5" fill="#FF5B39"/><rect x="15" y="4" width="4" height="9" rx="1.5" fill="#6C6191"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 3v18h6" fill="none" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><g fill="none" stroke="#33E6C8" stroke-width="2" stroke-linejoin="round"><path d="M13.2 10.4l-.8-4 3.1 2"/><path d="M19.8 10.4l.8-4-3.1 2"/><circle cx="16.5" cy="14.4" r="4.6"/></g></svg>',
     build(ctx){
       const n = ctx.level < 6 ? 4 : ctx.level < 20 ? 5 : 6;
       const carRow = n <= 4 ? 2 : Math.floor(n/2);
@@ -6109,7 +6112,7 @@ const MODES = {
      about trivia, and a phrase nobody recognises is not harder, just worse. */
   wheel: {
     name:'Stitch Sampler', blurb:'Guess letters to finish the sampler', cat:'words', par:14000, bonus:3600,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#4BC0FF" stroke-width="2"/><path d="M12 3v9l7.5 4.3" stroke="#4BC0FF" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M12 12 4.5 16.3" stroke="#6C6191" stroke-width="1.8" stroke-linecap="round" opacity=".6"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="#6C6191" stroke-width="2"/><circle cx="12" cy="12" r="6" fill="none" stroke="#4BC0FF" stroke-width="1.5"/><path d="M9.4 15.2l2.6-6.4 2.6 6.4M10.3 13.2h3.4" fill="none" stroke="#4BC0FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     build(ctx){
       const entry = ctx.deal(phraseBank(), 'phrase:' + save.lang);
       const phrase = entry.text.toUpperCase();
@@ -6181,7 +6184,7 @@ const MODES = {
   /* ── 15. Off Beat — timing, which nothing else in the roster tests ────── */
   beat: {
     name:'Off Beat', blurb:'Find the paw that is out of time', cat:'reflex', par:6000, bonus:2000,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 17h20" stroke="#FF8AD8" stroke-width="1.6" stroke-linecap="round" opacity=".4"/><circle cx="5" cy="17" r="2.4" fill="#FF8AD8"/><circle cx="12" cy="9" r="2.4" fill="#FF8AD8"/><circle cx="19" cy="17" r="2.4" fill="#FF8AD8"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#6C6191"><circle cx="5" cy="14" r="2.4"/><circle cx="12" cy="14" r="2.4"/></g><circle cx="19" cy="8.4" r="2.9" fill="#FF3D6E"/><path d="M2.5 19.5h19" stroke="#6C6191" stroke-width="1.6" stroke-linecap="round"/></svg>',
     build(ctx){
       const n = clamp(3 + Math.floor(ctx.level/4), 3, 8);
       const period = clamp(900 - ctx.level*22, 420, 900);
@@ -6214,7 +6217,7 @@ const MODES = {
   /* ── 16. Sort Drop — the rule flips mid-round, which nothing else does ── */
   sort: {
     name:'Sorting Basket', blurb:'Sort by the rule — it changes', cat:'focus', par:7000, bonus:2200,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8" stroke="#6C6191" stroke-width="2.4" stroke-linecap="round"/><rect x="2" y="14" width="8" height="7" rx="2" fill="#FF5B39"/><rect x="14" y="14" width="8" height="7" rx="2" fill="#33E6C8"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5h16l-1.7 9H5.7z" fill="none" stroke="#6C6191" stroke-width="2" stroke-linejoin="round"/><circle cx="8.5" cy="5.5" r="2.7" fill="#FF5B39"/><rect x="13.6" y="2.8" width="5.4" height="5.4" rx="1.4" fill="#6C6191"/></svg>',
     build(ctx){
       const rounds = clamp(3 + Math.floor(ctx.level/4), 3, 10);
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0,2);
@@ -6308,7 +6311,7 @@ const MODES = {
      a greedy nearest-first run strands the far ones. */
   arc: {
     name:'Cat’s Cradle', blurb:'Loop every peg before the thread goes slack', cat:'reflex', par:6000, bonus:2000,
-    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#FFC53D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5 L20 12 L4 19" fill="none" stroke="#FF3D6E" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 5 L4 12 L20 19" fill="none" stroke="#6C6191" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     build(ctx){
       const n = clamp(4 + Math.floor(ctx.level/3), 4, 11);
       const pts = [];
@@ -6408,7 +6411,7 @@ const MODES = {
      a gradient you can actually descend. */
   slack: {
     name:'No Crossing', blurb:'Drag the pegs until no thread crosses', input:'drag', cat:'logic', par:11000, bonus:3000,
-    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#33E6C8" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 6c6 4 10 8 16 12M20 6C14 10 10 14 4 18"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8 Q12 3.5 21 8" fill="none" stroke="#33E6C8" stroke-width="2.3" stroke-linecap="round"/><path d="M3 16 Q12 20.5 21 16" fill="none" stroke="#6C6191" stroke-width="2.3" stroke-linecap="round"/></svg>',
     build(ctx){
       const n = clamp(5 + Math.floor(ctx.level/4), 5, 9);
       /* Nodes evenly on a circle and edges only between near neighbours is a
@@ -6510,7 +6513,7 @@ const MODES = {
      is the only mode whose difficulty is being too fast. */
   tide: {
     name:'Purr', blurb:'Hold to swell, let go to settle — stay in the band', input:'drag', cat:'calm', par:12000, bonus:3000,
-    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#7BE38A" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9" opacity=".45"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 14.5 Q7 9.5 12 14.5 T22 14.5" fill="none" stroke="#7BE38A" stroke-width="2.1" stroke-linecap="round"/><path d="M2 19.5 Q7 15 12 19.5 T22 19.5" fill="none" stroke="#6C6191" stroke-width="2.1" stroke-linecap="round"/><path d="M7.6 7q1.5-1.8 3 0M13.4 7q1.5-1.8 3 0" fill="none" stroke="#7BE38A" stroke-width="1.9" stroke-linecap="round"/></svg>',
     build(ctx){
       const need = clamp(2 + Math.floor(ctx.level/6), 2, 5);
       const speed = 0.045 + Math.min(0.03, ctx.level*0.0015);
@@ -6554,7 +6557,7 @@ const MODES = {
      board — the bounce is still random, but you get to load the dice. */
   plink: {
     name:'Basket Drop', blurb:'Pull one peg, then drop into the lit basket', input:'tapdrag', cat:'physics', par:8000, bonus:2400,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2.4" fill="#FF9A3D"/><circle cx="7" cy="11" r="1.6" fill="#6C6191"/><circle cx="17" cy="11" r="1.6" fill="#6C6191"/><circle cx="12" cy="16" r="1.6" fill="#6C6191"/><rect x="3" y="19" width="18" height="3" rx="1.4" fill="#33E6C8"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="3.6" r="2.2" fill="#FF9A3D"/><g fill="#6C6191"><circle cx="7.8" cy="9" r="1.5"/><circle cx="16.2" cy="9" r="1.5"/><circle cx="12" cy="13" r="1.5"/></g><path d="M6 16.8h12l-1.3 4.2H7.3z" fill="none" stroke="#FF9A3D" stroke-width="2" stroke-linejoin="round"/></svg>',
     build(ctx){
       const rows = clamp(3 + Math.floor(ctx.level/5), 3, 6);
       const bins = rows + 1;
@@ -6630,7 +6633,7 @@ const MODES = {
      you twice. */
   peril: {
     name:'Cat Fight', blurb:'Read the tell, pick the counter, win the scrap', cat:'logic', par:9000, bonus:2800,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="none" stroke="#33E6C8" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9.5v5" stroke="#33E6C8" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.15" fill="#33E6C8"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#33E6C8" stroke-width="1.9" stroke-linejoin="round"><path d="M3.2 8.2l-.7-3.5 2.8 1.7"/><path d="M9.6 8.2l.7-3.5-2.8 1.7"/><circle cx="6.4" cy="11.2" r="3.8"/></g><g fill="none" stroke="#6C6191" stroke-width="1.9" stroke-linejoin="round"><path d="M14.4 15.6l-.7-3.5 2.8 1.7"/><path d="M20.8 15.6l.7-3.5-2.8 1.7"/><circle cx="17.6" cy="18.6" r="3.8"/></g></svg>',
     build(ctx){
       const TELLS = {
         swing:  { beats:'parry',  ico:'M5 19 19 5M14 5h5v5' },
@@ -6733,7 +6736,7 @@ const MODES = {
      tempo against the fill, which is the only currency here. */
   tumble: {
     name:'Tumble Dryer', blurb:'Pair the socks faster than the drum refills', cat:'focus', par:9000, bonus:2600,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="8" fill="none" stroke="#FF5B39" stroke-width="1.8"/><rect x="8" y="9" width="5" height="5" rx="1.3" fill="#FF5B39" transform="rotate(18 10.5 11.5)"/><rect x="13" y="10.5" width="4" height="4" rx="1.1" fill="#33E6C8" transform="rotate(-14 15 12.5)"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#6C6191" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#FF5B39" stroke-width="2"/><circle cx="12" cy="3.6" r="1.4" fill="#FF5B39"/></svg>',
     build(ctx){
       const g = ctx.level < 8 ? 4 : 5;
       const cells = g*g;
@@ -6833,7 +6836,7 @@ const MODES = {
      where the window sits changes how hard it is, not just how wide it is. */
   skim: {
     name:'Needle Pass', blurb:'Tap as the needle crosses — the gap narrows each time', cat:'reflex', par:6000, bonus:2200,
-    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#4BC0FF" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M3 16c4-6 8 2 12-4M17 6l4 2-4 2"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 5v14M20.5 5v14" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><path d="M6.5 12h11" stroke="#FF3D6E" stroke-width="2.4" stroke-linecap="round"/><circle cx="7.2" cy="12" r="1.7" fill="#FF3D6E"/></svg>',
     build(ctx){
       const need = clamp(3 + Math.floor(ctx.level/4), 3, 7);
       let width = clamp(26 - ctx.level*0.7, 9, 26);
@@ -6909,7 +6912,7 @@ const MODES = {
      play and the correct play come apart. Colour is the health bar. */
   bruise: {
     name:'Mending', blurb:'Finish the frayed ones before they unravel', cat:'reflex', par:7000, bonus:2400,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="10" r="5" fill="#FF3D6E"/><circle cx="16" cy="15" r="4" fill="#9C7BFF"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="12" rx="2.2" fill="none" stroke="#6C6191" stroke-width="2"/><path d="M8.4 6v12M12 6v12M15.6 6v12" stroke="#FF3D6E" stroke-width="1.8" stroke-dasharray="2.4 2.4"/></svg>',
     build(ctx){
       const g = ctx.level < 7 ? 3 : 4;
       const need   = clamp(4 + Math.floor(ctx.level/3), 4, 12);
@@ -7101,7 +7104,7 @@ const MODES = {
      place is a mistake, because a drag that missed by ten pixels is not one. */
   tidy: {
     name:'Tidy Up', blurb:'Drag the mess into the right baskets', input:'drag', cat:'focus', par:11000, bonus:3000,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2.6" fill="#FF5B39"/><circle cx="15" cy="7" r="2.6" fill="#33E6C8"/><circle cx="9" cy="11" r="2.6" fill="#33E6C8"/><rect x="2" y="16" width="8" height="6" rx="2" fill="#FF5B39" opacity=".5"/><rect x="14" y="16" width="8" height="6" rx="2" fill="#33E6C8" opacity=".5"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5h16l-1.7 8H5.7z" fill="none" stroke="#6C6191" stroke-width="2" stroke-linejoin="round"/><circle cx="8" cy="5" r="2.3" fill="#FF5B39"/><circle cx="15.4" cy="7.2" r="2.3" fill="#FF5B39" opacity=".55"/></svg>',
     build(ctx){
       const kinds = clamp(2 + Math.floor(ctx.level/8), 2, 4);
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, kinds);
@@ -7211,7 +7214,7 @@ const MODES = {
      of tightening. That arc is the mode: it gets easier, and it is meant to. */
   glimmer: {
     name:'Cat’s Eyes', blurb:'Carry the light until every lamp is lit', input:'drag', cat:'calm', par:13000, bonus:3200,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="#FFC53D"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="#FFC53D" stroke-width="1.4" opacity=".45"/><circle cx="19" cy="6" r="1.6" fill="#7BE38A"/><circle cx="5" cy="18" r="1.6" fill="#7BE38A"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#7BE38A" stroke-width="2" stroke-linejoin="round"><path d="M2.5 10 Q7 5.6 11.5 10 Q7 14.4 2.5 10Z"/><path d="M12.5 10 Q17 5.6 21.5 10 Q17 14.4 12.5 10Z"/></g><circle cx="7" cy="10" r="1.7" fill="#7BE38A"/><circle cx="17" cy="10" r="1.7" fill="#7BE38A"/><path d="M4.5 18.5h15" stroke="#6C6191" stroke-width="1.6" stroke-linecap="round"/></svg>',
     build(ctx){
       const lamps = clamp(3 + Math.floor(ctx.level/4), 3, 9);
       let reach = 26;
@@ -7285,7 +7288,7 @@ const MODES = {
      worse than a careful two. */
   slice: {
     name:'Snip', blurb:'One snip cuts every thread it crosses — miss the knots', input:'drag', cat:'reflex', par:7000, bonus:2400,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="15" r="4" fill="#7BE38A"/><circle cx="16" cy="9" r="4.5" fill="#FF9A3D"/><path d="M3 20 21 4" stroke="#FFF3E6" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#FF3D6E" stroke-width="2.1" stroke-linecap="round"><path d="M6.5 3.5l9.5 12"/><path d="M17.5 3.5l-9.5 12"/></g><g fill="none" stroke="#6C6191" stroke-width="2"><circle cx="6.6" cy="18.6" r="2.6"/><circle cx="17.4" cy="18.6" r="2.6"/></g></svg>',
     build(ctx){
       const need  = clamp(4 + Math.floor(ctx.level/2), 4, 14);
       const total = clamp(5 + Math.floor(ctx.level/1.6), 5, 16);
@@ -7374,7 +7377,7 @@ const MODES = {
      tapping the leaf itself does nothing at all. */
   ripple: {
     name:'Ripples', blurb:'Tap the water — the ripples carry the leaf', cat:'physics', par:17000, bonus:3600,
-    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#4BC0FF" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="14" r="3"/><circle cx="9" cy="14" r="6.5" opacity=".5"/><path d="M15 6c2 1 3 3 3 5" stroke="#7BE38A" stroke-width="2.2" stroke-linecap="round"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#FF9A3D"><circle cx="12" cy="12" r="3" stroke-width="2.2"/><circle cx="12" cy="12" r="6.6" stroke-width="1.8" opacity=".7"/><circle cx="12" cy="12" r="10" stroke-width="1.4" opacity=".4"/></g></svg>',
     build(ctx){
       const gates = clamp(2 + Math.floor(ctx.level/5), 2, 5);
       /* Measured, not guessed: the first cut sent the leaf 53% of the pool on a
@@ -7466,7 +7469,7 @@ const MODES = {
      so a late correction cannot save a bad one. */
   descent: {
     name:'Dropped Stitch', blurb:'Steer the falling bobbin through every gap', input:'drag', cat:'reflex', par:9000, bonus:2800,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="3" width="8.5" height="3.6" rx="1.4" fill="#FF3D6E"/><rect x="14" y="3" width="8.5" height="3.6" rx="1.4" fill="#FF3D6E"/><path d="M12 8v4.5" stroke="#FF3D6E" stroke-width="1.6" stroke-linecap="round" opacity=".45"/><path d="M12 13l2.3 4h-4.6z" fill="#FF3D6E"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h4.5M3 20h4.5M16.5 4H21M16.5 20H21" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><rect x="9.8" y="8" width="4.4" height="8" rx="1" fill="none" stroke="#FF3D6E" stroke-width="2"/><path d="M8.6 8h6.8M8.6 16h6.8" stroke="#FF3D6E" stroke-width="2" stroke-linecap="round"/></svg>',
     build(ctx){
       const gates = clamp(3 + Math.floor(ctx.level/3), 3, 9);
       const fall  = 0.30 + Math.min(0.42, ctx.level*0.018);
@@ -7560,7 +7563,7 @@ const MODES = {
      targets before you start rather than correcting as you go. */
   siphon: {
     name:'Dye Pots', blurb:'Pour each dye into the pot that wants it', input:'drag', cat:'focus', par:10000, bonus:2800,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h5v6l-3 10H6z" fill="#FF5B39"/><path d="M13 8h5v11h-5z" fill="#33E6C8" opacity=".55"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h5.4v3l-1.8 4H6.8L5 6.5z" fill="none" stroke="#6C6191" stroke-width="1.9" stroke-linejoin="round"/><path d="M13.4 12.5h7.2l-1.3 8h-4.6z" fill="none" stroke="#FF5B39" stroke-width="2" stroke-linejoin="round"/><path d="M9 11.4 Q11.6 14.4 15 14.4" fill="none" stroke="#FF5B39" stroke-width="1.8" stroke-linecap="round"/></svg>',
     build(ctx){
       const n = clamp(2 + Math.floor(ctx.level/6), 2, 5);
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, n);
@@ -7656,7 +7659,7 @@ const MODES = {
      way through a tall one. */
   cairn: {
     name:'Folds', blurb:'Stack the knits — every overhang is gone for good', cat:'physics', par:12000, bonus:3200,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="17" width="18" height="4" rx="1.6" fill="#33E6C8" opacity=".5"/><rect x="6" y="12" width="13" height="4" rx="1.6" fill="#33E6C8" opacity=".75"/><rect x="9" y="7" width="9" height="4" rx="1.6" fill="#33E6C8"/><rect x="11" y="2" width="6" height="4" rx="1.6" fill="#33E6C8" opacity=".55"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke-width="2" stroke-linejoin="round"><rect x="3.5" y="15" width="17" height="5.2" rx="1.7" stroke="#6C6191"/><rect x="5.8" y="9.4" width="12.4" height="5.2" rx="1.7" stroke="#FF9A3D"/><rect x="8.2" y="3.8" width="7.6" height="5.2" rx="1.7" stroke="#6C6191"/></g></svg>',
     build(ctx){
       const need  = 4 + Math.min(6, Math.floor(ctx.level/4));
       const rows  = need + 2;
@@ -7746,7 +7749,7 @@ const MODES = {
      answer, and the near-misses get nearer as the level climbs. */
   drift: {
     name:'Tangle Watch', blurb:'Two of these will meet — find them before they tangle', cat:'focus', par:13000, bonus:3400,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6" r="2.6" fill="#FF5B39"/><circle cx="19" cy="18" r="2.6" fill="#FF5B39"/><circle cx="18" cy="6" r="2.2" fill="#FF5B39" opacity=".35"/><circle cx="6" cy="18" r="2.2" fill="#FF5B39" opacity=".35"/><path d="M7.4 7.6 16.6 16.4" stroke="#FF5B39" stroke-width="1.3" stroke-dasharray="2 2" fill="none"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5 Q12 12 21 19" fill="none" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><path d="M3 19 Q12 12 21 5" fill="none" stroke="#FF5B39" stroke-width="2.3" stroke-linecap="round"/><circle cx="12" cy="12" r="2.6" fill="#FF5B39"/></svg>',
     build(ctx){
       const R      = 6.4;
       const n      = 4 + Math.min(4, Math.floor(ctx.level/5));
@@ -7883,7 +7886,7 @@ const MODES = {
      so one stroke always exists that solves the board. */
   chalk: {
     name:'Chalk Line', blurb:'Draw the ramp, then watch — no second chances', input:'drag', cat:'physics', par:14000, bonus:3600,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="4.5" r="2.6" fill="#4BC0FF"/><path d="M3 11c4.5 0 9 2.4 11 7" stroke="#4BC0FF" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-dasharray="3 2.4"/><path d="M16 20h5v-3h-5z" fill="#4BC0FF" opacity=".55"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="4.6" r="2.4" fill="#FF9A3D"/><path d="M3 12 Q10 20 20.5 16" fill="none" stroke="#FF9A3D" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3.5 3"/><path d="M16.5 20.5h5" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/></svg>',
     build(ctx){
       const R  = 3.4;                                   /* ball radius, % of field */
       const BW = clamp(17 - ctx.level*0.35, 10, 17);    /* basket mouth */
@@ -8052,7 +8055,7 @@ const MODES = {
      exists, which makes every round catchable by someone quick enough. */
   gather: {
     name:'Catch the Balls', blurb:'Catch the good ones, let the tangles fall', input:'drag', cat:'reflex', par:13000, bonus:3400,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="4" r="2" fill="#FF3D6E"/><circle cx="15" cy="8" r="2" fill="#FF3D6E" opacity=".4"/><circle cx="10" cy="11" r="2" fill="#FF3D6E"/><path d="M4 16h16l-2 5H6z" fill="none" stroke="#FF3D6E" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5.6" r="3" fill="#FF3D6E"/><path d="M5 13h14l-1.6 7.5H6.6z" fill="none" stroke="#6C6191" stroke-width="2" stroke-linejoin="round"/></svg>',
     build(ctx){
       const EGG   = 8;                                      /* egg width, % of field */
       const MOUTH = clamp(26 - ctx.level*0.5, 17, 26);      /* the rim the player sees */
@@ -8224,7 +8227,7 @@ const MODES = {
      always exists, and the parts in the tray are exactly the parts it takes. */
   forge: {
     name:'Patchwork', blurb:'Fit every patch into the pattern — nothing left over', cat:'make', par:16000, bonus:4200,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.4" fill="#C08BFF"/><rect x="13" y="3" width="8" height="4" rx="1.4" fill="#C08BFF" opacity=".5"/><rect x="3" y="13" width="4" height="8" rx="1.4" fill="#C08BFF" opacity=".5"/><rect x="9" y="13" width="12" height="8" rx="1.4" fill="none" stroke="#C08BFF" stroke-width="1.6" stroke-dasharray="2.4 2"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke-width="1.9"><rect x="3" y="3" width="8" height="8" rx="1.5" stroke="#C08BFF"/><rect x="13" y="3" width="8" height="8" rx="1.5" stroke="#6C6191"/><rect x="3" y="13" width="8" height="8" rx="1.5" stroke="#6C6191"/><rect x="13" y="13" width="8" height="8" rx="1.5" stroke="#C08BFF"/></g></svg>',
     build(ctx){
       /* The board stays five wide at every level. Six wide leaves squares under
          40px once the tray needs a second row, and a tap target you have to aim
@@ -8520,7 +8523,7 @@ const MODES = {
      shared scale changes nothing about which is heavier. */
   heft: {
     name:'Heft', blurb:'Which basket weighs more? Counting will not tell you', cat:'numbers', par:9000, bonus:2800,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.5" cy="8" r="4" fill="#FFC53D"/><circle cx="16" cy="6" r="2.1" fill="#FFC53D" opacity=".6"/><circle cx="20" cy="10" r="2.1" fill="#FFC53D" opacity=".6"/><circle cx="16.5" cy="12.5" r="2.1" fill="#FFC53D" opacity=".6"/><path d="M3 19h18" stroke="#FFC53D" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v15.5M4.5 19h15" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><path d="M2 7.5h8l-1.4 5H3.4z" fill="none" stroke="#FFC53D" stroke-width="1.9" stroke-linejoin="round"/><path d="M14 7.5h8l-1.4 5h-5.2z" fill="none" stroke="#6C6191" stroke-width="1.9" stroke-linejoin="round"/></svg>',
     build(ctx){
       /* How much heavier the heavy side is. At the top of the curve six per
          cent is about as fine as an eye can call without a ruler. */
@@ -8629,7 +8632,7 @@ const MODES = {
   /* ── Bridge ───────────────────────────────────────────────────────────── */
   bridge: {
     name:'Darning', blurb:'Lay stitches edge to edge — you have only so many', cat:'make', par:14000, bonus:4000,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 15h4M18 15h4" stroke="#C08BFF" stroke-width="2" stroke-linecap="round"/><rect x="7" y="13" width="4" height="4" rx="1" fill="#C08BFF"/><rect x="13" y="13" width="4" height="4" rx="1" fill="#C08BFF" opacity=".45"/><path d="M4 15v5M20 15v5" stroke="#C08BFF" stroke-width="1.6" stroke-linecap="round" opacity=".5"/><path d="M6 9h12" stroke="#C08BFF" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2.5 2.5" opacity=".6"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 6v12M21.5 6v12" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><g stroke="#C08BFF" stroke-width="2.1" stroke-linecap="round"><path d="M7 8v8"/><path d="M12 8v8"/><path d="M17 8v8"/></g></svg>',
     build(ctx){
       /* The board used to be five wide forever, and the walk's own turns were
          pure luck at every level — a straight, one-column-off crossing was as
@@ -8750,7 +8753,7 @@ const MODES = {
   /* ── Latch ────────────────────────────────────────────────────────────── */
   latch: {
     name:'Latch Hook', blurb:'Turn the rows until every hook lines up', cat:'make', par:14000, bonus:4100,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="4" rx="2" fill="none" stroke="#C08BFF" stroke-width="1.5"/><rect x="3" y="10" width="18" height="4" rx="2" fill="none" stroke="#C08BFF" stroke-width="1.5"/><rect x="3" y="16" width="18" height="4" rx="2" fill="none" stroke="#C08BFF" stroke-width="1.5"/><rect x="8" y="4" width="4" height="4" rx="1.5" fill="#C08BFF"/><rect x="14" y="10" width="4" height="4" rx="1.5" fill="#C08BFF"/><rect x="8" y="16" width="4" height="4" rx="1.5" fill="#C08BFF"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.6v10.4a4.2 4.2 0 0 0 8.4 0" fill="none" stroke="#C08BFF" stroke-width="2.3" stroke-linecap="round"/><path d="M4 20.5h16" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="3.4" r="1.9" fill="#C08BFF"/></svg>',
     build(ctx){
       /* A lock, taken apart. Braid reorders a set and Weave flips one; this
          turns rows past each other until they agree, and it does not care WHICH
@@ -8835,7 +8838,7 @@ const MODES = {
   /* ── Splice ───────────────────────────────────────────────────────────── */
   splice: {
     name:'Splice', blurb:'Join each loose end to the right beginning', cat:'words', par:14000, bonus:4000,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="8" height="6" rx="2" fill="#4BC0FF"/><rect x="13.5" y="4" width="8" height="6" rx="2" fill="#4BC0FF" opacity=".45"/><rect x="2.5" y="14" width="8" height="6" rx="2" fill="#4BC0FF" opacity=".45"/><rect x="13.5" y="14" width="8" height="6" rx="2" fill="#4BC0FF"/><path d="M11 7h2M11 17h2" stroke="#4BC0FF" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 8 Q8 8 11 12" fill="none" stroke="#4BC0FF" stroke-width="2.3" stroke-linecap="round"/><path d="M21.5 16 Q16 16 13 12" fill="none" stroke="#6C6191" stroke-width="2.3" stroke-linecap="round"/><circle cx="12" cy="12" r="2.3" fill="#4BC0FF"/></svg>',
     build(ctx){
       /* The three word modes all work on one word at a time. This one is about
          the set: four words cut in half, the endings shuffled, and the only
@@ -8945,7 +8948,7 @@ const MODES = {
   /* ── Trace ────────────────────────────────────────────────────────────── */
   trace: {
     name:'Follow the Thread', blurb:'Follow the thread to its end — no hurry', input:'drag', cat:'calm', par:15000, bonus:3600,
-    glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="#7BE38A" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M3 17c3 0 3-10 6-10s3 10 6 10 3-7 6-7"/><circle cx="3" cy="17" r="1.6" fill="#7BE38A"/><circle cx="21" cy="10" r="1.6" fill="#7BE38A"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18.5 Q8 4 12 12 T21 7" fill="none" stroke="#7BE38A" stroke-width="2.1" stroke-linecap="round"/><circle cx="3" cy="18.5" r="1.9" fill="#7BE38A"/><circle cx="21" cy="7" r="1.9" fill="#6C6191"/></svg>',
     build(ctx){
       /* Calm had three modes and all three are about holding something steady.
          This one is about going somewhere: a line, a finger, and no clock on
@@ -9076,7 +9079,7 @@ const MODES = {
   /* ── Lever ────────────────────────────────────────────────────────────── */
   lever: {
     name:'Balance', blurb:'Find the balance point by eye, then test it', input:'drag', cat:'physics', par:14000, bonus:3800,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 11h19" stroke="#FF9A3D" stroke-width="2" stroke-linecap="round"/><path d="M12 12.5l3.2 5.5H8.8z" fill="none" stroke="#FF9A3D" stroke-width="1.5" stroke-linejoin="round"/><rect x="4" y="6.5" width="4" height="4" rx="1" fill="#FF9A3D" opacity=".75"/><rect x="17" y="8" width="2.6" height="2.6" rx=".8" fill="#FF9A3D" opacity=".75"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13.2 L21 9" stroke="#FF9A3D" stroke-width="2.4" stroke-linecap="round"/><path d="M12 11 L8.5 20.5h7z" fill="none" stroke="#6C6191" stroke-width="2" stroke-linejoin="round"/><circle cx="4.6" cy="10.2" r="2.1" fill="#6C6191"/></svg>',
     build(ctx){
       /* Cairn is about where a stone will sit, Chalk about where one will roll.
          This one is about the thing neither asks: that a small weight far out
@@ -9179,7 +9182,7 @@ const MODES = {
   /* ── Forage ───────────────────────────────────────────────────────────── */
   forage: {
     name:'Kittens Out', blurb:'Send the kittens at a colour — only so many out at once', input:'forage', cat:'logic', par:16000, bonus:4200,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="#33E6C8" opacity=".85"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="#33E6C8" opacity=".35"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="#33E6C8" opacity=".35"/><circle cx="17.5" cy="17.5" r="1.3" fill="#33E6C8"/><circle cx="20.5" cy="19.5" r="1.1" fill="#33E6C8"/><circle cx="15" cy="20" r="1.1" fill="#33E6C8"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#33E6C8" stroke-width="2" stroke-linejoin="round"><path d="M7 8.6l-.7-3.5 2.8 1.7"/><path d="M13.6 8.6l.7-3.5-2.8 1.7"/><circle cx="10.3" cy="11.8" r="4.4"/></g><path d="M15.6 15 Q20 17.2 21 21" fill="none" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/></svg>',
     build(ctx){
       /* A patch of berries in colour blocks, and a swarm you send at a colour.
          The swarm comes in from the OUTSIDE, so it can only reach what the edge
@@ -9476,7 +9479,7 @@ const MODES = {
   /* ── Meld ─────────────────────────────────────────────────────────────── */
   meld: {
     name:'Yarn Shop', blurb:'Merge the balls up, sell them on, reach the day’s takings', input:'meld', cat:'make', par:17000, bonus:4400,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="5" fill="#C08BFF" opacity=".45"/><circle cx="16" cy="15" r="5" fill="#C08BFF" opacity=".45"/><circle cx="12" cy="7" r="4" fill="#C08BFF"/><path d="M9.5 10.5L8 12M14.5 10.5L16 12" stroke="#C08BFF" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="13.4" r="5.6" fill="none" stroke="#C08BFF" stroke-width="2"/><circle cx="16.6" cy="8.8" r="4" fill="none" stroke="#6C6191" stroke-width="2"/><path d="M5 10.8 Q9 15.6 13 11.4" fill="none" stroke="#C08BFF" stroke-width="1.6" stroke-linecap="round"/></svg>',
     build(ctx){
       /* A merge game is only a merge game for about a minute. What keeps one
          going is the till: a bigger jelly is worth more than the two it came
@@ -9781,7 +9784,7 @@ const MODES = {
   /* ── Volley ───────────────────────────────────────────────────────────── */
   volley: {
     name:'Spool Shots', blurb:'Fire the spools in an order that paints the picture', input:'volley', cat:'logic', par:18000, bonus:4600,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="13" height="4" rx="1" fill="#33E6C8" opacity=".8"/><rect x="8" y="9" width="13" height="4" rx="1" fill="#33E6C8" opacity=".4"/><rect x="8" y="15" width="13" height="4" rx="1" fill="#33E6C8" opacity=".6"/><path d="M2 5h4M2 11h4M2 17h4" stroke="#33E6C8" stroke-width="2" stroke-linecap="round"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="8" height="10" rx="1.6" fill="none" stroke="#6C6191" stroke-width="2"/><path d="M3 10.2h8M3 13.8h8" stroke="#33E6C8" stroke-width="1.7"/><circle cx="17.6" cy="12" r="2.8" fill="#33E6C8"/></svg>',
     build(ctx){
       /* A picture, and a ring of cannons round it. Each cannon is one colour
          and fires straight in, painting the bare squares it crosses — and
@@ -10005,7 +10008,7 @@ const MODES = {
   /* ── Sift ─────────────────────────────────────────────────────────────── */
   sift: {
     name:'Spool Belt', blurb:'Put spools on the belt before their thread runs out', input:'sift', cat:'physics', par:20000, bonus:4800,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6l-1 5h-4z" fill="none" stroke="#FF9A3D" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="1" fill="#FF9A3D"/><circle cx="12" cy="12" r="1" fill="#FF9A3D" opacity=".6"/><rect x="3" y="15" width="7" height="5" rx="1" fill="none" stroke="#FF9A3D" stroke-width="1.5"/><rect x="13" y="15" width="7" height="5" rx="1" fill="none" stroke="#FF9A3D" stroke-width="1.5" opacity=".45"/><path d="M2 22h20" stroke="#FF9A3D" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 18h20" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><rect x="4.5" y="7.5" width="6" height="8" rx="1.3" fill="none" stroke="#FF9A3D" stroke-width="2"/><path d="M3.8 10h7.4M3.8 13h7.4" stroke="#FF9A3D" stroke-width="1.5"/><path d="M14.5 11.5h5.5M17.8 9.2l2.4 2.3-2.4 2.3" fill="none" stroke="#6C6191" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     build(ctx){
       /* Sand falls one grain at a time, always in the same place, and the belt
          under it shifts one slot every time. So a bucket you put on the BACK of
@@ -10168,7 +10171,7 @@ const MODES = {
   /* ── Halve ────────────────────────────────────────────────────────────── */
   halve: {
     name:'Even Skeins', blurb:'Move skeins until both baskets weigh the same', cat:'numbers', par:15000, bonus:4200,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="9" width="8.5" height="10" rx="2" fill="none" stroke="#FFC53D" stroke-width="1.6"/><rect x="13" y="9" width="8.5" height="10" rx="2" fill="none" stroke="#FFC53D" stroke-width="1.6"/><path d="M4.5 5.5h5M14.5 5.5h5" stroke="#FFC53D" stroke-width="1.8" stroke-linecap="round"/><path d="M12 3v18" stroke="#FFC53D" stroke-width="1.2" stroke-dasharray="2 2" opacity=".6"/></svg>',
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5h18" stroke="#FFC53D" stroke-width="2.4" stroke-linecap="round"/><path d="M12 9.5v9.5M7.5 19h9" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><circle cx="6.2" cy="5.6" r="2.7" fill="#FFC53D"/><circle cx="17.8" cy="5.6" r="2.7" fill="#FFC53D"/></svg>',
     build(ctx){
       /* Sum Snap is two numbers hitting a target and Count Fast is one number
          under a clock. This is the whole set at once: not "which two" but
