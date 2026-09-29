@@ -2539,6 +2539,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
               <b data-i18n="play.justPlay">Just play</b>
               <small id="justPlaySub"></small>
             </button>
+            <button class="guidedBtn" id="endlessBtn" type="button">
+              <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.585 0-4.585 8 0 8 5.606 0 7.644-8 12.739-8z"/></svg></span>
+              <b data-i18n="endless.title">Endless</b>
+              <small id="endlessSub"></small>
+            </button>
             <button class="guidedBtn" id="pickModeBtn" type="button">
               <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span>
               <b data-i18n="play.pickMode">Pick a mode</b>
@@ -3099,7 +3104,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.87.0';
+const VERSION_TAG = 'v0.88.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3112,7 +3117,7 @@ const KEY = 'dd.v1';
 const QUARANTINE = 'dd.v1.unreadable';
 const SCHEMA = 10;
 const defaults = {
-  pbBlitz:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
+  pbBlitz:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, pbEndless:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
   lifetime:0, perks:[], perkLv:{}, tokens:0,
@@ -3618,7 +3623,8 @@ const STRINGS = {
     'hero.eyebrow':'Every mode, on shuffle', 'hero.title':'Shuffle',
     'hero.sub':'Ten minutes. The puzzle changes every round.', 'run.lid':'+{n}s ceiling',
     'play.other':'Other ways to play', 'play.favorites':'Favorites',
-    'play.guidedTitle':'What do you want to do?', 'play.guidedSub':'Three questions, not sixty-six modes at once.',
+    'play.guidedTitle':'What do you want to do?', 'play.guidedSub':'A few choices, not forty-two modes at once.',
+    'endless.title':'Endless', 'endless.sub':'No clock, no lives. A miss only breaks your streak.',
     'play.justPlay':'Just play', 'play.myStuff':'My stuff', 'play.myStuffSub':'Favorites, Mixtape, Marathon',
     'mix.title':'Mixtape', 'mix.tapToChoose':'Tap to choose your modes',
     'reflexrush.title':'Reflex Rush', 'reflexrush.sub':'All 7 reflex modes, back to back',
@@ -3803,7 +3809,8 @@ const STRINGS = {
     'hero.eyebrow':'Tous les modes, en aléatoire', 'hero.title':'Mélange',
     'hero.sub':'Dix minutes. Le casse-tête change à chaque manche.', 'run.lid':'plafond +{n}s',
     'play.other':'Autres façons de jouer', 'play.favorites':'Favoris',
-    'play.guidedTitle':'Que voulez-vous faire ?', 'play.guidedSub':'Trois questions, pas soixante-six modes d’un coup.',
+    'play.guidedTitle':'Que voulez-vous faire ?', 'play.guidedSub':'Quelques choix, pas quarante-deux modes d’un coup.',
+    'endless.title':'Sans fin', 'endless.sub':'Ni chrono ni vies. Une erreur ne casse que votre série.',
     'play.justPlay':'Jouer', 'play.myStuff':'Mes affaires', 'play.myStuffSub':'Favoris, Mixtape, Marathon',
     'mix.title':'Playlist', 'mix.tapToChoose':'Touchez pour choisir vos modes',
     'reflexrush.title':'Ruée réflexe', 'reflexrush.sub':'Les 7 modes réflexe, à la suite',
@@ -3988,7 +3995,8 @@ const STRINGS = {
     'hero.eyebrow':'Todos los modos, al azar', 'hero.title':'Mezcla',
     'hero.sub':'Diez minutos. El reto cambia en cada ronda.', 'run.lid':'techo +{n}s',
     'play.other':'Otras formas de jugar', 'play.favorites':'Favoritos',
-    'play.guidedTitle':'¿Qué quieres hacer?', 'play.guidedSub':'Tres preguntas, no sesenta y seis modos a la vez.',
+    'play.guidedTitle':'¿Qué quieres hacer?', 'play.guidedSub':'Unas pocas opciones, no cuarenta y dos modos a la vez.',
+    'endless.title':'Sin fin', 'endless.sub':'Sin reloj ni vidas. Un fallo solo rompe tu racha.',
     'play.justPlay':'Jugar', 'play.myStuff':'Lo mío', 'play.myStuffSub':'Favoritos, Mixtape, Maratón',
     'mix.title':'Lista', 'mix.tapToChoose':'Toca para elegir tus modos',
     'reflexrush.title':'Ráfaga refleja', 'reflexrush.sub':'Los 7 modos de reflejos, seguidos',
@@ -4173,7 +4181,8 @@ const STRINGS = {
     'hero.eyebrow':'Alle Modi, gemischt', 'hero.title':'Mix',
     'hero.sub':'Zehn Minuten. Das Rätsel wechselt jede Runde.', 'run.lid':'+{n}s Limit',
     'play.other':'Andere Spielarten', 'play.favorites':'Favoriten',
-    'play.guidedTitle':'Was möchtest du tun?', 'play.guidedSub':'Drei Fragen, nicht sechsundsechzig Modi auf einmal.',
+    'play.guidedTitle':'Was möchtest du tun?', 'play.guidedSub':'Ein paar Optionen, nicht zweiundvierzig Modi auf einmal.',
+    'endless.title':'Endlos', 'endless.sub':'Keine Uhr, keine Leben. Ein Fehler unterbricht nur deine Serie.',
     'play.justPlay':'Loslegen', 'play.myStuff':'Meine Sachen', 'play.myStuffSub':'Favoriten, Mixtape, Marathon',
     'mix.title':'Playlist', 'mix.tapToChoose':'Tippen, um Modi zu wählen',
     'reflexrush.title':'Reflex-Rausch', 'reflexrush.sub':'Alle 7 Reflex-Modi im Wechsel',
@@ -4455,6 +4464,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.88.0', date:'2026-09-29', items:[
+    'Endless is on the main menu, straight under Just Play. Every mode, no clock, no lives, and it never ends by itself: a miss breaks your streak and deals the next round, so what a mistake costs you is the multiplier you had built rather than the run. It gets harder the longer you last, a step for every ten you solve, or it would go flat after a few minutes with nothing pushing back. It keeps its own best score and you stop when you decide to.',
+    'Fixed: Reset promised to erase every best score and did not. It cleared two of them and left the Reflex Rush, Puzzle Cascade, Survival and Chaos records standing, along with your daily streak. It clears every best score now, matched by name so the next one added is cleared too. The main menu also still said it had sixty-six modes.',
+  ] },
   { v:'0.87.0', date:'2026-09-25', items:[
     'Just Play runs for ten minutes now instead of one. A sixty-second run was over before a mode you had not met before stopped being a surprise, and with forty-two of them you could finish a whole run having properly played about four. Solves still buy time on top of that, up to a quarter of an hour.',
   ] },
@@ -10613,6 +10626,10 @@ const KINDS = {
   daily:    { label:'Daily Drop',  key:'daily.title',    timed:false, scored:true, rounds:12, roundClock:true },
   marathon: { label:'Marathon',    key:'marathon.title', timed:false, lives:3,   scored:true, roundClock:true },
   zen:      { label:'Fidget Loop', key:'zen.title',      timed:false, scored:false },
+  /* Every mode, no clock, no lives. It never ends by itself: a miss breaks the
+     streak and deals the next round, so the price of a mistake is the
+     multiplier you had built rather than the run. You stop when you choose to. */
+  endless:  { label:'Endless',     key:'endless.title',  timed:false, scored:true },
   /* One round of every mode you haven't given a verdict yet, in whatever
      order the bag deals them — no clock, no lives, no score, because
      "did you like it" isn't a thing speed or a streak should be able to
@@ -11112,6 +11129,7 @@ function nextRound(){
   const full = Prog.effectiveLevel(run.solved, run.playerLevel)
     + (run.kind === 'reflexrush' ? Math.floor(run.solved/3)
       : run.kind === 'puzzlecascade' ? Math.floor(run.solved/6)
+      : run.kind === 'endless' ? Math.floor(run.solved/10)
       : bossWave ? 6 : 0);
   run.lvl = firstMeet ? Math.min(6, full) : full;
   run.thisRoundBoss = bossWave;
@@ -11587,6 +11605,7 @@ function endRun(){
     if (r.kind === 'puzzlecascade' && r.score > (save.pbPuzzleCascade || 0)){ save.pbPuzzleCascade = r.score; best = true; }
     if (r.kind === 'survival' && r.score > (save.pbSurvival || 0)){ save.pbSurvival = r.score; best = true; }
     if (r.kind === 'chaos' && r.score > (save.pbChaos || 0)){ save.pbChaos = r.score; best = true; }
+    if (r.kind === 'endless' && r.score > (save.pbEndless || 0)){ save.pbEndless = r.score; best = true; }
     if (r.kind === 'marathon'){
       const prev = save.marathon[r.mode] || 0;
       if (r.score > prev){ save.marathon[r.mode] = r.score; best = true; }
@@ -11682,6 +11701,7 @@ function endRun(){
     : r.kind === 'puzzlecascade' ? (save.pbPuzzleCascade || 0)
     : r.kind === 'survival' ? (save.pbSurvival || 0)
     : r.kind === 'chaos' ? (save.pbChaos || 0)
+    : r.kind === 'endless' ? (save.pbEndless || 0)
     : r.kind === 'marathon' ? (save.marathon[r.mode]||0) : (save.daily[todayKey()]||0);
   $('againSub').textContent = k.scored
     ? (best ? t('over.twice') : t('over.beat', { n: fmt(target) }))
@@ -11922,6 +11942,8 @@ function paintPlay(){
     $('justPlaySub').textContent = t('hero.sub');
   }
   $('pickModeSub').textContent = t('play.pickSub', { n: MODE_IDS.length });
+  $('endlessSub').textContent = save.pbEndless
+    ? t('play.carryBest', { n: fmt(save.pbEndless) }) : t('endless.sub');
 
   /* A chosen shortlist, not an algorithmic one — shown only once it exists,
      so a fresh save sees exactly what it saw before this section existed. */
@@ -12733,6 +12755,7 @@ $('justPlayBtn').addEventListener('click', () => {
   const last = save.lastMode && MODES[save.lastMode] ? save.lastMode : null;
   if (last) startRun('marathon', last); else startRun('shuffle');
 });
+$('endlessBtn').addEventListener('click', () => startRun('endless'));
 $('pickModeBtn').addEventListener('click', () => goTab('Modes'));
 $('myStuffBtn').addEventListener('click', () => { setPlayView('myStuff'); sfx.tap(); });
 $('myStuffBack').addEventListener('click', () => { setPlayView('home'); sfx.tap(); });
@@ -12988,7 +13011,13 @@ function wipeProgress(){
   /* Perks are progress too, and the reset predates them: it cleared the level
      and every best score and left a player with five perk slots and a
      level-one account, which is every advantage and no ladder. */
-  ['pbBlitz','pbStreak','runs','xp','solved','lifetime','tokens'].forEach(k => { save[k] = defaults[k]; });
+  ['runs','xp','solved','lifetime','tokens',
+   'dailyStreak','dailyLast','dailyBestStreak','dailyBonusAt'].forEach(k => { save[k] = defaults[k]; });
+  /* Every best score, by name pattern rather than by list. This used to name
+     pbBlitz and pbStreak and nothing else, so a reset left the Reflex Rush,
+     Puzzle Cascade, Survival and Chaos records standing under a dialog that
+     said it erased every best score. */
+  Object.keys(defaults).filter(k => k.startsWith('pb')).forEach(k => { save[k] = defaults[k]; });
   save.marathon = {}; save.daily = {};
   save.perks = []; save.perkLv = {};
   /* Which modes you have met is progress through the roster, so a reset gives

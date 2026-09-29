@@ -62,7 +62,7 @@ for (const [label, extra] of PROFILES){
       page.on('pageerror', e => errs.push(String(e)));
       await openApp(page, { ...extra, lang });
 
-      /* ── Guided home: exactly three choices, and Just Play knows what it's
+      /* ── Guided home: exactly four choices, and Just Play knows what it's
          continuing (or falls back to the Shuffle blurb with nothing to carry). */
       const home = await page.evaluate(measure);
       const homeInfo = await page.evaluate(() => ({
@@ -79,7 +79,7 @@ for (const [label, extra] of PROFILES){
         .find(s => /\{[a-zA-Z]/.test(s));
       const homeDistinct = new Set(homeInfo.labels).size === homeInfo.labels.length;
       const homeOk = !home.hscroll && !home.clipped.length && home.minTap >= 30
-        && homeInfo.labels.length === 3 && homeInfo.subs.length === 3 && homeDistinct
+        && homeInfo.labels.length === 4 && homeInfo.subs.length === 4 && homeDistinct
         && !!homeInfo.justPlaySub && !!homeInfo.pickModeSub && !!homeInfo.dailyLine
         && !rawBrace && !errs.length;
       if (!homeOk) bad++;
@@ -89,7 +89,7 @@ for (const [label, extra] of PROFILES){
         + `  smallest tap ${home.minTap}px (${home.minWho})`
         + (rawBrace ? ' UNFILLED-PLACEHOLDER "' + rawBrace + '"' : '')
         + (errs.length ? ' ERR ' + errs[0] : ''));
-      floorOrDie(`${label} guided labels`, homeInfo.labels.length, 3);
+      floorOrDie(`${label} guided labels`, homeInfo.labels.length, 4);
 
       /* ── My Stuff: everything that isn't one of the three guided choices —
          Favorites (once earned), the perk chip, and the four rows below it. */
