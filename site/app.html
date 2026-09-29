@@ -1513,10 +1513,20 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    above it on a tall phone. Rather than fill it with chrome, let the family's
    own colour bleed down into it, so a mode is placed before its name is read.
    Painted behind everything and never in the way of a finger. */
+/* --heat runs 0 to 1 with the multiplier (x1 to x5) and is set from renderHud.
+   Until now a run looked the same at x1 and at x5 apart from a small chip: the
+   only thing that told you the streak was alive was reading it. Now the room
+   warms with it — the colour reaches further down the screen and comes up
+   brighter — so momentum is something you can feel in the corner of your eye
+   without looking at a number. Both terms are calc() over one property, so a
+   change is a single style write, and the transition does the easing. */
 #play::before{
-  content:"";position:absolute;inset:0 0 auto;height:44%;pointer-events:none;z-index:0;
+  content:"";position:absolute;inset:0 0 auto;
+  height:calc(44% + var(--heat,0) * 26%);
+  pointer-events:none;z-index:0;
   background:radial-gradient(120% 78% at 50% 0%, var(--fam,transparent) 0%, transparent 72%);
-  opacity:.2;transition:opacity var(--t-med), background var(--t-med);
+  opacity:calc(.2 + var(--heat,0) * .3);
+  transition:opacity 520ms ease, height 520ms ease, background var(--t-med);
 }
 #play > *{position:relative;z-index:1}
 .hud{flex:none;display:flex;flex-direction:column;gap:8px;padding-top:8px}
@@ -1648,7 +1658,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
     repeating-linear-gradient(45deg,  #ffffff04 0 2px, transparent 2px 13px),
     repeating-linear-gradient(-45deg, #0000000c 0 2px, transparent 2px 13px),
     #ffffff05;
-  box-shadow:var(--lift-deep), inset 0 0 0 2px #ffffff09, inset 0 0 26px -10px #00000070;
+  /* The last term is the streak showing on the board's own edge: nothing at x1,
+     a warm rim by x5. Inset, because contain:paint clips anything drawn outside
+     the box, so an outer glow would be cut off at the border. */
+  box-shadow:var(--lift-deep), inset 0 0 0 2px #ffffff09, inset 0 0 26px -10px #00000070,
+    inset 0 0 calc(var(--heat,0) * 38px) calc(var(--heat,0) * -14px)
+      color-mix(in srgb, var(--flare) calc(var(--heat,0) * 70%), transparent);
+  transition:box-shadow 520ms ease;
   padding:14px;contain:layout paint;
 }
 /* Nothing a mode draws may be wider than the board it is drawn in. A grid
@@ -3104,7 +3120,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.89.0';
+const VERSION_TAG = 'v0.90.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -3624,7 +3640,7 @@ const STRINGS = {
     'hero.sub':'Ten minutes. The puzzle changes every round.', 'run.lid':'+{n}s ceiling',
     'play.other':'Other ways to play', 'play.favorites':'Favorites',
     'play.guidedTitle':'What do you want to do?', 'play.guidedSub':'A few choices, not forty-two modes at once.',
-    'endless.title':'Endless', 'endless.sub':'No clock, no lives. A miss only breaks your streak.',
+    'endless.title':'Endless', 'endless.sub':'No clock, no lives. A miss only breaks your streak.', 'stage.eyebrow':'Stage {n}', 'stage.title':'Stage cleared', 'stage.desc':'+{n} points', 'stage.descTimed':'+{n} points and {s} more seconds',
     'play.justPlay':'Just play', 'play.myStuff':'My stuff', 'play.myStuffSub':'Favorites, Mixtape, Marathon',
     'mix.title':'Mixtape', 'mix.tapToChoose':'Tap to choose your modes',
     'reflexrush.title':'Reflex Rush', 'reflexrush.sub':'All 7 reflex modes, back to back',
@@ -3810,7 +3826,7 @@ const STRINGS = {
     'hero.sub':'Dix minutes. Le casse-tête change à chaque manche.', 'run.lid':'plafond +{n}s',
     'play.other':'Autres façons de jouer', 'play.favorites':'Favoris',
     'play.guidedTitle':'Que voulez-vous faire ?', 'play.guidedSub':'Quelques choix, pas quarante-deux modes d’un coup.',
-    'endless.title':'Sans fin', 'endless.sub':'Ni chrono ni vies. Une erreur ne casse que votre série.',
+    'endless.title':'Sans fin', 'endless.sub':'Ni chrono ni vies. Une erreur ne casse que votre série.', 'stage.eyebrow':'Étape {n}', 'stage.title':'Étape franchie', 'stage.desc':'+{n} points', 'stage.descTimed':'+{n} points et {s} secondes de plus',
     'play.justPlay':'Jouer', 'play.myStuff':'Mes affaires', 'play.myStuffSub':'Favoris, Mixtape, Marathon',
     'mix.title':'Playlist', 'mix.tapToChoose':'Touchez pour choisir vos modes',
     'reflexrush.title':'Ruée réflexe', 'reflexrush.sub':'Les 7 modes réflexe, à la suite',
@@ -3996,7 +4012,7 @@ const STRINGS = {
     'hero.sub':'Diez minutos. El reto cambia en cada ronda.', 'run.lid':'techo +{n}s',
     'play.other':'Otras formas de jugar', 'play.favorites':'Favoritos',
     'play.guidedTitle':'¿Qué quieres hacer?', 'play.guidedSub':'Unas pocas opciones, no cuarenta y dos modos a la vez.',
-    'endless.title':'Sin fin', 'endless.sub':'Sin reloj ni vidas. Un fallo solo rompe tu racha.',
+    'endless.title':'Sin fin', 'endless.sub':'Sin reloj ni vidas. Un fallo solo rompe tu racha.', 'stage.eyebrow':'Etapa {n}', 'stage.title':'Etapa superada', 'stage.desc':'+{n} puntos', 'stage.descTimed':'+{n} puntos y {s} segundos más',
     'play.justPlay':'Jugar', 'play.myStuff':'Lo mío', 'play.myStuffSub':'Favoritos, Mixtape, Maratón',
     'mix.title':'Lista', 'mix.tapToChoose':'Toca para elegir tus modos',
     'reflexrush.title':'Ráfaga refleja', 'reflexrush.sub':'Los 7 modos de reflejos, seguidos',
@@ -4182,7 +4198,7 @@ const STRINGS = {
     'hero.sub':'Zehn Minuten. Das Rätsel wechselt jede Runde.', 'run.lid':'+{n}s Limit',
     'play.other':'Andere Spielarten', 'play.favorites':'Favoriten',
     'play.guidedTitle':'Was möchtest du tun?', 'play.guidedSub':'Ein paar Optionen, nicht zweiundvierzig Modi auf einmal.',
-    'endless.title':'Endlos', 'endless.sub':'Keine Uhr, keine Leben. Ein Fehler unterbricht nur deine Serie.',
+    'endless.title':'Endlos', 'endless.sub':'Keine Uhr, keine Leben. Ein Fehler unterbricht nur deine Serie.', 'stage.eyebrow':'Etappe {n}', 'stage.title':'Etappe geschafft', 'stage.desc':'+{n} Punkte', 'stage.descTimed':'+{n} Punkte und {s} Sekunden mehr',
     'play.justPlay':'Loslegen', 'play.myStuff':'Meine Sachen', 'play.myStuffSub':'Favoriten, Mixtape, Marathon',
     'mix.title':'Playlist', 'mix.tapToChoose':'Tippen, um Modi zu wählen',
     'reflexrush.title':'Reflex-Rausch', 'reflexrush.sub':'Alle 7 Reflex-Modi im Wechsel',
@@ -4464,6 +4480,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.90.0', date:'2026-09-29', items:[
+    'A run has a shape now. The screen warms as your streak climbs: the colour of the mode you are playing reaches further down the screen and comes up brighter, and the board picks up a warm rim, so at ×5 the whole thing looks different from ×1 without you reading a number. And every tenth solve in a long run is a stage, with a bonus that grows as you go, six seconds back on a clock where there is one, and a banner saying so. Just Play is ten minutes long and Endless has no end, and neither had anything to say about how far you had got.',
+  ] },
   { v:'0.89.0', date:'2026-09-29', items:[
     'Rounds start when you can see them. A new mode was announced with a card laid over the board, but the round itself began in the same instant: the board was built, every timer it armed was running, the round clock was counting and the shared clock was draining, all underneath a card that hid it and did not stop a tap getting through. You could lose a round to something you had not been shown. The card plays over an empty board now and the round starts when it goes. The clock only runs while a round is live, so the pause after a solve, the pause after a miss and the card itself no longer cost you time.',
     'The countdown meter told the wrong story with the Rally perk. Rally adds seconds to the clock you start with but not to the ceiling the meter divides by, so the bar sat pinned at full for the first six to fourteen seconds while the clock was really running, and the first solve then clamped you back to the ceiling, quietly deleting the head start the perk exists to give. Both are fixed.',
@@ -10897,6 +10916,12 @@ function renderHud(){
   chip.textContent = '×' + m;
   chip.classList.toggle('hot', m > 1);
   chip.style.setProperty('--lvl', m);
+  /* The whole screen warms with the streak (see #play::before and #surface).
+     Written only when it changes: this function runs every frame, and a style
+     write on the play screen sixty times a second is a recalculation nobody
+     asked for. */
+  const heat = clamp((m - 1) / 4, 0, 1);
+  if (run.heat !== heat){ run.heat = heat; el.play.style.setProperty('--heat', String(heat)); }
   const step = MULT_STEP[Perk.lv('zeal')];
   chip.style.setProperty('--to', m >= 5 ? 1 : (run.streak % step) / step);
   chip.classList.toggle('maxed', m >= 5);
@@ -11256,6 +11281,17 @@ function beginRound(mode, firstMeet){
   el.surface.classList.toggle('boardin', !motionOff());
 }
 
+/* A ten-minute run, or one with no end at all, is a single unbroken stream of
+   rounds: nothing marks how far you have come, so nothing feels like it was
+   reached. Every tenth solve is a stage. It pays a bonus that grows with the
+   stage, gives back some clock where there is one, and says so out loud, which
+   is what turns "I have been playing for a while" into "I got to stage four".
+   Only the run types with no natural length of their own: Marathon has lives,
+   the Daily has twelve rounds, Survival has waves and a boss. */
+const STAGE_EVERY = 10;
+const STAGED_KINDS = new Set(['shuffle', 'mix', 'chaos', 'endless', 'reflexrush', 'puzzlecascade']);
+const STAGE_BREATHER_MS = 6000;
+
 function resolve(ok, node){
   if (!roundLive || !run) return;
   roundLive = false;
@@ -11312,6 +11348,19 @@ function resolve(ok, node){
     persist();
     const after = Prog.levelForXp(save.xp);
     if (after > before) pendingLevel = after;
+
+    if (STAGED_KINDS.has(run.kind) && run.solved % STAGE_EVERY === 0){
+      const stage = run.solved / STAGE_EVERY;
+      const bonus = 250 * Math.min(stage, 8);
+      run.stage = stage;
+      if (k.scored){ run.score += bonus; save.lifetime = (save.lifetime || 0) + bonus; }
+      if (k.timed) run.time = Math.min(capOf(k), run.time + STAGE_BREATHER_MS);
+      announceToast({ ink:'#FFC53D',
+        glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 16.7 6.6 19.6l1.2-6L3.3 9.4l6.1-.8z" fill="currentColor" stroke="none"/></svg>',
+        eyebrow: t('stage.eyebrow', { n: stage }), title: t('stage.title'),
+        desc: t(k.timed ? 'stage.descTimed' : 'stage.desc', { n: bonus, s: STAGE_BREATHER_MS / 1000 }) });
+      sfx.combo(5);
+    }
 
     burst(node, cosmeticHex(), mult); flash('flash-win');
     sfx.good(run.streak); buzz('good');
