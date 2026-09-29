@@ -1,5 +1,5 @@
 /* Every probe, in the order that fails fastest: the quick ones first, the sweep
- * — which opens all sixty-six modes and takes minutes — last. Exits non-zero on
+ * — which opens every mode and takes minutes — last. Exits non-zero on
  * the first failure.
  *
  *   node tools/probe/all.mjs
@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const probes = ['settings.mjs', 'board.mjs', 'mix.mjs', 'home.mjs', 'sweep.mjs'];
+const probes = ['settings.mjs', 'board.mjs', 'mix.mjs', 'home.mjs', 'timing.mjs', 'sweep.mjs'];
 
 for (const p of probes){
   console.log(`\n=== ${p} ${'='.repeat(Math.max(0, 60 - p.length))}`);

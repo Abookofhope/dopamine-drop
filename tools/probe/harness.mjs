@@ -15,11 +15,28 @@ import { dirname, join } from 'path';
 export const PORT = process.env.PORT || 8275;
 export const BASE = `http://127.0.0.1:${PORT}/`;
 
+/* The version the build under test reports as newest. The app opens the "What's
+ * new" sheet 700ms after boot whenever a player who has played before has not
+ * seen the current version, and this harness used to seed seenVersion '9.9.9',
+ * which never matches anything — so the sheet opened in EVERY probe, and every
+ * probe dismissed it with a fixed wait. That is a race between two timers, and
+ * it is only ever won when the machine is idle: under load the page's timer
+ * fires late, the sheet opens after it was "closed", and it sits on top of the
+ * button the probe is about to click. Seeding the real version means it never
+ * opens at all, so there is nothing to race. */
+const currentVersion = () => {
+  try {
+    const src = readFileSync(join(process.env.SITE || '/tmp/pw/_site', 'index.html'), 'utf8');
+    const m = src.match(/const CHANGELOG = \[\s*\{ v:'([^']+)'/);
+    return m ? m[1] : '9.9.9';
+  } catch { return '9.9.9'; }
+};
+
 /* A save with sensible defaults; pass what the probe actually cares about. */
 export const save = (o = {}) => JSON.stringify(Object.assign({
   schema: 10, xp: 40000, solved: 180, runs: 42, marathon: {}, daily: {}, mix: [],
   sound: false, haptics: false, reduceMotion: true, colorAssist: false, lang: 'en',
-  seenVersion: '9.9.9', lifetime: 52000, perks: [], perkLv: {}, tokens: 0,
+  seenVersion: currentVersion(), lifetime: 52000, perks: [], perkLv: {}, tokens: 0,
   pbBlitz: 0, pbStreak: 0, dailyStreak: 0, dailyLast: null, dailyBestStreak: 0,
   onboarded: true, lastMode: null, tapes: [], tapeId: null, seen: {}
 }, o));

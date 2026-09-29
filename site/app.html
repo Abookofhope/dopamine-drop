@@ -3104,7 +3104,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.88.0';
+const VERSION_TAG = 'v0.89.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4464,6 +4464,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.89.0', date:'2026-09-29', items:[
+    'Rounds start when you can see them. A new mode was announced with a card laid over the board, but the round itself began in the same instant: the board was built, every timer it armed was running, the round clock was counting and the shared clock was draining, all underneath a card that hid it and did not stop a tap getting through. You could lose a round to something you had not been shown. The card plays over an empty board now and the round starts when it goes. The clock only runs while a round is live, so the pause after a solve, the pause after a miss and the card itself no longer cost you time.',
+    'The countdown meter told the wrong story with the Rally perk. Rally adds seconds to the clock you start with but not to the ceiling the meter divides by, so the bar sat pinned at full for the first six to fourteen seconds while the clock was really running, and the first solve then clamped you back to the ceiling, quietly deleting the head start the perk exists to give. Both are fixed.',
+  ] },
   { v:'0.88.0', date:'2026-09-29', items:[
     'Endless is on the main menu, straight under Just Play. Every mode, no clock, no lives, and it never ends by itself: a miss breaks your streak and deals the next round, so what a mistake costs you is the multiplier you had built rather than the run. It gets harder the longer you last, a step for every ten you solve, or it would go flat after a few minutes with nothing pushing back. It keeps its own best score and you stop when you decide to.',
     'Fixed: Reset promised to erase every best score and did not. It cleared two of them and left the Reflex Rush, Puzzle Cascade, Survival and Chaos records standing, along with your daily streak. It clears every best score now, matched by name so the next one added is cleared too. The main menu also still said it had sixty-six modes.',
@@ -10838,8 +10842,14 @@ const multiplier = () => run
    buys a quarter minute, up to three. A weak run is untouched — the first lift
    needs four in a row-ish — and a strong one can reach three minutes. */
 const CAP_EVERY = 4, CAP_STEP = 15000, CAP_MAX = 180000;
+/* Rally adds to the starting clock, so it has to add to the ceiling too. It did
+   not, which had two effects: the meter is time divided by this, so it sat
+   pinned at full for the first six to fourteen seconds while the clock was
+   really draining, and the first solve did min(cap, time + bonus), which
+   quietly deleted the head start the perk was there to give. */
 const capOf = k => !k.timed ? 0
-  : Math.min(k.capMax || CAP_MAX, k.cap + Math.floor((run ? run.solved : 0) / CAP_EVERY) * CAP_STEP);
+  : Math.min((k.capMax || CAP_MAX) + Perk.step('rally') * 1000,
+             k.cap + Perk.step('rally') * 1000 + Math.floor((run ? run.solved : 0) / CAP_EVERY) * CAP_STEP);
 const capTier = n => Math.floor(n / CAP_EVERY);
 
 /* What you chose on the Stats tab should be visible while it is doing its work.
@@ -10964,7 +10974,10 @@ function tick(ts){
   lastTs = ts;
   const kind = KINDS[run.kind];
   const edt = dt * gameSpeedMult;   /* the clock itself slows at "Relaxed"/"Slow" too */
-  if (kind.timed && run.started){
+  /* Only while a round is live. The clock used to run through the pause after a
+     solve, the pause after a miss and the whole of the mode plate — time you
+     could not do anything with, spent before the board existed. */
+  if (kind.timed && run.started && roundLive){
     run.time -= edt;
     if (run.time <= 0){ run.time = 0; renderHud(); return endRun(); }
   }
@@ -11073,6 +11086,16 @@ function clearHow(){
   const el2 = $('howto'); if (el2) el2.hidden = true;
 }
 
+/* How long the "new mode" plate holds the screen, and how long the round waits
+   before it starts. One number for both, because they used to be two: the
+   plate ran 900ms in CSS and the round did not wait for it at all, so the board
+   was built, live and counting under a card that hid it. */
+const PLATE_MS = 760;
+/* The pause before a round that has no plate — the same mode again, or motion
+   turned off. Short, but not zero: a board that appears in the same frame the
+   last one is cleared reads as a glitch rather than a new round. */
+const BREATH_MS = 220;
+
 function announceMode(id){
   /* Built fresh each time rather than kept in the markup: clearBoard empties
      the surface between rounds, so a plate that lived there was destroyed the
@@ -11085,8 +11108,10 @@ function announceMode(id){
   const fam  = mk('small'); fam.textContent = t('cat.' + catOf(id));
   box.appendChild(name); box.appendChild(fam);
   box.setAttribute('aria-hidden','true');   /* the header already announces it */
+  box.style.animationDuration = PLATE_MS + 'ms';
+  name.style.animationDuration = PLATE_MS + 'ms';
   el.surface.appendChild(box);
-  later(900, () => box.remove());
+  later(PLATE_MS, () => box.remove());
 }
 
 function nextRound(){
@@ -11107,6 +11132,33 @@ function nextRound(){
   /* Captured before showHow, which is what marks a mode as met. */
   const firstMeet = !(save.seen || {})[id];
   showHow(id, firstMeet);
+
+  /* Nothing is live yet. The round used to start right here, in the same call
+     that put the plate up: the board was built, every timer the mode arms had
+     started, the round clock was counting and the shared clock was draining,
+     all under a card that hid the board and did not stop a tap reaching it.
+     You could lose a round to something you had not been shown. Now the plate
+     plays over an empty board and the round begins when it is gone. */
+  roundLive = false;
+  el.prompt.textContent = ''; el.prompt.className = 'prompt';
+  if (k.roundClock){
+    /* Reset here rather than at the start of the round: a bar left where the
+       last round ended sits half-empty under the plate for the whole intro. */
+    el.roundBar.hidden = false;
+    el.roundBar.classList.remove('warn');
+    el.roundFill.style.transform = 'scaleX(1)';
+  }
+  later(changed && !motionOff() ? PLATE_MS : BREATH_MS,
+    () => beginRound(mode, firstMeet));
+}
+
+/* The other half of nextRound: the round the player is about to play. Guarded
+   on the mode it was scheduled for, because a pause or an end between the two
+   halves clears the timer, and anything that slips past that must not build a
+   board for a run that has moved on. */
+function beginRound(mode, firstMeet){
+  if (!run || run.curMode !== mode || run.paused) return;
+  const k = KINDS[run.kind];
   roundLive = true;
   roundStart = performance.now();
   /* Settled once per round, because the round clock, the mode's own difficulty

@@ -58,19 +58,39 @@ await ctx.addInitScript(() => {
 const page = await ctx.newPage();
 
 /* A fresh save for every single shot. A seeded RNG is not enough on its own:
-   a mode's difficulty ramps on save.runs, and quitting a run increments it, so
+   the FIRST time a mode is met it is dealt at the shallow end (nextRound caps
+   run.lvl at 6 when save.seen[id] is unset, and showHow then marks it seen), so
    the second visit to Odd Skein deals 25 tiles where the first dealt 9. Same
-   seed, different board. Reloading is slow and is the only thing that makes
-   this comparable at all. */
+   seed, different board. An earlier version of this comment blamed save.runs;
+   that was a correlation read as a cause, and it was wrong. Reloading is slow
+   and is the only thing that makes every shot a first meeting. */
 const shoot = async id => {
   await openApp(page, { reduceMotion: true, xp: 9000, runs: 40, solved: 600,
                         sound: false, haptics: false, onboarded: true });
   await openModeList(page);
   await page.evaluate(() => window.__reseed && window.__reseed());
   await clickMode(page, id);
-  await page.waitForTimeout(1100);
+  /* Wait for stillness, not for a time. A fixed wait was wrong twice: at 1100ms
+     it photographed a board about 110ms old with its transitions still in
+     flight (so the baseline was a picture of motion, not of a board), and when
+     the round gained an intro beat it photographed a surface with nothing on
+     it. The board is byte-identical from about 1400ms on. So: wait for a board
+     to exist (the count-in overlay and the mode plate are also children of the
+     surface, and are not it), then take pictures until two in a row match. A
+     mode that never holds still simply runs out of tries and is caught by the
+     determinism check below. */
+  await page.waitForFunction(() => [...document.getElementById('surface').children]
+    .some(c => c.id !== 'count' && !c.classList.contains('swap')),
+    null, { timeout: 8000, polling: 50 }).catch(() => {});
   const el = await page.$('#surface');
-  return el.screenshot({ type: 'png' });
+  let prev = await el.screenshot({ type: 'png' });
+  for (let i = 0; i < 14; i++){
+    await page.waitForTimeout(220);
+    const cur = await el.screenshot({ type: 'png' });
+    if (cur.equals(prev)) return cur;
+    prev = cur;
+  }
+  return prev;
 };
 
 const changed = [], unstable = [], fresh = [];
