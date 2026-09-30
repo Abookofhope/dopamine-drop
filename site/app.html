@@ -2936,6 +2936,115 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .syn.on b{color:#FF8AD8}
 .syn.on small{color:var(--cream);opacity:1}
 .synnone{font-size:11.5px;color:var(--haze);line-height:1.45;margin:0 2px;opacity:.85}
+
+/* ── Patchwork, as a quilt ───────────────────────────────────────────────── */
+.forgewrap.quilt{position:relative;gap:10px;--knit:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'%3E%3Cpath d='M.8 .8 4 5.2 7.2 .8' fill='none' stroke='%23fff' stroke-opacity='.3' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.quilt .fgrid{position:relative;gap:3px}
+.quilt .fcell{border-radius:6px;background:#0000002e}
+.quilt .fcell.mould{background:#ffffff18;border:1.5px dashed #ffffff66;box-shadow:inset 0 0 10px #00000033}
+.quilt .fcell.set{--pd:color-mix(in srgb,var(--pc) 52%,#000);--s-t:0 0 #0000;--s-r:0 0 #0000;--s-b:0 0 #0000;--s-l:0 0 #0000;
+  border:0;background-color:var(--pc);background-image:var(--knit);background-size:8px 6px;
+  box-shadow:var(--s-t),var(--s-r),var(--s-b),var(--s-l),inset 0 -3px 0 #00000026;transition:filter var(--t-med)}
+.quilt .fcell.e-t{--s-t:inset 0 3px 0 0 var(--pd)}
+.quilt .fcell.e-r{--s-r:inset -3px 0 0 0 var(--pd)}
+.quilt .fcell.e-b{--s-b:inset 0 -3px 0 0 var(--pd)}
+.quilt .fcell.e-l{--s-l:inset 3px 0 0 0 var(--pd)}
+.quilt .fcell.laid{filter:brightness(1.35)}
+.quilt .fcell.drop-ok{background:#5BD98C55;border-color:#5BD98C;box-shadow:inset 0 0 0 1px #5BD98C}
+.quilt .fcell.drop-bad{background:#ff3d6e33;border-color:var(--bad)}
+.quilt .fcell.hint{background:#FFC53D55;border:1.5px solid #FFC53D;animation:quilthint .7s ease-in-out 3}
+@keyframes quilthint{50%{background:#FFC53D99}}
+.quilt .fgrid.made .fcell.set{filter:brightness(1.12)}
+.quilt .fpiece{padding:8px;border-radius:10px;border:2px solid var(--edge-soft);background:var(--ink-2);touch-action:none}
+.quilt .fpiece.hinted{border-color:#FFC53D;box-shadow:0 0 0 3px #FFC53D55}
+.fbits{display:grid;gap:2px}
+.quilt .fbit{width:16px;height:16px;border-radius:3px;background:transparent}
+.quilt .fbit.on{background-color:var(--pc);background-image:var(--knit);background-size:8px 6px;box-shadow:inset 0 -2px 0 #0000002a}
+.fghost{position:absolute;left:0;top:0;display:grid;grid-auto-rows:1fr;gap:3px;pointer-events:none;z-index:6;
+  filter:drop-shadow(0 12px 14px #000000a0);opacity:.96}
+.fghost .fbit{width:auto;height:auto;border-radius:5px}
+.ftools{display:flex;gap:10px;justify-content:center;flex:none}
+.ftool{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;min-height:44px;border-radius:99px;
+  border:1px solid var(--edge);background:#ffffff08;color:var(--cream);font-family:var(--f-data);font-size:11px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;transition:opacity var(--t-fast),border-color var(--t-fast)}
+.ftool svg{width:16px;height:16px;flex:none}
+.ftool:disabled{opacity:.38}
+.ftool:active:not(:disabled){background:#ffffff14}
+.ftool.nudge{border-color:var(--flare);animation:ftnudge .5s ease 2}
+@keyframes ftnudge{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.fcat{position:absolute;left:50%;top:50%;width:48%;transform:translate(-50%,-50%);pointer-events:none;
+  opacity:0;animation:quiltcat .5s ease .05s forwards;filter:drop-shadow(0 6px 10px #000a)}
+.fcat svg{width:100%;height:auto;display:block}
+@keyframes quiltcat{to{opacity:1}}
+
+.quilt .fcell,.quilt .fbit{position:relative}
+.quilt .fcell.m::after,.quilt .fbit.m::after{content:"";position:absolute;inset:24%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff' fill-opacity='.62'%3E%3Cellipse cx='12' cy='16' rx='5.2' ry='4.2'/%3E%3Cellipse cx='5.4' cy='11' rx='2.2' ry='2.9'/%3E%3Cellipse cx='9.6' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='14.4' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='18.6' cy='11' rx='2.2' ry='2.9'/%3E%3C/svg%3E") center/contain no-repeat;pointer-events:none}
+/* ── Chalk Line: a tailor's line, a ball of yarn, a cat with a basket ─────── */
+.chalkwrap{display:flex;flex-direction:column;gap:8px;min-height:0;height:100%}
+.chalkwrap .chalkbox{flex:1 1 0;height:auto;min-height:0}
+.chalkink .cline{stroke:var(--cream);stroke-width:2.6;opacity:.95;filter:drop-shadow(0 1px 1px #000a)}
+.chalkink .cthread{stroke:#FF8FB1;stroke-width:1.8;stroke-dasharray:1 3.4;opacity:.9}
+.chalkink .cpeek{stroke:#9FE8FF;stroke-width:2.2;stroke-dasharray:6 4;opacity:.95}
+.chalkbox.peekwin .cpeek{stroke:var(--cool)}
+.chalkbox.peeklose .cpeek{stroke:var(--bad)}
+.chalkbox.live .chalkink .cline{opacity:.45}
+.chalkbox.live .chalkink .cthread{opacity:.9}
+.cball{background:radial-gradient(circle at 34% 28%,#FFC9DA,#FF6E9A 58%,#C23A66);box-shadow:0 3px 7px -2px #000a,inset 0 -3px 5px #0000003a;isolation:isolate}
+.cball::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:repeating-radial-gradient(ellipse 130% 80% at 8% 100%,transparent 0 9%,#ffffff33 9% 11.5%),repeating-radial-gradient(ellipse 90% 140% at 100% 0%,transparent 0 12%,#00000026 12% 14.5%)}
+.cball.snipped{background:radial-gradient(circle at 34% 28%,#ffd7d7,#ff9aa8 58%,#b84a5a);animation:csnip .3s ease-out both}
+@keyframes csnip{50%{transform:scale(.72) rotate(14deg)}}
+.cbasket,.cbasket.caught{height:8%;border:0;background:none;box-shadow:none;overflow:visible;isolation:isolate}
+.cbasket::before{content:"";position:absolute;inset:0;z-index:1;border-radius:2px 2px 10px 10px;
+  background:repeating-linear-gradient(90deg,#0000 0 4px,#00000038 4px 5px),repeating-linear-gradient(0deg,#0000 0 6px,#00000026 6px 7px),linear-gradient(180deg,#C99A5B,#8C6334);
+  box-shadow:0 4px 8px -3px #000c,inset 0 2px 0 #ffffff33}
+.cbasket.caught::before{box-shadow:0 0 16px #33e6c899,0 4px 8px -3px #000c,inset 0 2px 0 #ffffff33}
+.ccat{position:absolute;left:50%;bottom:34%;width:132%;transform:translateX(-50%);pointer-events:none;z-index:0}
+.ccat svg{width:100%;height:auto;display:block;filter:drop-shadow(0 2px 3px #0008)}
+.cbasket.caught .ccat{animation:ccatjump .45s ease-out}
+@keyframes ccatjump{40%{transform:translate(-50%,-22%) scale(1.1)}}
+.cbump,.cpad,.cscis,.cportal{position:absolute;display:block;border-radius:50%;box-sizing:border-box}
+.cbump{background:radial-gradient(circle at 36% 30%,#FFE9A8,#F3B93F 58%,#B98217);border:2px solid #7C5512;box-shadow:0 3px 6px -2px #000b,inset 0 -2px 3px #00000033}
+.cbump::before{content:"";position:absolute;left:50%;top:50%;width:46%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,#3A2608 0 14%,transparent 15% 100%),radial-gradient(circle at 25% 25%,#3A2608 0 14%,transparent 15%);background-repeat:no-repeat;
+  background-size:100% 100%;opacity:.55;box-shadow:inset 0 0 0 1.5px #7C5512}
+.cpad{background:radial-gradient(circle at 36% 30%,#FFC1D9,#FF5C9B 60%,#B42768);border:2px solid #7E1847;box-shadow:0 3px 6px -2px #000b,inset 0 -3px 4px #0000003a}
+.cpad::before{content:"";position:absolute;inset:-5px;border-radius:50%;border:1.5px dashed #ffffff55;animation:cpadpulse 1.6s ease-in-out infinite}
+@keyframes cpadpulse{50%{transform:scale(1.07);opacity:.55}}
+.cbump.hit,.cpad.hit,.cportal.hit,.cscis.hit{animation:chit .18s ease-out}
+.cpaw.hit{animation:chit .18s ease-out}
+@keyframes chit{40%{transform:scale(1.2)}}
+.cscis{display:grid;place-items:center;background:radial-gradient(circle,#2B1030,#140818);border:1.5px solid #FF5C8A;box-shadow:0 0 10px #ff3d6e66}
+.cscis svg{width:84%;height:84%;animation:cscis 1.2s ease-in-out infinite;transform-origin:30% 50%}
+@keyframes cscis{50%{transform:rotate(-12deg)}}
+.cportal{background:radial-gradient(circle,#0B0817 0 42%,#2E2252 43% 100%);border:2px solid #9C7BFF;box-shadow:0 0 12px #9c7bff88,inset 0 0 8px #000}
+.cportal::before{content:"";position:absolute;inset:14%;border-radius:50%;border:1.5px dashed #c7b4ff;animation:cspin 6s linear infinite}
+.cportal.b{border-color:#5DE0C5;box-shadow:0 0 12px #5de0c588,inset 0 0 8px #000}
+.cportal.b::before{border-color:#a8f5e6;animation-direction:reverse}
+@keyframes cspin{to{transform:rotate(360deg)}}
+.cribbon{position:absolute;display:block;border-radius:3px;
+  background:repeating-linear-gradient(90deg,#ffffff00 0 7px,#ffffff40 7px 9px),linear-gradient(180deg,#FF8DB0,#D94C7E);
+  background-size:16px 100%,100% 100%;animation:cribbon .9s linear infinite;box-shadow:0 2px 4px -1px #0009,inset 0 1px 0 #ffffff55}
+.cribbon.left{animation-direction:reverse}
+@keyframes cribbon{to{background-position:16px 0,0 0}}
+.cpawrail{position:absolute;display:block;border-radius:99px;background:#ffffff0d;border:1px dashed #ffffff22}
+.cpaw{position:absolute;display:block;border-radius:40% 40% 46% 46%/50% 50% 50% 50%;
+  background:radial-gradient(circle at 22% 38%,#FFE1C2 0 11%,transparent 12%),radial-gradient(circle at 42% 30%,#FFE1C2 0 11%,transparent 12%),radial-gradient(circle at 62% 30%,#FFE1C2 0 11%,transparent 12%),radial-gradient(circle at 80% 38%,#FFE1C2 0 11%,transparent 12%),linear-gradient(180deg,#F0A35A,#B66A28);
+  box-shadow:0 3px 6px -2px #000c,inset 0 -3px 3px #0000002e}
+.ctools{display:flex;gap:6px;justify-content:center;flex:none;height:44px}
+.ctool{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;min-height:44px;flex:1 1 0;min-width:0;max-width:150px;border-radius:99px;
+  border:1px solid var(--edge);background:#ffffff08;color:var(--cream);font-family:var(--f-data);font-size:11px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;transition:opacity var(--t-fast),border-color var(--t-fast)}
+.ctool svg{width:16px;height:16px;flex:none}
+.ctool b{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+@media (max-width:399px){.ctool{padding:0 6px;font-size:10px;letter-spacing:.02em}.ctool svg{display:none}}
+.ctool:disabled{opacity:.38}
+.ctool:active:not(:disabled){background:#ffffff14}
+.ctool.drop{border-color:var(--flare);background:#ff5b3924}
+.ctool.drop:not(:disabled){animation:ctoolgo 1.8s ease-in-out infinite}
+@keyframes ctoolgo{50%{box-shadow:0 0 12px #ff5b3955}}
+.hc .cline{stroke:#fff}
+.hc :is(.cball,.cbump,.cpad,.cscis,.cportal)::before{display:none}
 </style>
 
 <div class="cab">
@@ -3622,7 +3731,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.94.0';
+const VERSION_TAG = 'v0.95.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4366,9 +4475,9 @@ const STRINGS = {
     
 
     'p.heft':'Which side weighs more?', 'heft.pile':'A basket of {n} pieces', 'm.heft':'Heft|Which basket weighs more? Counting will not tell you',
-    'p.forge':'{n} squares of the pattern still bare', 'forge.hole':'Pattern, column {x} row {y}', 'forge.solid':'Backing, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Patchwork|Fit every patch into the pattern — nothing left over',
+    'p.forge':'{n} squares of the pattern still bare', 'forge.hole':'Pattern, column {x} row {y}', 'forge.solid':'Backing, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Patchwork|Drag each patch onto the quilt, turn it to fit — nothing left over',
     'p.gather':'{n} more to catch — let the dark ones fall', 'gather.pail':'Your basket', 'gather.keep':'A ripe one, worth catching', 'gather.dud':'A dud, let it fall', 'm.gather':'Catch the Balls|Catch the good ones, let the tangles fall',
-    'p.chalk':'Draw a ramp — lift your finger to drop the ball', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball', 'chalk.basket':'The basket', 'm.chalk':'Chalk Line|Draw the ramp, then watch — no second chances',
+    'p.chalk':'Chalk ramps for the yarn — then press Drop', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball of yarn', 'chalk.basket':'The cat’s basket', 'm.chalk':'Chalk Line|Chalk the ramps, peek, then drop the yarn in the basket',
     'p.drift':'Two are on a collision course — tap them both', 'drift.dot':'Drifting dot {n}', 'm.drift':'Tangle Watch|Two of these will meet — find them before they tangle',
     'p.cairn':'{n} more to stack', 'cairn.tap':'Tap to drop the stone', 'm.cairn':'Folds|Stack the knits — every overhang is gone for good',
 
@@ -4564,6 +4673,17 @@ const STRINGS = {
     'syn.brunch':'Second Breakfast', 'syn.brunch.d':'Every stage adds 2s and 2 yarn.', 'syn.moonlit':'Moonlit Sky',
     'syn.moonlit.d':'The first miss of every stage is free.', 'syn.curious':'Curious Pair', 'syn.curious.d':'A mode new to this run pays +10% points.',
     'syn.autumn':'Autumn Walk', 'syn.autumn.d':'Focus and reflex solves pay half a yarn more.',
+    /* patchwork */
+    'forge.undo':'Undo', 'forge.hint':'Hint', 'forge.turn':'Tap to turn it',
+    'forge.dead':'That leaves no way to finish — undo a patch', 'p.forgeRule':'{n} squares left — the same colour can’t touch',
+    /* patchwork pictures */
+    'p.forgePic':'{n} squares left — it is {what}', 'forge.pic.cat':'a cat', 'forge.pic.heart':'a heart',
+    'forge.pic.fish':'a fish', 'forge.pic.ball':'a ball of yarn', 'forge.pic.bell':'a bell',
+    /* Chalk Line: the things in the field, and the three buttons */
+    'chalk.ribbon':'A ribbon that pushes the yarn along', 'chalk.bump':'A button that bounces the yarn', 'chalk.pad':'A pincushion that springs the yarn back',
+    'chalk.scis':'Scissors — the yarn will be cut', 'chalk.portal':'A sewing tin; the yarn comes out of the other one', 'chalk.paw':'A paw sweeping side to side',
+    'chalk.undo':'Undo', 'chalk.peek':'Peek', 'chalk.drop':'Drop',
+    'p.chalkDry':'The chalk has run out — undo a line or drop',
   },
 
   fr: {
@@ -4708,9 +4828,9 @@ const STRINGS = {
     
 
     'p.heft':'Quel côté pèse le plus ?', 'heft.pile':'Un panier de {n} pièces', 'm.heft':'Soupeser|Quel panier pèse le plus ? Compter n’y suffit pas',
-    'p.forge':'Encore {n} cases du motif', 'forge.hole':'Motif, colonne {x} ligne {y}', 'forge.solid':'Fond, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Patchwork|Placez chaque pièce dans le motif — rien en trop',
+    'p.forge':'Encore {n} cases du motif', 'forge.hole':'Motif, colonne {x} ligne {y}', 'forge.solid':'Fond, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Patchwork|Glissez chaque pièce sur la courtepointe et tournez-la pour l’ajuster — rien en trop',
     'p.gather':'Encore {n} à attraper — laissez tomber les sombres', 'gather.pail':'Votre panier', 'gather.keep':'Un mûr, à attraper', 'gather.dud':'Un gâté, laissez-le tomber', 'm.gather':'Attrapez les Pelotes|Attrapez les bonnes, laissez tomber les nœuds',
-    'p.chalk':'Tracez une rampe — relâchez pour lâcher la bille', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La bille', 'chalk.basket':'Le panier', 'm.chalk':'Trait de Craie|Tracez la pente, puis regardez — un seul essai',
+    'p.chalk':'Tracez des rampes pour la pelote — puis Lâcher', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La pelote de laine', 'chalk.basket':'Le panier du chat', 'm.chalk':'Trait de Craie|Tracez les rampes, jetez un œil, puis lâchez la pelote dans le panier',
     'p.drift':'Deux vont se percuter — touchez-les tous les deux', 'drift.dot':'Point dérivant {n}', 'm.drift':'Guet des Nœuds|Deux vont se croiser — trouvez-les avant le nœud',
     'p.cairn':'Encore {n} à empiler', 'cairn.tap':'Touchez pour poser la pierre', 'm.cairn':'Pliage|Empilez les tricots — tout débord est perdu',
 
@@ -4906,6 +5026,17 @@ const STRINGS = {
     'syn.brunch':'Deuxième petit-déjeuner', 'syn.brunch.d':'Chaque étape ajoute 2 s et 2 de laine.', 'syn.moonlit':'Ciel de lune',
     'syn.moonlit.d':'Le premier raté de chaque étape est gratuit.', 'syn.curious':'Duo curieux', 'syn.curious.d':'Un mode nouveau dans cette partie rapporte +10 % de points.',
     'syn.autumn':'Promenade d’automne', 'syn.autumn.d':'Les réussites d’attention et de réflexes rapportent une demi-laine de plus.',
+    /* patchwork */
+    'forge.undo':'Annuler', 'forge.hint':'Indice', 'forge.turn':'Touchez pour la tourner',
+    'forge.dead':'Plus de solution possible — annulez une pièce', 'p.forgeRule':'Encore {n} cases — deux pièces de même couleur ne se touchent pas',
+    /* patchwork pictures */
+    'p.forgePic':'Encore {n} cases — c’est {what}', 'forge.pic.cat':'un chat', 'forge.pic.heart':'un cœur',
+    'forge.pic.fish':'un poisson', 'forge.pic.ball':'une pelote', 'forge.pic.bell':'une clochette',
+    /* Chalk Line: the things in the field, and the three buttons */
+    'chalk.ribbon':'Un ruban qui pousse la pelote', 'chalk.bump':'Un bouton sur lequel la pelote rebondit', 'chalk.pad':'Une pelote à épingles qui renvoie la pelote',
+    'chalk.scis':'Des ciseaux — la laine serait coupée', 'chalk.portal':'Une boîte à couture ; la pelote ressort de l’autre', 'chalk.paw':'Une patte qui balaie de gauche à droite',
+    'chalk.undo':'Annuler', 'chalk.peek':'Aperçu', 'chalk.drop':'Lâcher',
+    'p.chalkDry':'Plus de craie — annulez un trait ou lâchez',
   },
 
   es: {
@@ -5050,9 +5181,9 @@ const STRINGS = {
     
 
     'p.heft':'¿Qué lado pesa más?', 'heft.pile':'Una cesta de {n} piezas', 'm.heft':'Sopesar|¿Qué cesta pesa más? Contar no te lo dirá',
-    'p.forge':'Quedan {n} casillas del patrón', 'forge.hole':'Patrón, columna {x} fila {y}', 'forge.solid':'Fondo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Retales|Encaja cada retal en el patrón — sin sobras',
+    'p.forge':'Quedan {n} casillas del patrón', 'forge.hole':'Patrón, columna {x} fila {y}', 'forge.solid':'Fondo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Retales|Arrastra cada retal a la colcha y gíralo para encajarlo — sin sobras',
     'p.gather':'{n} más que atrapar — deja caer los oscuros', 'gather.pail':'Tu cesta', 'gather.keep':'Uno maduro, para atrapar', 'gather.dud':'Uno malo, déjalo caer', 'm.gather':'Atrapa Ovillos|Atrapa los buenos, deja caer los enredos',
-    'p.chalk':'Dibuja una rampa — suelta para lanzar la bola', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'La bola', 'chalk.basket':'La cesta', 'm.chalk':'Línea de Tiza|Dibuja la rampa y mira — sin segunda oportunidad',
+    'p.chalk':'Dibuja rampas para el ovillo — luego Soltar', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'El ovillo', 'chalk.basket':'La cesta del gato', 'm.chalk':'Línea de Tiza|Dibuja las rampas, ojea y suelta el ovillo en la cesta',
     'p.drift':'Dos van a chocar — toca los dos', 'drift.dot':'Punto a la deriva {n}', 'm.drift':'Vigila el Enredo|Dos se van a cruzar — encuéntralos antes del nudo',
     'p.cairn':'{n} más para apilar', 'cairn.tap':'Toca para soltar la piedra', 'm.cairn':'Pliegues|Apila los tejidos — lo que sobresale se pierde',
 
@@ -5248,6 +5379,17 @@ const STRINGS = {
     'syn.brunch':'Segundo desayuno', 'syn.brunch.d':'Cada etapa suma 2 s y 2 de lana.', 'syn.moonlit':'Cielo de luna',
     'syn.moonlit.d':'El primer fallo de cada etapa es gratis.', 'syn.curious':'Pareja curiosa', 'syn.curious.d':'Un modo nuevo en esta partida paga +10 % de puntos.',
     'syn.autumn':'Paseo de otoño', 'syn.autumn.d':'Los aciertos de atención y reflejos dan media lana más.',
+    /* patchwork */
+    'forge.undo':'Deshacer', 'forge.hint':'Pista', 'forge.turn':'Toca para girarla',
+    'forge.dead':'Así ya no se puede terminar: deshaz una pieza', 'p.forgeRule':'Quedan {n} casillas — el mismo color no puede tocarse',
+    /* patchwork pictures */
+    'p.forgePic':'Quedan {n} casillas — es {what}', 'forge.pic.cat':'un gato', 'forge.pic.heart':'un corazón',
+    'forge.pic.fish':'un pez', 'forge.pic.ball':'un ovillo', 'forge.pic.bell':'un cascabel',
+    /* Chalk Line: the things in the field, and the three buttons */
+    'chalk.ribbon':'Una cinta que empuja el ovillo', 'chalk.bump':'Un botón que hace rebotar el ovillo', 'chalk.pad':'Un alfiletero que lanza el ovillo de vuelta',
+    'chalk.scis':'Unas tijeras: cortarían el hilo', 'chalk.portal':'Una lata de costura; el ovillo sale por la otra', 'chalk.paw':'Una pata que barre de lado a lado',
+    'chalk.undo':'Deshacer', 'chalk.peek':'Ojear', 'chalk.drop':'Soltar',
+    'p.chalkDry':'Se acabó la tiza: deshaz una línea o suelta',
   },
 
   de: {
@@ -5392,9 +5534,9 @@ const STRINGS = {
     
 
     'p.heft':'Welche Seite wiegt mehr?', 'heft.pile':'Ein Korb mit {n} Stücken', 'm.heft':'Wiegen|Welcher Korb wiegt mehr? Zählen hilft nicht',
-    'p.forge':'Noch {n} Felder des Musters frei', 'forge.hole':'Muster, Spalte {x} Zeile {y}', 'forge.solid':'Grund, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Flickwerk|Setz jeden Flicken ins Muster — nichts bleibt übrig',
+    'p.forge':'Noch {n} Felder des Musters frei', 'forge.hole':'Muster, Spalte {x} Zeile {y}', 'forge.solid':'Grund, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Flickwerk|Zieh jeden Flicken auf die Decke und dreh ihn passend — nichts bleibt übrig',
     'p.gather':'Noch {n} zu fangen — die dunklen fallen lassen', 'gather.pail':'Dein Korb', 'gather.keep':'Ein reifer, den fängst du', 'gather.dud':'Ein fauler, lass ihn fallen', 'm.gather':'Knäuel Fangen|Fang die guten, lass die Knoten fallen',
-    'p.chalk':'Zeichne eine Rampe — loslassen lässt die Kugel fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Die Kugel', 'chalk.basket':'Der Korb', 'm.chalk':'Kreidestrich|Zeichne die Rampe und schau zu — nur ein Versuch',
+    'p.chalk':'Zeichne Rampen für das Knäuel — dann Fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Das Wollknäuel', 'chalk.basket':'Der Korb der Katze', 'm.chalk':'Kreidestrich|Zeichne die Rampen, wirf einen Blick darauf und lass das Knäuel in den Korb fallen',
     'p.drift':'Zwei laufen aufeinander zu — tippe beide an', 'drift.dot':'Treibender Punkt {n}', 'm.drift':'Knotenwache|Zwei treffen sich — finde sie vor dem Knoten',
     'p.cairn':'Noch {n} zu stapeln', 'cairn.tap':'Tippen, um den Stein zu setzen', 'm.cairn':'Falten|Staple die Strickstücke — jeder Überhang ist für immer weg',
 
@@ -5590,6 +5732,17 @@ const STRINGS = {
     'syn.brunch':'Zweites Frühstück', 'syn.brunch.d':'Jede Etappe bringt 2 s und 2 Wolle.', 'syn.moonlit':'Mondhimmel',
     'syn.moonlit.d':'Der erste Fehler jeder Etappe ist frei.', 'syn.curious':'Neugieriges Paar', 'syn.curious.d':'Ein in diesem Lauf neuer Modus bringt +10 % Punkte.',
     'syn.autumn':'Herbstspaziergang', 'syn.autumn.d':'Konzentrations- und Reaktionstreffer bringen eine halbe Wolle mehr.',
+    /* patchwork */
+    'forge.undo':'Zurück', 'forge.hint':'Tipp', 'forge.turn':'Tippen zum Drehen',
+    'forge.dead':'So lässt es sich nicht beenden — nimm ein Teil zurück', 'p.forgeRule':'Noch {n} Felder — gleiche Farben dürfen sich nicht berühren',
+    /* patchwork pictures */
+    'p.forgePic':'Noch {n} Felder — es wird {what}', 'forge.pic.cat':'eine Katze', 'forge.pic.heart':'ein Herz',
+    'forge.pic.fish':'ein Fisch', 'forge.pic.ball':'ein Wollknäuel', 'forge.pic.bell':'ein Glöckchen',
+    /* Chalk Line: the things in the field, and the three buttons */
+    'chalk.ribbon':'Ein Band, das das Knäuel weiterschiebt', 'chalk.bump':'Ein Knopf, von dem das Knäuel abprallt', 'chalk.pad':'Ein Nadelkissen, das das Knäuel zurückfedert',
+    'chalk.scis':'Eine Schere — das Garn würde durchgeschnitten', 'chalk.portal':'Eine Nähdose; das Knäuel kommt aus der anderen heraus', 'chalk.paw':'Eine Pfote, die hin und her fegt',
+    'chalk.undo':'Zurück', 'chalk.peek':'Vorschau', 'chalk.drop':'Fallen',
+    'p.chalkDry':'Die Kreide ist alle — nimm eine Linie zurück oder lass fallen',
   }
 };
 
@@ -5694,6 +5847,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.95.0', date:'2026-09-30', items:[
+    'Patchwork is a quilt you carry patches across. Pick a patch up anywhere and it follows your finger; let go and it lands on the nearest place it fits, so it no longer needs its middle over one particular square. A patch let go nowhere near the quilt goes back to the tray, a patch already laid can be lifted and carried somewhere else, and a tap turns a patch a quarter (a second finger or the R key turns the one in your hand). The quilt is bigger — five squares wide to start, six from level 4 and seven from level 12 — with more patches to fit into it.',
+    'Patchwork is knitted now. Every patch is stitched yarn with a paw print on one square, some quilts are a picture (a cat, a heart, a fish, a ball, a bell) and some are a plain patchwork of shapes, from level 8 two patches of the same colour may not touch, Undo takes back the last patch, Hint shows a place and turns the patch to suit, and a finished quilt has a cat asleep on it.',
+    'Chalk Line has things in it. Buttons bounce the yarn, pincushions spring it back harder than it came, a ribbon carries it sideways, scissors cut it, a sewing tin swallows it and lets it out of the other one, and from level 22 a cat’s paw sweeps across and knocks it about. You have a length of chalk and can spend it in as many lines as you like, take the last one back with Undo, and Peek twice a round to see exactly where the yarn would go before you press Drop. The yarn is a ball of yarn and leaves a thread behind it; the basket has a cat in it who jumps when you land.',
+    'Every Chalk Line round is solved before you see it: the ball is run down ramps the way a person would place them, and the round is only shown if an answer lands it even when it is drawn a little off and on a slightly taller or shorter screen. The chalk you get is a share of what that answer takes, smaller as you climb. A field too crowded to solve is thinned one thing at a time, scissors first, rather than shown unsolved.',
+  ] },
   { v:'0.94.0', date:'2026-09-30', items:[
     'Six more cats, twenty in all. Pebble gets back up: the solve after a miss pays extra. Maple is at home in focus and reflex puzzles and Sage in calm, physics and making ones, so every kind of puzzle now has a cat that cares about it. Clover finds coins in the sofa every few solves, Pixel pays for a solve inside a fifth of par, and Waffles, who comes at level 40, makes the first few solves of every run worth more.',
     'Friends. Ten pairs of cats do more together than apart, and only when both are in a seat: Noodle and Shadow share a nap and give one more free miss, Biscuit and Mochi add a little to every solve, Comet and Pixel make speed pay more, Duchess and Truffle make stage prizes bigger, and so on. The Room lists the pairs you could make from the cats you have, and with three seats who sits beside whom is a choice.',
@@ -9219,173 +9378,345 @@ const MODES = {
     }
   },
 
-  /* ── Chalk — the only mode you cannot correct ─────────────────────────────
-     From "gravity doodle". Descent hands you a falling object and lets you
-     steer it the whole way down; this is its exact inverse. You do not touch
-     the ball at all. You draw the world it will fall through, and the moment
-     you lift your finger the drawing is final — everything after that is
-     consequence. Nothing else in the roster asks for the whole answer before
-     anything moves.
-     The chalk runs out, and how much you get is the difficulty: enough to cheat
-     a funnel at first, barely enough for one honest ramp later. The budget is
-     always at least the straight-line distance from ball to basket plus a
-     margin, and the blockers are re-rolled until that straight line is clear,
-     so one stroke always exists that solves the board. */
+  /* ── Chalk Line — a tailor's line, and a ball of yarn to roll along it ───────
+     One stroke and no second chances was a mode with one idea. Now the field has things
+     in it (blocks, buttons that bounce, pincushions that spring, a ribbon that carries,
+     sewing boxes that swallow and spit, scissors that do not forgive, and later a paw that
+     sweeps), and you have some chalk: as many strokes as it will stretch to, taken back one
+     at a time, before you let the ball go with the button. Peek runs the ball along the
+     lines as they are, without letting it go, and draws where it would end up; two of
+     those a round.
+
+     The physics is fixed-step, so Peek, the solver that built the round and the real drop
+     are the same arithmetic and agree exactly. Everything is measured in widths of the field
+     (a y in percent is multiplied by the field's height over its width first) so a ball is a
+     circle and a bounce goes the way it looks. */
   chalk: {
-    name:'Chalk Line', blurb:'Draw the ramp, then watch — no second chances', input:'drag', cat:'physics', par:14000, bonus:3600,
+    name:'Chalk Line', blurb:'Chalk some ramps with the ink you have, then drop the yarn into the cat’s basket', input:'drag', cat:'physics', par:16000, bonus:4200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="4.6" r="2.4" fill="#FF9A3D"/><path d="M3 12 Q10 20 20.5 16" fill="none" stroke="#FF9A3D" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3.5 3"/><path d="M16.5 20.5h5" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/></svg>',
     build(ctx){
-      const R  = 3.4;                                   /* ball radius, % of field */
+      const R  = 3.4;                                   /* ball radius, in widths of the field */
       const BW = clamp(17 - ctx.level*0.35, 10, 17);    /* basket mouth */
-      const G  = 0.000062;                              /* % per ms per ms */
+      const nBlock  = Math.min(3, Math.floor(ctx.level/6));
+      const nBump   = clamp(Math.floor((ctx.level - 3)/5), 0, 4);
+      const nPad    = clamp(Math.floor((ctx.level - 8)/7), 0, 2);
+      const nRibbon = clamp(Math.floor((ctx.level - 12)/8), 0, 2);
+      const nScis   = clamp(Math.floor((ctx.level - 10)/9), 0, 2);
+      const nPortal = clamp(Math.floor((ctx.level - 16)/9), 0, 1);
+      const margin  = clamp(1.75 - ctx.level*0.02, 1.25, 1.75);      /* chalk, as a share of what the shortest answer needs */
+      const pawOn   = ctx.level >= 22;
+      const G = 0.00009, DT = 4, PEEKS = 2;
+
       const bx = 14 + ctx.rnd()*72, by = 9;
-      /* The basket is never under the ball. If it were, the ball would simply
-         fall into it and the drawing would be decoration — you would scribble
-         anything to start the drop and win. Keeping them apart by more than the
-         basket's own half-width plus the ball means a ramp is the only way
-         across. */
+      /* The basket is never under the ball, or drawing would be decoration. */
       const apart = BW/2 + R + 9;
       const bands = [];
       if (bx - apart > 10) bands.push([10, bx - apart]);
       if (bx + apart < 90) bands.push([bx + apart, 90]);
       const band = bands.length ? bands[Math.floor(ctx.rnd()*bands.length)] : [10, 90];
       const tx = band[0] + ctx.rnd()*(band[1] - band[0]), ty = 93;
-      const reach = Math.hypot(tx - bx, ty - by);
-      /* Never less than the straight line plus a margin: the honest stroke has
-         to stay affordable however tight the level gets. */
-      const inkCap = Math.max(reach*1.14, reach * (1.55 - ctx.level*0.022));
 
-      const seg = (px2, py2, ax, ay, bx2, by2) => {
+      /* ── the things in the field, in % of the field each way ── */
+      const segd = (px, py, ax, ay, bx2, by2) => {
         const dx = bx2-ax, dy = by2-ay, L = dx*dx + dy*dy;
-        let u = L < 1e-9 ? 0 : ((px2-ax)*dx + (py2-ay)*dy) / L;
-        u = clamp(u, 0, 1);
+        let u = L < 1e-9 ? 0 : ((px-ax)*dx + (py-ay)*dy) / L; u = clamp(u, 0, 1);
         return { x: ax + dx*u, y: ay + dy*u };
       };
+      /* The field is whatever room the screen leaves under the prompt, less the row of tools; the round is built for that shape,
+         and is checked against a little either side of it, because a phone can turn or grow a toolbar mid-round. */
+      const sw = ctx.surface.clientWidth, sh = ctx.surface.clientHeight;
+      const A0 = sw > 28 && sh > 80 ? clamp((sh - 28 - 52)/(sw - 28), 1.1, 2.1) : 1.55;
+      const W = { blocks: [], bumps: [], pads: [], ribbons: [], portals: [], scis: [], paw: null };
+      const place = () => {
+        W.blocks.length = W.bumps.length = W.pads.length = W.ribbons.length = W.portals.length = W.scis.length = 0; W.paw = null;
+        const clearOf = (x, y, r) => Math.hypot(x - bx, (y - by)*A0) > r + R + 8 && Math.hypot(x - tx, (y - ty)*A0) > r + BW/2 + 8
+          && !W.blocks.some(b => x > b.x - r && x < b.x + b.w + r && y > b.y - r/A0 && y < b.y + b.h + r/A0)
+          && ![...W.bumps, ...W.pads, ...W.portals, ...W.scis].some(o => Math.hypot(o.x - x, (o.y - y)*A0) < o.r + r + 3);
+        for (let k = 0, guard = 0; k < nBlock && guard < 200; guard++){
+          const w = 14 + ctx.rnd()*20, h = 3 + ctx.rnd()*2.5;
+          const b = { x: 6 + ctx.rnd()*(88-w), y: 26 + ctx.rnd()*46, w, h };
+          if (b.x < bx + R + 2 && b.x + w > bx - R - 2) continue;
+          if (W.blocks.some(o => Math.abs(o.x+o.w/2 - (b.x+w/2)) < (o.w+w)/2 + 3 && Math.abs(o.y+o.h/2 - (b.y+h/2)) < (o.h+h)/2 + 4)) continue;
+          W.blocks.push(b); k++;
+        }
+        const circ = (n, list, r0, r1) => { for (let k = 0, guard = 0; k < n && guard < 200; guard++){
+          const r = r0 + ctx.rnd()*(r1 - r0), x = 12 + ctx.rnd()*76, y = 24 + ctx.rnd()*54;
+          if (!clearOf(x, y, r)) continue; list.push({ x, y, r }); k++; } };
+        circ(nBump, W.bumps, 3.2, 4.4); circ(nPad, W.pads, 4.6, 5.6); circ(nScis, W.scis, 2.8, 3.4); circ(nPortal*2, W.portals, 3.6, 3.9);
+        for (let k = 0, guard = 0; k < nRibbon && guard < 100; guard++){
+          const w = 22 + ctx.rnd()*16, h = 2.6, x = 8 + ctx.rnd()*(84-w), y = 30 + ctx.rnd()*44;
+          if (!clearOf(x + w/2, y, w/2 + 2)) continue; W.ribbons.push({ x, y, w, h, dir: ctx.rnd() < 0.5 ? -1 : 1 }); k++;
+        }
+        if (pawOn) W.paw = { y: 40 + ctx.rnd()*26, h: 4.4, w: 15, x0: 50, amp: 19 + ctx.rnd()*8, per: 3400 + ctx.rnd()*1600 };
+      };
 
-      /* Blockers, re-rolled until the straight shot from ball to basket is
-         clear of every one of them. */
-      const nBlock = Math.min(3, Math.floor(ctx.level/6));
-      const blocks = [];
-      for (let k = 0, guard = 0; k < nBlock && guard < 300; guard++){
-        const w = 14 + ctx.rnd()*20, h = 3.5 + ctx.rnd()*3;
-        const b = { x: 6 + ctx.rnd()*(88-w), y: 26 + ctx.rnd()*46, w, h };
-        const cx = b.x + w/2, cy = b.y + h/2;
-        const q = seg(cx, cy, bx, by, tx, ty);
-        if (Math.hypot(q.x-cx, q.y-cy) < Math.max(w, h)/2 + R + 4) continue;
-        /* Nothing sits under the ball either. A blocker in the fall line turns
-           a ball the player never steered into the basket often enough that
-           scribbling and hoping beats drawing a ramp. */
-        if (b.x < bx + R + 2 && b.x + w > bx - R - 2) continue;
-        if (blocks.some(o => Math.abs(o.x+o.w/2 - cx) < (o.w+w)/2 + 3 &&
-                             Math.abs(o.y+o.h/2 - cy) < (o.h+h)/2 + 4)) continue;
-        blocks.push(b); k++;
+      /* ── the physics: one fixed-step world, used by Peek, by the builder and by the drop ── */
+      const world = A => ({
+        A,
+        blocks: W.blocks.map(b => ({ x: b.x, y: b.y*A, w: b.w, h: b.h*A })),
+        bumps: W.bumps.map(o => ({ x: o.x, y: o.y*A, r: o.r })), pads: W.pads.map(o => ({ x: o.x, y: o.y*A, r: o.r })),
+        ribbons: W.ribbons.map(o => ({ x: o.x, y: o.y*A, w: o.w, h: o.h*A, dir: o.dir })),
+        portals: W.portals.map(o => ({ x: o.x, y: o.y*A, r: o.r })), scis: W.scis.map(o => ({ x: o.x, y: o.y*A, r: o.r })),
+        paw: W.paw ? { y: W.paw.y*A, h: W.paw.h*A, w: W.paw.w, x0: W.paw.x0, amp: W.paw.amp, per: W.paw.per } : null,
+        tyA: ty*A
+      });
+      const pawAt = (wd, tms) => wd.paw ? { x: wd.paw.x0 + wd.paw.amp*Math.sin(tms/wd.paw.per*Math.PI*2) - wd.paw.w/2, y: wd.paw.y, w: wd.paw.w, h: wd.paw.h } : null;
+      const makeSim = (wd, lines) => {
+        const segs = [];
+        lines.forEach(ln => { for (let i = 1; i < ln.length; i++) segs.push([ln[i-1].x, ln[i-1].y*wd.A, ln[i].x, ln[i].y*wd.A]); });
+        const s = { x: bx, y: by*wd.A, vx: 0, vy: 0, t: 0, status: 'flying', cool: 0, hit: '', mx: bx, my: by*wd.A, mt: 0, touch: 0, rec: false, ev: [] };
+        const rebound = (nx, ny, keep, kick) => {
+          const vn = s.vx*nx + s.vy*ny;
+          if (vn >= 0) return;
+          const tvx = s.vx - vn*nx, tvy = s.vy - vn*ny;
+          s.vx = tvx*0.999 - vn*nx*keep; s.vy = tvy*0.999 - vn*ny*keep;
+          if (kick){ s.vx += nx*kick; s.vy += ny*kick; }
+        };
+        const against = (cx, cy, rad, keep, kick) => {
+          let dx = s.x - cx, dy = s.y - cy; const d2 = dx*dx + dy*dy;
+          if (d2 >= rad*rad || d2 < 1e-12) return false;
+          const d = Math.sqrt(d2); dx /= d; dy /= d; s.x = cx + dx*rad; s.y = cy + dy*rad; rebound(dx, dy, keep, kick); return true;
+        };
+        s.step = () => {
+          s.t += DT;
+          s.vy += G*DT;
+          for (const rb of wd.ribbons) if (s.x > rb.x && s.x < rb.x + rb.w && Math.abs(s.y - (rb.y + rb.h/2)) < rb.h/2 + R + 0.5) s.vx += rb.dir*0.00009*DT;
+          const sp = Math.hypot(s.vx, s.vy); if (sp > 0.26){ s.vx *= 0.26/sp; s.vy *= 0.26/sp; }
+          s.x += s.vx*DT; s.y += s.vy*DT;
+          for (const q of segs){ const h = segd(s.x, s.y, q[0], q[1], q[2], q[3]); if (against(h.x, h.y, R + 0.5, 0.22, 0)) s.touch = s.t; }
+          for (const b of wd.blocks) against(clamp(s.x, b.x, b.x+b.w), clamp(s.y, b.y, b.y+b.h), R, 0.22, 0);
+          const pw = pawAt(wd, s.t); if (pw && against(clamp(s.x, pw.x, pw.x+pw.w), clamp(s.y, pw.y, pw.y+pw.h), R, 0.5, 0.05) && s.rec) s.ev.push(['paw', 0]);
+          wd.bumps.forEach((o, i) => { if (against(o.x, o.y, o.r + R, 0.92, 0.05) && s.rec) s.ev.push(['bump', i]); });
+          wd.pads.forEach((o, i) => { if (against(o.x, o.y, o.r + R, 1.4, 0.02) && s.rec) s.ev.push(['pad', i]); });
+          wd.scis.forEach((o, i) => { if (Math.hypot(s.x - o.x, s.y - o.y) < o.r + R*0.7){ if (s.status === 'flying' && s.rec) s.ev.push(['snip', i]); s.status = 'snipped'; } });
+          s.cool -= DT;
+          if (wd.portals.length >= 2 && s.cool <= 0){
+            for (let i = 0; i < wd.portals.length; i++){ const o = wd.portals[i];
+              if (Math.hypot(s.x - o.x, s.y - o.y) < o.r*0.75){ const to = wd.portals[i ^ 1]; s.x = to.x; s.y = to.y; s.cool = 400; if (s.rec) s.ev.push(['tin', i ^ 1]); break; } }
+          }
+          if (s.y + R > wd.tyA - 3*wd.A && s.y < wd.tyA + 6*wd.A && Math.abs(s.x - tx) < BW/2) s.status = 'caught';
+          else if (s.x < -8 || s.x > 108 || s.y > (ty + 12)*wd.A || s.t > 7500) s.status = s.status === 'snipped' ? s.status : 'lost';
+          if (s.t - s.mt >= 1500){ /* a ball that has gone nowhere for a second and a half is not going anywhere */
+            if (s.status === 'flying' && Math.hypot(s.x - s.mx, s.y - s.my) < 1.2) s.status = 'lost';
+            s.mx = s.x; s.my = s.y; s.mt = s.t; }
+        };
+        return s;
+      };
+      const runAll = (wd, lines, every) => {
+        const s = makeSim(wd, lines), path = every ? [[s.x, s.y/wd.A]] : null, gy = wd.tyA - 2*wd.A;
+        let n = 0, near = 1e9;
+        while (s.status === 'flying' && n++ < 2500){ s.step(); const d = Math.hypot(s.x - tx, s.y - gy); if (d < near) near = d; if (every && n % every === 0) path.push([s.x, s.y/wd.A]); }
+        return { status: s.status, path, near, touchT: s.touch };
+      };
+
+      /* ── make a round that can be done ───────────────────────────────────────────
+         The round is solved before it is shown, the way a person would: run the ball, see where it leaves the last ramp, put the
+         next ramp under where it falls, aimed at the basket, and run it again, a few ramps deep. Several tries at each step are
+         made and the two that end nearest the basket are kept. The ramps are separate strokes, so the ball leaves one and lands on
+         the next, which is what the chalk is for. An answer counts only when a hand that is a little off still lands it, and on a
+         field a touch taller or shorter than this one, because a phone can turn. A round that cannot be answered inside the
+         budget is thinned one thing at a time, scissors first, and solved again; the budget is a count of runs, not of
+         milliseconds, so the same seed makes the same round on every phone. */
+      const lineFrom = pts => { const out = [], n = pts.length; for (let i = 0; i < n - 1; i++){ const a = pts[i], b = pts[i+1], L = Math.hypot(b[0]-a[0], (b[1]-a[1])*A0), k = Math.max(1, Math.ceil(L/1.6));
+        for (let j = 0; j < k; j++) out.push({ x: a[0] + (b[0]-a[0])*j/k, y: a[1] + (b[1]-a[1])*j/k }); } out.push({ x: pts[n-1][0], y: pts[n-1][1] }); return out; };
+      const lenOf = ln => { let L = 0; for (let i = 1; i < ln.length; i++) L += Math.hypot(ln[i].x - ln[i-1].x, (ln[i].y - ln[i-1].y)*A0); return L; };
+      const nudged = (lines, dx, dy) => lines.map(ln => ln.map(q => ({ x: q.x + dx, y: q.y + dy })));
+      const THIN = [() => W.scis.pop(), () => W.ribbons.pop(), () => W.pads.pop(), () => W.bumps.pop(), () => W.scis.pop(), () => W.blocks.pop(), () => W.ribbons.pop(), () => W.bumps.pop(), () => W.blocks.pop(), () => W.portals.splice(0), () => { W.paw = null; }];
+      const slabHit = (ax, ay, cx, cy, r) => {
+        let t0 = 0, t1 = 1; const dx = cx - ax, dy = cy - ay, p = [-dx, dx, -dy, dy], q = [ax - r.x0, r.x1 - ax, ay - r.y0, r.y1 - ay];
+        for (let i = 0; i < 4; i++){
+          if (p[i] === 0){ if (q[i] < 0) return false; continue; }
+          const u = q[i]/p[i];
+          if (p[i] < 0){ if (u > t1) return false; if (u > t0) t0 = u; } else { if (u < t0) return false; if (u < t1) t1 = u; }
+        }
+        return t1 - t0 > 1e-6;
+      };
+      let answer = null, evals = 0;
+      const cascade = (w0, wds, sims) => {
+        const m = 2.8, rects = [], circs = [], floorY = (ty - 0.5)*A0, T = { x: tx, y: (ty - 1)*A0 };
+        w0.blocks.forEach(b => rects.push({ x0: b.x - m, y0: b.y - m, x1: b.x + b.w + m, y1: b.y + b.h + m }));
+        w0.ribbons.forEach(b => rects.push({ x0: b.x - m*0.4, y0: b.y - m*0.4, x1: b.x + b.w + m*0.4, y1: b.y + b.h + m*0.4 }));
+        w0.bumps.concat(w0.pads).forEach(o => circs.push({ x: o.x, y: o.y, r: o.r + m }));
+        w0.scis.forEach(o => circs.push({ x: o.x, y: o.y, r: o.r + m + 2 }));
+        w0.portals.forEach(o => circs.push({ x: o.x, y: o.y, r: o.r + m*0.5 }));
+        const free = (ax, ay, cx, cy) => !rects.some(r => slabHit(ax, ay, cx, cy, r)) && !circs.some(c => { const h = segd(c.x, c.y, ax, ay, cx, cy); return Math.hypot(h.x - c.x, h.y - c.y) < c.r - 1e-6; });
+        const toLine = (ax, ay, cx, cy) => [{ x: ax, y: ay/A0 }, { x: cx, y: cy/A0 }];
+        const run = lines => { evals++; return runAll(w0, lines, 0); };
+        const robust = lines => { evals += 5;
+          return runAll(w0, lines, 0).status === 'caught' && wds.every(wd => runAll(wd, lines, 0).status === 'caught') && [[-0.6, 0], [0.6, 0], [0, 0.6]].every(d => runAll(w0, nudged(lines, d[0], d[1]), 0).status === 'caught'); };
+        let beam = [{ lines: [], sc: 1e9 }];
+        for (let depth = 0; depth < 5 && evals < sims; depth++){
+          const next = [];
+          for (const base of beam){
+            const r = runAll(w0, base.lines, 3); evals++;
+            if (r.status === 'caught') continue;
+            const i0 = Math.min(Math.max(0, r.path.length - 3), Math.floor(r.touchT/(DT*3)));
+            const tail = r.path.slice(i0 + 1, i0 + 110).map(p => [p[0], p[1]*A0]).filter(p => p[1] < floorY - 14 && p[0] > 2 && p[0] < 98 && p[1] > by*A0 + 2);
+            if (!tail.length) continue;
+            for (let k = 0, got = 0; got < 14 && k < 140 && evals < sims; k++){
+              const L = tail[Math.floor(ctx.rnd()*tail.length)];
+              const py = L[1] + R + 0.8, before = 4 + ctx.rnd()*10;
+              let sx, sy, ex, ey;
+              const vx = T.x + (ctx.rnd() - 0.5)*BW*0.4 - L[0], vy = T.y - py;
+              if (ctx.rnd() < 0.55 && vy > 0.3*Math.abs(vx) + 2){
+                const n = Math.hypot(vx, vy); sx = L[0] - vx/n*before; sy = py - vy/n*before; ex = L[0] + vx; ey = py + vy;
+              } else {
+                let d = tx > L[0] ? 1 : -1; if (Math.abs(tx - L[0]) < 5 || ctx.rnd() < 0.15) d = ctx.rnd() < 0.5 ? -1 : 1;
+                const kk = 0.3 + ctx.rnd()*1.2; let after = 6 + ctx.rnd()*34;
+                if (py + kk*after > floorY) after = (floorY - py)/kk;
+                sx = L[0] - d*before; sy = py - kk*before; ex = L[0] + d*after; ey = py + kk*after;
+              }
+              if (sx < 3 || sx > 97 || ex < 3 || ex > 97 || sy < by*A0 + 3 || !free(sx, sy, ex, ey)) continue;
+              got++;
+              const lines = base.lines.concat([toLine(sx, sy, ex, ey)]), rr = run(lines);
+              if (rr.status === 'caught'){ const dense = lines.map(ln => lineFrom(ln.map(q => [q.x, q.y]))); if (robust(dense)) return dense; continue; }   /* checked as it will be drawn: a hand makes a line of many small pieces */
+              next.push({ lines, sc: rr.near + (rr.status === 'snipped' ? 30 : 0) + 1 });
+            }
+          }
+          next.sort((a, b) => a.sc - b.sc); beam = next.slice(0, 3);
+          if (!beam.length) return null;
+        }
+        return null;
+      };
+      for (let attempt = 0; attempt < 6 && !answer; attempt++){
+        place();
+        for (let k = 0; k < attempt*2; k++) THIN[k] && THIN[k]();
+        answer = cascade(world(A0), [A0*0.95, A0*1.05].map(world), evals + 120);
       }
+      /* Nothing on the field at all always has an answer; it is searched for the same way rather than assumed. */
+      for (let k = 0; k < 6 && !answer; k++){ place(); W.blocks.length = W.bumps.length = W.pads.length = W.ribbons.length = W.portals.length = W.scis.length = 0; W.paw = null;
+        answer = cascade(world(A0), [A0*0.95, A0*1.05].map(world), evals + 200); }
+      if (!answer) answer = [lineFrom([[bx + (tx > bx ? 9 : -9), by + 8], [tx, ty - 3]])];
+      const need = answer.reduce((n, ln) => n + lenOf(ln), 0);
+      const inkCap = Math.max(need*margin, need + 10);
 
+      /* ── the field ── */
+      const SCISSORS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20 14 10M4 4l10 10" stroke="#E8ECF6" stroke-width="2.4" stroke-linecap="round"/><circle cx="18.2" cy="5.4" r="3" fill="none" stroke="#FF5C8A" stroke-width="2.2"/><circle cx="18.2" cy="18.6" r="3" fill="none" stroke="#FF5C8A" stroke-width="2.2"/><path d="M15.6 6.9 9 12l6.600 5.100" fill="none" stroke="#E8ECF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      const field = mk('div','chalkwrap');
       const box = mk('div','chalkbox');
-      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-      svg.setAttribute('viewBox','0 0 100 100');
-      svg.setAttribute('class','chalkink');
-      svg.setAttribute('preserveAspectRatio','none');
-      const line = document.createElementNS('http://www.w3.org/2000/svg','polyline');
-      svg.appendChild(line); box.appendChild(svg);
-      blocks.forEach(b => { const e = mk('i','cblock');
-        e.style.left = b.x+'%'; e.style.top = b.y+'%';
-        e.style.width = b.w+'%'; e.style.height = b.h+'%'; box.appendChild(e); });
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS,'svg');
+      svg.setAttribute('viewBox','0 0 100 100'); svg.setAttribute('class','chalkink'); svg.setAttribute('preserveAspectRatio','none');
+      const mkLine = cls => { const l = document.createElementNS(svgNS,'polyline'); l.setAttribute('class', cls); svg.appendChild(l); return l; };
+      const linesG = document.createElementNS(svgNS,'g'); svg.appendChild(linesG);
+      const threadEl = mkLine('cthread'), peekEl = mkLine('cpeek');
+      box.appendChild(svg);
+      const put = (el, x, y, w, h) => { el.style.left = x+'%'; el.style.top = y+'%'; if (w !== undefined) el.style.width = w+'%'; if (h !== undefined) el.style.height = h+'%'; box.appendChild(el); return el; };
+      const round = (cls, o, label) => { const e = mk('i', cls); e.style.left = (o.x - o.r)+'%'; e.style.top = o.y+'%'; e.style.width = (o.r*2)+'%'; e.style.aspectRatio = '1'; e.style.height = 'auto';
+        e.setAttribute('role','img'); e.setAttribute('aria-label', t(label)); box.appendChild(e); return e; };
+      const roundEls = [], kind = { bump: [], pad: [], snip: [], tin: [], paw: [] };
+      W.blocks.forEach(b => put(mk('i','cblock'), b.x, b.y, b.w, b.h));
+      W.ribbons.forEach(r => { const e = put(mk('i','cribbon' + (r.dir < 0 ? ' left' : '')), r.x, r.y, r.w, r.h); e.setAttribute('role','img'); e.setAttribute('aria-label', t('chalk.ribbon')); });
+      W.bumps.forEach(o => { const e = round('cbump', o, 'chalk.bump'); kind.bump.push(e); roundEls.push([e, o]); });
+      W.pads.forEach(o => { const e = round('cpad', o, 'chalk.pad'); kind.pad.push(e); roundEls.push([e, o]); });
+      W.scis.forEach(o => { const e = round('cscis', o, 'chalk.scis'); e.innerHTML = SCISSORS; kind.snip.push(e); roundEls.push([e, o]); });
+      W.portals.forEach((o, i) => { const e = round('cportal ' + (i ? 'b' : 'a'), o, 'chalk.portal'); kind.tin.push(e); roundEls.push([e, o]); });
+      if (W.paw){ const rail = put(mk('i','cpawrail'), W.paw.x0 - W.paw.amp - W.paw.w/2, W.paw.y, W.paw.amp*2 + W.paw.w, W.paw.h); rail.setAttribute('aria-hidden','true'); }
+      const pawEl = W.paw ? put(mk('i','cpaw'), W.paw.x0 - W.paw.w/2, W.paw.y, W.paw.w, W.paw.h) : null;
+      if (pawEl){ pawEl.setAttribute('role','img'); pawEl.setAttribute('aria-label', t('chalk.paw')); kind.paw.push(pawEl); }
       const cup = mk('i','cbasket');
       cup.style.left = (tx - BW/2)+'%'; cup.style.width = BW+'%'; cup.style.top = (ty-5)+'%';
       cup.setAttribute('role','img'); cup.setAttribute('aria-label', t('chalk.basket'));
+      { const lead = Pals.on()[0] || PAL_BY_ID.biscuit; const cc = mk('span','ccat'); cc.innerHTML = catSvg(lead.coat, { pose:'sit' }); cup.appendChild(cc); }
       box.appendChild(cup);
       const ball = mk('i','cball');
       ball.style.width = (R*2)+'%'; ball.style.aspectRatio = '1'; ball.style.height = 'auto';
       ball.setAttribute('role','img'); ball.setAttribute('aria-label', t('chalk.ball'));
       box.appendChild(ball);
       const meter = mk('i','cink'); box.appendChild(meter);
-      box.setAttribute('role','application');
-      box.setAttribute('aria-label', t('chalk.draw'));
-      ctx.surface.appendChild(box);
+      box.setAttribute('role','application'); box.setAttribute('aria-label', t('chalk.draw'));
+      field.appendChild(box);
+      const tools = mk('div','ctools'); field.appendChild(tools);
+      const undoBtn = mk('button','ctool'); undoBtn.type = 'button';
+      undoBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5M4 12h11a5 5 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -5)"/></svg><b></b>';
+      undoBtn.querySelector('b').textContent = t('chalk.undo');
+      const peekBtn = mk('button','ctool'); peekBtn.type = 'button';
+      peekBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg><b></b>';
+      const dropBtn = mk('button','ctool drop'); dropBtn.type = 'button';
+      dropBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg><b></b>';
+      dropBtn.querySelector('b').textContent = t('chalk.drop');
+      tools.appendChild(undoBtn); tools.appendChild(peekBtn); tools.appendChild(dropBtn);
+      ctx.surface.appendChild(field);
 
-      let done = false, drawing = false, launched = false, raf2 = 0;
-      const pts = [];
-      let used = 0;
-      let px = bx, py = by, vx = 0, vy = 0;
-      const paint = () => { ball.style.left = (px-R)+'%'; ball.style.top = (py-R)+'%'; };
-      paint();
-      const drawInk = () => {
-        line.setAttribute('points', pts.map(q => q.x.toFixed(2)+','+q.y.toFixed(2)).join(' '));
+      let done = false, drawing = false, launched = false, raf2 = 0, peeks = PEEKS, used = 0, dry = false;
+      const strokes = [];           /* each a list of {x, y} in % of the field */
+      let cur = null;
+      const aspect = () => box.clientHeight > 0 && box.clientWidth > 0 ? box.clientHeight / box.clientWidth : A0;
+      const pct = pt => pt.x.toFixed(2)+','+pt.y.toFixed(2);
+      const bxy = [bx, by];
+      const paintBall = () => { ball.style.left = (bxy[0]-R)+'%'; ball.style.top = (bxy[1] - R/aspect())+'%'; };
+      const redraw = () => {
+        linesG.innerHTML = '';
+        strokes.forEach(st => { const l = document.createElementNS(svgNS,'polyline'); l.setAttribute('class','cline'); l.setAttribute('points', st.map(pct).join(' ')); linesG.appendChild(l); });
         const left = Math.max(0, 1 - used/inkCap);
-        meter.style.width = (left*100)+'%';
-        meter.classList.toggle('low', left < 0.22);
+        meter.style.width = (left*100)+'%'; meter.classList.toggle('low', left < 0.22);
+        undoBtn.disabled = !strokes.length || launched;
+        peekBtn.querySelector('b').textContent = t('chalk.peek') + ' ' + peeks;
+        peekBtn.disabled = !peeks || launched || !strokes.length;
+        dropBtn.disabled = launched || used < 6;
       };
-      drawInk();
-      const say = () => ctx.prompt(t(launched ? 'p.chalkGo' : 'p.chalk'));
-      say();
+      const say = k => ctx.prompt(t(k || (launched ? 'p.chalkGo' : 'p.chalk')));
+      /* Round things are sized in widths and placed by their middle, so their top follows the field's shape once it is laid out. */
+      const positionRound = () => { const a = aspect(); roundEls.forEach(([e, o]) => { e.style.top = (o.y - o.r/a)+'%'; }); if (!launched) paintBall(); };
+      positionRound(); redraw(); say();
+      if (window.ResizeObserver) new ResizeObserver(positionRound).observe(box);
+      const inkLeft = () => inkCap - used;
 
       onDrag(box, {
-        start: q => { if (done || launched) return;
-          drawing = true; pts.length = 0; used = 0; pts.push({x:q.x, y:q.y}); drawInk(); },
-        move:  q => { if (!drawing) return;
-          const last = pts[pts.length-1];
-          const d = Math.hypot(q.x-last.x, q.y-last.y);
+        start: q => { if (done || launched) return; drawing = true; cur = [{ x: q.x, y: q.y }]; strokes.push(cur); redraw(); },
+        move:  q => { if (!drawing || !cur) return;
+          const last = cur[cur.length-1], a = aspect();
+          const d = Math.hypot(q.x - last.x, (q.y - last.y)*a);
           if (d < 1.1) return;
-          if (used + d > inkCap) return;          /* the chalk simply stops */
-          used += d; pts.push({x:q.x, y:q.y}); drawInk(); },
-        end:   () => {
-          if (!drawing || done || launched) return;
-          drawing = false;
-          /* A stray tap is not a commitment. */
-          if (used < 6){ pts.length = 0; drawInk(); return; }
-          launched = true; say(); box.classList.add('live');
-          const t0 = performance.now();
-          let last = t0;
-          const step = ms => {
-            vy += G*ms;
-            let nx = px + vx*ms, ny = py + vy*ms;
-            /* Resolve against the chalk line and the blockers the same way:
-               find the nearest point on the obstacle, and if the ball overlaps
-               it, push it out and reflect the velocity about that surface. */
-            const hits = [];
-            for (let i = 1; i < pts.length; i++)
-              hits.push(seg(nx, ny, pts[i-1].x, pts[i-1].y, pts[i].x, pts[i].y));
-            for (const b of blocks)
-              hits.push({ x: clamp(nx, b.x, b.x+b.w), y: clamp(ny, b.y, b.y+b.h) });
-            for (const h of hits){
-              let dx = nx-h.x, dy = ny-h.y;
-              const d = Math.hypot(dx, dy);
-              if (d >= R || d < 1e-6) continue;
-              dx /= d; dy /= d;
-              nx = h.x + dx*R; ny = h.y + dy*R;
-              const vn = vx*dx + vy*dy;
-              if (vn < 0){
-                /* Split the velocity, do not scale it whole. The normal part
-                   loses most of itself — a ramp should carry the ball, not
-                   throw it — while the tangential part, the part that is the
-                   whole point of a ramp, is barely touched. Scaling both
-                   together runs six times a frame and stops the ball dead on
-                   the first surface it meets. */
-                const tvx = vx - vn*dx, tvy = vy - vn*dy;
-                vx = tvx*0.999 - vn*dx*0.22;
-                vy = tvy*0.999 - vn*dy*0.22;
-              }
-            }
-            px = nx; py = ny;
-          };
-          const frame = () => {
-            if (done) return;
-            const now = performance.now();
-            const ms = Math.min(48, now - last); last = now;
-            for (let k = 0; k < 6; k++) step(ms/6);
-            paint();
-            if (py + R > ty-3 && py < ty+6 && Math.abs(px - tx) < BW/2){
-              done = true; cancelAnimationFrame(raf2);
-              cup.classList.add('caught'); return ctx.win(cup); }
-            if (px < -8 || px > 108 || py > 112 || now - t0 > 7000){
-              done = true; cancelAnimationFrame(raf2);
-              ball.classList.add('lost'); return ctx.miss(ball); }
-            raf2 = requestAnimationFrame(frame);
-          };
-          raf2 = requestAnimationFrame(frame);
-        }
+          if (used + d > inkCap){ if (!dry){ dry = true; say('p.chalkDry'); } return; }   /* the chalk simply stops */
+          used += d; cur.push({ x: q.x, y: q.y }); redraw(); },
+        end:   () => { if (!drawing) return; drawing = false;
+          /* A stray tap is not a stroke. */
+          if (cur && cur.length < 3){ strokes.pop(); }
+          cur = null; used = strokes.reduce((n, st) => n + lenAt(st), 0); if (dry && used < inkCap - 2){ dry = false; say(); } redraw(); }
       });
+      const lenAt = st => { const a = aspect(); let L = 0; for (let i = 1; i < st.length; i++) L += Math.hypot(st[i].x - st[i-1].x, (st[i].y - st[i-1].y)*a); return L; };
+
+      onTap(undoBtn, () => { if (done || launched || !strokes.length) return; strokes.pop(); used = strokes.reduce((n, st) => n + lenAt(st), 0); if (dry){ dry = false; say(); } peekEl.setAttribute('points',''); box.classList.remove('peekwin','peeklose'); redraw(); sfx.tap(); });
+      onTap(peekBtn, () => {
+        if (done || launched || !peeks || !strokes.length) return;
+        peeks--;
+        const r = runAll(world(aspect()), strokes, 10);
+        peekEl.setAttribute('points', r.path.map(p => p[0].toFixed(2)+','+p[1].toFixed(2)).join(' '));
+        box.classList.toggle('peekwin', r.status === 'caught'); box.classList.toggle('peeklose', r.status !== 'caught');
+        redraw(); sfx.tap();
+        ctx.after(2600, () => { peekEl.setAttribute('points',''); box.classList.remove('peekwin','peeklose'); });
+      });
+      onTap(dropBtn, () => {
+        if (done || launched || used < 6) return;
+        launched = true; peekEl.setAttribute('points',''); box.classList.remove('peekwin','peeklose'); box.classList.add('live'); redraw(); say();
+        const wd = world(aspect()), s = makeSim(wd, strokes); s.rec = true;
+        const thread = [[bx, by]]; let acc = 0, last = performance.now(), sinceThread = 0;
+        const frame = () => {
+          if (done) return;
+          const now = performance.now(); acc += Math.min(48, now - last); last = now;
+          while (acc >= DT && s.status === 'flying'){ s.step(); acc -= DT; sinceThread += DT;
+            if (sinceThread >= 30){ sinceThread = 0; thread.push([s.x, s.y/wd.A]); } }
+          bxy[0] = s.x; bxy[1] = s.y/wd.A; paintBall();
+          if (s.ev.length){
+            s.ev.splice(0).forEach(([k, i]) => {
+              const el = kind[k] && kind[k][i]; if (el){ el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
+              if (k === 'bump') tone(780 + i*70, 0.06, 'triangle', 0.035); else if (k === 'pad') tone(330 + i*50, 0.14, 'sine', 0.05, 1.6);
+              else if (k === 'tin') tone(240, 0.12, 'sine', 0.04, 1.8); else if (k === 'paw') tone(150, 0.09, 'square', 0.03, 0.7); else if (k === 'snip') tone(1200, 0.05, 'sawtooth', 0.03, 0.4);
+              if (k !== 'snip') buzz(8);
+            });
+          }
+          threadEl.setAttribute('points', thread.map(p => p[0].toFixed(2)+','+p[1].toFixed(2)).join(' '));
+          if (pawEl){ const pw = pawAt(wd, s.t); pawEl.style.left = pw.x+'%'; }
+          if (s.status === 'caught'){ done = true; cup.classList.add('caught'); return ctx.win(cup); }
+          if (s.status === 'snipped'){ done = true; ball.classList.add('lost','snipped'); return ctx.miss(ball); }
+          if (s.status === 'lost'){ done = true; ball.classList.add('lost'); return ctx.miss(ball); }
+          raf2 = requestAnimationFrame(frame);
+        };
+        raf2 = requestAnimationFrame(frame);
+      });
+      /* A probe-only hook: the round was built from an answer, and a test that cannot be told it cannot check the round is winnable. */
+      try { if (localStorage.getItem('dd.probe')) box.dataset.solution = JSON.stringify(answer.map(ln => ln.map(p => [+p.x.toFixed(2), +p.y.toFixed(2)]))); } catch(e){}
     }
   },
 
@@ -9562,28 +9893,36 @@ const MODES = {
     }
   },
 
-  /* ── Forge — the only mode where you build, not solve ─────────────────────
-     From "fidget forge", and the first thing in the Make family. Everything
-     else hands you a finished situation to read, steer or undo. Here you are
-     given a hole and the exact parts that fill it, and the answer only exists
-     once you have built it. There is no rotating: the parts come out already
-     turned the way they were when the shape was made, so the work is seeing
-     where each one belongs rather than fiddling with it.
-     The shape is not drawn and then checked for solvability — it is made BY
-     laying the parts down, and what they cover becomes the hole. So a fit
-     always exists, and the parts in the tray are exactly the parts it takes. */
+  /* ── Patchwork — a quilt, built by hand ───────────────────────────────────
+     Given a hole in the quilt and the exact patches that fill it, and the answer only
+     exists once you have built it. It is made BY laying the patches down (what they cover
+     becomes the hole), so a fit always exists and the tray holds exactly the patches it
+     takes.
+
+     What you do with them is the whole feel of it, and it was wrong before: a patch had
+     to be dropped with its middle exactly over one particular square, there was no turning
+     them, and the board was always five wide. Now a patch is picked up anywhere, follows the
+     finger a hand's height above it, and lands on the nearest place it fits when let go —
+     you point at the area, not the square. A tap on a patch in the tray turns it; a second
+     finger (or R) turns the one in your hand; a patch already laid is lifted by touching it,
+     and can be carried to somewhere else. From level 8 the quilt has a rule, as a real
+     one does: patches of the same colour may not touch. */
   forge: {
-    name:'Patchwork', blurb:'Fit every patch into the pattern — nothing left over', cat:'make', par:16000, bonus:4200,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke-width="1.9"><rect x="3" y="3" width="8" height="8" rx="1.5" stroke="#C08BFF"/><rect x="13" y="3" width="8" height="8" rx="1.5" stroke="#6C6191"/><rect x="3" y="13" width="8" height="8" rx="1.5" stroke="#6C6191"/><rect x="13" y="13" width="8" height="8" rx="1.5" stroke="#C08BFF"/></g></svg>',
+    name:'Patchwork', blurb:'Drag each patch onto the quilt, turn it to fit — nothing left over', cat:'make', par:18000, bonus:4600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke-width="1.9"><rect x="3" y="3" width="8" height="8" rx="1.5" stroke="#C08BFF"/><rect x="13" y="3" width="8" height="8" rx="1.5" stroke="#6C6191"/><rect x="3" y="13" width="8" height="8" rx="1.5" stroke="#6C6191"/><rect x="13" y="13" width="8" height="8" rx="1.5" stroke="#C08BFF"/></g><path d="M5 5l4 4M15 15l4 4" stroke="#FF8AD8" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="1 2.4"/></svg>',
     build(ctx){
-      /* The board stays five wide at every level. Six wide leaves squares under
-         40px once the tray needs a second row, and a tap target you have to aim
-         at is a worse kind of hard than a puzzle you have to think about.
-         Difficulty is the number of parts instead. */
-      const g     = 5;
-      const want  = 3 + Math.min(3, Math.floor(ctx.level/6));
-      /* Rotations are generated rather than written out, so a shape can never
-         be listed with one of its turns missing. */
+      const GAP = 3;
+      /* The quilt is as wide as the room allows and as the level asks: a square under about
+         44px is a square you have to aim at, so the room caps it, and difficulty is the
+         number of patches and the rule rather than a smaller target. */
+      const room = Math.min(ctx.surface.clientWidth || 350, Math.max(0, (ctx.surface.clientHeight || 560) - 190));
+      const maxG = Math.max(4, Math.floor((room + GAP) / 46));
+      const g = clamp(ctx.level < 4 ? 5 : ctx.level < 12 ? 6 : 7, 4, maxG);
+      const cap = Math.floor(g*g*0.7/3.3);
+      const wantAt = clamp(3 + Math.floor(ctx.level/3), 3, 10);      /* how many patches the level asks for */
+      const want = Math.min(wantAt, cap);
+      const ruleOn = ctx.level >= 8;
+
       const norm = cs => { const mx = Math.min(...cs.map(c=>c[0])), my = Math.min(...cs.map(c=>c[1]));
         return cs.map(c=>[c[0]-mx, c[1]-my]).sort((a,b)=> a[1]-b[1] || a[0]-b[0]); };
       const key  = cs => cs.map(c=>c.join(',')).join(' ');
@@ -9595,21 +9934,60 @@ const MODES = {
         [[0,0],[1,0],[0,1],[1,1]],           /* square  */
         [[0,0],[1,0],[2,0],[1,1]],           /* tee     */
         [[0,0],[1,0],[2,0],[2,1]],           /* ell     */
-        [[1,0],[2,0],[0,1],[1,1]]            /* zed     */
+        [[1,0],[2,0],[0,1],[1,1]],           /* zed     */
+        [[0,0],[1,0],[2,0],[3,0]],           /* bar 4   */
+        [[1,0],[0,1],[1,1],[2,1],[1,2]],     /* plus    */
+        [[0,0],[1,0],[0,1],[1,1],[0,2]]      /* pea     */
       ];
-      const SHAPES = [];
-      for (const b of BASE){
-        let c = norm(b);
-        for (let r = 0; r < 4; r++){
-          if (!SHAPES.some(s => key(s) === key(c))) SHAPES.push(c);
-          c = turn(c);
+      /* The bigger ones only once the quilt is big enough to be worth them. */
+      const usable = BASE.slice(0, ctx.level < 5 ? 7 : ctx.level < 10 ? 8 : 10);
+      /* All four turns of every base shape, without duplicates, so a shape can never be
+         listed with one of its turns missing. */
+      const turnsOf = b => { const out = []; let c = norm(b);
+        for (let r = 0; r < 4; r++){ if (!out.some(s => key(s) === key(c))) out.push(c); c = turn(c); } return out; };
+      const FAMILY = usable.map(turnsOf);
+      const SHAPES = FAMILY.flat();
+
+      /* Sometimes the hole is a picture, and finishing it makes one: a cat, a heart, a fish, a
+         ball of yarn, a bell. It is tiled from the picture in, by trying patches at the first
+         uncovered square until everything is covered, so it can always be filled. */
+      const PICTURES = [
+        { id:'cat',   rows:['##...##','###.###','#######','#######','#######','.#####.','..###..'] },
+        { id:'heart', rows:['.##.##','######','######','.####.','..##..'] },
+        { id:'fish',  rows:['..##...','.####.#','#######','.####.#','..##...'] },
+        { id:'ball',  rows:['.####.','######','######','######','######','.####.'] },
+        { id:'bell',  rows:['...#...','..###..','.#####.','.#####.','#######','#######','...#...'] }
+      ].filter(pic => pic.rows[0].length <= g && pic.rows.length <= g);
+      let parts = null, picture = null;
+      if (ctx.level >= 10 && PICTURES.length && ctx.rnd() < 0.6){
+        for (let tries = 0; tries < 6 && !parts; tries++){
+          const pic = PICTURES[Math.floor(ctx.rnd()*PICTURES.length)];
+          const ox = Math.floor((g - pic.rows[0].length) / 2), oy = Math.floor((g - pic.rows.length) / 2);
+          const cellsP = []; pic.rows.forEach((row, y) => [...row].forEach((ch, x) => { if (ch === '#') cellsP.push((oy + y)*g + ox + x); }));
+          const inPic = new Set(cellsP), cov = new Set(), list = [];
+          let nodes = 0;
+          const order = cellsP.slice().sort((a,b) => a - b);
+          const go = () => {
+            if (nodes++ > 30000) return false;
+            const first = order.find(c => !cov.has(c));
+            if (first === undefined) return list.length >= 3 && list.length <= 10;
+            if (list.length >= 10) return false;
+            for (const sh of shuffle(SHAPES.slice(), ctx.rnd)){
+              const a0 = sh[0], ax = (first % g) - a0[0], ay = Math.floor(first / g) - a0[1];
+              const at = sh.map(c => (ay + c[1])*g + ax + c[0]);
+              if (sh.some(c => ax + c[0] < 0 || ax + c[0] >= g || ay + c[1] < 0 || ay + c[1] >= g)) continue;
+              if (at.some(i => !inPic.has(i) || cov.has(i))) continue;
+              at.forEach(i => cov.add(i)); list.push({ sh, at });
+              if (go()) return true;
+              list.pop(); at.forEach(i => cov.delete(i));
+            }
+            return false;
+          };
+          if (go()) { parts = { list: list.slice(), cells: new Set(cellsP) }; picture = pic.id; }
         }
       }
-
-      /* Build the mould by laying parts down. Every part is placed touching
-         what is already there, so the hole is one connected piece. */
-      let parts = null;
-      for (let attempt = 0; attempt < 220 && !parts; attempt++){
+      /* Lay patches down, each touching what is already there, so the hole is in one piece. */
+      for (let attempt = 0; attempt < 260 && !parts; attempt++){
         const taken = new Set(), list = [];
         const kk = (x,y) => y*g + x;
         for (let n = 0; n < want; n++){
@@ -9625,22 +10003,50 @@ const MODES = {
               }
               options.push({ sh, cells });
             }
-            if (options.length > 40) break;
+            if (options.length > 50) break;
           }
           if (!options.length) break;
           const pick = options[Math.floor(ctx.rnd()*options.length)];
           pick.cells.forEach(c => taken.add(kk(c[0],c[1])));
-          list.push(pick.sh);
+          list.push({ sh: pick.sh, at: pick.cells.map(c => kk(c[0],c[1])) });
         }
         if (list.length === want) parts = { list, cells: taken };
       }
-      if (!parts){   /* a mould of two dominoes always exists on any grid */
-        const taken = new Set([0, 1, g, g+1]);
-        parts = { list: [SHAPES[0], SHAPES[0]], cells: taken };
+      if (!parts){   /* two dominoes always fit */
+        const d = SHAPES[0];
+        parts = { list: [{ sh: d, at: [0, 1] }, { sh: d, at: [g, g+1] }], cells: new Set([0, 1, g, g+1]) };
       }
       const target = parts.cells;
+      const N = parts.list.length;
+      const pictureName = picture ? t('forge.pic.' + picture) : '';
 
-      const wrap = mk('div','forgewrap');
+      /* Colours: a proper colouring of which patches touch which, so the rule can always be
+         kept by the way the patches were laid. Most constrained first, fewest colours. */
+      const PAL = ['#FF6E9E', '#4BC0FF', '#5BD98C', '#FFC53D', '#B27BFF'];
+      const owner = new Map(); parts.list.forEach((p, i) => p.at.forEach(c => owner.set(c, i)));
+      const nbr = parts.list.map(() => new Set());
+      parts.list.forEach((p, i) => p.at.forEach(c => {
+        [[1,0],[-1,0],[0,1],[0,-1]].forEach(d => {
+          const x = (c % g) + d[0], y = Math.floor(c / g) + d[1];
+          if (x < 0 || y < 0 || x >= g || y >= g) return;
+          const o = owner.get(y*g + x); if (o !== undefined && o !== i) nbr[i].add(o);
+        });
+      }));
+      const colour = new Array(N).fill(-1);
+      Array.from({ length: N }, (_, i) => i).sort((a, b) => nbr[b].size - nbr[a].size).forEach(i => {
+        const used = new Set([...nbr[i]].map(j => colour[j]));
+        let c = 0; while (used.has(c)) c++;
+        colour[i] = c % PAL.length;
+      });
+      /* A rule-free quilt can be any colours; shuffle which colour is which so the same
+         shape is not always the same colour. */
+      const pal = shuffle(PAL.slice(), ctx.rnd);
+
+      const rot = parts.list.map(() => Math.floor(ctx.rnd()*4));            /* the turn each patch sits at in the tray */
+      const orient = i => { let c = parts.list[i].sh; for (let r = 0; r < rot[i]; r++) c = turn(c); return c; };
+
+      /* ── DOM ── */
+      const wrap = mk('div','forgewrap quilt');
       const grid = mk('div','fgrid');
       grid.style.gridTemplateColumns = 'repeat(' + g + ',1fr)';
       const cellEls = [];
@@ -9648,213 +10054,294 @@ const MODES = {
         const c = mk('i','fcell');
         if (target.has(i)) c.classList.add('mould');
         c.setAttribute('role','button');
-        c.setAttribute('aria-label', t(target.has(i) ? 'forge.hole' : 'forge.solid',
-          { x: (i % g) + 1, y: Math.floor(i / g) + 1 }));
+        c.setAttribute('aria-label', t(target.has(i) ? 'forge.hole' : 'forge.solid', { x: (i % g) + 1, y: Math.floor(i / g) + 1 }));
         grid.appendChild(c); cellEls.push(c);
       }
       wrap.appendChild(grid);
-      const tray = mk('div','ftray');
-      wrap.appendChild(tray);
+      const tray = mk('div','ftray'); wrap.appendChild(tray);
+      const tools = mk('div','ftools'); wrap.appendChild(tools);
+      const undoBtn = mk('button','ftool'); undoBtn.type = 'button';
+      undoBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5M4 12h11a5 5 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -5)"/></svg><b></b>';
+      undoBtn.querySelector('b').textContent = t('forge.undo'); undoBtn.setAttribute('aria-label', t('forge.undo'));
+      const hintBtn = mk('button','ftool'); hintBtn.type = 'button';
+      hintBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><ellipse cx="12" cy="16" rx="5.2" ry="4.2"/><ellipse cx="5.4" cy="11" rx="2.2" ry="2.9"/><ellipse cx="9.6" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="14.4" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="18.6" cy="11" rx="2.2" ry="2.9"/></svg><b></b>';
+      tools.appendChild(undoBtn); tools.appendChild(hintBtn);
       ctx.surface.appendChild(wrap);
 
-      const budget = moveBudget(ctx, parts.list.length);
-      const filled = new Map();      /* cell index -> placement */
-      const placed = [];
-      let sel = null, done = false;
+      const budget = moveBudget(ctx, N);
+      const filled = new Map();           /* cell index -> placement */
+      const placed = [];                  /* placements, oldest first */
+      let held = null, done = false, hints = 2;
 
-      const say = () => ctx.prompt(t('p.forge', { n: target.size - filled.size }));
+      const inTray = i => !placed.some(p => p.part === i) && !(held && held.part === i);
+      const say = (key, args) => ctx.prompt(key ? t(key, args) : picture ? t('p.forgePic', { n: target.size - filled.size, what: pictureName }) : t(ruleOn ? 'p.forgeRule' : 'p.forge', { n: target.size - filled.size }));
 
-      const trayEls = [];
-      const drawTray = () => {
-        tray.innerHTML = ''; trayEls.length = 0;
-        parts.list.forEach((sh, i) => {
-          if (placed.some(p => p.part === i)) return;
-          const w = Math.max(...sh.map(c=>c[0])) + 1, h = Math.max(...sh.map(c=>c[1])) + 1;
-          const e = mk('button','fpiece');
-          e.type = 'button';
-          e.dataset.idx = i;
-          e.style.gridTemplateColumns = 'repeat(' + w + ',1fr)';
-          for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){
-            const b2 = mk('i', sh.some(c => c[0]===x && c[1]===y) ? 'fbit on' : 'fbit');
-            e.appendChild(b2);
+      /* ── What goes where ── */
+      const nbrs = c => { const x = c % g, y = Math.floor(c / g), out = [];
+        if (x > 0) out.push(c-1); if (x < g-1) out.push(c+1); if (y > 0) out.push(c-g); if (y < g-1) out.push(c+g); return out; };
+      /* Can the patch (in this turn) go with its first square at (ax, ay)? `sim` lets the
+         solver ask without touching the board. */
+      const spot = (part, o, ax, ay, fl) => {
+        const cells = [];
+        for (const c of o){
+          const x = ax + c[0], y = ay + c[1];
+          if (x < 0 || y < 0 || x >= g || y >= g) return null;
+          const i = y*g + x;
+          if (!target.has(i) || fl.has(i)) return null;
+          cells.push(i);
+        }
+        if (ruleOn){
+          for (const i of cells) for (const n of nbrs(i)){
+            const p = fl.get(n);
+            if (p && !cells.includes(n) && colour[p.part] === colour[part]) return null;
           }
-          e.setAttribute('aria-label', t('forge.part', { n: sh.length }));
-          if (sel === i) e.classList.add('fsel');
-          /* Real pointer input goes through the tray's own onDrag below, which
-             tells a tap from a drag by how far it moved. This stays for
-             keyboard activation only — detail is 0 for a synthesised click and
-             1+ for a real pointer click, so a mouse tap can never double-fire
-             here on top of the drag path resolving the same gesture. */
-          /* Real pointer input is fully handled by the tray's own onDrag below,
-             which tells a tap from a drag by how far it moved. This listener
-             exists for keyboard activation — but Chromium also delivers a
-             trusted click, detail 0, after a touch gesture already handled
-             above, so detail alone cannot tell the two apart. The 700ms
-             window (the same one onTap uses) can: a keyboard click arrives
-             long after any pointer gesture on this tray, a touch-compat one
-             lands within a beat of it. */
-          e.addEventListener('click', ev => {
-            if (done) return;
-            const t = ev.timeStamp || performance.now();
-            if (t - lastPointerGesture < 700) return;
-            sel = (sel === i) ? null : i; drawTray();
-          });
-          tray.appendChild(e); trayEls.push(e);
+        }
+        return cells;
+      };
+      /* Every way the remaining patches can finish the quilt from here. One is enough, and
+         the search gives up on a very large tree rather than freeze: "no answer found" then
+         means "not sure", never "impossible". */
+      const solve = () => {
+        const fl = new Map(filled), left = parts.list.map((_, i) => i).filter(i => !filled.size || !placed.some(p => p.part === i));
+        let nodes = 0, sol = null;
+        const order = [...target].sort((a,b) => a - b);
+        const go = (remaining, acc) => {
+          if (sol || nodes++ > 60000) return;
+          const first = order.find(c => !fl.has(c));
+          if (first === undefined){ sol = acc.slice(); return; }
+          const fx = first % g, fy = Math.floor(first / g);
+          for (const i of remaining){
+            let c = parts.list[i].sh;
+            const seen = new Set();
+            for (let r = 0; r < 4; r++, c = turn(c)){
+              const k = key(c); if (seen.has(k)) continue; seen.add(k);
+              const a0 = c[0];                               /* the first square lands on the first empty one */
+              const cells = spot(i, c, fx - a0[0], fy - a0[1], fl);
+              if (!cells) continue;
+              const pl = { part: i, cells, o: c };
+              cells.forEach(x => fl.set(x, pl));
+              acc.push(pl);
+              go(remaining.filter(j => j !== i), acc);
+              acc.pop(); cells.forEach(x => fl.delete(x));
+              if (sol) return;
+            }
+          }
+        };
+        go(left, []);
+        return { sol, gaveUp: nodes > 60000 };
+      };
+
+      /* ── Drawing ── */
+      const paint = () => {
+        cellEls.forEach((c, i) => {
+          const p = filled.get(i);
+          c.className = 'fcell' + (target.has(i) ? ' mould' : '') + (p ? ' set' : '');
+          c.style.removeProperty('--pc');
+          if (p){
+            c.style.setProperty('--pc', pal[colour[p.part]]);
+            const same = n => filled.get(n) === p;
+            const x = i % g, y = Math.floor(i / g);
+            if (y === 0 || !same(i-g)) c.classList.add('e-t');
+            if (x === g-1 || !same(i+1)) c.classList.add('e-r');
+            if (y === g-1 || !same(i+g)) c.classList.add('e-b');
+            if (x === 0 || !same(i-1)) c.classList.add('e-l');
+            if (i === p.cells[0]) c.classList.add('m');
+          }
+        });
+        undoBtn.disabled = !placed.length;
+        hintBtn.querySelector('b').textContent = t('forge.hint') + ' ' + hints;
+        hintBtn.disabled = !hints || done;
+        hintBtn.setAttribute('aria-label', t('forge.hint') + ': ' + hints);
+      };
+      const bitsOf = (o, pc) => {
+        const w = Math.max(...o.map(c=>c[0])) + 1, h = Math.max(...o.map(c=>c[1])) + 1;
+        const frag = mk('span','fbits'); frag.style.gridTemplateColumns = 'repeat(' + w + ',1fr)';
+        frag.style.setProperty('--pc', pc);
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
+          frag.appendChild(mk('i', o.some(c => c[0]===x && c[1]===y) ? (x === o[0][0] && y === o[0][1] ? 'fbit on m' : 'fbit on') : 'fbit'));
+        return frag;
+      };
+      const drawTray = () => {
+        tray.innerHTML = '';
+        parts.list.forEach((p, i) => {
+          if (!inTray(i)) return;
+          const e = mk('button','fpiece'); e.type = 'button'; e.dataset.idx = i;
+          e.appendChild(bitsOf(orient(i), pal[colour[i]]));
+          e.setAttribute('aria-label', t('forge.part', { n: p.sh.length }) + '. ' + t('forge.turn'));
+          e.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); rot[i] = (rot[i]+1)%4; drawTray(); } });
+          tray.appendChild(e);
         });
       };
-      drawTray();
-      say();
-      /* The board is square and the tray sits under it, so sizing the board
-         from the surface's WIDTH pushes the tray off the bottom of the play
-         area. Size it from what is actually left once the tray has laid out —
-         at seven parts the tray wraps to two rows, and a fixed allowance for
-         it is wrong by exactly one row. */
       const fitBoard = () => {
-        const room = ctx.surface.clientHeight - tray.offsetHeight - 14;
-        const side = Math.max(120, Math.min(ctx.surface.clientWidth, room));
+        const left = ctx.surface.clientHeight - tray.offsetHeight - tools.offsetHeight - 24;
+        const side = Math.max(120, Math.min(ctx.surface.clientWidth, left));
         grid.style.width = side + 'px'; grid.style.aspectRatio = '1'; grid.style.height = 'auto';
       };
-      fitBoard();
-      /* Once more after the first paint: on the frame the mode is built the
-         surface has not been laid out yet, so its height reads short and the
-         board comes out smaller than the room it actually has. The tray wraps
-         on its own width, not on the board, so one extra pass settles it. */
+      const redraw = () => { drawTray(); paint(); fitBoard(); };
+      redraw(); say();
       requestAnimationFrame(fitBoard);
 
-      const paint = () => {
-        cellEls.forEach((c, i) => c.classList.toggle('set', filled.has(i)));
+      /* ── The hand ── */
+      const gridRect = () => grid.getBoundingClientRect();
+      const pitch = () => (gridRect().width + GAP) / g;
+      let ghost = null;
+      const clearPreview = () => cellEls.forEach(c => c.classList.remove('drop-ok', 'drop-bad', 'hint'));
+      const makeGhost = () => {
+        if (ghost) ghost.remove();
+        ghost = mk('div','fghost');
+        const pt = pitch();
+        const o = orient(held.part);
+        const w = Math.max(...o.map(c=>c[0])) + 1, h = Math.max(...o.map(c=>c[1])) + 1;
+        ghost.style.width = (w*pt - GAP) + 'px'; ghost.style.height = (h*pt - GAP) + 'px';
+        ghost.style.gridTemplateColumns = 'repeat(' + w + ',1fr)'; ghost.style.setProperty('--pc', pal[colour[held.part]]);
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
+          ghost.appendChild(mk('i', o.some(c => c[0]===x && c[1]===y) ? (x === o[0][0] && y === o[0][1] ? 'fbit on m' : 'fbit on') : 'fbit'));
+        ghost.dataset.w = w; ghost.dataset.h = h;
+        wrap.appendChild(ghost);
       };
-
-      /* What placing a part at idx would occupy, and whether that is free.
-         Tap and drag both call this — the only calculation either of them
-         does — so neither can land a piece the other would have refused. The
-         part lands with its own first square — top row, leftmost — on idx.
-         Anchoring on the bounding box instead means a part whose top-left
-         corner is empty drops somewhere you did not point at, with no way to
-         learn where. */
-      const anchorFor = (selIdx, idx) => {
-        const sh = parts.list[selIdx], a0 = sh[0];
-        const ax = (idx % g) - a0[0], ay = Math.floor(idx / g) - a0[1];
-        const cells = sh.map(c => (ay + c[1])*g + (ax + c[0]));
-        const fits = sh.every((c, k) => ax + c[0] >= 0 && ax + c[0] < g
-          && ay + c[1] >= 0 && ay + c[1] < g
-          && target.has(cells[k]) && !filled.has(cells[k]));
-        return { cells, fits };
-      };
-      /* Places selIdx at idx if it fits and reports whether it did — the one
-         path both an ordinary tap and a drop take, so a part behaves exactly
-         the same way regardless of which one got it there. */
-      const place = (selIdx, idx) => {
-        const { cells, fits } = anchorFor(selIdx, idx);
-        if (!fits) return false;
-        const p = { part: selIdx, cells };
-        cells.forEach(i => filled.set(i, p));
-        placed.push(p); sel = null;
-        drawTray(); paint(); fitBoard();
-        /* Win before spending: a part that completes the mould should never
-           be the move that runs the budget out. */
-        if (filled.size === target.size){
-          done = true; grid.classList.add('made'); ctx.win(grid); return true;
+      /* Where the nearest place it fits is, for a patch whose middle is at (cx, cy) on the screen. */
+      const nearest = (cx, cy) => {
+        const o = orient(held.part), gr = gridRect(), pt = pitch();
+        const w = Math.max(...o.map(c=>c[0])) + 1, h = Math.max(...o.map(c=>c[1])) + 1;
+        let best = null, bestBad = null;
+        for (let ay = -(h-1); ay < g; ay++) for (let ax = -(w-1); ax < g; ax++){
+          const mx = gr.left + (ax + w/2) * pt - GAP/2, my = gr.top + (ay + h/2) * pt - GAP/2;
+          const d = Math.hypot(mx - cx, my - cy);
+          const cells = spot(held.part, o, ax, ay, filled);
+          if (cells){ if (!best || d < best.d) best = { d, cells, o }; }
+          else if (!bestBad || d < bestBad.d){
+            const inb = o.every(c => ax + c[0] >= 0 && ax + c[0] < g && ay + c[1] >= 0 && ay + c[1] < g);
+            if (inb) bestBad = { d, cells: o.map(c => (ay + c[1])*g + ax + c[0]) };
+          }
         }
-        say();
-        budget.spend(cellEls[idx]);
-        return true;
+        return { best: best && best.d <= 1.75 * pt ? best : null, bad: bestBad && bestBad.d <= 1.0 * pt ? bestBad : null };
       };
-
-      cellEls.forEach((cell, idx) => {
-        onTap(cell, () => {
-          if (done) return;
-          /* Tapping something already built takes that part back. */
-          if (filled.has(idx)){
-            const p = filled.get(idx);
-            p.cells.forEach(i => filled.delete(i));
-            placed.splice(placed.indexOf(p), 1);
-            sel = p.part; drawTray(); paint(); say();
-            return;
-          }
-          if (sel === null) return;
-          if (!place(sel, idx)){
-            cell.classList.add('no');
-            ctx.after(220, () => cell.classList.remove('no'));
-          }
-        });
-      });
-
-      /* Dragging is the way this is meant to be played: lift a part off the
-         tray, watch the mould light up green where it fits and red where it
-         does not, drop it. onDrag sits on the tray itself rather than on each
-         piece — the tap-to-select path above rebuilds the tray on every tap,
-         and a piece rebuilt out from under a live drag loses pointer capture
-         and the gesture silently dies. A container that is never itself
-         replaced has nothing to lose. */
-      const pieceElAt = (x, y) => {
-        const el2 = document.elementFromPoint(x, y);
-        return el2 && el2.closest ? el2.closest('.fpiece') : null;
-      };
-      const cellAt = (x, y) => {
-        const el2 = document.elementFromPoint(x, y);
-        const c = el2 && el2.closest ? el2.closest('.fcell') : null;
-        return c ? cellEls.indexOf(c) : -1;
-      };
-      const clearPreview = () => cellEls.forEach(c => c.classList.remove('drop-ok', 'drop-bad'));
-      let dragPiece = -1, dragEl = null, dragMoved = false, dragOX = 0, dragOY = 0, lastPointerGesture = 0;
-      const endDrag = () => {
-        if (dragEl){ dragEl.classList.remove('fdrag');
-          dragEl.style.removeProperty('--dx'); dragEl.style.removeProperty('--dy'); }
+      let lastXY = [0, 0];
+      const follow = (x, y) => {
+        lastXY = [x, y];
+        if (!ghost) return;
+        const wr = wrap.getBoundingClientRect(), gh = ghost.offsetHeight, gw = ghost.offsetWidth;
+        const lift = gh / 2 + 34;
+        const cx = x, cy = y - lift;
+        ghost.style.transform = 'translate(' + Math.round(cx - wr.left - gw/2) + 'px,' + Math.round(cy - wr.top - gh/2) + 'px)';
         clearPreview();
-        dragPiece = -1; dragEl = null; dragMoved = false;
+        const n = nearest(cx, cy);
+        held.snap = n.best;
+        if (n.best) n.best.cells.forEach(i => cellEls[i].classList.add('drop-ok'));
+        else if (n.bad) n.bad.cells.forEach(i => cellEls[i].classList.add('drop-bad'));
       };
-      onDrag(tray, {
-        start: q => {
-          if (done) return;
-          const el = pieceElAt(q.ev.clientX, q.ev.clientY);
-          if (!el) return;
-          dragPiece = Number(el.dataset.idx); dragEl = el; dragMoved = false;
-          dragOX = q.ev.clientX; dragOY = q.ev.clientY;
-          /* Chromium still fires a trusted, non-keyboard click after this
-             gesture ends, detail 0 and all — preventDefault() on pointerdown
-             does not reliably suppress it here. The piece's own click
-             listener below checks this timestamp against the same 700ms
-             window onTap uses elsewhere, so that click cannot also toggle
-             the selection this gesture already resolved. */
-          lastPointerGesture = q.ev.timeStamp || performance.now();
-        },
-        move: q => {
-          if (dragPiece < 0) return;
-          const dx = q.ev.clientX - dragOX, dy = q.ev.clientY - dragOY;
-          /* A held-still finger is a tap, not a drag — the lift and the
-             preview only start once it has actually moved. */
-          if (!dragMoved && Math.hypot(dx, dy) < 6) return;
-          dragMoved = true;
-          dragEl.classList.add('fdrag');
-          dragEl.style.setProperty('--dx', dx + 'px');
-          dragEl.style.setProperty('--dy', dy + 'px');
-          const r = dragEl.getBoundingClientRect();
-          const idx = cellAt(r.left + r.width/2, r.top + r.height/2);
-          clearPreview();
-          if (idx >= 0){
-            const { cells, fits } = anchorFor(dragPiece, idx);
-            cells.forEach(ci => { if (cellEls[ci]) cellEls[ci].classList.add(fits ? 'drop-ok' : 'drop-bad'); });
+      const dropIt = () => {
+        const h = held; held = null;
+        if (ghost){ ghost.remove(); ghost = null; }
+        clearPreview();
+        if (!h) return;
+        if (h.snap){
+          const pl = { part: h.part, cells: h.snap.cells, o: h.snap.o };
+          pl.cells.forEach(i => filled.set(i, pl)); placed.push(pl);
+          redraw();
+          pl.cells.forEach(i => { cellEls[i].classList.add('laid'); });
+          ctx.after(260, () => pl.cells.forEach(i => cellEls[i] && cellEls[i].classList.remove('laid')));
+          sfx.tap();
+          if (filled.size === target.size){
+            done = true; grid.classList.add('made');
+            const lead = Pals.on()[0] || PAL_BY_ID.biscuit;
+            const cat = mk('div','fcat'); cat.innerHTML = catSvg(lead.coat, { pose: 'sleep' }); grid.appendChild(cat);
+            ctx.win(grid); return;
           }
-        },
-        end: () => {
-          if (dragPiece < 0) return;
-          const i = dragPiece, el = dragEl, moved = dragMoved;
-          let idx = -1;
-          if (moved){
-            const r = el.getBoundingClientRect();
-            idx = cellAt(r.left + r.width/2, r.top + r.height/2);
-          }
-          endDrag();
-          if (done) return;
-          if (!moved){ sel = (sel === i) ? null : i; drawTray(); return; }
-          if (idx >= 0 && !place(i, idx)){
-            const cell = cellEls[idx];
-            cell.classList.add('no');
-            ctx.after(220, () => cell.classList.remove('no'));
-          }
+          /* Dead end? Say so kindly, once, rather than let them find out by running out of moves. */
+          const s = solve();
+          if (!s.sol && !s.gaveUp){ say('forge.dead'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge')); }
+          else say();
+          budget.spend(cellEls[pl.cells[0]]);
+        } else {
+          redraw();
+          say();
         }
+      };
+      const pickUp = (part, from) => { held = { part, from, snap: null }; if (from === 'board'){
+          const p = placed.find(q => q.part === part);
+          if (p){ p.cells.forEach(i => filled.delete(i)); placed.splice(placed.indexOf(p), 1); }
+        }
+        redraw(); makeGhost(); follow(lastXY[0], lastXY[1]); say(); };
+      const turnHeld = () => { if (!held) return; rot[held.part] = (rot[held.part] + 1) % 4; makeGhost(); follow(lastXY[0], lastXY[1]); sfx.tap(); };
+
+      const undo = () => {
+        if (done || held || !placed.length) return;
+        const p = placed.pop(); p.cells.forEach(i => filled.delete(i));
+        redraw(); say(); sfx.tap();
+      };
+      onTap(undoBtn, undo);
+      onTap(hintBtn, () => {
+        if (done || held || hints <= 0) return;
+        const s = solve();
+        if (!s.sol || !s.sol.length){ say('forge.dead'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge')); return; }
+        hints--;
+        /* The placement that covers the first empty square, and the patch turned the way it goes. */
+        const pl = s.sol[0];
+        let r = 0; let c = parts.list[pl.part].sh;
+        while (key(c) !== key(pl.o) && r < 4){ c = turn(c); r++; }
+        rot[pl.part] = r % 4;
+        redraw();
+        pl.cells.forEach(i => cellEls[i].classList.add('hint'));
+        const te = tray.querySelector('.fpiece[data-idx="' + pl.part + '"]'); if (te) te.classList.add('hinted');
+        ctx.after(2200, () => { pl.cells.forEach(i => cellEls[i] && cellEls[i].classList.remove('hint')); if (te) te.classList.remove('hinted'); });
+        hintBtn.querySelector('b').textContent = t('forge.hint') + ' ' + hints;
       });
+
+      /* ── One pointer is the hand; a second one turns what it holds ── */
+      let hand = null;   /* { id, part, from, x0, y0, moved } */
+      const pieceAt = (x, y) => {
+        const el2 = document.elementFromPoint(x, y);
+        if (!el2 || !el2.closest) return null;
+        const pc = el2.closest('.fpiece'); if (pc && tray.contains(pc)) return { part: Number(pc.dataset.idx), from: 'tray' };
+        const cl = el2.closest('.fcell'); if (cl && cl.classList.contains('set')){
+          const p = filled.get(cellEls.indexOf(cl)); if (p) return { part: p.part, from: 'board' };
+        }
+        return null;
+      };
+      wrap.addEventListener('pointerdown', ev => {
+        if (done || ev.button) return;
+        if (hand && ev.pointerId !== hand.id){ if (held){ ev.preventDefault(); turnHeld(); } return; }
+        if (ev.target.closest && ev.target.closest('.ftool')) return;
+        const at = pieceAt(ev.clientX, ev.clientY);
+        if (!at) return;
+        ev.preventDefault();
+        hand = { id: ev.pointerId, part: at.part, from: at.from, x0: ev.clientX, y0: ev.clientY, moved: false };
+        lastXY = [ev.clientX, ev.clientY];
+        try { wrap.setPointerCapture(ev.pointerId); } catch(e){}
+      });
+      wrap.addEventListener('pointermove', ev => {
+        if (!hand || ev.pointerId !== hand.id) return;
+        ev.preventDefault();
+        lastXY = [ev.clientX, ev.clientY];
+        if (!hand.moved){
+          if (Math.hypot(ev.clientX - hand.x0, ev.clientY - hand.y0) < 7) return;
+          hand.moved = true; pickUp(hand.part, hand.from);
+        }
+        follow(ev.clientX, ev.clientY);
+      });
+      const letGo = ev => {
+        if (!hand || ev.pointerId !== hand.id) return;
+        const h = hand; hand = null;
+        try { wrap.releasePointerCapture(ev.pointerId); } catch(e){}
+        if (done) return;
+        if (!h.moved){
+          /* A tap: turn a patch in the tray; take one off the quilt back to the tray. */
+          if (h.from === 'tray'){ rot[h.part] = (rot[h.part] + 1) % 4; drawTray(); sfx.tap(); }
+          else { const p = placed.find(q => q.part === h.part); if (p){ p.cells.forEach(i => filled.delete(i)); placed.splice(placed.indexOf(p), 1); redraw(); say(); } }
+          return;
+        }
+        dropIt();
+      };
+      wrap.addEventListener('pointerup', letGo);
+      wrap.addEventListener('pointercancel', ev => { if (hand && ev.pointerId === hand.id){ hand = null; if (held){ held = null; if (ghost){ ghost.remove(); ghost = null; } clearPreview(); redraw(); } } });
+      /* R turns the patch in your hand, for anyone with a keyboard. The listener removes itself
+         the first time it runs after this board has gone. */
+      const onKey = ev => {
+        if (!wrap.isConnected){ document.removeEventListener('keydown', onKey); return; }
+        if ((ev.key === 'r' || ev.key === 'R') && held){ ev.preventDefault(); turnHeld(); }
+      };
+      document.addEventListener('keydown', onKey);
     }
   },
 

@@ -39,6 +39,8 @@ Or one at a time:
 | `timing.mjs`, `momentum.mjs` | The round clock, the streak heat and the stage beats, played by a bot. |
 | `fx_unit.mjs` | The craft room's rules by value: what each cat and charm adds at each bond, wishes from a date, adoption without the yarn. Lifts the real source out of the build and runs it in a sandbox. |
 | `meta.mjs` | The craft room played: a solve pays yarn, the tenth offers a charm, the results show what a run paid, a twist run never touches the Classic best, Stats and the Room in every language. |
+| `forge.mjs` | Patchwork played the way a thumb does: every patch dropped up to nearly half a square off, taps to turn, a patch let go nowhere goes back to the tray, a laid patch can be lifted and carried, Undo, Hint, R, and a finished quilt. |
+| `chalk.mjs` | Chalk Line: the answer the round was built from is drawn with a real mouse at five levels and on small screens and must win; the chalk runs out and says so, Undo gives it back, Peek shows where the yarn would go and is limited, a line that does not help loses. Needs `localStorage.dd.probe`, which it sets, for the app to hand over the answer. |
 | `soak.mjs` | Four minutes of real play (taps on real controls, not random pixels); reports a play area that moved under a live board. |
 | `monkey.mjs` | Random input in every mode with motion on: page errors, hangs, and the play area moving under a board that is still the same board (a prompt that wraps to a second line does this). |
 
