@@ -3120,7 +3120,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.91.0';
+const VERSION_TAG = 'v0.91.1';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4432,6 +4432,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.91.1', date:'2026-09-30', items:[
+    'The first time you open the app it no longer loads twice. The welcome screen appeared and, a fraction of a second later, was thrown away and built again, because the page reloaded itself when its offline worker took charge of it. It stays put now. Updates reach you the same way as before, including one that lands during your very first visit.',
+  ] },
   { v:'0.91.0', date:'2026-09-30', items:[
     'Just play is the ten-minute shuffle, every time. It used to carry on with your last mode instead whenever there was one, and tapping any card in the roster counts as choosing one, so for anyone who had ever picked a mode it quietly meant a single mode on three lives, and the ten-minute run made in the last update could not be reached from the button that was meant to start it. Your last mode is still one tap away under Pick a mode and in Favorites.',
     'A first run that scored nothing no longer tells you to beat zero.',
@@ -12585,7 +12588,14 @@ function watchForUpdates(){
   $('updateNow').addEventListener('click', applyUpdate);
   $('updateLater').addEventListener('click', () => { $('updateBar').hidden = true; });
 
-  navigator.serviceWorker.getRegistration().then(reg => {
+  /* The worker is registered on the window's load event, which is AFTER this
+     runs. On every visit but the first there is already a registration to
+     find; on the first there is none yet, and giving up here meant the first
+     session never watched for an update. It only worked because that visit
+     used to reload itself (see controllerchange below), by which time the
+     registration existed. Wait for it instead of relying on that. */
+  navigator.serviceWorker.getRegistration()
+    .then(reg => reg || navigator.serviceWorker.ready).then(reg => {
     if (!reg) return;
     swReg = reg;
     if (reg.waiting) offerUpdate(reg.waiting);
@@ -12611,8 +12621,16 @@ function watchForUpdates(){
     }, 15 * 60 * 1000);
   }).catch(() => {});
 
+  /* A worker taking charge of a page that already had one means a new build
+     has arrived, so reload into it. A FIRST visit fires the very same event
+     when the page's own worker claims it, and reloading then only throws away
+     a page that is already running the newest code: the welcome screen loaded
+     twice, the second time about 170ms after the first. The first takeover is
+     let through unremarked; every later one is an update. */
+  let controlled = !!navigator.serviceWorker.controller;
   let reloading = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!controlled){ controlled = true; return; }
     if (reloading) return;
     reloading = true;
     window.location.reload();
