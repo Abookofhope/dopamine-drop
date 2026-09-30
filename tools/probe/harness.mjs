@@ -159,3 +159,23 @@ export function floorOrDie(label, got, min){
     process.exit(1);
   }
 }
+
+/* Everything a finger could be meant to hit on the current board, as page
+ * coordinates. Random pixels find a control on a board that is mostly controls
+ * and miss it on one that is mostly picture, so anything that needs to PLAY a
+ * board (rather than look at it) picks from this. */
+export const touchTargets = page => page.evaluate(() => {
+  const s = document.getElementById('surface');
+  const seen = new Set(), out = [];
+  const vis = e => { const c = getComputedStyle(e); return c.display !== 'none' && c.visibility !== 'hidden'
+    && parseFloat(c.opacity) > 0.05 && c.pointerEvents !== 'none'; };
+  for (const e of s.querySelectorAll('button, [role="button"], .cell, [tabindex], .knob, .peg, .bit, .arcdot, .slacknode')){
+    if (!vis(e) || e.disabled) continue;
+    const r = e.getBoundingClientRect();
+    if (r.width < 8 || r.height < 8 || r.bottom < 0 || r.top > innerHeight) continue;
+    const k = Math.round(r.left / 6) + ':' + Math.round(r.top / 6);
+    if (seen.has(k)) continue; seen.add(k);
+    out.push({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+  }
+  return out;
+});

@@ -837,9 +837,15 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .ghostdrift .eye{fill:var(--ink)}
 
 /* ── Bruise ───────────────────────────────────────────────────────────── */
-.cell.hole{background:var(--ink-3);border:1px solid var(--edge);border-radius:50%;position:relative;overflow:hidden}
-.cell.hole::after{content:"";position:absolute;inset:14%;border-radius:50%;background:var(--blob,transparent);
-  transform:scale(0);transition:transform var(--t-med) cubic-bezier(.2,1.3,.4,1),background var(--t-fast)}
+/* A hole is a circle whatever shape its cell is. border-radius:50% on a cell
+   taller than it is wide is an oval, which is the stretched look the boards are
+   meant to have lost, so the circle is drawn INSIDE the box: closest-side is the
+   distance to the nearest edge, which is the inscribed circle. */
+.cell.hole{border:0;background:radial-gradient(circle closest-side at 50% 50%,
+    var(--ink-3) 0 96%, var(--edge) 96% 99.5%, transparent 100%);position:relative;overflow:hidden}
+.cell.hole::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(circle closest-side at 50% 50%, var(--blob,transparent) 0 72%, transparent 73%);
+  transform:scale(0);transition:transform var(--t-med) cubic-bezier(.2,1.3,.4,1)}
 .cell.hole.up::after{transform:scale(1)}
 .cell.hole:active::after{transform:scale(.84)}
 .cell.hole .hp{position:relative;z-index:1;font-family:var(--f-data);font-size:15px;font-weight:700;color:var(--ink)}
@@ -1135,7 +1141,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Tide Breath ──────────────────────────────────────────────────────── */
 .tidebox{position:relative;width:100%;height:100%;display:grid;place-items:center;touch-action:none;
-  border-radius:50%;transition:background var(--t-med)}
+  border-radius:var(--r-lg);transition:background var(--t-med)}
 .tidebox.ok{background:#7be38a14}
 .tideband{position:absolute;border-radius:50%;border:2px dashed #7be38a66;pointer-events:none}
 .tidebub{position:absolute;border-radius:50%;background:#7be38a33;border:2px solid #7be38a;pointer-events:none;
@@ -2034,7 +2040,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    align-self:center is what lets the ratio apply at all: a stretched grid
    item has a definite height and aspect-ratio has nothing left to set. */
 .grid{display:grid;gap:10px;width:100%;align-self:center;
-  aspect-ratio:var(--n,3) / calc(var(--n,3) * 1.2);max-height:100%}
+  aspect-ratio:var(--n,3) / calc(var(--n,3) * 1.2);max-height:100%;
+  /* Columns were always equal shares (gridEl) and rows were not: with no row
+     size given they size to their content, so a row of blank cells collapsed
+     while a row holding pipes stayed tall (Untangle, 58px apart), and rows with
+     a wider glyph or an emptied slot came out a few pixels off (Haunt, Kittens
+     Out). Equal shares of the height, whatever is in them. */
+  grid-auto-rows:minmax(0,1fr)}
 /* The early roster shared these pieces flat grey regardless of which mode or
    family drew them — a tile, a pad, a number cell all looked identical to
    each other whether the mode was Odd One Out or Sum Snap. --fam is already
@@ -2044,8 +2056,6 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell{border-radius:var(--r-sm);border:1px solid color-mix(in srgb, var(--fam,var(--edge)) 20%, #ffffff10);min-width:0;min-height:0;display:grid;place-items:center;transition:transform var(--t-fast),background var(--t-fast),border-color var(--t-med)}
 .cell:active{transform:scale(.94)}
 .cell.tile{box-shadow:inset 0 -3px 0 #00000026}
-.cell.tile.bigtile{transform:scale(1.12);z-index:1}
-.cell.tile.bigtile:active{transform:scale(1.05)}
 /* These board containers belong exclusively to the early roster (never
    reused by a bespoke-era mode), so a family-tinted backdrop here is safe
    to add without touching any board that already has its own atmosphere. */
@@ -3129,7 +3139,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.91.2';
+const VERSION_TAG = 'v0.91.3';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4441,6 +4451,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.91.3', date:'2026-09-30', items:[
+    'Odd Skein stopped ballooning one square. From level 14 a same-coloured tile was drawn a touch larger, as a decoy, so in every round something looked off that was not the answer. It read as a glitch, not a puzzle. Every tile is the same size now; only the colour is the question.',
+    'Rows in a grid share the height equally. A row with nothing in it used to collapse while a row of pipes stayed tall, which made Untangle’s board lopsided (58 pixels between its rows on a small phone), and put Haunt and Kittens Out a few pixels out of true.',
+    'Mending’s holes are round. They were tall ovals, because a circle drawn in a cell taller than it is wide is an oval. Purr’s green glow when you are in the band was an oval the size of the screen; it is a rounded panel now.',
+  ] },
   { v:'0.91.2', date:'2026-09-30', items:[
     'No Crossing had its threads in the wrong place. They were drawn in a square and dropped into the middle of a board that is no longer square, so every thread ended a hand\u2019s width from the peg it was meant to join. They join the pegs now. Cat\u2019s Cradle had the same fault, and Snip\u2019s trail was drawn that far from your finger.',
     'Distances follow what you can see. Cat\u2019s Cradle counted a peg as in reach when it was inside an oval much taller than the dashed circle it drew, a peg in No Crossing could be grabbed from well above or below it, and Snip cut pieces that were a whole finger away from the stroke. Each now works out distance the way the picture shows it.',
@@ -5501,16 +5516,14 @@ const MODES = {
       const oddHue = byLight ? hue : hueForDistance(hue, want, 68, 58, ctx.rnd() < 0.5 ? 1 : -1);
       const oddBaseLight = byLight ? lightForDistance(hue, want, 68, 58, ctx.rnd() < 0.5 ? 1 : -1) : 58;
       const odd = Math.floor(ctx.rnd()*n*n);
-      /* Past a point the grid is big enough to hide a second kind of
-         different: a tile the same colour as everything else, just a touch
-         larger. It draws the eye exactly like the real answer does, so
-         reaching for "the one that looks off" stops being enough — only hue
-         was ever the question. */
-      const sizeDecoy = n*n >= 9 && ctx.level >= 14 ? pick(
-        Array.from({length:n*n},(_,i)=>i).filter(i => i !== odd), ctx.rnd) : -1;
+      /* There used to be a second kind of "different" here: a tile the same
+         colour as the rest, drawn a touch larger, to draw the eye like the real
+         answer. In practice it meant one square ballooning over its neighbours
+         in every round from level 14, which read as a glitch, not as a puzzle.
+         Every tile is the same size; only the colour was ever the question. */
       const g = gridEl(n);
       for (let i=0;i<n*n;i++){
-        const b = mk('button','cell tile' + (i===sizeDecoy ? ' bigtile' : ''));
+        const b = mk('button','cell tile');
         b.type = 'button';
         b.style.background = 'hsl(' + (i===odd ? oddHue : hue)
           + ' 68% ' + (i===odd ? oddBaseLight+light : 58) + '%)';

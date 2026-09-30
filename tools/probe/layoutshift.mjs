@@ -29,37 +29,61 @@ const rect = () => page.evaluate(() => { const r = document.getElementById('surf
 const same = (a, b) => a.top === b.top && a.h === b.h;
 const fmt = r => `top ${r.top} height ${r.h}`;
 
-const bad = [];
+const bad = [], unmeasured = [];
 let measured = 0;
+/* Some boards play themselves: Descent's bobbin falls from the first frame and, with
+   nobody steering, misses its first gate a couple of seconds in. The round is then
+   dealt again, and a mode already met has no hint, so the play area rightly gets that
+   height back. That is a new board, not the old one moving. So every measurement is
+   taken under a board tagged when it appeared, and one that was replaced mid-way is
+   thrown out and tried again rather than counted for or against the mode. */
+const tag = () => page.evaluate(() => { const b = [...document.getElementById('surface').children]
+  .find(c => c.id !== 'count' && !c.classList.contains('swap')); if (b) b.setAttribute('data-lsb', '1'); return !!b; });
+const still = () => page.evaluate(() => { const b = document.querySelector('[data-lsb]'); return !!b && b.isConnected; });
 for (const id of ids){
-  await openApp(page, { reduceMotion: true, xp: 9000, runs: 40, solved: 600, sound: false, haptics: false, onboarded: true, seen: {} });
-  await openModeList(page); await clickMode(page, id);
-  await page.waitForFunction(() => [...document.getElementById('surface').children]
-    .some(c => c.id !== 'count' && !c.classList.contains('swap')), null, { timeout: 9000, polling: 50 }).catch(() => {});
-  const boardAt = Date.now();
-  const hint = await page.evaluate(() => { const h = document.getElementById('howto'); return !!h && !h.hidden; });
-  const r0 = await rect();
-  /* Past the 2.2s the hint ignores touches for, counted from when the hint went
-     up (a moment BEFORE the board), then touch the board: the first press is
-     what dismisses it. Timed from the click, a press lands inside the guard,
-     dismisses nothing, and the probe passes on a build that has the bug. */
-  await page.waitForTimeout(Math.max(0, 2500 - (Date.now() - boardAt)));
-  const r1 = await rect();
-  const box = await (await page.$('#surface')).boundingBox();
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down();
-  await page.waitForTimeout(120);
-  const r2 = await rect();
-  await page.mouse.up();
-  await page.waitForTimeout(150);
-  const r3 = await rect();
+  let result = null;
+  for (let attempt = 1; attempt <= 6 && !result; attempt++){
+    await openApp(page, { reduceMotion: true, xp: 9000, runs: 40, solved: 600, sound: false, haptics: false, onboarded: true, seen: {} });
+    await openModeList(page); await clickMode(page, id);
+    await page.waitForFunction(() => [...document.getElementById('surface').children]
+      .some(c => c.id !== 'count' && !c.classList.contains('swap')), null, { timeout: 9000, polling: 50 }).catch(() => {});
+    const boardAt = Date.now();
+    await tag();
+    const hint = await page.evaluate(() => { const h = document.getElementById('howto'); return !!h && !h.hidden; });
+    const r0 = await rect();
+    /* Past the 2.2s the hint ignores touches for, counted from when the hint went
+       up (a moment BEFORE the board), then touch the board: the first press is
+       what dismisses it. Timed from the click, a press lands inside the guard,
+       dismisses nothing, and the probe passes on a build that has the bug. */
+    await page.waitForTimeout(Math.max(0, 2500 - (Date.now() - boardAt)));
+    const r1 = await rect(), kept1 = await still();
+    const box = await (await page.$('#surface')).boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down();
+    await page.waitForTimeout(120);
+    const r2 = await rect(), kept2 = await still();
+    await page.mouse.up();
+    await page.waitForTimeout(150);
+    const r3 = await rect(), kept3 = await still();
+    if (!(kept1 && kept2 && kept3)) continue;      // the round ended by itself: measure a fresh one
+    result = { hint, moved: [
+      ...(!same(r0, r1) ? [`settling: ${fmt(r0)} -> ${fmt(r1)}`] : []),
+      ...(!same(r1, r2) ? [`on the first press: ${fmt(r1)} -> ${fmt(r2)}`] : []),
+      ...(!same(r2, r3) ? [`just after it: ${fmt(r2)} -> ${fmt(r3)}`] : [])
+    ] };
+  }
+  if (!result){
+    console.log(`skip ${id.padEnd(9)} the round ended by itself before it could be measured, six times`);
+    unmeasured.push(id);
+    continue;
+  }
   measured++;
-  const moved = [];
-  if (!same(r0, r1)) moved.push(`settling: ${fmt(r0)} -> ${fmt(r1)}`);
-  if (!same(r1, r2)) moved.push(`on the first press: ${fmt(r1)} -> ${fmt(r2)}`);
-  if (!same(r2, r3)) moved.push(`just after it: ${fmt(r2)} -> ${fmt(r3)}`);
+  const { hint, moved } = result;
   console.log(`${moved.length ? 'FAIL' : 'ok  '} ${id.padEnd(9)} ${hint ? 'hint up' : 'no hint'}${moved.length ? '  ' + moved.join('; ') : ''}`);
   if (moved.length) bad.push(id);
 }
+/* A skip is a hole in what was checked, so it has a ceiling: a few self-playing boards
+   is expected, a dozen means the probe has stopped measuring anything. */
+if (unmeasured.length > 3) bad.push('too many unmeasurable modes: ' + unmeasured.join(', '));
 
 /* The other way the hint goes: nine seconds, whatever you do. Sampled the whole
    way, and only a change under the SAME board counts: if the round times out and
