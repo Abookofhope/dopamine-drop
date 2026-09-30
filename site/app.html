@@ -738,17 +738,23 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 /* ── Descent ──────────────────────────────────────────────────────────── */
 .descentsky{position:relative;width:100%;height:100%;overflow:hidden;touch-action:none;
   border-radius:var(--r-lg);border:1px solid var(--edge-soft);
-  background:linear-gradient(180deg,#0b0a1c 0%,#141033 60%,#1d1440 100%)}
+  background:repeating-linear-gradient(90deg,#ffffff07 0 1px,transparent 1px 15px),
+    linear-gradient(180deg,#0b0a1c 0%,#141033 60%,#1d1440 100%)}
 .dbar{position:absolute;left:0;right:0;height:4.5%}
+/* The warp: each bar is a strip of cloth with a running stitch down the middle, and
+   the gap is the stitch that dropped. */
 .dbar .side{position:absolute;top:0;height:100%;border-radius:3px;
-  background:linear-gradient(180deg,#6C6191,#4a4270);box-shadow:0 2px 0 #00000040}
+  background:repeating-linear-gradient(90deg,#0000 0 4px,#0000002b 4px 5px),
+    repeating-linear-gradient(0deg,#ffffff12 0 2px,#0000 2px 4px),
+    linear-gradient(180deg,#9279C2,#5E4A8C);box-shadow:0 2px 0 #00000040}
+.dbar .side::after{content:"";position:absolute;left:4px;right:4px;top:50%;border-top:1.5px dashed #ffffff66}
 .dbar .side.l{left:0}
-.dbar.cleared .side{background:linear-gradient(180deg,#33e6c8aa,#1f9e8a)}
-.dbar.struck .side{background:linear-gradient(180deg,#ff3d6e,#a5203f)}
-.dstar{position:absolute;top:10%;width:9%;aspect-ratio:1;transform:translate(-50%,-50%);
-  background:radial-gradient(circle at 40% 35%,#fff3c4,#FFC53D 60%,#e08a17);
-  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%);
-  filter:drop-shadow(0 0 8px #ffc53d88);z-index:2}
+.dbar.cleared .side{background:repeating-linear-gradient(90deg,#0000 0 4px,#0000002b 4px 5px),linear-gradient(180deg,#33e6c8aa,#1f9e8a)}
+.dbar.struck .side{background:repeating-linear-gradient(90deg,#0000 0 4px,#0000002b 4px 5px),linear-gradient(180deg,#ff3d6e,#a5203f)}
+.dstar{position:absolute;top:10%;width:10%;aspect-ratio:1;transform:translate(-50%,-50%);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='1.5' width='18' height='4.2' rx='1.6' fill='%23D9A76C'/%3E%3Crect x='3' y='18.3' width='18' height='4.2' rx='1.6' fill='%23D9A76C'/%3E%3Crect x='5.6' y='5.4' width='12.8' height='13.2' rx='1' fill='%23FF6FC8'/%3E%3Cg stroke='%23B8348F' stroke-width='1.1' stroke-linecap='round'%3E%3Cpath d='M5.6 8.6 L18.4 6.4 M5.6 12 L18.4 9.8 M5.6 15.4 L18.4 13.2 M5.6 18.4 L18.4 16.6'/%3E%3C/g%3E%3Cpath d='M18.2 17 Q23 15 22 20.6' fill='none' stroke='%23FF6FC8' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  filter:drop-shadow(0 0 7px #ff8ad8aa);z-index:2}
+.dstar::after{display:none}
 
 /* ── Ripple ───────────────────────────────────────────────────────────── */
 .ripplepool{position:relative;width:100%;height:100%;overflow:hidden;touch-action:none;
@@ -789,9 +795,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
   background:radial-gradient(circle, #ffc53d26 0%, #ffc53d0d 45%, transparent 72%);
   transition:width var(--t-med),height var(--t-med)}
-.glimlamp{position:absolute;width:7%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
-  background:#7BE38A;opacity:0;transition:opacity 160ms linear,box-shadow var(--t-med),background var(--t-med)}
-.glimlamp.lit{background:#BFF7C8;box-shadow:0 0 14px 5px #7be38a77}
+.glimlamp{position:absolute;width:14%;aspect-ratio:2;transform:translate(-50%,-50%);border-radius:0;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 24'%3E%3Cpath d='M2 12 Q11.5 1.5 21 12 Q11.5 22.5 2 12Z' fill='%234FBF63'/%3E%3Cpath d='M27 12 Q36.5 1.5 46 12 Q36.5 22.5 27 12Z' fill='%234FBF63'/%3E%3Cellipse cx='11.5' cy='12' rx='2' ry='8.6' fill='%2307140a'/%3E%3Cellipse cx='36.5' cy='12' rx='2' ry='8.6' fill='%2307140a'/%3E%3C/svg%3E") center/contain no-repeat;opacity:0;
+  transition:opacity 160ms linear,filter var(--t-med)}
+.glimlamp::after{display:none}
+.glimlamp.lit{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 24'%3E%3Cpath d='M2 12 Q11.5 1.5 21 12 Q11.5 22.5 2 12Z' fill='%23C8FFD2'/%3E%3Cpath d='M27 12 Q36.5 1.5 46 12 Q36.5 22.5 27 12Z' fill='%23C8FFD2'/%3E%3Cellipse cx='11.5' cy='12' rx='2' ry='8.6' fill='%2307140a'/%3E%3Cellipse cx='36.5' cy='12' rx='2' ry='8.6' fill='%2307140a'/%3E%3C/svg%3E");filter:drop-shadow(0 0 7px #7be38acc) drop-shadow(0 0 16px #7be38a66)}
 
 /* ── Tidy ─────────────────────────────────────────────────────────────── */
 .tidybox{position:relative;width:100%;height:100%;touch-action:none;display:flex;flex-direction:column}
@@ -812,29 +820,35 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .tidybin.thud{animation:facetPop .3s ease}
 
 /* ── Haunt ────────────────────────────────────────────────────────────── */
-.cell.crypt{background:var(--ink-3);border:1px solid var(--edge);border-radius:var(--r-sm);
+.cell.crypt{border:1px solid #6B4C4F;border-radius:var(--r-sm);
+  background:
+    repeating-linear-gradient(90deg, #0000 0 7px, #0000003d 7px 8.5px),
+    repeating-linear-gradient(0deg, #ffffff0b 0 6px, #0000 6px 12px),
+    radial-gradient(120% 120% at 50% 35%, #4B3340, #2B1E2E 72%);
+  box-shadow:inset 0 0 0 4px #7A5A55, inset 0 0 0 5px #00000040, inset 0 10px 18px -8px #000000b0;
   display:grid;place-items:center;overflow:hidden;transition:background var(--t-fast),transform var(--t-fast)}
 .cell.crypt .gh{width:66%;aspect-ratio:1;opacity:0;transform:translateY(14%) scale(.8);
   transition:opacity var(--t-med),transform var(--t-med)}
-.cell.crypt .gh svg{width:100%;height:100%;display:block;fill:#9C7BFF}
-.cell.crypt .gh .eye{fill:var(--ink)}
+.cell.crypt .gh svg{width:100%;height:100%;display:block;fill:#FFE2B8}
+.cell.crypt .gh .eye{fill:#2A1A20}
+.cell.crypt .gh .whisk,.ghostdrift .whisk{fill:none;stroke:#2A1A20;stroke-width:.7;stroke-linecap:round;opacity:.7}
 .cell.crypt.open .gh{opacity:1;transform:none}
-.cell.crypt.found{background:#9c7bff2e;border-color:#9C7BFF}
-.cell.crypt.wrong{background:#ff3d6e33;border-color:var(--bad)}
+.cell.crypt.found{box-shadow:inset 0 0 0 4px #33E6C8, inset 0 0 18px #33e6c855;border-color:#33E6C8}
+.cell.crypt.wrong{box-shadow:inset 0 0 0 4px var(--bad), inset 0 0 18px #ff3d6e55;border-color:var(--bad)}
 /* Not .swap: that name already belongs to the full-screen "the mode changed"
    card, which is position:absolute;inset:0. A cell wearing it inherited
    both and stretched to cover the whole board on every shuffle. */
 .cell.crypt.crswap{animation:cryptSwap .34s ease}
-@keyframes cryptSwap{0%{transform:none}45%{transform:scale(.86) rotate(-4deg);background:#9c7bff22}100%{transform:none}}
+@keyframes cryptSwap{0%{transform:none}45%{transform:scale(.88) rotate(-4deg)}100%{transform:none}}
 /* The ghost in transit. Absolute inside the grid, so it travels over the tiles
    rather than between them, and lit so it stays the brightest thing on a board
    that is otherwise all closed lids. */
 .grid.crypts{position:relative}
 .ghostdrift{position:absolute;display:grid;place-items:center;pointer-events:none;z-index:3;
   transition:transform linear;will-change:transform}
-.ghostdrift svg{width:62%;aspect-ratio:1;display:block;fill:#9C7BFF;
-  filter:drop-shadow(0 0 9px #9c7bffcc)}
-.ghostdrift .eye{fill:var(--ink)}
+.ghostdrift svg{width:62%;aspect-ratio:1;display:block;fill:#FFE2B8;
+  filter:drop-shadow(0 0 9px #ffc27acc)}
+.ghostdrift .eye{fill:#2A1A20}
 
 /* ── Bruise ───────────────────────────────────────────────────────────── */
 /* A hole is a circle whatever shape its cell is. border-radius:50% on a cell
@@ -2153,7 +2167,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.empty{background:#ffffff05;border-color:transparent}
 .cell.corridor{background:#33e6c814;border-color:#33e6c84d}
 .cell.corridor.clear{background:#33e6c84d}
-.cell.car{background:var(--flare);border-color:var(--flare)}
+.cell.car{background-color:#FF8A43;border-color:#FF8A43;background-repeat:no-repeat;background-position:center;background-size:100% 100%}
+.cell.car.capR{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.4 11 L5.4 3 L10.4 6.8 Q12 6.4 13.6 6.8 L18.6 3 L19.6 11 Q20.2 20.6 12 20.6 Q3.8 20.6 4.4 11Z' fill='%23FFE6CC'/%3E%3Cpath d='M6.3 6.4 L9.2 8.2 L6.1 9.8Z M17.7 6.4 L14.8 8.2 L17.9 9.8Z' fill='%23FF9DB0'/%3E%3Cg stroke='%23C8571F' stroke-width='1.3' stroke-linecap='round'%3E%3Cpath d='M12 7 L12 9.4 M9.6 7.6 L10.3 9.5 M14.4 7.6 L13.7 9.5'/%3E%3C/g%3E%3Cellipse cx='8.6' cy='12.6' rx='1.3' ry='1.9' fill='%23253B2B'/%3E%3Cellipse cx='15.4' cy='12.6' rx='1.3' ry='1.9' fill='%23253B2B'/%3E%3Cpath d='M10.9 15.6 L13.1 15.6 L12 16.9Z' fill='%23FF6E9E'/%3E%3Cg stroke='%23A07D5F' stroke-width='.6' stroke-linecap='round' fill='none'%3E%3Cpath d='M6.4 15.6 L2 14.8 M6.4 17 L2.4 18.2 M17.6 15.6 L22 14.8 M17.6 17 L21.6 18.2'/%3E%3C/g%3E%3C/svg%3E");background-size:contain}
+.cell.car.capL{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23C8571F' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M9 3.5 Q11.4 12 9 20.5 M15.2 3.5 Q17.6 12 15.2 20.5 M21 3.5 Q22.6 12 21 20.5'/%3E%3Cpath d='M3.2 20 Q0.6 12.5 4.6 8.6' stroke-width='2.2'/%3E%3C/g%3E%3C/svg%3E")}
 .cell.car.capL{border-radius:var(--r-sm) 0 0 var(--r-sm)}
 .cell.car.capR{border-radius:0 var(--r-sm) var(--r-sm) 0}
 .cell.bar{background:#9c90c459;border-color:var(--edge);color:var(--cream)}
@@ -2759,6 +2775,158 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .mcard .mmain:focus-visible{outline:2px solid var(--cink,var(--flare));outline-offset:-3px}
 .mcard .twb{position:relative;z-index:2;margin-left:auto;padding:14px 8px;margin-top:-14px;margin-bottom:-14px;margin-right:-8px;
   border:0;background:none;font-family:inherit;line-height:1.2;cursor:pointer;color:inherit;-webkit-tap-highlight-color:transparent}
+/* ═══ Craft layer ═══════════════════════════════════════════════════════════
+   The boards used to be the one part of the game that did not look like the
+   theme: rounded rectangles and gradient discs on a dark tray, with the cats and
+   the yarn all in the chrome around them. This is the material vocabulary that
+   goes on top, written once and applied by class so no mode's own rules change:
+
+     • the board is a felt mat with a stitched border and two paw prints on it
+     • round pieces of any size worth it are balls of yarn, wound
+     • square pieces are patches: woven, with a running stitch round the edge
+     • pegs are pins
+
+   It is all decoration under the content (z-index:-1 inside an isolated piece,
+   so a number on a ball is still on top of the winding), none of it takes a tap,
+   and none of it changes a size or a position. The winding is drawn in
+   percentages of the ball so it scales with it, and it is left off anything
+   under about forty pixels, where line detail stops being thread and becomes
+   dirt; those keep the soft shading they already had.                        */
+
+/* The mat: two paw prints in the felt, and a running stitch round the edge. */
+#surface{
+  isolation:isolate;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff' fill-opacity='.06'%3E%3Cellipse cx='12' cy='16' rx='5.2' ry='4.2'/%3E%3Cellipse cx='5.4' cy='11' rx='2.2' ry='2.9'/%3E%3Cellipse cx='9.6' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='14.4' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='18.6' cy='11' rx='2.2' ry='2.9'/%3E%3C/svg%3E") right 16px bottom 14px / 30px 30px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff' fill-opacity='.06'%3E%3Cellipse cx='12' cy='16' rx='5.2' ry='4.2'/%3E%3Cellipse cx='5.4' cy='11' rx='2.2' ry='2.9'/%3E%3Cellipse cx='9.6' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='14.4' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='18.6' cy='11' rx='2.2' ry='2.9'/%3E%3C/svg%3E") left 14px top 14px / 20px 20px no-repeat,
+    radial-gradient(120% 90% at 50% 8%, color-mix(in srgb, var(--fam,transparent) 9%, transparent), transparent 70%),
+    repeating-linear-gradient(45deg,  #ffffff04 0 2px, transparent 2px 13px),
+    repeating-linear-gradient(-45deg, #0000000c 0 2px, transparent 2px 13px),
+    #ffffff05;
+}
+#surface::before{
+  content:"";position:absolute;inset:5px;pointer-events:none;z-index:-1;border-radius:calc(var(--r-lg) - 5px);
+  border:1.5px dashed color-mix(in srgb, var(--fam,#fff) 28%, transparent);
+}
+#surface::after{z-index:2}
+
+/* Balls of yarn: winding as arcs across the ball, a highlight, a shadow. */
+:is(.bub,.cdot,.beatdot,.arcdot,.slacknode,.ddot,.bit,.jel:not(.empty)){isolation:isolate}
+:is(.beatdot,.jel){position:relative}
+:is(.bub,.cdot,.beatdot,.arcdot,.slacknode,.ddot,.bit,.jel:not(.empty))::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:
+    repeating-radial-gradient(ellipse 130% 80% at 8% 100%, transparent 0 9%, #ffffff2e 9% 11.5%),
+    repeating-radial-gradient(ellipse 90% 140% at 100% 0%, transparent 0 12%, #00000026 12% 14.5%);
+}
+/* Something loose and hairy about a ball that is meant to be picked up. */
+.bub{box-shadow:0 4px 8px -3px #000000a6, inset 0 -4px 7px #00000038, inset 0 2px 3px #ffffff29}
+.cdot,.beatdot,.ddot,.bit,.jel{box-shadow:0 3px 6px -2px #0000008c, inset 0 -3px 5px #0000003a}
+
+/* Patches: a woven face and a running stitch. Numbers and glyphs sit above both. */
+:is(.cell.tile,.cell.num,.cell.sock,.cell.bug,.cell.given,.tidyitem,.spltile,.hlvchip,.vial,.swatch,.fpiece,.abtn,.duelbtn){position:relative;isolation:isolate}
+:is(.tidyitem){position:absolute}
+:is(.cell.tile,.cell.num,.cell.sock,.cell.bug,.cell.given,.tidyitem,.spltile,.hlvchip,.vial,.swatch)::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:
+    repeating-linear-gradient(0deg, #0000000f 0 1.5px, transparent 1.5px 4px),
+    repeating-linear-gradient(90deg, #ffffff0d 0 1.5px, transparent 1.5px 4px),
+    linear-gradient(160deg, #ffffff29, transparent 46%, #00000024);
+}
+:is(.cell.tile,.cell.num,.cell.sock,.cell.bug,.cell.given,.spltile,.hlvchip,.vial,.swatch)::after{
+  content:"";position:absolute;inset:4px;border-radius:max(3px, calc(var(--r-sm) - 4px));pointer-events:none;
+  border:1.5px dashed #ffffff57;
+}
+:is(.cell.num,.spltile,.hlvchip)::after{border-color:color-mix(in srgb, var(--fam,#fff) 42%, #ffffff26)}
+:is(.cell.bug,.swatch)::after{inset:3px}
+.vial::after{border-radius:5px 5px 10px 10px}
+:is(.cell.bug.gone,.cell.sock.tangled)::before,:is(.cell.bug.gone)::after{display:none}
+.hc :is(.bub,.cdot,.beatdot,.arcdot,.slacknode,.ddot,.bit,.jel,.cell.tile,.cell.num,.cell.sock,.cell.bug,.cell.given,.tidyitem,.spltile,.hlvchip,.vial,.swatch)::before,
+.hc :is(.cell.tile,.cell.num,.cell.sock,.cell.bug,.cell.given,.spltile,.hlvchip,.vial,.swatch)::after{display:none}
+
+/* Pins: a brass head with a dark rim, not a dot. */
+:is(.peg,.slacknode,.arcdot){box-shadow:0 3px 5px -1px #000000a6, inset 0 0 0 2.5px #00000030, inset 0 2px 2px #ffffff40}
+
+/* ── Craft layer, part two: the boards that were not made of anything yet ── */
+
+/* Ripples: a saucer of milk. Pale, so the rings read as rings. The gates are
+   the places to drift through; the thing drifting is a ball of yarn. */
+.ripplepool{background:radial-gradient(120% 100% at 50% 0%, #DDD2BC 0%, #C8BB9F 55%, #B2A386 100%);
+  border-color:#9C8D72;box-shadow:inset 0 0 0 6px #E4DCCB, inset 0 0 0 7px #A39780, inset 0 0 30px #00000040}
+.wave{border-color:#6E93B4cc;box-shadow:0 0 8px #ffffff99}
+.rgate{border-color:#4E8F5Fcc}
+.rgate::after{display:none}
+.rgate.passed{border-color:#2F8F52;background:#5bd07c40}
+.leaf{border-radius:50%;background:radial-gradient(circle at 34% 28%,#FFC9EA,#FF6FC8 56%,#BE3490);transform:translate(-50%,-50%)}
+
+/* Needle Pass: the needle goes through cloth, not space. The seam is the place to be. */
+.skimtrack{background:repeating-linear-gradient(90deg,#ffffff06 0 1px,transparent 1px 16px),
+  radial-gradient(120% 90% at 50% 110%, #3A2457 0%, #181029 74%)}
+.skimtrack.hot{box-shadow:inset 0 0 0 1px #FFC53D66}
+.skimstars i{width:9px;height:1.6px;border-radius:2px;background:#ffffff3a;transform:rotate(var(--sr,0deg))}
+.skimstars i:nth-child(3n){--sr:24deg}
+.skimstars i:nth-child(3n+1){--sr:-36deg}
+.skimstars i:nth-child(5n){--sr:72deg}
+.skimzone{background:#FFC53D1f;border:1.5px dashed #FFC53Dcc}
+.skimtrack.hot .skimzone{background:#FFC53D47}
+.skimmark{width:3px;background:linear-gradient(180deg,#fff,#C5CAD8);box-shadow:0 0 10px #ffffff88}
+.skimmark::before{content:"";position:absolute;top:-3px;left:50%;width:7px;height:11px;transform:translateX(-50%);
+  border:1.6px solid #fff;border-radius:50%;background:#181029}
+.skimmark::after{content:"";position:absolute;top:100%;left:50%;height:34px;border-left:2px dashed #FF8AD8;transform:translateX(-50%)}
+.skimpips i.on{background:#FF8AD8}
+
+/* Basket Drop: brass pins, woven baskets, a ball of yarn. */
+.peg{background:radial-gradient(circle at 34% 28%,#FFEDB8,#D9A53A 55%,#8C6418);border:0;
+  box-shadow:0 2px 3px #000000a0, inset 0 -1px 2px #0000005a}
+.bin2{background:repeating-linear-gradient(90deg,#0000 0 6px,#0000003a 6px 7.5px),linear-gradient(180deg,#5B4148,#382830);
+  border:1px solid #7A5A55;box-shadow:inset 0 3px 0 #9A766C}
+.bin2.goal{background:repeating-linear-gradient(90deg,#0000 0 6px,#0000002e 6px 7.5px),linear-gradient(180deg,#2E7D74,#1C4C4C);
+  border-color:var(--cool);box-shadow:0 0 12px #33e6c877, inset 0 3px 0 var(--cool)}
+.bin2.hit{background:var(--flare)}
+.plinkball{background:radial-gradient(circle at 34% 28%,#FFA98C,#FF5B39 56%,#B22D12)}
+
+/* Chalk Line: pattern paper, a tailor's line, a basket to land in. */
+.chalkbox{background:radial-gradient(#ffffff14 1px,transparent 1.5px) 0 0/20px 20px,linear-gradient(180deg,#151835,#0E1024)}
+.cblock{background:repeating-linear-gradient(90deg,#0000 0 5px,#0000002e 5px 6px),linear-gradient(180deg,#9A766C,#62463F);border-color:#B58E82}
+.cbasket{border-color:#D9A76C;background:repeating-linear-gradient(90deg,#0000 0 4px,#0000002e 4px 5px),#8B6A4866}
+.cbasket.caught{background:repeating-linear-gradient(90deg,#0000 0 4px,#0000002e 4px 5px),#33e6c866}
+
+/* Catch the Balls: the pail is a basket. */
+.gbowl{border-color:#D9A76C;background:repeating-linear-gradient(90deg,#0000 0 6px,#0000002e 6px 7.5px),linear-gradient(180deg,#8B6A4866,#5C433F40);
+  box-shadow:inset 0 -9px 15px -11px #D9A76C}
+.grim{background:linear-gradient(180deg,#F5DDB0,#D9A76C);box-shadow:0 0 8px #d9a76c66}
+
+/* Cat Fight: there is a cat on the other side of the table. */
+.foecat{width:88px;height:auto;display:block;filter:drop-shadow(0 4px 8px #00000099)}
+.foecat .foeeye{fill:#FF3D6E;filter:drop-shadow(0 0 3px #ff3d6e)}
+.duelfoe.strike .foecat .foeeye{animation:foeflash .34s ease-out}
+@keyframes foeflash{0%{fill:#fff}100%{fill:#FF3D6E}}
+
+/* Kittens Out: a kitten out is a round head with two ears; one still at home is a paw print. */
+.antslot{position:relative;isolation:isolate}
+.antslot.held::before,.antslot.held::after{content:"";position:absolute;top:-6px;width:14px;height:14px;
+  background:inherit;clip-path:polygon(0 100%,50% 0,100% 100%);z-index:-1}
+.antslot.held::before{left:2px;transform:rotate(-12deg)}
+.antslot.held::after{right:2px;transform:rotate(12deg)}
+.antslot.free{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff' fill-opacity='.22'%3E%3Cellipse cx='12' cy='16' rx='5.2' ry='4.2'/%3E%3Cellipse cx='5.4' cy='11' rx='2.2' ry='2.9'/%3E%3Cellipse cx='9.6' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='14.4' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='18.6' cy='11' rx='2.2' ry='2.9'/%3E%3C/svg%3E") center/58% no-repeat}
+
+/* Mending: the hole has a frayed edge. */
+.cell.hole::before{content:"";position:absolute;left:50%;top:50%;width:calc(100% - 9px);aspect-ratio:1;
+  transform:translate(-50%,-50%);border:1.8px dashed #ffffff3d;border-radius:50%;pointer-events:none}
+
+/* What a solve sheds: paw prints and a curl of yarn, not confetti. */
+.spark.paw{width:15px;height:15px;border-radius:0;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='16' rx='5.2' ry='4.2'/%3E%3Cellipse cx='5.4' cy='11' rx='2.2' ry='2.9'/%3E%3Cellipse cx='9.6' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='14.4' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='18.6' cy='11' rx='2.2' ry='2.9'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='16' rx='5.2' ry='4.2'/%3E%3Cellipse cx='5.4' cy='11' rx='2.2' ry='2.9'/%3E%3Cellipse cx='9.6' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='14.4' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='18.6' cy='11' rx='2.2' ry='2.9'/%3E%3C/svg%3E") center/contain no-repeat}
+.spark.hot.paw{width:18px;height:18px;box-shadow:none;filter:drop-shadow(0 0 4px currentColor)}
+.spark.curl{width:13px;height:7px;background:none!important;border-top:2.6px solid var(--sc,#fff);border-radius:50% 50% 0 0/100% 100% 0 0;box-shadow:none}
+
+/* Purr: the bubble is a cat asleep. The hint moves to the foot of the board so the face is not under it. */
+.tidebub{isolation:isolate}
+.tidebub::before{content:"";position:absolute;left:4%;right:4%;top:-15%;height:30%;z-index:-1;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 30' preserveAspectRatio='none'%3E%3Cpath d='M9 30 L18 2 L42 28 M91 30 L82 2 L58 28' fill='%237be38a55' stroke='%237be38a' stroke-width='3' stroke-linejoin='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center/100% 100% no-repeat}
+.tidebub svg{position:absolute;left:50%;top:50%;width:62%;height:auto;transform:translate(-50%,-44%);fill:none;
+  stroke:#E9FFE9;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.tidebub svg .nose{fill:#E9FFE9;stroke:none}
+.tidehint{position:absolute;bottom:6%;left:0;right:0;text-align:center}
 </style>
 
 <div class="cab">
@@ -3444,7 +3612,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.92.0';
+const VERSION_TAG = 'v0.93.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4181,7 +4349,7 @@ const STRINGS = {
     'how.forage':'tap a kitten to send the kittens at its colour; they come in through the bare gaps and take only what they can reach, then wait in the basket until you send them again. Tap a waiting kitten to call it home', 'how.first':'First time — taking it gently.', 'how.sift':'tap a colour to drop that spool on the BACK of the belt; the belt shifts one slot per strand, so you are placing for a strand further down the chute, not the one falling. Tap the front spool to knock it off',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
-    'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.favAdd':'Add to favorites', 'a.favRemove':'Remove from favorites', 'a.verdictChange':'Tap to change your rating','a.bin':'Basket {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.lampOff':'Unlit lamp {n}', 'a.lampOn':'Lit lamp {n}', 'a.source':'Ball of yarn, tap to turn', 'a.sink':'The cat, tap to turn', 'a.pipe':'Knot, tap to turn', 'a.targetBin':'Target basket', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.skimNow':'Skim now', 'a.firefly':'Firefly', 'a.leaf':'Leaf', 'a.star':'Falling star', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
+    'a.tile':'Tile {n}', 'a.number':'Number {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.favAdd':'Add to favorites', 'a.favRemove':'Remove from favorites', 'a.verdictChange':'Tap to change your rating','a.bin':'Basket {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.lampOff':'Eyes {n}, closed', 'a.lampOn':'Eyes {n}, open', 'a.source':'Ball of yarn, tap to turn', 'a.sink':'The cat, tap to turn', 'a.pipe':'Knot, tap to turn', 'a.targetBin':'Target basket', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.skimNow':'Skim now', 'a.firefly':'Light', 'a.leaf':'Leaf', 'a.star':'Falling bobbin', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
     'over.ribbon':'{a} of {b} rounds solved',
     'p.saved':'Streak held', 'perk.title':'Perks', 'perk.used':'{a} of {b} slots', 'perk.toSlot':'{n} points to the next slot', 'perk.toToken':'{n} points to the next token', 'perk.equipped':'equipped, level {n}', 'perk.notEquipped':'not equipped', 'perk.upgrade':'Spend a token on {p}', 'perk.tokensLeft':'{n} tokens to spend', 'perk.spare':'Spare Life', 'perk.spare.d':'Start a Marathon with {n} more lives', 'perk.spare.d1':'Start a Marathon with one more life', 'perk.shield':'Streak Shield', 'perk.shield.d':'Keep your streak through {n} misses a run', 'perk.shield.d1':'Keep your streak through one miss a run', 'perk.patience':'Long Fuse', 'perk.patience.d':'{n}% longer on the round clock', 'perk.zeal':'Zeal', 'perk.zeal.d':'The multiplier climbs sooner (rank {n})', 'perk.steady':'Steady Hands', 'perk.steady.d':'{n} more moves where moves are counted', 'perk.rally':'Rally', 'perk.rally.d':'Timed runs start {n} seconds longer',
 
@@ -4200,9 +4368,9 @@ const STRINGS = {
     'p.slice':'{n} more to cut', 'slice.good':'Ripe', 'slice.rotten':'Rotten — do not cut', 'm.slice':'Snip|One snip cuts every thread it crosses — miss the knots',
 
     
-    'p.glimmer':'{n} lamps still dark', 'm.glimmer':'Cat’s Eyes|Carry the light until every lamp is lit',
+    'p.glimmer':'{n} pairs of eyes still shut', 'm.glimmer':'Cat’s Eyes|Carry the light until every pair of eyes is open',
     'p.tidy':'{n} left on the floor', 'm.tidy':'Tidy Up|Drag the mess into the right baskets',
-    'p.hauntLook':'{n} of them — watch closely', 'p.hauntTrack':'Follow them', 'p.hauntPick':'{n} still to find', 'm.haunt':'Haunt|Watch the baskets — where did the cats end up?',
+    'p.hauntLook':'{n} cats — watch closely', 'p.hauntTrack':'Follow them', 'p.hauntPick':'{n} still to find', 'm.haunt':'Peekaboo|Watch the baskets — where did the cats end up?',
 
     
 
@@ -4478,7 +4646,7 @@ const STRINGS = {
     'how.forage':'touchez un chaton pour lancer les chatons sur sa couleur ; ils entrent par les trous, ne prennent que ce qu’ils atteignent, puis attendent dans le panier que vous les relanciez. Touchez un chaton en attente pour le rappeler', 'how.first':'Première fois — on y va doucement.', 'how.sift':'touchez une couleur pour poser cette bobine à l’ARRIÈRE du tapis ; le tapis avance d’un cran par brin, donc vous posez pour un brin plus loin dans la trémie, pas pour celui qui tombe. Touchez la bobine de tête pour la faire tomber',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
-    'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.favAdd':'Ajouter aux favoris', 'a.favRemove':'Retirer des favoris', 'a.verdictChange':'Touchez pour changer votre avis','a.bin':'Panier {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.lampOff':'Lampe éteinte {n}', 'a.lampOn':'Lampe allumée {n}', 'a.source':'Pelote, touchez pour tourner', 'a.sink':'Le chat, touchez pour tourner', 'a.pipe':'Nœud, touchez pour tourner', 'a.targetBin':'Panier cible', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.skimNow':'Touchez maintenant', 'a.firefly':'Luciole', 'a.leaf':'Feuille', 'a.star':'Étoile filante', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
+    'a.tile':'Tuile {n}', 'a.number':'Nombre {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.favAdd':'Ajouter aux favoris', 'a.favRemove':'Retirer des favoris', 'a.verdictChange':'Touchez pour changer votre avis','a.bin':'Panier {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.lampOff':'Yeux {n}, fermés', 'a.lampOn':'Yeux {n}, ouverts', 'a.source':'Pelote, touchez pour tourner', 'a.sink':'Le chat, touchez pour tourner', 'a.pipe':'Nœud, touchez pour tourner', 'a.targetBin':'Panier cible', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.skimNow':'Touchez maintenant', 'a.firefly':'Lueur', 'a.leaf':'Feuille', 'a.star':'Bobine qui tombe', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
     'over.ribbon':'{a} manches sur {b} réussies',
     'p.saved':'Série gardée', 'perk.title':'Atouts', 'perk.used':'{a} sur {b} emplacements', 'perk.toSlot':'{n} points avant le prochain emplacement', 'perk.toToken':'{n} points avant le prochain jeton', 'perk.equipped':'équipé, niveau {n}', 'perk.notEquipped':'non équipé', 'perk.upgrade':'Dépenser un jeton sur {p}', 'perk.tokensLeft':'{n} jetons à dépenser', 'perk.spare':'Vie en plus', 'perk.spare.d':'Commencez un Marathon avec {n} vies de plus', 'perk.spare.d1':'Commencez un Marathon avec une vie de plus', 'perk.shield':'Bouclier de série', 'perk.shield.d':'Gardez votre série malgré {n} échecs par partie', 'perk.shield.d1':'Gardez votre série malgré un échec par partie', 'perk.patience':'Mèche longue', 'perk.patience.d':'{n}% de temps en plus par manche', 'perk.zeal':'Ferveur', 'perk.zeal.d':'Le multiplicateur monte plus tôt (rang {n})', 'perk.steady':'Main sûre', 'perk.steady.d':'{n} coups de plus là où les coups comptent', 'perk.rally':'Élan', 'perk.rally.d':'Les parties chronométrées durent {n} secondes de plus',
 
@@ -4497,9 +4665,9 @@ const STRINGS = {
     'p.slice':'Encore {n} à trancher', 'slice.good':'Mûr', 'slice.rotten':'Pourri — à éviter', 'm.slice':'Coup de Ciseaux|Un coup coupe tous les fils croisés — évitez les nœuds',
 
     
-    'p.glimmer':'{n} lampes éteintes', 'm.glimmer':'Yeux de Chat|Portez la lueur jusqu’à allumer chaque lampe',
+    'p.glimmer':'{n} paires d’yeux encore fermées', 'm.glimmer':'Yeux de Chat|Portez la lueur jusqu’à ouvrir chaque paire d’yeux',
     'p.tidy':'{n} encore au sol', 'm.tidy':'Rangement|Glissez le désordre dans les bons paniers',
-    'p.hauntLook':'{n} fantômes — regardez bien', 'p.hauntTrack':'Suivez-les', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Hantise|Suivez les paniers — où sont passés les chats ?',
+    'p.hauntLook':'{n} chats — regardez bien', 'p.hauntTrack':'Suivez-les', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Cache-cache|Suivez les paniers — où sont passés les chats ?',
 
     
 
@@ -4775,7 +4943,7 @@ const STRINGS = {
     'how.forage':'toca un gatito para lanzar los gatitos a su color; entran por los huecos, toman solo lo que alcanzan y luego esperan en la cesta a que los vuelvas a lanzar. Toca un gatito en espera para llamarlo', 'how.first':'Primera vez: vamos con calma.', 'how.sift':'toca un color para poner ese carrete al FINAL de la cinta; la cinta avanza un hueco por hebra, así que colocas para una hebra más adelante en la tolva, no para la que cae. Toca el carrete delantero para tirarlo',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
-    'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.favAdd':'Añadir a favoritos', 'a.favRemove':'Quitar de favoritos', 'a.verdictChange':'Toca para cambiar tu valoración','a.bin':'Cesta {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.lampOff':'Lámpara apagada {n}', 'a.lampOn':'Lámpara encendida {n}', 'a.source':'Ovillo, toca para girar', 'a.sink':'El gato, toca para girar', 'a.pipe':'Nudo, toca para girar', 'a.targetBin':'Cesta objetivo', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.skimNow':'Toca ahora', 'a.firefly':'Luciérnaga', 'a.leaf':'Hoja', 'a.star':'Estrella fugaz', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
+    'a.tile':'Casilla {n}', 'a.number':'Número {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.favAdd':'Añadir a favoritos', 'a.favRemove':'Quitar de favoritos', 'a.verdictChange':'Toca para cambiar tu valoración','a.bin':'Cesta {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.lampOff':'Ojos {n}, cerrados', 'a.lampOn':'Ojos {n}, abiertos', 'a.source':'Ovillo, toca para girar', 'a.sink':'El gato, toca para girar', 'a.pipe':'Nudo, toca para girar', 'a.targetBin':'Cesta objetivo', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.skimNow':'Toca ahora', 'a.firefly':'Luz', 'a.leaf':'Hoja', 'a.star':'Bobina que cae', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
     'over.ribbon':'{a} de {b} rondas resueltas',
     'p.saved':'Racha mantenida', 'perk.title':'Ventajas', 'perk.used':'{a} de {b} ranuras', 'perk.toSlot':'{n} puntos para la próxima ranura', 'perk.toToken':'{n} puntos para la próxima ficha', 'perk.equipped':'equipada, nivel {n}', 'perk.notEquipped':'no equipada', 'perk.upgrade':'Gastar una ficha en {p}', 'perk.tokensLeft':'{n} fichas por gastar', 'perk.spare':'Vida extra', 'perk.spare.d':'Empieza un Maratón con {n} vidas más', 'perk.spare.d1':'Empieza un Maratón con una vida más', 'perk.shield':'Escudo de racha', 'perk.shield.d':'Conserva tu racha pese a {n} fallos por partida', 'perk.shield.d1':'Conserva tu racha pese a un fallo por partida', 'perk.patience':'Mecha larga', 'perk.patience.d':'{n}% más de tiempo por ronda', 'perk.zeal':'Fervor', 'perk.zeal.d':'El multiplicador sube antes (rango {n})', 'perk.steady':'Pulso firme', 'perk.steady.d':'{n} movimientos más donde se cuentan', 'perk.rally':'Empuje', 'perk.rally.d':'Las partidas con reloj empiezan {n} segundos más largas',
 
@@ -4794,9 +4962,9 @@ const STRINGS = {
     'p.slice':'Corta {n} más', 'slice.good':'Maduro', 'slice.rotten':'Podrido — no cortar', 'm.slice':'Tijeretazo|Un corte siega todo hilo que cruza — evita los nudos',
 
     
-    'p.glimmer':'{n} lámparas apagadas', 'm.glimmer':'Ojos de Gato|Lleva la luz hasta encender cada lámpara',
+    'p.glimmer':'{n} pares de ojos aún cerrados', 'm.glimmer':'Ojos de Gato|Lleva la luz hasta abrir cada par de ojos',
     'p.tidy':'Quedan {n} en el suelo', 'm.tidy':'A Recoger|Arrastra el desorden a las cestas correctas',
-    'p.hauntLook':'{n} fantasmas — fíjate bien', 'p.hauntTrack':'Síguelos', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Embrujo|Sigue las cestas — ¿dónde acabaron los gatos?',
+    'p.hauntLook':'{n} gatos — fíjate bien', 'p.hauntTrack':'Síguelos', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Escondite|Sigue las cestas — ¿dónde acabaron los gatos?',
 
     
 
@@ -5072,7 +5240,7 @@ const STRINGS = {
     'how.forage':'tippe ein Kätzchen an, um die Kätzchen auf seine Farbe zu schicken; sie kommen durch die Lücken herein, nehmen nur, was sie erreichen, und warten dann im Korb, bis du sie erneut schickst. Tippe ein wartendes Kätzchen an, um es zurückzurufen', 'how.first':'Zum ersten Mal — wir fangen sanft an.', 'how.sift':'tippe eine Farbe an, um die Spule HINTEN aufs Band zu stellen; das Band rückt je Faden einen Platz vor, du stellst also für einen Faden weiter oben im Schacht, nicht für den fallenden. Tippe die vorderste Spule an, um sie herunterzustoßen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
-    'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.favAdd':'Zu Favoriten hinzufügen', 'a.favRemove':'Aus Favoriten entfernen', 'a.verdictChange':'Tippen, um deine Bewertung zu ändern','a.bin':'Korb {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.lampOff':'Unbeleuchtete Lampe {n}', 'a.lampOn':'Beleuchtete Lampe {n}', 'a.source':'Wollknäuel, zum Drehen tippen', 'a.sink':'Die Katze, zum Drehen tippen', 'a.pipe':'Knoten, zum Drehen tippen', 'a.targetBin':'Zielkorb', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.skimNow':'Jetzt tippen', 'a.firefly':'Glühwürmchen', 'a.leaf':'Blatt', 'a.star':'Fallender Stern', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
+    'a.tile':'Feld {n}', 'a.number':'Zahl {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.favAdd':'Zu Favoriten hinzufügen', 'a.favRemove':'Aus Favoriten entfernen', 'a.verdictChange':'Tippen, um deine Bewertung zu ändern','a.bin':'Korb {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.lampOff':'Augen {n}, geschlossen', 'a.lampOn':'Augen {n}, offen', 'a.source':'Wollknäuel, zum Drehen tippen', 'a.sink':'Die Katze, zum Drehen tippen', 'a.pipe':'Knoten, zum Drehen tippen', 'a.targetBin':'Zielkorb', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.skimNow':'Jetzt tippen', 'a.firefly':'Licht', 'a.leaf':'Blatt', 'a.star':'Fallende Spule', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
     'over.ribbon':'{a} von {b} Runden gelöst',
     'p.saved':'Serie gehalten', 'perk.title':'Boni', 'perk.used':'{a} von {b} Plätzen', 'perk.toSlot':'{n} Punkte bis zum nächsten Platz', 'perk.toToken':'{n} Punkte bis zur nächsten Marke', 'perk.equipped':'ausgerüstet, Stufe {n}', 'perk.notEquipped':'nicht ausgerüstet', 'perk.upgrade':'Eine Marke für {p} ausgeben', 'perk.tokensLeft':'{n} Marken übrig', 'perk.spare':'Extraleben', 'perk.spare.d':'Starte einen Marathon mit {n} Leben mehr', 'perk.spare.d1':'Starte einen Marathon mit einem Leben mehr', 'perk.shield':'Serienschild', 'perk.shield.d':'Behalte deine Serie trotz {n} Fehlern pro Lauf', 'perk.shield.d1':'Behalte deine Serie trotz einem Fehler pro Lauf', 'perk.patience':'Lange Lunte', 'perk.patience.d':'{n}% mehr Zeit pro Runde', 'perk.zeal':'Eifer', 'perk.zeal.d':'Der Multiplikator steigt früher (Rang {n})', 'perk.steady':'Ruhige Hand', 'perk.steady.d':'{n} Züge mehr, wo Züge zählen', 'perk.rally':'Aufholjagd', 'perk.rally.d':'Zeitläufe starten {n} Sekunden länger',
 
@@ -5091,9 +5259,9 @@ const STRINGS = {
     'p.slice':'Noch {n} schneiden', 'slice.good':'Reif', 'slice.rotten':'Faul — nicht schneiden', 'm.slice':'Schnipp|Ein Schnitt trennt jeden Faden — meide die Knoten',
 
     
-    'p.glimmer':'Noch {n} Lampen dunkel', 'm.glimmer':'Katzenaugen|Trag das Licht, bis jede Lampe brennt',
+    'p.glimmer':'Noch {n} Augenpaare geschlossen', 'm.glimmer':'Katzenaugen|Trag das Licht, bis jedes Augenpaar offen ist',
     'p.tidy':'Noch {n} am Boden', 'm.tidy':'Aufräumen|Zieh die Unordnung in die richtigen Körbe',
-    'p.hauntLook':'{n} Geister — gut hinsehen', 'p.hauntTrack':'Folge ihnen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Spuk|Verfolge die Körbe — wo sind die Katzen gelandet?',
+    'p.hauntLook':'{n} Katzen — gut hinsehen', 'p.hauntTrack':'Folge ihnen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Versteckspiel|Verfolge die Körbe — wo sind die Katzen gelandet?',
 
     
 
@@ -5336,6 +5504,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.93.0', date:'2026-09-30', items:[
+    'The boards are made of something now. Every board is a felt mat with a running stitch round the edge and two paw prints pressed into it; round pieces are balls of yarn, wound; square pieces are woven patches with a stitch round them; pegs are brass pins. Nothing moved and no rule changed, but the cats and the yarn are no longer only in the screens around the puzzles.',
+    'Modes that did not look like their names got the thing in their name. Haunt is Peekaboo, cats looking out of woven baskets instead of ghosts in boxes. Dropped Stitch’s falling star is a bobbin of pink thread and its bars are strips of cloth with a stitch down the middle. Cat’s Eyes hides pairs of eyes in the dark that open as the light comes near. The block you slide out in Let the Cat Out is a tabby cat. Kittens Out’s kittens have ears and an empty place is a paw print. Cat Fight has a cat across the table. Ripples is a saucer of milk with a ball of yarn drifting through it. Needle Pass is cloth, with a needle and its thread. Basket Drop has brass pins and woven baskets, Chalk Line is pattern paper, the pail in Catch the Balls is a basket, Mending’s holes have frayed edges, and Purr is a cat asleep that swells and settles.',
+    'A solve sheds paw prints and curls of yarn in the colour of what you solved, where it used to throw squares.',
+  ] },
   { v:'0.92.0', date:'2026-09-30', items:[
     'A room of your own. Every solve now pays yarn, and the new Room tab is where it goes: fourteen cats to adopt, and eight corners of the craft room (rug, window, wall, shelf, cat tree, lamp, bed, plant) to furnish through three grades each. A furnished room pays more yarn and opens more seats for the cats that ride along. Everyone starts with Biscuit, already aboard; if you had been playing before, your past play is turned into yarn so you begin with something to spend.',
     'Cats that do something. Up to three ride along in every run and each has a different knack: one makes the first miss free, one makes a long streak worth more, one is at its best when the clock is nearly out, one likes a mode you have not played for a while, one snacks at every stage. They warm to you a solve at a time (three bond levels, each with its own small gift) and you can pet them in the Room. Their portrait sits in the header, so you can see who is helping.',
@@ -7494,6 +7667,8 @@ const MODES = {
       const box = mk('div','tidebox');
       const band = mk('div','tideband'); box.appendChild(band);
       const bub = mk('div','tidebub'); box.appendChild(bub);
+      /* A cat asleep: the bubble is the cat, and it swells and settles as it purrs. */
+      bub.innerHTML = '<svg viewBox="0 0 40 24" aria-hidden="true"><path d="M8 10q4 4 8 0M24 10q4 4 8 0"/><path d="M18 15.200h4l-2 2z" class="nose"/><path d="M20 17.200q-3 3.400-6 1M20 17.200q3 3.400 6 1"/></svg>';
       const hint = mk('div','tidehint'); box.appendChild(hint);
       ctx.surface.appendChild(box);
 
@@ -7618,7 +7793,7 @@ const MODES = {
 
       const wrap = mk('div','duel');
       const foeBar = mk('div','duelfoe');
-      foeBar.innerHTML = '<span class="pips"></span><span class="tell"><svg viewBox="0 0 24 24" fill="none" '
+      foeBar.innerHTML = '<svg class="foecat" viewBox="0 0 84 62" aria-hidden="true"><path d="M10 30 L13 4 L33 18 Q42 16 51 18 L71 4 L74 30 Q78 58 42 58 Q6 58 10 30Z" fill="#3A2A5E" stroke="#7358B5" stroke-width="2" stroke-linejoin="round"/><path d="M16 12 L27 20 L15 26Z M68 12 L57 20 L69 26Z" fill="#8A3F78"/><path class="foeeye" d="M21 32 Q29 27 37 34 Q29 39 21 32Z M63 32 Q55 27 47 34 Q55 39 63 32Z"/><ellipse cx="29" cy="33" rx="1.3" ry="3.4" fill="#10091f"/><ellipse cx="55" cy="33" rx="1.3" ry="3.4" fill="#10091f"/><path d="M19 25 L37 31 M65 25 L47 31" stroke="#FF8AA0" stroke-width="2.4" stroke-linecap="round"/><path d="M39 42 L45 42 L42 46Z" fill="#FF6E9E"/><path d="M42 46 Q38 52 33 49 M42 46 Q46 52 51 49" stroke="#10091f" fill="none" stroke-width="1.6" stroke-linecap="round"/><path d="M14 43 L3 40 M14 47 L4 50 M70 43 L81 40 M70 47 L80 50" stroke="#9C90C4" stroke-width=".9" stroke-linecap="round"/></svg><span class="pips"></span><span class="tell"><svg viewBox="0 0 24 24" fill="none" '
         + 'stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d=""/></svg></span>';
       wrap.appendChild(foeBar);
       const youBar = mk('div','duelyou'); wrap.appendChild(youBar);
@@ -7963,8 +8138,8 @@ const MODES = {
      point, and it is still hard, which is a different feeling entirely —
      failing here is losing the thread rather than forgetting. */
   haunt: {
-    name:'Haunt', blurb:'Watch the baskets — where did the cats end up?', cat:'focus', par:8000, bonus:2600,
-    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.6 5.6 L6.3 1.4 L10.2 3.4 Z" fill="#9C7BFF"/><path d="M16.4 5.6 L17.7 1.4 L13.8 3.4 Z" fill="#9C7BFF"/><path d="M12 3a7 7 0 0 0-7 7v10l2.5-2 2.5 2 2-2 2 2 2.5-2 2.5 2V10a7 7 0 0 0-7-7z" fill="#9C7BFF"/><circle cx="9.5" cy="10" r="1.2" fill="#0D0918"/><circle cx="14.5" cy="10" r="1.2" fill="#0D0918"/></svg>',
+    name:'Peekaboo', blurb:'Watch the baskets — where did the cats end up?', cat:'focus', par:8000, bonus:2600,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 11.2 L4.6 2.4 L10 6.3 Q12 5.9 14 6.3 L19.4 2.4 L20.4 11.2 Q20.8 20.2 12 20.2 Q3.2 20.2 3.6 11.2Z" fill="#FFB067"/><ellipse cx="8.6" cy="12" rx="1.25" ry="1.8" fill="#0D0918"/><ellipse cx="15.4" cy="12" rx="1.25" ry="1.8" fill="#0D0918"/><path d="M11 15.2 L13 15.2 L12 16.4Z" fill="#0D0918"/></svg>',
     build(ctx){
       const g = ctx.level < 7 ? 3 : 4;
       const n = g*g;
@@ -7983,8 +8158,7 @@ const MODES = {
       for (let i=0;i<n;i++){
         const b = mk('button','cell crypt'); b.type='button';
         b.innerHTML = '<span class="gh"><svg viewBox="0 0 24 24" aria-hidden="true">'
-          + '<path d="M7.6 5.6 L6.3 1.4 L10.2 3.4 Z"/><path d="M16.4 5.6 L17.7 1.4 L13.8 3.4 Z"/><path d="M12 3a7 7 0 0 0-7 7v10l2.5-2 2.5 2 2-2 2 2 2.5-2 2.5 2V10a7 7 0 0 0-7-7z"/>'
-          + '<circle cx="9.5" cy="10" r="1.2" class="eye"/><circle cx="14.5" cy="10" r="1.2" class="eye"/></svg></span>';
+          + '<path d="M3.6 11.2 L4.6 2.4 L10 6.3 Q12 5.9 14 6.3 L19.4 2.4 L20.4 11.2 Q20.8 20.2 12 20.2 Q3.2 20.2 3.6 11.2Z"/><ellipse cx="8.6" cy="12" rx="1.25" ry="1.8" class="eye"/><ellipse cx="15.4" cy="12" rx="1.25" ry="1.8" class="eye"/><path d="M11 15.2 L13 15.2 L12 16.4Z" class="eye"/><path d="M6.2 14.6 L1.8 13.8 M6.2 16.2 L2.2 17.4 M17.8 14.6 L22.2 13.8 M17.8 16.2 L21.8 17.4" class="whisk"/></svg></span>';
         b.setAttribute('aria-label', t('a.tile', { n: i+1 }));
         els.push(b); grid.appendChild(b);
       }
@@ -12859,6 +13033,13 @@ function burst(target, color, tier){
   const hot = t >= 4;
   for (let i=0;i<n;i++){
     const s = mk('span', hot ? 'spark hot' : 'spark');
+    /* A solve sheds what a cat leaves behind: paw prints and short curls of yarn, in
+       the colour of what was solved. Only where the win is tiered, so the untiered
+       callers keep the plain look they always had. */
+    if (tier){
+      if (i % 3 === 0) s.classList.add('paw');
+      else if (i % 3 === 1){ s.classList.add('curl'); s.style.setProperty('--sc', color); }
+    }
     const ang = (i/n)*Math.PI*2 + Math.random()*0.5, dist = (34 + Math.random()*44) * spread;
     s.style.left = cx+'px'; s.style.top = cy+'px';
     s.style.setProperty('--dx', Math.cos(ang)*dist + 'px');
