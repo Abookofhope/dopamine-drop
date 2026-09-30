@@ -197,7 +197,7 @@ const firstBoard = page => page.waitForFunction(() => document.querySelector('#s
     decor: document.querySelectorAll('#decorList .decor').length,
     catsInScene: document.querySelectorAll('#roomScene [data-pal]').length,
   }));
-  check(+ui.yarn >= 400 && ui.scene && ui.seats === 3 && ui.cats === 14 && ui.wishes === 4 && ui.decor === 8,
+  check(+ui.yarn >= 400 && ui.scene && ui.seats === 3 && ui.cats === 20 && ui.wishes === 4 && ui.decor === 8,
     'the Room draws: ' + JSON.stringify(ui));
   check(ui.catsInScene === 1, 'the cat you own is in the scene (' + ui.catsInScene + ')');
 
@@ -340,7 +340,7 @@ const firstBoard = page => page.waitForFunction(() => document.querySelector('#s
   check(st.bars.length === 14 && st.bars[13].today && st.bars[13].h === 100, 'fourteen bars, today last and tallest at 100% (' + st.bars.length + ', ' + (st.bars[13] && st.bars[13].h) + ')');
   check(st.bars[12].h === 50 && st.bars[10].h === 25 && st.bars[11].none, 'yesterday is half of it, three days ago a quarter, and a blank day is dim');
   check(/^35 /.test(st.total) && /35/.test(st.aria), 'the fortnight adds up to 35, and a month-old day is not counted (' + st.total + ')');
-  check(st.cats === '2/14' && st.wishes === '4' && st.fav === 'Focus' && /^\d+\/24$/.test(st.room), "the room's numbers are there (" + [st.cats, st.wishes, st.fav, st.room, st.charms].join(', ') + ')');
+  check(st.cats === '2/20' && st.wishes === '4' && st.fav === 'Focus' && /^\d+\/24$/.test(st.room), "the room's numbers are there (" + [st.cats, st.wishes, st.fav, st.room, st.charms].join(', ') + ')');
   const pruned = await page.evaluate(() => { document.querySelector('[data-tab="Play"]').click(); return JSON.parse(localStorage.getItem('dd.v1')).hist; });
   await page.close();
   const p2 = await newPage();

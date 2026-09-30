@@ -2927,6 +2927,15 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
   stroke:#E9FFE9;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
 .tidebub svg .nose{fill:#E9FFE9;stroke:none}
 .tidehint{position:absolute;bottom:6%;left:0;right:0;text-align:center}
+/* Friends: pairs that do more together. Lit when both are in a seat. */
+.synrow{display:grid;gap:6px;margin:0 0 6px}
+.syn{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border-radius:var(--r-md);border:1px dashed var(--edge);background:#ffffff05}
+.syn b{font-size:12.5px;color:var(--haze)}
+.syn small{font-size:11.5px;color:var(--haze);opacity:.85;line-height:1.35}
+.syn.on{border-style:solid;border-color:#FF8AD86b;background:linear-gradient(180deg,#FF8AD81f,#FF8AD80a)}
+.syn.on b{color:#FF8AD8}
+.syn.on small{color:var(--cream);opacity:1}
+.synnone{font-size:11.5px;color:var(--haze);line-height:1.45;margin:0 2px;opacity:.85}
 </style>
 
 <div class="cab">
@@ -3209,6 +3218,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
         <div class="giftcard" id="giftCard"></div>
         <div class="seclbl"><span data-i18n="room.seats">Riding along</span><u id="seatCount"></u></div>
         <div class="seatrow" id="seatRow"></div>
+        <div class="synrow" id="synRow"></div>
         <div class="seclbl"><span data-i18n="wish.title">Wishes</span><u id="wishCount"></u></div>
         <div id="wishList"></div>
         <div class="seclbl"><span data-i18n="pal.title">Cats</span><u id="palCount"></u></div>
@@ -3612,7 +3622,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.93.0';
+const VERSION_TAG = 'v0.94.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4471,7 +4481,7 @@ const STRINGS = {
     /* the second wave of achievements */
     'ach.firstcat':'Company', 'ach.firstcat.d':'Adopt your first cat besides Biscuit.', 'ach.cats5':'Cat Person',
     'ach.cats5.d':'Own 5 cats.', 'ach.cats10':'Cat Café', 'ach.cats10.d':'Own 10 cats.',
-    'ach.catsall':'Every Last One', 'ach.catsall.d':'Own all 14 cats.', 'ach.bond2':'Getting Close',
+    'ach.catsall':'Every Last One', 'ach.catsall.d':'Own all 20 cats.', 'ach.bond2':'Getting Close',
     'ach.bond2.d':'Take a cat to bond II.', 'ach.bond3':'Best Friends', 'ach.bond3.d':'Take a cat to bond III.',
     'ach.soulmate':'Soulmates', 'ach.soulmate.d':'Ride along with one cat for 900 solves.', 'ach.seats3':'Full House',
     'ach.seats3.d':'Have three cats riding along at once.', 'ach.room8':'Settling In', 'ach.room8.d':'Furnish the room to grade 8.',
@@ -4509,6 +4519,51 @@ const STRINGS = {
     'stats.yarnEver':'Yarn earned', 'stats.cats':'Cats', 'stats.roomGrade':'Room grade',
     'stats.favFam':'Favourite family', 'stats.topRanks':'Top ranks', 'stats.charms':'Charms tried',
     'stats.wishes':'Wishes granted', 'over.recapFast':'Fastest solve: {s}s · {name}', 'over.recapMost':'Most played: {name} ×{n}', 'share.text':'Dopamine Drop · {kind} · {score} points · {solved} solved · best streak {streak}',
+    /* depth: cats, charms, achievements */
+    'pal.pebble':'Pebble', 'pal.pebble.bio':'Small, round and very hard to move. Gets back up every time.', 'pal.pebble.fx':'Steady paws',
+    'pal.pebble.d':'After a miss, the next solve pays +{a}% points.', 'pal.maple':'Maple', 'pal.maple.bio':'Collects leaves, sunbeams and other people’s attention.',
+    'pal.maple.fx':'Eyes and paws', 'pal.maple.d':'+{a}% points on focus and reflex puzzles.', 'pal.sage':'Sage',
+    'pal.sage.bio':'Sits very still and somehow knows where the ball will land.', 'pal.sage.fx':'Calm hands', 'pal.sage.d':'+{a}% points on calm, physics and making puzzles.',
+    'pal.clover':'Clover', 'pal.clover.bio':'Finds coins in the sofa. Has never once looked for them.', 'pal.clover.fx':'Four-leaf paw',
+    'pal.clover.d':'Every {a}th solve drops {b} extra yarn.', 'pal.pixel':'Pixel', 'pal.pixel.bio':'Plays everything on hard and has opinions about the lag.',
+    'pal.pixel.fx':'Perfect run', 'pal.pixel.d':'Solving within a fifth of par pays +{a} yarn and +{b}% points.', 'pal.waffles':'Waffles',
+    'pal.waffles.bio':'Shows up for breakfast, stays for second breakfast.', 'pal.waffles.fx':'Good start', 'pal.waffles.d':'The first {a} solves of every run pay ×{b} points.',
+    'fx.steady':'Steady paws!', 'fx.perfect':'Perfect!', 'fx.headstart':'Good start',
+    'charm.mousetoy':'Toy Mouse', 'charm.mousetoy.d':'A solve in under 40% of par pays +1 yarn.', 'charm.pawprint':'Paw Print',
+    'charm.pawprint.d':'Every 4th solve: +1.5s on a clock, or +12% points without one.', 'charm.nightlight':'Night Light', 'charm.nightlight.d':'Solving with the clock nearly out pays +25% points.',
+    'charm.knit':'Knitting', 'charm.knit.d':'Each solve in a streak adds 2% to points, up to +40%.', 'charm.boa':'Feather Boa',
+    'charm.boa.d':'A streak of 10 or more: points ×1.3.', 'charm.bowl':'Water Bowl', 'charm.bowl.d':'A miss gives back 1.5s of clock.',
+    'charm.windowseat':'Window Seat', 'charm.windowseat.d':'Round clocks run 15% longer.', 'charm.crown':'Little Crown',
+    'charm.crown.d':'At ×3 or higher, points ×1.25.', 'charm.treasure':'Buried Treasure', 'charm.treasure.d':'Every stage pays +6 yarn.',
+    'charm.tangle':'Tangled Knot', 'charm.tangle.d':'+50% yarn, but a miss costs double.', 'ach.famfocus':'Eagle Eyes',
+    'ach.famfocus.d':'Solve 100 focus puzzles.', 'ach.famreflex':'Quick Paws', 'ach.famreflex.d':'Solve 100 reflex puzzles.',
+    'ach.famlogic':'Thread Puller', 'ach.famlogic.d':'Solve 100 logic puzzles.', 'ach.famnumbers':'Stitch Counter',
+    'ach.famnumbers.d':'Solve 100 number puzzles.', 'ach.famwords':'Sampler Stitcher', 'ach.famwords.d':'Solve 100 word puzzles.',
+    'ach.famcalm':'Purr Master', 'ach.famcalm.d':'Solve 100 calm puzzles.', 'ach.famphysics':'Yarn Physicist',
+    'ach.famphysics.d':'Solve 100 physics puzzles.', 'ach.fammake':'Patchworker', 'ach.fammake.d':'Solve 100 making puzzles.',
+    'ach.blitz1':'Against the Clock', 'ach.blitz1.d':'Earn a star on a Blitz board.', 'ach.fog1':'Into the Fog',
+    'ach.fog1.d':'Earn a star on a Fog board.', 'ach.frenzy1':'Whirlwind', 'ach.frenzy1.d':'Earn a star on a Frenzy board.',
+    'ach.fiveways':'Every Which Way', 'ach.fiveways.d':'Earn a star on all five boards of one mode.', 'ach.rank4':'Pouncer',
+    'ach.rank4.d':'Reach Pouncer rank in a mode.', 'ach.lions3':'Pride', 'ach.lions3.d':'Reach Lion rank in 3 modes.',
+    'ach.lions10':'Big Cat Country', 'ach.lions10.d':'Reach Lion rank in 10 modes.', 'ach.bondall':'Inseparable',
+    'ach.bondall.d':'Bring five cats to bond III.', 'ach.raretop':'Rare Find', 'ach.raretop.d':'Adopt a cat of the highest rarity.',
+    'ach.yarn50k':'Mountain of Wool', 'ach.yarn50k.d':'Earn 50,000 yarn.', 'ach.runs1000':'Hall of Fame',
+    'ach.runs1000.d':'Play 1,000 runs.', 'ach.solved50k':'Fifty Thousand Stitches', 'ach.solved50k.d':'Solve 50,000 puzzles.',
+    'ach.streak100':'Hundred Unbroken', 'ach.streak100.d':'Reach a streak of 100 in one run.', 'ach.lvl75':'Level 75',
+    'ach.lvl75.d':'Reach level 75.', 'ach.stars100':'Night Sky', 'ach.stars100.d':'Earn 100 stars.',
+    'ach.stars126':'Every Star', 'ach.stars126.d':'Earn every star in the game.', 'ach.endless100':'Bottomless',
+    'ach.endless100.d':'Solve 100 in one Endless run.', 'ach.flawless50':'Fifty Perfect', 'ach.flawless50.d':'Solve 50 in one run without a miss.',
+    'ach.stage10':'Ten Stages', 'ach.stage10.d':'Reach Stage 10 in a run.', 'ach.daily100':'A Hundred Mornings',
+    'ach.daily100.d':'Keep a 100-day Daily Drop streak.',
+    /* friends */
+    'syn.title':'Friends', 'syn.apart':'Seat {a} and {b} together', 'syn.none':'Some cats are better together. Own a pair that is, and seat them side by side.',
+    'syn.napcity':'Nap Pile', 'syn.napcity.d':'One more free miss a run.', 'syn.sunday':'Sunday Morning',
+    'syn.sunday.d':'+5% points on every solve.', 'syn.zoomclub':'Zoomies Club', 'syn.zoomclub.d':'Speed pays 20% more.',
+    'syn.bookclub':'Book Club', 'syn.bookclub.d':'Lifetime points come 15% faster.', 'syn.court':'Royal Court',
+    'syn.court.d':'Stage prizes are 25% bigger.', 'syn.luckypair':'Lucky Pair', 'syn.luckypair.d':'Every 10th solve drops 5 extra yarn.',
+    'syn.brunch':'Second Breakfast', 'syn.brunch.d':'Every stage adds 2s and 2 yarn.', 'syn.moonlit':'Moonlit Sky',
+    'syn.moonlit.d':'The first miss of every stage is free.', 'syn.curious':'Curious Pair', 'syn.curious.d':'A mode new to this run pays +10% points.',
+    'syn.autumn':'Autumn Walk', 'syn.autumn.d':'Focus and reflex solves pay half a yarn more.',
   },
 
   fr: {
@@ -4768,7 +4823,7 @@ const STRINGS = {
     /* the second wave of achievements */
     'ach.firstcat':'Compagnie', 'ach.firstcat.d':'Adoptez votre premier chat en plus de Biscuit.', 'ach.cats5':'Ami des chats',
     'ach.cats5.d':'Ayez 5 chats.', 'ach.cats10':'Café à chats', 'ach.cats10.d':'Ayez 10 chats.',
-    'ach.catsall':'Tous sans exception', 'ach.catsall.d':'Ayez les 14 chats.', 'ach.bond2':'Rapprochement',
+    'ach.catsall':'Tous sans exception', 'ach.catsall.d':'Ayez les 20 chats.', 'ach.bond2':'Rapprochement',
     'ach.bond2.d':'Amenez un chat au lien II.', 'ach.bond3':'Meilleurs amis', 'ach.bond3.d':'Amenez un chat au lien III.',
     'ach.soulmate':'Âmes sœurs', 'ach.soulmate.d':'Faites 900 réussites avec le même chat.', 'ach.seats3':'Salle comble',
     'ach.seats3.d':'Ayez trois chats du voyage en même temps.', 'ach.room8':'Emménagement', 'ach.room8.d':'Aménagez l’atelier jusqu’au niveau 8.',
@@ -4806,6 +4861,51 @@ const STRINGS = {
     'stats.yarnEver':'Laine gagnée', 'stats.cats':'Chats', 'stats.roomGrade':'Niveau atelier',
     'stats.favFam':'Famille préférée', 'stats.topRanks':'Rangs suprêmes', 'stats.charms':'Charmes essayés',
     'stats.wishes':'Souhaits exaucés', 'over.recapFast':'Réussite la plus rapide : {s} s · {name}', 'over.recapMost':'Le plus joué : {name} ×{n}', 'share.text':'Dopamine Drop · {kind} · {score} points · {solved} réussites · meilleure série {streak}',
+    /* depth: cats, charms, achievements */
+    'pal.pebble':'Pebble', 'pal.pebble.bio':'Petit, rond et impossible à déloger. Se relève à chaque fois.', 'pal.pebble.fx':'Pattes fermes',
+    'pal.pebble.d':'Après un raté, la réussite suivante rapporte +{a} % de points.', 'pal.maple':'Maple', 'pal.maple.bio':'Collectionne les feuilles, les rayons de soleil et l’attention des autres.',
+    'pal.maple.fx':'Yeux et pattes', 'pal.maple.d':'+{a} % de points aux énigmes d’attention et de réflexes.', 'pal.sage':'Sauge',
+    'pal.sage.bio':'Reste parfaitement immobile et sait pourtant où la balle va tomber.', 'pal.sage.fx':'Mains calmes', 'pal.sage.d':'+{a} % de points aux énigmes calmes, de physique et de création.',
+    'pal.clover':'Trèfle', 'pal.clover.bio':'Trouve des pièces dans le canapé. Ne les a jamais cherchées.', 'pal.clover.fx':'Patte à quatre feuilles',
+    'pal.clover.d':'Une réussite sur {a} laisse {b} de laine en plus.', 'pal.pixel':'Pixel', 'pal.pixel.bio':'Joue à tout en difficile et a des avis sur la latence.',
+    'pal.pixel.fx':'Sans faute', 'pal.pixel.d':'Résoudre en un cinquième du temps de référence rapporte +{a} de laine et +{b} % de points.', 'pal.waffles':'Gaufre',
+    'pal.waffles.bio':'Arrive pour le petit-déjeuner, reste pour le deuxième.', 'pal.waffles.fx':'Bon départ', 'pal.waffles.d':'Les {a} premières réussites de chaque partie rapportent ×{b} de points.',
+    'fx.steady':'Pattes fermes !', 'fx.perfect':'Parfait !', 'fx.headstart':'Bon départ',
+    'charm.mousetoy':'Souris en tissu', 'charm.mousetoy.d':'Réussir en moins de 40 % du temps de référence rapporte +1 de laine.', 'charm.pawprint':'Empreinte',
+    'charm.pawprint.d':'Toutes les 4 réussites : +1,5 s au chrono, ou +12 % de points sans chrono.', 'charm.nightlight':'Veilleuse', 'charm.nightlight.d':'Réussir quand le chrono est presque épuisé rapporte +25 % de points.',
+    'charm.knit':'Tricot', 'charm.knit.d':'Chaque réussite d’une série ajoute 2 % de points, jusqu’à +40 %.', 'charm.boa':'Boa à plumes',
+    'charm.boa.d':'Série de 10 ou plus : points ×1,3.', 'charm.bowl':'Gamelle d’eau', 'charm.bowl.d':'Un raté rend 1,5 s de chrono.',
+    'charm.windowseat':'Coin de fenêtre', 'charm.windowseat.d':'Les chronos de manche durent 15 % de plus.', 'charm.crown':'Petite couronne',
+    'charm.crown.d':'À ×3 ou plus, points ×1,25.', 'charm.treasure':'Trésor enfoui', 'charm.treasure.d':'Chaque étape rapporte +6 de laine.',
+    'charm.tangle':'Nœud emmêlé', 'charm.tangle.d':'+50 % de laine, mais un raté coûte le double.', 'ach.famfocus':'Yeux d’aigle',
+    'ach.famfocus.d':'Résolvez 100 énigmes d’attention.', 'ach.famreflex':'Pattes vives', 'ach.famreflex.d':'Résolvez 100 énigmes de réflexes.',
+    'ach.famlogic':'Tireur de fil', 'ach.famlogic.d':'Résolvez 100 énigmes de logique.', 'ach.famnumbers':'Compteur de mailles',
+    'ach.famnumbers.d':'Résolvez 100 énigmes de nombres.', 'ach.famwords':'Brodeuse de mots', 'ach.famwords.d':'Résolvez 100 énigmes de mots.',
+    'ach.famcalm':'Maître du ronron', 'ach.famcalm.d':'Résolvez 100 énigmes calmes.', 'ach.famphysics':'Physicien de la laine',
+    'ach.famphysics.d':'Résolvez 100 énigmes de physique.', 'ach.fammake':'Patcheur', 'ach.fammake.d':'Résolvez 100 énigmes de création.',
+    'ach.blitz1':'Contre la montre', 'ach.blitz1.d':'Gagnez une étoile sur un plateau Éclair.', 'ach.fog1':'Dans le brouillard',
+    'ach.fog1.d':'Gagnez une étoile sur un plateau Brume.', 'ach.frenzy1':'Tourbillon', 'ach.frenzy1.d':'Gagnez une étoile sur un plateau Frénésie.',
+    'ach.fiveways':'Dans tous les sens', 'ach.fiveways.d':'Gagnez une étoile sur les cinq plateaux d’un même mode.', 'ach.rank4':'Bondisseur',
+    'ach.rank4.d':'Atteignez le rang Bondisseur dans un mode.', 'ach.lions3':'Une fierté', 'ach.lions3.d':'Atteignez le rang Lion dans 3 modes.',
+    'ach.lions10':'Pays des grands félins', 'ach.lions10.d':'Atteignez le rang Lion dans 10 modes.', 'ach.bondall':'Inséparables',
+    'ach.bondall.d':'Amenez cinq chats au lien III.', 'ach.raretop':'Trouvaille rare', 'ach.raretop.d':'Adoptez un chat de la plus haute rareté.',
+    'ach.yarn50k':'Montagne de laine', 'ach.yarn50k.d':'Gagnez 50 000 de laine.', 'ach.runs1000':'Panthéon',
+    'ach.runs1000.d':'Faites 1 000 parties.', 'ach.solved50k':'Cinquante mille mailles', 'ach.solved50k.d':'Résolvez 50 000 énigmes.',
+    'ach.streak100':'Cent sans faute', 'ach.streak100.d':'Atteignez une série de 100 en une partie.', 'ach.lvl75':'Niveau 75',
+    'ach.lvl75.d':'Atteignez le niveau 75.', 'ach.stars100':'Ciel nocturne', 'ach.stars100.d':'Gagnez 100 étoiles.',
+    'ach.stars126':'Toutes les étoiles', 'ach.stars126.d':'Gagnez toutes les étoiles du jeu.', 'ach.endless100':'Sans fond',
+    'ach.endless100.d':'Résolvez 100 énigmes en une partie Sans fin.', 'ach.flawless50':'Cinquante parfaits', 'ach.flawless50.d':'Résolvez 50 énigmes sans un raté en une partie.',
+    'ach.stage10':'Dix étapes', 'ach.stage10.d':'Atteignez l’étape 10 dans une partie.', 'ach.daily100':'Cent matins',
+    'ach.daily100.d':'Tenez une série de 100 jours au Défi du jour.',
+    /* friends */
+    'syn.title':'Amis', 'syn.apart':'Installez {a} et {b} ensemble', 'syn.none':'Certains chats vont mieux ensemble. Ayez un de ces duos et installez-les côte à côte.',
+    'syn.napcity':'Tas de sieste', 'syn.napcity.d':'Un raté gratuit de plus par partie.', 'syn.sunday':'Dimanche matin',
+    'syn.sunday.d':'+5 % de points à chaque réussite.', 'syn.zoomclub':'Club des zoomies', 'syn.zoomclub.d':'La rapidité rapporte 20 % de plus.',
+    'syn.bookclub':'Club de lecture', 'syn.bookclub.d':'Les points à vie arrivent 15 % plus vite.', 'syn.court':'Cour royale',
+    'syn.court.d':'Les primes d’étape sont 25 % plus grosses.', 'syn.luckypair':'Duo porte-bonheur', 'syn.luckypair.d':'Une réussite sur 10 laisse 5 de laine en plus.',
+    'syn.brunch':'Deuxième petit-déjeuner', 'syn.brunch.d':'Chaque étape ajoute 2 s et 2 de laine.', 'syn.moonlit':'Ciel de lune',
+    'syn.moonlit.d':'Le premier raté de chaque étape est gratuit.', 'syn.curious':'Duo curieux', 'syn.curious.d':'Un mode nouveau dans cette partie rapporte +10 % de points.',
+    'syn.autumn':'Promenade d’automne', 'syn.autumn.d':'Les réussites d’attention et de réflexes rapportent une demi-laine de plus.',
   },
 
   es: {
@@ -5065,7 +5165,7 @@ const STRINGS = {
     /* the second wave of achievements */
     'ach.firstcat':'Compañía', 'ach.firstcat.d':'Adopta tu primer gato además de Biscuit.', 'ach.cats5':'Amante de los gatos',
     'ach.cats5.d':'Ten 5 gatos.', 'ach.cats10':'Gatocafé', 'ach.cats10.d':'Ten 10 gatos.',
-    'ach.catsall':'Hasta el último', 'ach.catsall.d':'Ten los 14 gatos.', 'ach.bond2':'Acercándose',
+    'ach.catsall':'Hasta el último', 'ach.catsall.d':'Ten los 20 gatos.', 'ach.bond2':'Acercándose',
     'ach.bond2.d':'Lleva a un gato al vínculo II.', 'ach.bond3':'Mejores amigos', 'ach.bond3.d':'Lleva a un gato al vínculo III.',
     'ach.soulmate':'Almas gemelas', 'ach.soulmate.d':'Acompaña a un mismo gato durante 900 aciertos.', 'ach.seats3':'Lleno total',
     'ach.seats3.d':'Lleva tres gatos de viaje a la vez.', 'ach.room8':'Instalándose', 'ach.room8.d':'Amuebla el taller hasta el nivel 8.',
@@ -5103,6 +5203,51 @@ const STRINGS = {
     'stats.yarnEver':'Lana ganada', 'stats.cats':'Gatos', 'stats.roomGrade':'Nivel del taller',
     'stats.favFam':'Familia favorita', 'stats.topRanks':'Rangos máximos', 'stats.charms':'Amuletos probados',
     'stats.wishes':'Deseos cumplidos', 'over.recapFast':'Acierto más rápido: {s} s · {name}', 'over.recapMost':'Más jugado: {name} ×{n}', 'share.text':'Dopamine Drop · {kind} · {score} puntos · {solved} aciertos · mejor racha {streak}',
+    /* depth: cats, charms, achievements */
+    'pal.pebble':'Pebble', 'pal.pebble.bio':'Pequeño, redondo y muy difícil de mover. Se levanta siempre.', 'pal.pebble.fx':'Patas firmes',
+    'pal.pebble.d':'Tras un fallo, el siguiente acierto paga +{a} % de puntos.', 'pal.maple':'Maple', 'pal.maple.bio':'Colecciona hojas, rayos de sol y la atención ajena.',
+    'pal.maple.fx':'Ojos y patas', 'pal.maple.d':'+{a} % de puntos en los puzles de atención y reflejos.', 'pal.sage':'Salvia',
+    'pal.sage.bio':'Se queda muy quieta y aun así sabe dónde caerá la bola.', 'pal.sage.fx':'Manos tranquilas', 'pal.sage.d':'+{a} % de puntos en los puzles de calma, física y creación.',
+    'pal.clover':'Trébol', 'pal.clover.bio':'Encuentra monedas en el sofá. Nunca las ha buscado.', 'pal.clover.fx':'Pata de cuatro hojas',
+    'pal.clover.d':'Cada {a}.º acierto deja {b} de lana extra.', 'pal.pixel':'Pixel', 'pal.pixel.bio':'Juega a todo en difícil y tiene opiniones sobre el lag.',
+    'pal.pixel.fx':'Jugada perfecta', 'pal.pixel.d':'Acertar en una quinta parte del tiempo de referencia paga +{a} de lana y +{b} % de puntos.', 'pal.waffles':'Gofre',
+    'pal.waffles.bio':'Llega para el desayuno y se queda al segundo.', 'pal.waffles.fx':'Buen comienzo', 'pal.waffles.d':'Los primeros {a} aciertos de cada partida pagan ×{b} de puntos.',
+    'fx.steady':'¡Patas firmes!', 'fx.perfect':'¡Perfecto!', 'fx.headstart':'Buen comienzo',
+    'charm.mousetoy':'Ratón de trapo', 'charm.mousetoy.d':'Acertar en menos del 40 % del tiempo de referencia paga +1 de lana.', 'charm.pawprint':'Huella',
+    'charm.pawprint.d':'Cada 4 aciertos: +1,5 s en el reloj, o +12 % de puntos sin reloj.', 'charm.nightlight':'Luz nocturna', 'charm.nightlight.d':'Acertar con el reloj casi agotado paga +25 % de puntos.',
+    'charm.knit':'Punto', 'charm.knit.d':'Cada acierto de una racha suma un 2 % de puntos, hasta +40 %.', 'charm.boa':'Boa de plumas',
+    'charm.boa.d':'Racha de 10 o más: puntos ×1,3.', 'charm.bowl':'Bebedero', 'charm.bowl.d':'Un fallo devuelve 1,5 s de reloj.',
+    'charm.windowseat':'Asiento de ventana', 'charm.windowseat.d':'Los relojes de ronda duran un 15 % más.', 'charm.crown':'Coronita',
+    'charm.crown.d':'A ×3 o más, puntos ×1,25.', 'charm.treasure':'Tesoro enterrado', 'charm.treasure.d':'Cada etapa paga +6 de lana.',
+    'charm.tangle':'Nudo enredado', 'charm.tangle.d':'+50 % de lana, pero un fallo cuesta el doble.', 'ach.famfocus':'Ojos de águila',
+    'ach.famfocus.d':'Resuelve 100 puzles de atención.', 'ach.famreflex':'Patas veloces', 'ach.famreflex.d':'Resuelve 100 puzles de reflejos.',
+    'ach.famlogic':'Tirahilos', 'ach.famlogic.d':'Resuelve 100 puzles de lógica.', 'ach.famnumbers':'Contapuntadas',
+    'ach.famnumbers.d':'Resuelve 100 puzles de números.', 'ach.famwords':'Bordadora de palabras', 'ach.famwords.d':'Resuelve 100 puzles de palabras.',
+    'ach.famcalm':'Maestro del ronroneo', 'ach.famcalm.d':'Resuelve 100 puzles de calma.', 'ach.famphysics':'Físico de la lana',
+    'ach.famphysics.d':'Resuelve 100 puzles de física.', 'ach.fammake':'Parchista', 'ach.fammake.d':'Resuelve 100 puzles de creación.',
+    'ach.blitz1':'Contrarreloj', 'ach.blitz1.d':'Gana una estrella en un tablero Relámpago.', 'ach.fog1':'Entre la niebla',
+    'ach.fog1.d':'Gana una estrella en un tablero Niebla.', 'ach.frenzy1':'Torbellino', 'ach.frenzy1.d':'Gana una estrella en un tablero Frenesí.',
+    'ach.fiveways':'Por todos lados', 'ach.fiveways.d':'Gana una estrella en los cinco tableros de un mismo modo.', 'ach.rank4':'Saltarín',
+    'ach.rank4.d':'Alcanza el rango Saltarín en un modo.', 'ach.lions3':'Manada', 'ach.lions3.d':'Alcanza el rango León en 3 modos.',
+    'ach.lions10':'Tierra de felinos', 'ach.lions10.d':'Alcanza el rango León en 10 modos.', 'ach.bondall':'Inseparables',
+    'ach.bondall.d':'Lleva a cinco gatos al vínculo III.', 'ach.raretop':'Hallazgo raro', 'ach.raretop.d':'Adopta un gato de la máxima rareza.',
+    'ach.yarn50k':'Montaña de lana', 'ach.yarn50k.d':'Gana 50 000 de lana.', 'ach.runs1000':'Salón de la fama',
+    'ach.runs1000.d':'Juega 1000 partidas.', 'ach.solved50k':'Cincuenta mil puntadas', 'ach.solved50k.d':'Resuelve 50 000 puzles.',
+    'ach.streak100':'Cien seguidos', 'ach.streak100.d':'Alcanza una racha de 100 en una partida.', 'ach.lvl75':'Nivel 75',
+    'ach.lvl75.d':'Llega al nivel 75.', 'ach.stars100':'Cielo nocturno', 'ach.stars100.d':'Gana 100 estrellas.',
+    'ach.stars126':'Todas las estrellas', 'ach.stars126.d':'Gana todas las estrellas del juego.', 'ach.endless100':'Sin fondo',
+    'ach.endless100.d':'Resuelve 100 en una partida Sin fin.', 'ach.flawless50':'Cincuenta perfectos', 'ach.flawless50.d':'Resuelve 50 en una partida sin un fallo.',
+    'ach.stage10':'Diez etapas', 'ach.stage10.d':'Llega a la etapa 10 en una partida.', 'ach.daily100':'Cien mañanas',
+    'ach.daily100.d':'Mantén una racha de 100 días en el Reto diario.',
+    /* friends */
+    'syn.title':'Amigos', 'syn.apart':'Sienta a {a} y {b} juntos', 'syn.none':'Algunos gatos están mejor juntos. Ten una de esas parejas y siéntalos uno al lado del otro.',
+    'syn.napcity':'Montón de siestas', 'syn.napcity.d':'Un fallo gratis más por partida.', 'syn.sunday':'Domingo por la mañana',
+    'syn.sunday.d':'+5 % de puntos en cada acierto.', 'syn.zoomclub':'Club de los galopes', 'syn.zoomclub.d':'La rapidez paga un 20 % más.',
+    'syn.bookclub':'Club de lectura', 'syn.bookclub.d':'Los puntos de por vida llegan un 15 % más rápido.', 'syn.court':'Corte real',
+    'syn.court.d':'Los premios de etapa son un 25 % mayores.', 'syn.luckypair':'Pareja con suerte', 'syn.luckypair.d':'Cada 10.º acierto deja 5 de lana extra.',
+    'syn.brunch':'Segundo desayuno', 'syn.brunch.d':'Cada etapa suma 2 s y 2 de lana.', 'syn.moonlit':'Cielo de luna',
+    'syn.moonlit.d':'El primer fallo de cada etapa es gratis.', 'syn.curious':'Pareja curiosa', 'syn.curious.d':'Un modo nuevo en esta partida paga +10 % de puntos.',
+    'syn.autumn':'Paseo de otoño', 'syn.autumn.d':'Los aciertos de atención y reflejos dan media lana más.',
   },
 
   de: {
@@ -5362,7 +5507,7 @@ const STRINGS = {
     /* the second wave of achievements */
     'ach.firstcat':'Gesellschaft', 'ach.firstcat.d':'Adoptiere deine erste Katze neben Biscuit.', 'ach.cats5':'Katzenmensch',
     'ach.cats5.d':'Besitze 5 Katzen.', 'ach.cats10':'Katzencafé', 'ach.cats10.d':'Besitze 10 Katzen.',
-    'ach.catsall':'Alle ohne Ausnahme', 'ach.catsall.d':'Besitze alle 14 Katzen.', 'ach.bond2':'Näher kommen',
+    'ach.catsall':'Alle ohne Ausnahme', 'ach.catsall.d':'Besitze alle 20 Katzen.', 'ach.bond2':'Näher kommen',
     'ach.bond2.d':'Bringe eine Katze auf Bindung II.', 'ach.bond3':'Beste Freunde', 'ach.bond3.d':'Bringe eine Katze auf Bindung III.',
     'ach.soulmate':'Seelenverwandte', 'ach.soulmate.d':'Löse 900 Rätsel mit derselben Katze.', 'ach.seats3':'Volles Haus',
     'ach.seats3.d':'Habe drei Katzen gleichzeitig dabei.', 'ach.room8':'Einleben', 'ach.room8.d':'Richte die Werkstatt bis Stufe 8 ein.',
@@ -5400,6 +5545,51 @@ const STRINGS = {
     'stats.yarnEver':'Wolle verdient', 'stats.cats':'Katzen', 'stats.roomGrade':'Werkstattstufe',
     'stats.favFam':'Lieblingsfamilie', 'stats.topRanks':'Höchste Ränge', 'stats.charms':'Glücksbringer probiert',
     'stats.wishes':'Erfüllte Wünsche', 'over.recapFast':'Schnellster Treffer: {s} s · {name}', 'over.recapMost':'Am häufigsten: {name} ×{n}', 'share.text':'Dopamine Drop · {kind} · {score} Punkte · {solved} gelöst · beste Serie {streak}',
+    /* depth: cats, charms, achievements */
+    'pal.pebble':'Pebble', 'pal.pebble.bio':'Klein, rund und kaum von der Stelle zu bewegen. Steht jedes Mal wieder auf.', 'pal.pebble.fx':'Ruhige Pfoten',
+    'pal.pebble.d':'Nach einem Fehler bringt der nächste Treffer +{a} % Punkte.', 'pal.maple':'Maple', 'pal.maple.bio':'Sammelt Blätter, Sonnenstrahlen und fremde Aufmerksamkeit.',
+    'pal.maple.fx':'Augen und Pfoten', 'pal.maple.d':'+{a} % Punkte bei Konzentrations- und Reaktionsrätseln.', 'pal.sage':'Salbei',
+    'pal.sage.bio':'Sitzt ganz still und weiß trotzdem, wo der Ball landet.', 'pal.sage.fx':'Ruhige Hand', 'pal.sage.d':'+{a} % Punkte bei ruhigen, Physik- und Bastelrätseln.',
+    'pal.clover':'Kleeblatt', 'pal.clover.bio':'Findet Münzen im Sofa. Hat nie danach gesucht.', 'pal.clover.fx':'Vierblättrige Pfote',
+    'pal.clover.d':'Jeder {a}. Treffer bringt {b} Wolle extra.', 'pal.pixel':'Pixel', 'pal.pixel.bio':'Spielt alles auf Schwer und hat Meinungen zum Lag.',
+    'pal.pixel.fx':'Perfekter Lauf', 'pal.pixel.d':'Ein Treffer in einem Fünftel der Richtzeit bringt +{a} Wolle und +{b} % Punkte.', 'pal.waffles':'Waffel',
+    'pal.waffles.bio':'Kommt zum Frühstück und bleibt zum zweiten.', 'pal.waffles.fx':'Guter Start', 'pal.waffles.d':'Die ersten {a} Treffer jedes Laufs bringen ×{b} Punkte.',
+    'fx.steady':'Ruhige Pfoten!', 'fx.perfect':'Perfekt!', 'fx.headstart':'Guter Start',
+    'charm.mousetoy':'Spielmaus', 'charm.mousetoy.d':'Ein Treffer in unter 40 % der Richtzeit bringt +1 Wolle.', 'charm.pawprint':'Pfotenabdruck',
+    'charm.pawprint.d':'Jeder 4. Treffer: +1,5 s auf der Uhr, oder +12 % Punkte ohne Uhr.', 'charm.nightlight':'Nachtlicht', 'charm.nightlight.d':'Ein Treffer, wenn die Uhr fast abgelaufen ist, bringt +25 % Punkte.',
+    'charm.knit':'Stricken', 'charm.knit.d':'Jeder Treffer einer Serie bringt 2 % mehr Punkte, bis +40 %.', 'charm.boa':'Federboa',
+    'charm.boa.d':'Serie ab 10: Punkte ×1,3.', 'charm.bowl':'Wassernapf', 'charm.bowl.d':'Ein Fehler gibt 1,5 s Uhr zurück.',
+    'charm.windowseat':'Fensterplatz', 'charm.windowseat.d':'Rundenuhren laufen 15 % länger.', 'charm.crown':'Krönchen',
+    'charm.crown.d':'Ab ×3 bringen Punkte ×1,25.', 'charm.treasure':'Vergrabener Schatz', 'charm.treasure.d':'Jede Etappe bringt +6 Wolle.',
+    'charm.tangle':'Wirrer Knoten', 'charm.tangle.d':'+50 % Wolle, aber ein Fehler kostet doppelt.', 'ach.famfocus':'Adleraugen',
+    'ach.famfocus.d':'Löse 100 Konzentrationsrätsel.', 'ach.famreflex':'Flinke Pfoten', 'ach.famreflex.d':'Löse 100 Reaktionsrätsel.',
+    'ach.famlogic':'Fadenzieher', 'ach.famlogic.d':'Löse 100 Logikrätsel.', 'ach.famnumbers':'Maschenzähler',
+    'ach.famnumbers.d':'Löse 100 Zahlenrätsel.', 'ach.famwords':'Sticker der Wörter', 'ach.famwords.d':'Löse 100 Worträtsel.',
+    'ach.famcalm':'Schnurrmeister', 'ach.famcalm.d':'Löse 100 ruhige Rätsel.', 'ach.famphysics':'Wollphysiker',
+    'ach.famphysics.d':'Löse 100 Physikrätsel.', 'ach.fammake':'Flickenkünstler', 'ach.fammake.d':'Löse 100 Bastelrätsel.',
+    'ach.blitz1':'Gegen die Uhr', 'ach.blitz1.d':'Verdiene einen Stern auf einem Blitz-Brett.', 'ach.fog1':'Im Nebel',
+    'ach.fog1.d':'Verdiene einen Stern auf einem Nebel-Brett.', 'ach.frenzy1':'Wirbelwind', 'ach.frenzy1.d':'Verdiene einen Stern auf einem Rausch-Brett.',
+    'ach.fiveways':'Auf alle Arten', 'ach.fiveways.d':'Verdiene einen Stern auf allen fünf Brettern eines Modus.', 'ach.rank4':'Springer',
+    'ach.rank4.d':'Erreiche in einem Modus den Rang Springer.', 'ach.lions3':'Rudel', 'ach.lions3.d':'Erreiche in 3 Modi den Rang Löwe.',
+    'ach.lions10':'Land der Großkatzen', 'ach.lions10.d':'Erreiche in 10 Modi den Rang Löwe.', 'ach.bondall':'Unzertrennlich',
+    'ach.bondall.d':'Bringe fünf Katzen auf Bindung III.', 'ach.raretop':'Seltener Fund', 'ach.raretop.d':'Adoptiere eine Katze der höchsten Seltenheit.',
+    'ach.yarn50k':'Wollberg', 'ach.yarn50k.d':'Verdiene 50.000 Wolle.', 'ach.runs1000':'Ruhmeshalle',
+    'ach.runs1000.d':'Spiele 1.000 Läufe.', 'ach.solved50k':'Fünfzigtausend Stiche', 'ach.solved50k.d':'Löse 50.000 Rätsel.',
+    'ach.streak100':'Hundert ohne Bruch', 'ach.streak100.d':'Erreiche in einem Lauf eine Serie von 100.', 'ach.lvl75':'Level 75',
+    'ach.lvl75.d':'Erreiche Level 75.', 'ach.stars100':'Nachthimmel', 'ach.stars100.d':'Verdiene 100 Sterne.',
+    'ach.stars126':'Jeder Stern', 'ach.stars126.d':'Verdiene jeden Stern im Spiel.', 'ach.endless100':'Bodenlos',
+    'ach.endless100.d':'Löse 100 in einem Endlos-Lauf.', 'ach.flawless50':'Fünfzig perfekt', 'ach.flawless50.d':'Löse 50 in einem Lauf ohne Fehler.',
+    'ach.stage10':'Zehn Etappen', 'ach.stage10.d':'Erreiche in einem Lauf Etappe 10.', 'ach.daily100':'Hundert Morgen',
+    'ach.daily100.d':'Halte eine 100-Tage-Serie beim Tagesrätsel.',
+    /* friends */
+    'syn.title':'Freunde', 'syn.apart':'Setze {a} und {b} zusammen', 'syn.none':'Manche Katzen sind zusammen besser. Besitze so ein Paar und setze beide nebeneinander.',
+    'syn.napcity':'Schlafhaufen', 'syn.napcity.d':'Ein zusätzlicher kostenloser Fehler pro Lauf.', 'syn.sunday':'Sonntagmorgen',
+    'syn.sunday.d':'+5 % Punkte bei jedem Treffer.', 'syn.zoomclub':'Zoomie-Club', 'syn.zoomclub.d':'Tempo zahlt 20 % mehr.',
+    'syn.bookclub':'Lesekreis', 'syn.bookclub.d':'Lebenszeit-Punkte kommen 15 % schneller.', 'syn.court':'Hofstaat',
+    'syn.court.d':'Etappenprämien sind 25 % größer.', 'syn.luckypair':'Glückspaar', 'syn.luckypair.d':'Jeder 10. Treffer bringt 5 Wolle extra.',
+    'syn.brunch':'Zweites Frühstück', 'syn.brunch.d':'Jede Etappe bringt 2 s und 2 Wolle.', 'syn.moonlit':'Mondhimmel',
+    'syn.moonlit.d':'Der erste Fehler jeder Etappe ist frei.', 'syn.curious':'Neugieriges Paar', 'syn.curious.d':'Ein in diesem Lauf neuer Modus bringt +10 % Punkte.',
+    'syn.autumn':'Herbstspaziergang', 'syn.autumn.d':'Konzentrations- und Reaktionstreffer bringen eine halbe Wolle mehr.',
   }
 };
 
@@ -5504,6 +5694,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.94.0', date:'2026-09-30', items:[
+    'Six more cats, twenty in all. Pebble gets back up: the solve after a miss pays extra. Maple is at home in focus and reflex puzzles and Sage in calm, physics and making ones, so every kind of puzzle now has a cat that cares about it. Clover finds coins in the sofa every few solves, Pixel pays for a solve inside a fifth of par, and Waffles, who comes at level 40, makes the first few solves of every run worth more.',
+    'Friends. Ten pairs of cats do more together than apart, and only when both are in a seat: Noodle and Shadow share a nap and give one more free miss, Biscuit and Mochi add a little to every solve, Comet and Pixel make speed pay more, Duchess and Truffle make stage prizes bigger, and so on. The Room lists the pairs you could make from the cats you have, and with three seats who sits beside whom is a choice.',
+    'Ten more charms, thirty-two in all. A toy mouse pays for fast solves, a paw print gives a little every fourth solve, a night light pays when the clock is nearly out, knitting grows with your streak, a feather boa pays at ten, a water bowl gives time back for a miss, a window seat lengthens the round clocks, a little crown pays from ×3, buried treasure pays at every stage, and a tangled knot pays more yarn for a price.',
+    'Twenty-eight more achievements, eighty-seven in all, each paying yarn. A hundred solves of each of the eight kinds of puzzle, a star on a Blitz, Fog or Frenzy board, all five boards of one mode, the higher ranks, a hundred in a row, every star in the game, and some very long roads: fifty thousand yarn, fifty thousand puzzles, a hundred-day Daily streak. Any you had already earned are paid the first time you open the game.',
+  ] },
   { v:'0.93.0', date:'2026-09-30', items:[
     'The boards are made of something now. Every board is a felt mat with a running stitch round the edge and two paw prints pressed into it; round pieces are balls of yarn, wound; square pieces are woven patches with a stitch round them; pegs are brass pins. Nothing moved and no rule changed, but the cats and the yarn are no longer only in the screens around the puzzles.',
     'Modes that did not look like their names got the thing in their name. Haunt is Peekaboo, cats looking out of woven baskets instead of ghosts in boxes. Dropped Stitch’s falling star is a bobbin of pink thread and its bars are strips of cloth with a stitch down the middle. Cat’s Eyes hides pairs of eyes in the dark that open as the light comes near. The block you slide out in Let the Cat Out is a tabby cat. Kittens Out’s kittens have ears and an empty place is a paw print. Cat Fight has a cat across the table. Ripples is a saucer of milk with a ball of yarn drifting through it. Needle Pass is cloth, with a needle and its thread. Basket Drop has brass pins and woven baskets, Chalk Line is pattern paper, the pail in Catch the Balls is a basket, Mending’s holes have frayed edges, and Purr is a cat asleep that swells and settles.',
@@ -11655,6 +11851,35 @@ const ACHIEVEMENTS = [
   { id:'stars75',  ink:'#FFC53D', y:250, glyph:GL.stars, goal: () => totalStars() >= 75 },
   { id:'blitz5k',  ink:'#FF3D6E', y:80,  glyph:GL.medal('5K'),    goal: () => (save.pbBlitz || 0) >= 5000 },
   { id:'blitz15k', ink:'#FF3D6E', y:250, glyph:GL.medal('15K'),   goal: () => (save.pbBlitz || 0) >= 15000 },
+  /* ── The second hundred ── */
+  { id:'famfocus', ink:CAT_INK.focus, y:70, glyph:GL.paw, goal: () => ((save.fams || {}).focus | 0) >= 100 },
+  { id:'famreflex', ink:CAT_INK.reflex, y:70, glyph:GL.bolt, goal: () => ((save.fams || {}).reflex | 0) >= 100 },
+  { id:'famlogic', ink:CAT_INK.logic, y:70, glyph:GL.swirl, goal: () => ((save.fams || {}).logic | 0) >= 100 },
+  { id:'famnumbers', ink:CAT_INK.numbers, y:70, glyph:GL.stars, goal: () => ((save.fams || {}).numbers | 0) >= 100 },
+  { id:'famwords', ink:CAT_INK.words, y:70, glyph:GL.medal('Aa'), goal: () => ((save.fams || {}).words | 0) >= 100 },
+  { id:'famcalm', ink:CAT_INK.calm, y:70, glyph:GL.heart, goal: () => ((save.fams || {}).calm | 0) >= 100 },
+  { id:'famphysics', ink:CAT_INK.physics, y:70, glyph:GL.loop, goal: () => ((save.fams || {}).physics | 0) >= 100 },
+  { id:'fammake', ink:CAT_INK.make, y:70, glyph:GL.yarn, goal: () => ((save.fams || {}).make | 0) >= 100 },
+  { id:'blitz1',   ink:'#FF3D6E', y:70,  glyph:GL.bolt,  goal: () => MODE_IDS.some(id => Twist.stars(id, 'blitz') >= 1) },
+  { id:'fog1',     ink:'#9C90C4', y:70,  glyph:GL.swirl, goal: () => MODE_IDS.some(id => Twist.stars(id, 'fog') >= 1) },
+  { id:'frenzy1',  ink:'#FF9A3D', y:90,  glyph:GL.bolt,  goal: () => MODE_IDS.some(id => Twist.stars(id, 'frenzy') >= 1) },
+  { id:'fiveways', ink:'#FFC53D', y:250, glyph:GL.stars, goal: () => MODE_IDS.some(id => TWISTS.every(x => Twist.stars(id, x.id) >= 1)) },
+  { id:'rank4',    ink:'#FFC53D', y:150, glyph:GL.swirl, goal: () => MODE_IDS.some(id => Twist.rank(id) >= 4) },
+  { id:'lions3',   ink:'#FFC53D', y:400, glyph:GL.crown, goal: () => MODE_IDS.filter(id => Twist.rank(id) >= 5).length >= 3 },
+  { id:'lions10',  ink:'#FFC53D', y:1000,glyph:GL.crown, goal: () => MODE_IDS.filter(id => Twist.rank(id) >= 5).length >= 10 },
+  { id:'bondall',  ink:'#FF6E9E', y:300, glyph:GL.heart, goal: () => PALS.filter(p => Pals.bond(p.id) >= BOND_AT[1]).length >= 5 },
+  { id:'raretop',  ink:'#FF8AD8', y:200, glyph:GL.paws,  goal: () => PALS.some(p => p.rar === 3 && Pals.own(p.id)) },
+  { id:'yarn50k',  ink:'#FF8AD8', y:500, glyph:GL.yarn,  goal: () => (save.yarnEver || 0) >= 50000 },
+  { id:'runs1000', ink:'#FF5B39', y:600, glyph:GL.medal('1K'),  goal: () => (save.runs || 0) >= 1000 },
+  { id:'solved50k',ink:'#4BC0FF', y:1000,glyph:GL.medal('50K'), goal: () => (save.solved || 0) >= 50000 },
+  { id:'streak100',ink:'#FF8AD8', y:500, glyph:GL.bolt,  goal: () => (save.pbStreak || 0) >= 100 },
+  { id:'lvl75',    ink:'#9C7BFF', y:500, glyph:GL.medal('L75'), goal: () => playerLevel() >= 75 },
+  { id:'stars100', ink:'#FFC53D', y:500, glyph:GL.stars, goal: () => totalStars() >= 100 },
+  { id:'stars126', ink:'#FFC53D', y:1500,glyph:GL.crown, goal: () => totalStars() >= MODE_IDS.length * 3 },
+  { id:'endless100',ink:'#7BE38A',y:300, glyph:GL.loop,  goal: (r) => !!(r && r.kind === 'endless' && r.solved >= 100) },
+  { id:'flawless50',ink:'#33E6C8',y:400, glyph:GL.shield,goal: (r) => !!(r && r.solved >= 50 && r.missed === 0) },
+  { id:'stage10',  ink:'#FFC53D', y:300, glyph:GL.stage, goal: (r) => !!(r && r.stage >= 10) },
+  { id:'daily100', ink:'#FFC53D', y:800, glyph:GL.medal('100'), goal: () => (save.dailyBestStreak || 0) >= 100 },
 ];
 const ACH_BY_ID = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));
 /* What the original twenty-one are worth, now that there is something to spend yarn on. */
@@ -11726,10 +11951,17 @@ function payAchievements(ids){
    a backfill is not "just happened" and shouldn't perform as one. */
 function backfillAchievements(){
   const set = save.achieve || (save.achieve = {});
-  let any = false;
-  ACHIEVEMENTS.forEach(a => { if (!set[a.id] && a.goal()){ set[a.id] = Date.now(); any = true; } });
-  /* Credited on sight, and paid in one line rather than one toast a piece. */
-  const gift = payAchievements();
+  let any = false, gift = 0;
+  /* Paying one can earn another: the yarn a backfill pays is itself counted by the yarn
+     achievements, so a single pass left the next one to be noticed at the next boot, and the
+     boot after that looked as if it were paying twice. Go round until nothing new turns up. */
+  for (let pass = 0; pass < 8; pass++){
+    let fresh = false;
+    ACHIEVEMENTS.forEach(a => { if (!set[a.id] && a.goal()){ set[a.id] = Date.now(); any = fresh = true; } });
+    /* Credited on sight, and paid in one line rather than one toast a piece. */
+    const paid = payAchievements(); gift += paid;
+    if (!fresh && !paid) break;
+  }
   if (any || gift) persist();
   if (gift > 0) setTimeout(() => announceToast({ ink:'#FF8AD8', glyph: GL.yarn, eyebrow: t('ach.unlocked'), title: t('ach.paid', { n: fmt(gift) }), desc: t('wish.treat') }), 900);
 }
@@ -11899,7 +12131,15 @@ const PALS = [
      you have to be able to afford them. */
   { id:'luna',     rar:3, cost:2500, need:{ stars:30 },   coat:{ base:'#D5DCE8', accent:'#9AA8C2', pattern:'tabby',  eye:'#B58CFF' } },
   { id:'duchess',  rar:3, cost:3000, need:{ level:25 },   coat:{ base:'#FFFFFF', accent:'#F0E4F5', pattern:'fluff',  eye:'#6EC1FF' } },
-  { id:'comet',    rar:3, cost:3500, need:{ daily:7 },    coat:{ base:'#F7EBD6', accent:'#7A5C48', point:'#6B4E3E', pattern:'points', eye:'#6EC1FF' } }
+  { id:'comet',    rar:3, cost:3500, need:{ daily:7 },    coat:{ base:'#F7EBD6', accent:'#7A5C48', point:'#6B4E3E', pattern:'points', eye:'#6EC1FF' } },
+  /* The second litter. Each of the eight families now has a cat that cares about it,
+     and three more care about how you play rather than what. */
+  { id:'pebble',   rar:0, cost:350,  coat:{ base:'#B9B5AF', accent:'#8E8983', pattern:'solid',  eye:'#FFD166' } },
+  { id:'maple',    rar:1, cost:500,  coat:{ base:'#EBD7B8', accent:'#B5723A', point:'#8A5226', pattern:'points', eye:'#7BE38A' } },
+  { id:'sage',     rar:1, cost:600,  coat:{ base:'#C9D3CB', accent:'#9CB0A1', pattern:'fluff',  eye:'#7BE38A' } },
+  { id:'clover',   rar:1, cost:850,  coat:{ base:'#2F3E3A', accent:'#E8F3E8', pattern:'tuxedo', eye:'#7BE38A', nose:'#FF9BB5', rim:'#8CC9A0' } },
+  { id:'pixel',    rar:2, cost:1400, coat:{ base:'#2B2340', accent:'#33E6C8', pattern:'tabby',  eye:'#33E6C8', nose:'#33E6C8', earIn:'#1F8F80', rim:'#8C78BF' } },
+  { id:'waffles',  rar:3, cost:3200, need:{ level:40 },   coat:{ base:'#F2C46B', accent:'#C98F3A', point:'#8A5A1E', pattern:'points', eye:'#6EC1FF' } }
 ];
 const PAL_BY_ID = Object.fromEntries(PALS.map(p => [p.id, p]));
 
@@ -11940,8 +12180,37 @@ const PAL_FX = {
   duchess: { v:[15,25,35],                                           /* royal treatment: yarn, everywhere */
     yarn(v){ return 1 + v/100; } },
   comet:   { v:[[10,10],[20,20],[30,30]],                            /* zoomies: fast solves pay and refund */
-    solve(a,i,v){ a.pts *= 1 + (v[0]/100) * i.speed; a.time += i.saved * v[1] / 100; } }
+    solve(a,i,v){ a.pts *= 1 + (v[0]/100) * i.speed; a.time += i.saved * v[1] / 100; } },
+  pebble:  { v:[12,20,30],                                           /* gets back up: the solve after a miss pays */
+    miss(a,v,r){ r.fxs.steady = 1; },
+    solve(a,i,v,r){ if (r.fxs.steady){ r.fxs.steady = 0; a.pts *= 1 + v/100; a.note('steady'); } } },
+  maple:   { v:[8,12,18],                                            /* eyes and paws: focus and reflex */
+    solve(a,i,v){ if (i.fam === 'focus' || i.fam === 'reflex') a.pts *= 1 + v/100; } },
+  sage:    { v:[8,12,18],                                            /* calm hands: calm, physics and making */
+    solve(a,i,v){ if (i.fam === 'calm' || i.fam === 'physics' || i.fam === 'make') a.pts *= 1 + v/100; } },
+  clover:  { v:[[6,3],[6,5],[5,6]],                                  /* every so often, coins in the sofa */
+    solve(a,i,v){ if (i.n % v[0] === 0){ a.yarn += v[1]; a.note('lucky'); } } },
+  pixel:   { v:[[2,10],[3,15],[4,20]],                               /* a solve inside a fifth of par is a perfect one */
+    solve(a,i,v){ if (i.speed > 0.8){ a.yarn += v[0]; a.pts *= 1 + v[1]/100; a.note('perfect'); } } },
+  waffles: { v:[[5,1.4],[6,1.5],[8,1.6]],                            /* a good start to every run */
+    solve(a,i,v){ if (i.n <= v[0]){ a.pts *= v[1]; a.note('headstart'); } } }
 };
+
+/* Friends. Some pairs do more together than apart, and only when they are both in a
+   seat: three seats make three pairs, so who sits with whom is a choice. Each is a
+   handler of the same shape as a charm's. */
+const SYNERGIES = [
+  { id:'napcity',   a:'noodle',  b:'shadow',  fx:{ start(s){ s.free += 1; } } },
+  { id:'sunday',    a:'biscuit', b:'mochi',   fx:{ solve(a){ a.pts *= 1.05; } } },
+  { id:'zoomclub',  a:'comet',   b:'pixel',   fx:{ solve(a){ a.speedK *= 1.2; } } },
+  { id:'bookclub',  a:'sesame',  b:'sage',    fx:{ solve(a){ a.lpK *= 1.15; } } },
+  { id:'court',     a:'duchess', b:'truffle', fx:{ stage(a){ a.stageK *= 1.25; } } },
+  { id:'luckypair', a:'ginger',  b:'clover',  fx:{ solve(a,i){ if (i.n % 10 === 0){ a.yarn += 5; a.note('lucky'); } } } },
+  { id:'brunch',    a:'pumpkin', b:'waffles', fx:{ stage(a){ a.time += 2000; a.yarn += 2; } } },
+  { id:'moonlit',   a:'luna',    b:'nimbus',  fx:{ stageFree:1 } },
+  { id:'curious',   a:'patches', b:'sprout',  fx:{ solve(a,i){ if (i.fresh) a.pts *= 1.1; } } },
+  { id:'autumn',    a:'maple',   b:'pebble',  fx:{ solve(a,i){ if (i.fam === 'focus' || i.fam === 'reflex') a.yarn += 0.5; } } }
+];
 
 /* How each cat's numbers read in its description: the same table, said in words. */
 const PAL_SHOW = {
@@ -11949,7 +12218,9 @@ const PAL_SHOW = {
   ginger: v => ({ a: v }), shadow: v => ({ a: (v[0] / 1000).toFixed(1), b: v[1] }), patches: v => ({ a: v[0], b: v[1] }),
   pumpkin: v => ({ a: v[0], b: v[1] }), sprout: v => ({ a: v }), nimbus: v => ({ a: v[0], b: v[1] }),
   sesame: v => ({ a: v }), truffle: v => ({ a: v }), luna: v => ({ a: v[0], b: v[1] }),
-  duchess: v => ({ a: v }), comet: v => ({ a: v[0], b: v[1] })
+  duchess: v => ({ a: v }), comet: v => ({ a: v[0], b: v[1] }),
+  pebble: v => ({ a: v }), maple: v => ({ a: v }), sage: v => ({ a: v }),
+  clover: v => ({ a: v[0], b: v[1] }), pixel: v => ({ a: v[0], b: v[1] }), waffles: v => ({ a: v[0], b: v[1] })
 };
 Object.keys(PAL_SHOW).forEach(id => { PAL_FX[id].show = PAL_SHOW[id]; });
 
@@ -11962,7 +12233,12 @@ const CHARMS = [
   { id:'goldbell',     rar:2 }, { id:'silverspool', rar:2 }, { id:'moonmilk', rar:2 }, { id:'kitten',  rar:2 },
   { id:'pounce',       rar:2 },
   /* Bargains with a price: worth more, and they hurt. */
-  { id:'ghostcat',     rar:1, spicy:true }, { id:'sharpclaws', rar:1, spicy:true }
+  { id:'ghostcat',     rar:1, spicy:true }, { id:'sharpclaws', rar:1, spicy:true },
+  /* The second drawer. */
+  { id:'mousetoy',     rar:0 }, { id:'pawprint',  rar:0 }, { id:'nightlight', rar:0 },
+  { id:'knit',         rar:1 }, { id:'boa',       rar:1 }, { id:'bowl',       rar:1 },
+  { id:'windowseat',   rar:2 }, { id:'crown',     rar:2 }, { id:'treasure',   rar:2 },
+  { id:'tangle',       rar:1, spicy:true }
 ];
 const CHARM_BY_ID = Object.fromEntries(CHARMS.map(c => [c.id, c]));
 const CHARM_FX = {
@@ -11987,7 +12263,17 @@ const CHARM_FX = {
   kitten:       { solve(a,i){ if (i.varied){ a.pts *= 1.2; a.note('vary'); } } },
   pounce:       { solve(a,i){ if (i.speed > 0.5){ a.pts *= 1.5; a.note('pounce'); } } },
   ghostcat:     { solve(a){ a.pts *= 1.4; }, penalty:2 },
-  sharpclaws:   { solve(a){ a.pts *= 1.3; }, clock:0.8 }
+  sharpclaws:   { solve(a){ a.pts *= 1.3; }, clock:0.8 },
+  mousetoy:     { solve(a,i){ if (i.speed > 0.6) a.yarn += 1; } },
+  pawprint:     { solve(a,i){ if (i.n % 4 === 0){ if (i.timed) a.time += 1500; else a.pts *= 1.12; } } },
+  nightlight:   { solve(a,i){ if (i.low) a.pts *= 1.25; } },
+  knit:         { solve(a,i){ a.pts *= 1 + 0.02 * Math.min(i.streak, 20); } },
+  boa:          { solve(a,i){ if (i.streak >= 10) a.pts *= 1.3; } },
+  bowl:         { miss(a){ a.timeBack += 1500; } },
+  windowseat:   { clock:1.15 },
+  crown:        { solve(a,i){ if (i.mult >= 3) a.pts *= 1.25; } },
+  treasure:     { stage(a){ a.yarn += 6; } },
+  tangle:       { yarn(){ return 1.5; }, penalty:2 }
 };
 
 /* ── Twists ───────────────────────────────────────────────────────────────── */
@@ -12062,6 +12348,8 @@ const Pals = {
      how it looks, which is its own kind of reward. */
   tier: id => { const b = Pals.bond(id); return b >= BOND_AT[1] ? 2 : b >= BOND_AT[0] ? 1 : 0; },
   stars: id => BOND_AT.filter(x => Pals.bond(id) >= x).length,
+  /* The pairs that are both in a seat right now. */
+  friends(){ const on = new Set(Pals.on().map(p => p.id)); return SYNERGIES.filter(f => on.has(f.a) && on.has(f.b)); },
   /* Who is riding along, in seat order, never more than the room has seats for. */
   on(){
     const seats = Room.seats();
@@ -12127,6 +12415,7 @@ const Fx = {
     const s = [];
     Pals.on().forEach(p => s.push({ h: PAL_FX[p.id], v: PAL_FX[p.id].v[Pals.tier(p.id)], pal: p }));
     ((r && r.charms) || []).forEach(id => { if (CHARM_FX[id]) s.push({ h: CHARM_FX[id], charm: id }); });
+    Pals.friends().forEach(f => s.push({ h: f.fx, syn: f.id }));
     return s;
   },
   fresh(){ return { free: 0, stageFree: 0, soft: 0, seen: {}, lastFam: '', back: false, moons: 0 }; },
@@ -12588,6 +12877,25 @@ function paintSeats(){
     host.appendChild(c);
   }
   $('seatCount').textContent = on.length + '/' + seats;
+  paintFriends();
+}
+
+/* Pairs that do more together: the ones in play first, then the ones you could put in
+   play. A pair you cannot seat yet (one of the two not adopted) is not shown, so the list
+   is only ever things you could do. */
+function paintFriends(){
+  const host = $('synRow'); host.innerHTML = '';
+  const on = new Set(Pals.friends().map(f => f.id));
+  const list = SYNERGIES.filter(f => Pals.own(f.a) && Pals.own(f.b))
+    .sort((x, y) => (on.has(y.id) ? 1 : 0) - (on.has(x.id) ? 1 : 0));
+  if (!list.length){ const n = mk('p', 'synnone'); n.textContent = t('syn.none'); host.appendChild(n); return; }
+  list.slice(0, 5).forEach(f => {
+    const c = mk('div', 'syn' + (on.has(f.id) ? ' on' : ''));
+    const h = mk('b'); h.textContent = t('syn.' + f.id);
+    const d = mk('small'); d.textContent = on.has(f.id) ? t('syn.' + f.id + '.d')
+      : t('syn.apart', { a: t('pal.' + f.a), b: t('pal.' + f.b) }) + ' · ' + t('syn.' + f.id + '.d');
+    c.appendChild(h); c.appendChild(d); host.appendChild(c);
+  });
 }
 
 function paintPals(){
@@ -12820,7 +13128,17 @@ const CHARM_MARK = {
   whisker:'M6 16c4-4 16-4 20 0-4 4-16 4-20 0zM16 13a3 3 0 100 6 3 3 0 000-6z', locket:'M16 26c-6-4-9-8-9-12a5 5 0 019-3 5 5 0 019 3c0 4-3 8-9 12z',
   sardine:'M6 16c4-6 14-6 18-1l3-3v8l-3-3c-4 5-14 5-18-1z', goldbell:'M16 7c-4 0-6 3-6 7v5l-2 3h16l-2-3v-5c0-4-2-7-6-7zM14 24h4a2 2 0 01-4 0z',
   silverspool:'M9 8h14v3H9zM9 21h14v3H9zM11 11h10v10H11z', moonmilk:'M20 8a9 9 0 100 16 8 8 0 01 0-16z', kitten:'M9 12l3-5 4 4 4-4 3 5v9H9z',
-  pounce:'M8 22l6-12 4 6 6-8-2 14z', ghostcat:'M9 25V14a7 7 0 0114 0v11l-3-3-2 3-2-3-2 3-2-3z', sharpclaws:'M8 25L13 8M14 25l5-17M20 25l5-17'
+  pounce:'M8 22l6-12 4 6 6-8-2 14z', ghostcat:'M9 25V14a7 7 0 0114 0v11l-3-3-2 3-2-3-2 3-2-3z', sharpclaws:'M8 25L13 8M14 25l5-17M20 25l5-17',
+  mousetoy:'M7 19a9 6 0 0118 0 9 6 0 01-18 0zM8 12a3 3 0 106 0 3 3 0 00-6 0zM18 12a3 3 0 106 0 3 3 0 00-6 0zM24 20l5 4-1 1-5-3z',
+  pawprint:'M16 26c-4 0-7-3-7-6 0-2 2-4 4-4h6c2 0 4 2 4 4 0 3-3 6-7 6zM6 14a2 3 0 104 0 2 3 0 00-4 0zM11 8a2 3 0 104 0 2 3 0 00-4 0zM17 8a2 3 0 104 0 2 3 0 00-4 0zM22 14a2 3 0 104 0 2 3 0 00-4 0z',
+  nightlight:'M16 6a7 7 0 00-4 12.800V22h8v-3.200A7 7 0 0016 6zM12 24h8v2h-8z',
+  knit:'M7 9l2-2 16 16-2 2zM25 9l-2-2L7 23l2 2zM22 5a3 3 0 110 6 3 3 0 010-6z',
+  boa:'M5 18c3-6 5-6 7 0s5 6 7 0 5-6 8 0v4c-3-6-5-6-8 0s-5 6-7 0-4-6-7 0z',
+  bowl:'M6 14h20c0 6-4 10-10 10S6 20 6 14zM9 25h14v2H9z',
+  windowseat:'M7 7h18v18H7zM9 9v6h6V9zM17 9v6h6V9zM9 17v6h6v-6zM17 17v6h6v-6z',
+  crown:'M6 22l2-12 6 6 2-8 2 8 6-6 2 12zM6 24h20v2H6z',
+  treasure:'M6 14c0-4 4-7 10-7s10 3 10 7v10H6zM14 17v5h4v-5z',
+  tangle:'M8 9c6-3 10 2 16-1v3c-6 3-10-2-16 1zM8 15c6-3 10 2 16-1v3c-6 3-10-2-16 1zM8 21c6-3 10 2 16-1v3c-6 3-10-2-16 1z'
 };
 
 let draftBox = null;

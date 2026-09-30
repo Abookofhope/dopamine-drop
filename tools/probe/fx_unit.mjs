@@ -36,7 +36,7 @@ function world(over = {}){
     room: {}, day: {}, wishes: {}, charmSeen: {}, twist: {}, marathon: {}, dailyBestStreak: 0 }, over);
   const src = `(function(save, S, persist, todayKey, mulberry32, hashStr, playerLevel, totalStars, masteredCount, starsFor, STAR_AT, CATS, catOf, fmt){
     ${core}
-    return { PALS, PAL_BY_ID, PAL_FX, CHARMS, CHARM_FX, CHARM_BY_ID, TWISTS, MASTERY_AT, Room, Yarn, Pals, Fx, Day, Wish, Charm, Twist, BOND_AT, WISH_T, WEEK_GOAL, ensureMeta, newAcc, ROOM_COST, SEAT_AT, weekKey };
+    return { SYNERGIES, PALS, PAL_BY_ID, PAL_FX, CHARMS, CHARM_FX, CHARM_BY_ID, TWISTS, MASTERY_AT, Room, Yarn, Pals, Fx, Day, Wish, Charm, Twist, BOND_AT, WISH_T, WEEK_GOAL, ensureMeta, newAcc, ROOM_COST, SEAT_AT, weekKey };
   })`;
   const fn = vm.runInNewContext(src, { Math, Date, Object, Array, JSON, Set, Map, Number, String, Boolean, parseInt, isFinite });
   const mul = new Function('return ' + pick('mulberry32'))();
@@ -168,7 +168,7 @@ const info = (o = {}) => Object.assign({ mult: 1, speed: 0.5, saved: 1000, id: '
     const r = run(); w.api.Fx.start(r);
     check(w.api.Pals.on().length === 3, 'a finished room seats three cats');
     const a = w.api.Fx.solve(r, info({ mult: 5, n: 7 }));
-    check(near(a.pts, 2 * (1 + 0.06 * 4)) && a.time === 400 + 1500, 'three cats stack: Luna doubles, Mochi adds 24%, Biscuit and Luna both add time');
+    check(near(a.pts, 2 * (1 + 0.06 * 4) * 1.05) && a.time === 400 + 1500, 'three cats stack: Luna doubles, Mochi adds 24%, Biscuit and Mochi are friends (+5%), Biscuit and Luna both add time');
     const two = world({ pals: { biscuit: { bond: 0 }, luna: { bond: 0 } }, palsOn: ['biscuit', 'luna'] });
     check(two.api.Pals.on().length === 1, 'with a bare room, a second cat in palsOn does not ride');
   }
@@ -199,8 +199,85 @@ const info = (o = {}) => Object.assign({ mult: 1, speed: 0.5, saved: 1000, id: '
     if (o.length !== 3 || new Set(o.map(c => c.id)).size !== 3 || o.some(c => held.includes(c.id))){ check(false, 'an offer is three different charms you do not hold'); break; }
     o.forEach(c => { total++; if (c.rar === 2) rare++; seen.add(c.id); });
   }
-  check(seen.size >= 18, 'over many offers nearly every charm shows up (' + seen.size + ' of 21)');
+  check(seen.size >= w.api.CHARMS.length - 3, 'over many offers nearly every charm shows up (' + seen.size + ' of ' + w.api.CHARMS.length + ')');
   check(rare / total > 0.05 && rare / total < 0.3, 'rares are offered a sensible share of the time (' + (rare / total * 100).toFixed(1) + '%)');
+}
+
+/* ── the second litter and the second drawer ─────────────────────────────── */
+{
+  const g = (id, bond) => { const w = world({ pals: { [id]: { bond } }, palsOn: [id] }); const r = run(); w.api.Fx.start(r); return { api: w.api, r }; };
+  { const { api, r } = g('pebble', 0);
+    check(near(api.Fx.solve(r, info()).pts, 1), 'Pebble adds nothing while all is well');
+    api.Fx.miss(r);
+    const next = api.Fx.solve(r, info()), after = api.Fx.solve(r, info());
+    check(near(next.pts, 1.12) && near(after.pts, 1), 'Pebble pays +12% on the solve after a miss, and only on that one (bond I)');
+    const hi = g('pebble', 300); hi.api.Fx.miss(hi.r);
+    check(near(hi.api.Fx.solve(hi.r, info()).pts, 1.3), '...and +30% at bond III'); }
+  { const { api, r } = g('maple', 0);
+    const at = f => api.Fx.solve(r, info({ fam: f })).pts;
+    check(near(at('focus'), 1.08) && near(at('reflex'), 1.08) && near(at('words'), 1) && near(at('calm'), 1), 'Maple: +8% on focus and reflex, nothing elsewhere'); }
+  { const { api, r } = g('sage', 300);
+    const at = f => api.Fx.solve(r, info({ fam: f })).pts;
+    check(near(at('calm'), 1.18) && near(at('physics'), 1.18) && near(at('make'), 1.18) && near(at('logic'), 1) && near(at('focus'), 1), 'Sage at bond III: +18% on calm, physics and making only'); }
+  { const a = g('clover', 0), b = g('clover', 300);
+    const y = (x, n) => x.api.Fx.solve(x.r, info({ n })).yarn;
+    check(y(a, 6) === 3 && y(a, 5) === 0 && y(a, 12) === 3, 'Clover at bond I: 3 yarn on every 6th solve');
+    check(y(b, 5) === 6 && y(b, 6) === 0 && y(b, 10) === 6, '...and 6 on every 5th at bond III'); }
+  { const { api, r } = g('pixel', 0);
+    const hot = api.Fx.solve(r, info({ speed: 0.9 })), cold = api.Fx.solve(r, info({ speed: 0.5 }));
+    check(hot.yarn === 2 && near(hot.pts, 1.1) && cold.yarn === 0 && near(cold.pts, 1), 'Pixel: a solve inside a fifth of par pays 2 yarn and +10%, a slower one nothing'); }
+  { const a = g('waffles', 0), b = g('waffles', 300);
+    const p = (x, n) => x.api.Fx.solve(x.r, info({ n })).pts;
+    check(near(p(a, 1), 1.4) && near(p(a, 5), 1.4) && near(p(a, 6), 1), 'Waffles at bond I: the first five solves pay x1.4');
+    check(near(p(b, 8), 1.6) && near(p(b, 9), 1), '...the first eight x1.6 at bond III'); }
+  { const w = world({ yarn: 99999 });
+    check(w.api.Pals.adopt('pebble') === true && w.api.Pals.adopt('waffles') === false, 'Waffles is not sold below level 40');
+    w.state.level = 40; check(w.api.Pals.adopt('waffles') === true, 'and is at level 40'); }
+  const c = id => { const w = world(); w.save.palsOn = []; const r = run({ charms: [id] }); w.api.Fx.start(r); return { api: w.api, r }; };   // no cat aboard, so only the charm speaks
+  { const { api, r } = c('mousetoy'); check(api.Fx.solve(r, info({ speed: 0.7 })).yarn === 1 && api.Fx.solve(r, info({ speed: 0.5 })).yarn === 0, 'Toy Mouse: +1 yarn on a solve inside 40% of par'); }
+  { const { api, r } = c('pawprint');
+    check(api.Fx.solve(r, info({ n: 4, timed: true })).time === 1500 && near(api.Fx.solve(r, info({ n: 4, timed: false })).pts, 1.12) && near(api.Fx.solve(r, info({ n: 3 })).pts, 1) && api.Fx.solve(r, info({ n: 3 })).time === 0, 'Paw Print: every 4th solve, +1.5s or +12%'); }
+  { const { api, r } = c('nightlight'); check(near(api.Fx.solve(r, info({ low: true })).pts, 1.25) && near(api.Fx.solve(r, info({ low: false })).pts, 1), 'Night Light: +25% when the clock is nearly out'); }
+  { const { api, r } = c('knit'); check(near(api.Fx.solve(r, info({ streak: 10 })).pts, 1.2) && near(api.Fx.solve(r, info({ streak: 40 })).pts, 1.4), 'Knitting: 2% a rung of the streak, capped at +40%'); }
+  { const { api, r } = c('boa'); check(near(api.Fx.solve(r, info({ streak: 9 })).pts, 1) && near(api.Fx.solve(r, info({ streak: 10 })).pts, 1.3), 'Feather Boa: x1.3 from a streak of ten'); }
+  { const { api, r } = c('bowl'); check(api.Fx.miss(r).timeBack === 1500, 'Water Bowl: a miss gives back 1.5s'); }
+  { const { api, r } = c('windowseat'); check(near(api.Fx.clockK(r), 1.15), 'Window Seat: round clocks 15% longer'); }
+  { const { api, r } = c('crown'); check(near(api.Fx.solve(r, info({ mult: 3 })).pts, 1.25) && near(api.Fx.solve(r, info({ mult: 2 })).pts, 1), 'Little Crown: x1.25 from x3'); }
+  { const { api, r } = c('treasure'); check(api.Fx.stage(r).yarn === 6, 'Buried Treasure: 6 yarn at every stage'); }
+  { const { api, r } = c('tangle'); check(near(api.Yarn.mult(r), 1.5) && api.Fx.penaltyK(r) === 2, 'Tangled Knot: +50% yarn and a miss costs double'); }
+  { const w = world();
+    check(w.api.PALS.length === 20 && new Set(w.api.PALS.map(p => p.id)).size === 20, 'twenty cats, all different');
+    check(w.api.CHARMS.length === 32 && new Set(w.api.CHARMS.map(x => x.id)).size === 32, 'thirty-two charms, all different');
+    const fams = new Set(); ['maple', 'sesame', 'sage'].forEach(id => w.api.PAL_FX[id]);
+    check(w.api.PALS.filter(p => p.rar === 3).length === 4, 'four cats of the highest rarity'); }
+}
+
+/* ── friends ─────────────────────────────────────────────────────────────── */
+{
+  const seated = (ids, over = {}) => { const pals = Object.fromEntries(ids.map(id => [id, { bond: 0 }]));
+    const w = world({ pals, palsOn: ids, room: { rug: 3, window: 3, wall: 3, shelf: 3, tree: 3, lamp: 3, bed: 3, plant: 3 }, ...over }); const r = run(); w.api.Fx.start(r); return { ...w, r }; };
+  const lone = seated(['noodle', 'mochi']);
+  check(lone.api.Pals.friends().length === 0, 'two cats that are not friends make no pair');
+  const nap = seated(['noodle', 'shadow']);
+  check(nap.api.Pals.friends().map(f => f.id).join() === 'napcity', 'Noodle and Shadow are the Nap Pile');
+  check(nap.r.fxs.free === 2, 'and between them have two free misses (one each from Noodle, Shadow adds none: ' + nap.r.fxs.free + ')');
+  const sun = seated(['biscuit', 'mochi']);
+  check(near(sun.api.Fx.solve(sun.r, info({ mult: 1, timed: false })).pts, 1.04 * 1.05), 'Sunday Morning adds 5% on top of Biscuit: ' + sun.api.Fx.solve(sun.r, info({ mult: 1, timed: false })).pts.toFixed(4));
+  const apart = world({ pals: { biscuit: { bond: 0 }, mochi: { bond: 0 } }, palsOn: ['biscuit', 'mochi'] });   // a bare room has one seat
+  check(apart.api.Pals.friends().length === 0, 'a pair only counts when both fit in the seats the room has');
+  const zoom = seated(['comet', 'pixel']);
+  check(near(zoom.api.Fx.solve(zoom.r, info({ speed: 0 })).speedK, 1.2), 'Zoomies Club makes speed pay 20% more');
+  const court = seated(['duchess', 'truffle']); check(near(court.api.Fx.stage(court.r).stageK, 1.25 * 1.5), 'Royal Court: stage prizes x1.25 on top of Truffle');
+  const lucky = seated(['ginger', 'clover'], {});
+  check(lucky.api.Fx.solve(lucky.r, info({ n: 10 })).yarn >= 5, 'Lucky Pair: 5 extra yarn on the 10th solve');
+  const brunch = seated(['pumpkin', 'waffles']); const st = brunch.api.Fx.stage(brunch.r);
+  check(st.yarn >= 2 + 8 && st.time >= 2000 + 1500, 'Second Breakfast adds 2s and 2 yarn at a stage, on top of Pumpkin');
+  const moon = seated(['luna', 'nimbus']); check(moon.api.Fx.freeMiss(moon.r) === true && moon.api.Fx.freeMiss(moon.r) === false, 'Moonlit Sky: the first miss of a stage is free');
+  const cur = seated(['patches', 'sprout']); check(near(cur.api.Fx.solve(cur.r, info({ fresh: true })).pts, 1.08 * 1.1), 'Curious Pair: a new mode pays 10% on top of Patches');
+  const book = seated(['sesame', 'sage']); check(near(book.api.Fx.solve(book.r, info({})).lpK, 1.15), 'Book Club: lifetime points 15% faster');
+  const aut = seated(['maple', 'pebble']); check(near(aut.api.Fx.solve(aut.r, info({ fam: 'focus' })).yarn, 0.5) && near(aut.api.Fx.solve(aut.r, info({ fam: 'words' })).yarn, 0), 'Autumn Walk: half a yarn on focus and reflex solves');
+  check(w0().api.SYNERGIES.length === 10 && w0().api.SYNERGIES.every(f => w0().api.PAL_BY_ID[f.a] && w0().api.PAL_BY_ID[f.b] && f.a !== f.b), 'ten pairs, each of two real cats');
+  function w0(){ return world(); }
 }
 
 /* ── wishes and the day ───────────────────────────────────────────────────── */
