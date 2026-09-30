@@ -96,14 +96,20 @@ const shoot = async id => {
 const changed = [], unstable = [], fresh = [];
 let same = 0;
 for (const id of ids){
-  let a, b;
-  try { a = await shoot(id); b = await shoot(id); }
+  let a, b, c;
+  /* Three identical shots, not two. A mode with something faintly moving in it
+     passes a two-shot check some of the time, and a mode that is sometimes
+     stable is worse than one that never is: it gets baselined on a lucky run
+     and then fails at random forever, which is how a visual suite gets
+     switched off. Sort Drop did exactly that: baselined once, then differed by
+     15 pixels of corner anti-aliasing, none above 2 of 255. */
+  try { a = await shoot(id); b = await shoot(id); c = await shoot(id); }
   catch (e){ unstable.push(id + ' (' + e.message.slice(0, 40) + ')'); continue; }
-  if (!a.equals(b)){ unstable.push(id); continue; }
+  if (!a.equals(b) || !b.equals(c)){ unstable.push(id); continue; }
   const file = join(BASE, id + '.png');
   if (!existsSync(file) || UPDATE){
     writeFileSync(file, a);
-    if (!existsSync(file)) fresh.push(id); else fresh.push(id);
+    fresh.push(id);
     continue;
   }
   if (readFileSync(file).equals(a)) same++;

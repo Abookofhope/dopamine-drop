@@ -29,7 +29,11 @@ const errs = [];
 const fresh = async state => {
   const page = await browser.newPage({ viewport: { width: 400, height: 820 }, hasTouch: true });
   page.on('pageerror', e => errs.push(String(e)));
-  await openApp(page, Object.assign({ reduceMotion: false, xp: 9000, lastMode: null }, state));
+  /* A last mode SAVED, on purpose. Just Play used to continue it as a Marathon
+     when there was one, so with lastMode null this probe took the one path
+     that worked and the ten-minute run looked fine while nobody who had ever
+     picked a mode from the roster could reach it. */
+  await openApp(page, Object.assign({ reduceMotion: false, xp: 9000, lastMode: 'forge' }, state));
   return page;
 };
 const meter = page => page.evaluate(() => {
@@ -42,6 +46,12 @@ const meter = page => page.evaluate(() => {
   const page = await fresh({ perks: ['rally'], perkLv: { rally: 3 } });   // +14s
   await page.click('#justPlayBtn');
   await page.waitForTimeout(2600);
+  const ui = await page.evaluate(() => ({
+    meter: !document.getElementById('hudMeter').hidden,
+    lives: !document.getElementById('hudLives').hidden,
+  }));
+  check(ui.meter && !ui.lives,
+    'Just Play is the timed shuffle even with a last mode saved (clock on, lives off)');
   const a = await meter(page);
   await page.waitForTimeout(6000);
   const b = await meter(page);
@@ -91,7 +101,7 @@ const trySeed = async seed => {
       return ((t ^ t >>> 14) >>> 0) / 4294967296;
     };
   }, seed);
-  await openApp(page, { reduceMotion: false, xp: 9000, lastMode: null });
+  await openApp(page, { reduceMotion: false, xp: 9000, lastMode: 'forge' });
   await page.click('#justPlayBtn');
   await page.waitForTimeout(1900);
   const kind = await page.evaluate(() => document.getElementById('hudKind').textContent.trim());

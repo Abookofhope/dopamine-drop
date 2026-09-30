@@ -3120,7 +3120,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.90.0';
+const VERSION_TAG = 'v0.91.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4480,6 +4480,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.91.0', date:'2026-09-30', items:[
+    'Just play is the ten-minute shuffle, every time. It used to carry on with your last mode instead whenever there was one, and tapping any card in the roster counts as choosing one, so for anyone who had ever picked a mode it quietly meant a single mode on three lives, and the ten-minute run made in the last update could not be reached from the button that was meant to start it. Your last mode is still one tap away under Pick a mode and in Favorites.',
+    'A first run that scored nothing no longer tells you to beat zero.',
+  ] },
   { v:'0.90.0', date:'2026-09-29', items:[
     'A run has a shape now. The screen warms as your streak climbs: the colour of the mode you are playing reaches further down the screen and comes up brighter, and the board picks up a warm rim, so at ×5 the whole thing looks different from ×1 without you reading a number. And every tenth solve in a long run is a stage, with a bonus that grows as you go, six seconds back on a clock where there is one, and a banner saying so. Just Play is ten minutes long and Endless has no end, and neither had anything to say about how far you had got.',
   ] },
@@ -11532,9 +11536,6 @@ function startRun(kind, modeId){
   /* pickMode only reshuffles when the bag is empty, so a bag handed over here
      is played in the order it was built. */
   if (kind === 'daily') run.bag = dailyBag(run.rnd);
-  /* The menu's first offer is the thing you were doing. Only Marathon is
-     worth remembering: the other four are already a button each. */
-  if (kind === 'marathon' && modeId) save.lastMode = modeId;
   save.runs++; persist();
   pendingLevel = 0;
 
@@ -11804,8 +11805,11 @@ function endRun(){
     : r.kind === 'chaos' ? (save.pbChaos || 0)
     : r.kind === 'endless' ? (save.pbEndless || 0)
     : r.kind === 'marathon' ? (save.marathon[r.mode]||0) : (save.daily[todayKey()]||0);
+  /* A target of nothing is not a target. A run that scores 0 with no best yet is
+     not a new best (0 is not greater than 0), so it used to fall through to
+     "Beat 0" — an instruction nobody can fail to follow. */
   $('againSub').textContent = k.scored
-    ? (best ? t('over.twice') : t('over.beat', { n: fmt(target) }))
+    ? (best ? t('over.twice') : target > 0 ? t('over.beat', { n: fmt(target) }) : t('over.another'))
     : t('over.another');
 
   /* Only when it was actually close. Being told you were four thousand short
@@ -12030,18 +12034,7 @@ function paintPlay(){
   $('dailyStatusLine').textContent = t('daily.title') + ' · ' + dLine;
   $('dailyStatus').classList.toggle('streaking', dSt > 1);
 
-  /* Just Play always has somewhere to go: the last mode played, or Shuffle if
-     there isn't one yet — the same smart default Carry On used to carry,
-     folded into the one primary button instead of living beside it as a
-     second decision. */
-  const last = save.lastMode && MODES[save.lastMode] ? save.lastMode : null;
-  if (last){
-    const best = save.marathon[last] || 0;
-    $('justPlaySub').textContent = modeName(last) + ' — ' +
-      (best ? t('play.carryBest', { n: fmt(best) }) : t('cat.' + catOf(last)));
-  } else {
-    $('justPlaySub').textContent = t('hero.sub');
-  }
+  $('justPlaySub').textContent = t('hero.sub');
   $('pickModeSub').textContent = t('play.pickSub', { n: MODE_IDS.length });
   $('endlessSub').textContent = save.pbEndless
     ? t('play.carryBest', { n: fmt(save.pbEndless) }) : t('endless.sub');
@@ -12852,10 +12845,11 @@ Array.from(el.tabbar.children).forEach(b =>
       const f = $('modeFind'); if (f) f.value = ''; }
     goTab(b.dataset.tab); }));
 
-$('justPlayBtn').addEventListener('click', () => {
-  const last = save.lastMode && MODES[save.lastMode] ? save.lastMode : null;
-  if (last) startRun('marathon', last); else startRun('shuffle');
-});
+/* Always the shuffle. This used to continue your last Marathon when there was
+   one, and tapping any card in the roster starts a Marathon, so for anyone who
+   had ever chosen a mode "Just play" quietly meant one mode on three lives and
+   the ten-minute run below it was unreachable. */
+$('justPlayBtn').addEventListener('click', () => startRun('shuffle'));
 $('endlessBtn').addEventListener('click', () => startRun('endless'));
 $('pickModeBtn').addEventListener('click', () => goTab('Modes'));
 $('myStuffBtn').addEventListener('click', () => { setPlayView('myStuff'); sfx.tap(); });
