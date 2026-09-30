@@ -101,6 +101,43 @@ if si >= 0:
         check("every language has every string", not gaps, "; ".join(gaps[:3]))
         check("string tables are not empty", len(base) >= 100, f"{len(base)} keys")
 
+        # The reverse of the gap check: a string nothing ever asks for is four
+        # translations somebody paid for and nobody sees, and it makes the
+        # next real gap harder to spot. A key counts as asked for if, outside
+        # the tables and outside comments, the code holds
+        #   - the key itself in quotes or a data-i18n attribute, or
+        #   - a fragment of at least five characters it starts with, which is
+        #     how t('volley.gun' + side) and one('mix.importN', n) reach
+        #     volley.gunL and mix.importN1, or
+        #   - a family prefix ('m.', 'ach.', 'perk.') that the code joins to an
+        #     id at run time.
+        # It is deliberately one-sided: it never flags a live key, and it can
+        # miss a dead one whose name extends a live one (set.assistPrev hid
+        # behind set.assist). It cannot check that a family's members are real
+        # ids, only that the family is in use; that half was audited by
+        # reading the id lists out of the running app.
+        ti = html.index("const STRINGS = {")
+        te = html.index("\n};", ti) + 3
+        code = html[:ti] + html[te:]
+        code = re.sub(r"/\*.*?\*/", "", code, flags=re.S)
+        code = re.sub(r"<!--.*?-->", "", code, flags=re.S)
+        code = re.sub(r"(?m)(^|\s)//[^\n]*", r"\1", code)
+        frags = set(re.findall(r"""['"`]([A-Za-z]\w*\.[\w.]*)['"`]""", code))
+        frags |= set(re.findall(r"""data-i18n(?:-aria|-html|-ph|-title)?="([\w.]+)\"""", code))
+        families = set(re.findall(r"""['"`]([A-Za-z][\w.]*\.)['"`]\s*\+""", code))
+        families |= set(re.findall(r"""`([A-Za-z][\w.]*\.)\$\{""", code))
+
+        def asked_for(key):
+            if re.search(r"(?<![\w.])" + re.escape(key) + r"(?!\w)", code):
+                return True
+            if any(f != key and len(f) >= 5 and key.startswith(f) for f in frags):
+                return True
+            return any(key.startswith(f) for f in families)
+
+        unused = sorted(k for k in base if not asked_for(k))
+        check("every string is used", not unused,
+              f"{len(unused)} unused, e.g. {unused[:4]}")
+
 # A mode that creates an element with a class the chrome already uses will
 # restyle the chrome, silently. This has happened twice now: a mode's `.target`
 # floated over another mode's header, and a mode's `.ring` resized the level
