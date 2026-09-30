@@ -368,6 +368,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   text-align:center;font-size:11.5px;line-height:1.45;color:var(--haze);
 }
 .howto.go{animation:howin 320ms cubic-bezier(.2,.8,.3,1) 1}
+/* Faded, not removed. The hint is dismissed by the first touch of the board, and
+   giving its height back at that moment moved the whole play area up under the
+   finger, so the tap landed on a piece that was no longer there. It keeps its
+   space until the next round, when the board is empty. */
+.howto.gone{opacity:0;visibility:hidden;transition:opacity 320ms ease,visibility 0s 320ms}
 @keyframes howin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){ .howto.go{animation:none} }
 .lifestrip{margin:0 0 14px;padding:11px 13px;border-radius:var(--r-md);
@@ -765,7 +770,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .slicebox{position:relative;width:100%;height:100%;touch-action:none;overflow:hidden;
   border-radius:var(--r-lg);background:#ffffff05;border:1px solid var(--edge-soft)}
 .slicetrail{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.slicetrail polyline{fill:none;stroke:var(--cream);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;
+.slicetrail polyline{fill:none;stroke:var(--cream);stroke-width:5px;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round;
   filter:drop-shadow(0 0 3px #fff8)}
 .bit{position:absolute;width:17%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
   background:radial-gradient(circle at 35% 30%, #9be7a8, #4ea863);
@@ -888,11 +893,15 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .duelbtn:active{transform:scale(.94)}
 .duelbtn.hit{background:#33e6c833;border-color:var(--cool)}
 
-/* ── Arc / Slack: a square board with absolutely placed nodes ─────────── */
+/* ── Arc / Slack: a board with absolutely placed nodes ───────────────────
+   The wire SVG's 0-100 space is stretched over the whole board
+   (preserveAspectRatio none) so that a point at 30,70 is exactly where a peg at
+   left:30% top:70% is. That stretches a stroke too, thicker across than down,
+   unless it is held to screen pixels, which is what non-scaling-stroke does. */
 .arcbox{position:relative;width:100%;height:100%;touch-action:none}
 .arcwire,.slackwire{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-.arcwire line{stroke:var(--zap);stroke-width:1.5;stroke-linecap:round;filter:drop-shadow(0 0 3px var(--zap))}
-.slackwire line{stroke:#9c90c4aa;stroke-width:1.4;stroke-linecap:round;transition:stroke var(--t-med)}
+.arcwire line{stroke:var(--zap);stroke-width:4px;vector-effect:non-scaling-stroke;stroke-linecap:round;filter:drop-shadow(0 0 3px var(--zap))}
+.slackwire line{stroke:#9c90c4aa;stroke-width:4px;vector-effect:non-scaling-stroke;stroke-linecap:round;transition:stroke var(--t-med)}
 .slackwire.clean line{stroke:var(--cool)}
 .arcreach{position:absolute;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;
   border:1px dashed #ffc53d55;background:#ffc53d0d;transition:width var(--t-med),height var(--t-med),left var(--t-med),top var(--t-med)}
@@ -3120,7 +3129,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.91.1';
+const VERSION_TAG = 'v0.91.2';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4432,6 +4441,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.91.2', date:'2026-09-30', items:[
+    'No Crossing had its threads in the wrong place. They were drawn in a square and dropped into the middle of a board that is no longer square, so every thread ended a hand\u2019s width from the peg it was meant to join. They join the pegs now. Cat\u2019s Cradle had the same fault, and Snip\u2019s trail was drawn that far from your finger.',
+    'Distances follow what you can see. Cat\u2019s Cradle counted a peg as in reach when it was inside an oval much taller than the dashed circle it drew, a peg in No Crossing could be grabbed from well above or below it, and Snip cut pieces that were a whole finger away from the stroke. Each now works out distance the way the picture shows it.',
+    'The board no longer jumps when you first touch it. The first time you meet a mode a line explaining it sits above the board, and touching the board (or waiting nine seconds) removed the line and handed its height back, so the whole board moved up thirty or forty pixels at the moment your finger landed. The line now fades and keeps its place until the next round.',
+  ] },
   { v:'0.91.1', date:'2026-09-30', items:[
     'The first time you open the app it no longer loads twice. The welcome screen appeared and, a fraction of a second later, was thrown away and built again, because the page reloaded itself when its offline worker took charge of it. It stays put now. Updates reach you the same way as before, including one that lands during your very first visit.',
   ] },
@@ -5437,6 +5451,15 @@ function onDrag(node, handlers){
   return { cancel: () => { id = null; } };
 }
 
+/* Boards are not square. A mode places things by a percentage of the board on
+   each axis separately, so a "distance" taken straight from those numbers is
+   stretched: ten down is a longer way than ten across, by exactly the board's
+   height over its width. Anything that measures against a shape you can SEE (a
+   peg you grab, a circle you can reach into, a stroke that cuts) has to weigh
+   the vertical by this, or the rule and the picture disagree. */
+const aspectOf = node => (node && node.clientWidth > 0 && node.clientHeight > 0)
+  ? node.clientHeight / node.clientWidth : 1;
+
 /* ═══ Mode engine ═════════════════════════════════════════════════════════
    Every puzzle implements the same contract:
      build(ctx) → renders into ctx.surface, then calls ctx.win() or ctx.miss()
@@ -6330,18 +6353,26 @@ const MODES = {
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5 L20 12 L4 19" fill="none" stroke="#FF3D6E" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 5 L4 12 L20 19" fill="none" stroke="#6C6191" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     build(ctx){
       const n = clamp(4 + Math.floor(ctx.level/3), 4, 11);
+      /* Every distance below is in widths, so the dashed circle you can see and
+         the pegs the game counts as in reach are the same set. Reach and the
+         gaps between pegs were once taken straight from the percentages, which on
+         a tall board made "in reach" an oval far taller than the circle drawn. */
+      const ar = aspectOf(ctx.surface);
+      const dd = (a, b, k) => Math.hypot(a.x-b.x, (a.y-b.y)*k);
       const pts = [];
       for (let i=0;i<n;i++){
         for (let a=0;a<200;a++){
           const x = 12 + ctx.rnd()*76, y = 12 + ctx.rnd()*76;
-          if (pts.every(q => Math.hypot(q.x-x, q.y-y) > 15)) { pts.push({x,y}); break; }
+          if (pts.every(q => dd(q, {x,y}, ar) > 15)) { pts.push({x,y}); break; }
         }
       }
       /* "Wide enough to probably work" is what Slide Path used to assume, and it
          was wrong there too. Prove it: depth-first over orderings with the same
          shrinking reach the player will face, and regenerate the board until one
          completes. The budget keeps the search honest on the worst layouts. */
-      const START = 52;
+      /* 52 was tuned on a square. A round reach covering the same AREA as the old
+         oval on a tall board is 52 times the square root of its aspect. */
+      let START = Math.round(52 * Math.sqrt(Math.max(1, ar)));
       const decay = 0.94 - Math.min(0.06, ctx.level*0.0025);
       function completable(list){
         const seen = new Array(list.length).fill(false);
@@ -6351,7 +6382,7 @@ const MODES = {
           if (budget-- <= 0) return false;
           for (let i=0;i<list.length;i++){
             if (seen[i]) continue;
-            if (Math.hypot(list[i].x-list[at].x, list[i].y-list[at].y) > reach) continue;
+            if (dd(list[i], list[at], ar) > reach) continue;
             seen[i] = true;
             if (go(i, depth+1, reach*decay)) return true;
             seen[i] = false;
@@ -6366,7 +6397,7 @@ const MODES = {
         for (let i=0;i<n;i++){
           for (let a=0;a<200;a++){
             const x = 12 + ctx.rnd()*76, y = 12 + ctx.rnd()*76;
-            if (out.every(q => Math.hypot(q.x-x, q.y-y) > 15)) { out.push({x,y}); break; }
+            if (out.every(q => dd(q, {x,y}, ar) > 15)) { out.push({x,y}); break; }
           }
         }
         return out;
@@ -6375,11 +6406,19 @@ const MODES = {
         pts.length = 0;
         spread().forEach(q => pts.push(q));
       }
+      /* Sixty layouts and none completable used to mean playing the last one
+         anyway, which may not be winnable at all. Widen the reach until it is. */
+      while (!completable(pts) && START < 150) START += 4;
       let reach = START, live = 0;
       const box = mk('div','arcbox');
+      /* The board, not the browser, decides how tall the box is, and it is not in
+         the page yet when the first reach is painted, so fall back to the shape
+         it was built for. */
+      const arNow = () => box.clientWidth > 0 ? aspectOf(box) : ar;
       const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
       svg.setAttribute('viewBox','0 0 100 100');
       svg.setAttribute('class','arcwire');
+      svg.setAttribute('preserveAspectRatio','none');   // 0-100 spans the board, like the pegs' percentages
       box.appendChild(svg);
       const halo = mk('div','arcreach'); box.appendChild(halo);
       const dots = pts.map((p,i) => {
@@ -6394,7 +6433,7 @@ const MODES = {
         halo.style.width = (reach*2)+'%'; halo.style.aspectRatio = '1'; halo.style.height = 'auto';
         dots.forEach((d,i) => {
           if (i <= live) return;
-          d.classList.toggle('near', Math.hypot(pts[i].x-p.x, pts[i].y-p.y) <= reach);
+          d.classList.toggle('near', dd(pts[i], p, arNow()) <= reach);
         });
       };
       dots[0].classList.add('lit');
@@ -6403,7 +6442,7 @@ const MODES = {
       dots.forEach((d,i) => onTap(d, () => {
         if (i === live || order.includes(i)) return;
         const from = pts[live], to = pts[i];
-        if (Math.hypot(to.x-from.x, to.y-from.y) > reach) return ctx.miss(d);
+        if (dd(to, from, arNow()) > reach) return ctx.miss(d);
         const ln = document.createElementNS('http://www.w3.org/2000/svg','line');
         ln.setAttribute('x1',from.x); ln.setAttribute('y1',from.y);
         ln.setAttribute('x2',to.x);   ln.setAttribute('y2',to.y);
@@ -6442,13 +6481,16 @@ const MODES = {
          drag ambiguous — the nearest wins, which is deterministic but not
          something the player can see or predict. */
       const MINGAP = 17;
+      /* Measured in widths, so "17 apart" is the same distance whichever way the
+         two pegs lie on a board taller than it is wide. */
+      const gap = (p, q, ar) => Math.hypot(p.x-q.x, (p.y-q.y)*ar);
       const scatter = () => {
-        const out = [];
+        const out = [], ar = aspectOf(ctx.surface);
         for (let i=0;i<n;i++){
           let best = null, bestD = -1;
           for (let a=0;a<160;a++){
             const q = { x: 14 + ctx.rnd()*72, y: 14 + ctx.rnd()*72 };
-            const d = out.length ? Math.min(...out.map(o => Math.hypot(o.x-q.x, o.y-q.y))) : 99;
+            const d = out.length ? Math.min(...out.map(o => gap(o, q, ar))) : 99;
             if (d >= MINGAP) { best = q; break; }
             if (d > bestD) { bestD = d; best = q; }
           }
@@ -6460,6 +6502,11 @@ const MODES = {
       const box = mk('div','arcbox');
       const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
       svg.setAttribute('viewBox','0 0 100 100'); svg.setAttribute('class','slackwire');
+      /* Stretch the 0-100 space over the whole board, the way the pegs' left and
+         top percentages are. Left to itself the SVG keeps a square and sits in
+         the middle of a tall box, so every thread ended a hand's width from the
+         peg it was meant to join. */
+      svg.setAttribute('preserveAspectRatio','none');
       box.appendChild(svg);
       const lines = edges.map(() => {
         const l = document.createElementNS('http://www.w3.org/2000/svg','line');
@@ -6500,13 +6547,15 @@ const MODES = {
       onDrag(box, {
         start: q => {
           held = -1; let best = 9e9;
-          pos.forEach((p,i) => { const d = Math.hypot(p.x-q.x, p.y-q.y); if (d < 11 && d < best){ best = d; held = i; } });
+          const ar = aspectOf(box);
+          pos.forEach((p,i) => { const d = gap(p, q, ar); if (d < 11 && d < best){ best = d; held = i; } });
           if (held >= 0) knobs[held].classList.add('held');
         },
         move: q => {
           if (held < 0 || done) return;
           const nx = clamp(q.x, 6, 94), ny = clamp(q.y, 6, 94);
-          const clash = pos.some((o,i) => i !== held && Math.hypot(o.x-nx, o.y-ny) < MINGAP*0.7);
+          const ar = aspectOf(box);
+          const clash = pos.some((o,i) => i !== held && gap(o, { x:nx, y:ny }, ar) < MINGAP*0.7);
           if (!clash){ pos[held].x = nx; pos[held].y = ny; repaint(); }
         },
         end: () => { if (held >= 0) knobs[held].classList.remove('held'); held = -1; }
@@ -7315,17 +7364,19 @@ const MODES = {
       const ink = document.createElementNS('http://www.w3.org/2000/svg','svg');
       ink.setAttribute('viewBox','0 0 100 100');
       ink.setAttribute('class','slicetrail');
+      ink.setAttribute('preserveAspectRatio','none');   // the trail is in the same percentages as the finger
       const trail = document.createElementNS('http://www.w3.org/2000/svg','polyline');
       ink.appendChild(trail);
       ctx.surface.appendChild(box);
 
       const bits = [];
+      const arBuild = aspectOf(ctx.surface);
       const good = total - rotten;
       for (let i=0;i<total;i++){
         let x=0,y=0,ok=false;
         for (let a=0;a<260 && !ok;a++){
           x = R + ctx.rnd()*(100-2*R); y = R + ctx.rnd()*(100-2*R);
-          ok = bits.every(p => Math.hypot(p.x-x, p.y-y) > R*2.3);
+          ok = bits.every(p => Math.hypot(p.x-x, (p.y-y)*arBuild) > R*2.3);
         }
         if (!ok) continue;
         const bad = i >= good;
@@ -7346,10 +7397,14 @@ const MODES = {
       /* Distance from a point to the segment just drawn — a stroke cuts what it
          passes THROUGH, not what happens to be near where it stopped. */
       const near = (p, a, b2) => {
-        const dx = b2.x-a.x, dy = b2.y-a.y;
+        /* In widths, so R is the piece's radius as drawn (17% of the width across)
+           and a stroke a hand's width above a piece does not cut it. */
+        const k = aspectOf(box);
+        const dx = b2.x-a.x, dy = (b2.y-a.y)*k;
+        const px = p.x-a.x, py = (p.y-a.y)*k;
         const L = dx*dx + dy*dy;
-        const tt = L ? clamp(((p.x-a.x)*dx + (p.y-a.y)*dy) / L, 0, 1) : 0;
-        return Math.hypot(p.x - (a.x + dx*tt), p.y - (a.y + dy*tt));
+        const tt = L ? clamp((px*dx + py*dy) / L, 0, 1) : 0;
+        return Math.hypot(px - dx*tt, py - dy*tt);
       };
       const sweep = (a, b2) => {
         if (done) return;
@@ -11047,7 +11102,7 @@ function showHow(id, firstMeet){
   el2.textContent = (firstMeet ? t('how.first') + ' ' : '')
     + modeBlurb(id) + (gesture ? ' \u2014 ' + t('how.' + gesture) : '');
   el2.hidden = false;
-  el2.classList.remove('go'); void el2.offsetWidth; el2.classList.add('go');
+  el2.classList.remove('go', 'gone'); void el2.offsetWidth; el2.classList.add('go');
   seen[id] = 1;
   persist();
   /* It used to go on the first touch of the board, which on a mode whose rule
@@ -11057,17 +11112,17 @@ function showHow(id, firstMeet){
   const born = performance.now();
   howDrop = () => {
     if (performance.now() - born < 2200) return;
-    el2.hidden = true;
+    el2.classList.add('gone');
     el.surface.removeEventListener('pointerdown', howDrop);
     howDrop = null;
   };
   el.surface.addEventListener('pointerdown', howDrop);
-  later(9000, () => { if (howDrop){ el2.hidden = true;
+  later(9000, () => { if (howDrop){ el2.classList.add('gone');
     el.surface.removeEventListener('pointerdown', howDrop); howDrop = null; } });
 }
 function clearHow(){
   if (howDrop){ el.surface.removeEventListener('pointerdown', howDrop); howDrop = null; }
-  const el2 = $('howto'); if (el2) el2.hidden = true;
+  const el2 = $('howto'); if (el2){ el2.hidden = true; el2.classList.remove('gone'); }
 }
 
 /* How long the "new mode" plate holds the screen, and how long the round waits
