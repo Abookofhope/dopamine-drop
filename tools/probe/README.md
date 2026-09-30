@@ -10,7 +10,16 @@ cd tools/probe && npm install && npx playwright install chromium   # once
 cd ../.. && python3 tools/build_site.py _site
 (cd _site && python3 -m http.server 8275 &)
 
-node tools/probe/all.mjs         # all five, in order
+node tools/probe/all.mjs         # the suite below, in order; stops at the first failure
+```
+
+Not in the suite because they take minutes (run them before a release):
+
+```sh
+MAX=1 node tools/probe/alive.mjs     # every board answers a real touch at maximum difficulty
+node tools/probe/soak.mjs            # four minutes of real play across modes; nothing leaks between them
+node tools/probe/shots.mjs           # byte-exact picture of every board against tools/probe/baseline/
+node tools/probe/monkey.mjs          # random taps and drags in every mode, motion on
 ```
 
 Or one at a time:
@@ -22,6 +31,16 @@ Or one at a time:
 | `mix.mjs` | Under a real touch gesture — not a synthetic click — do taps in the Mix tab add up, or does each one cancel the last? |
 | `home.mjs` | Does the home tab hold up fresh, mid-climb, and with every mode mastered — four distinct picks, each with a reason, in four languages at three sizes? |
 | `settings.mjs` | Does a settings row toggle when you tap it, does a row holding a button *not*, and does erasing your progress ask in the page? |
+| `firstvisit.mjs` | Does a first visit load the page once, and does the offline worker still take control and apply updates? |
+| `threads.mjs` | Measured in pixels: does every thread end on a peg, is a peg grabbed from a circle and not an ellipse, does Snip's trail end under the finger? Attempts where the round ended underneath the measurement are thrown out and retried. |
+| `layoutshift.mjs` | Does the play area hold still around the board appearing, the first touch and the how-to line's timeout, in every mode? |
+| `geometry.mjs` | Every mode at several viewports and levels: nothing past the board's edge, nothing overlapping that should not. |
+| `alive.mjs` | Does every board answer a real tap and a real drag from a real control (not a pixel that happens to be first in the DOM)? |
+| `timing.mjs`, `momentum.mjs` | The round clock, the streak heat and the stage beats, played by a bot. |
+| `fx_unit.mjs` | The craft room's rules by value: what each cat and charm adds at each bond, wishes from a date, adoption without the yarn. Lifts the real source out of the build and runs it in a sandbox. |
+| `meta.mjs` | The craft room played: a solve pays yarn, the tenth offers a charm, the results show what a run paid, a twist run never touches the Classic best, Stats and the Room in every language. |
+| `soak.mjs` | Four minutes of real play (taps on real controls, not random pixels); reports a play area that moved under a live board. |
+| `monkey.mjs` | Random input in every mode with motion on: page errors, hangs, and the play area moving under a board that is still the same board (a prompt that wraps to a second line does this). |
 
 Environment: `PORT` (default 8275), `SITE` (default `/tmp/pw/_site`, where
 `home.mjs` reads the mode roster from), `VW`/`VH` and `MAX` for `sweep.mjs`,
@@ -29,6 +48,8 @@ Environment: `PORT` (default 8275), `SITE` (default `/tmp/pw/_site`, where
 somewhere unusual.
 
 Each probe exits non-zero when it finds something.
+
+`SITE` and `PORT` must point at the same build: probes read the version and the mode roster from `SITE` and open the page on `PORT`.
 
 ## Why `harness.mjs` exists
 

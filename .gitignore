@@ -11,3 +11,6 @@ key.properties
 # the pattern matches a real directory but not a symlink to somewhere else,
 # which is how a link into /tmp nearly got committed.
 node_modules
+
+# What a failing shots.mjs run leaves beside the baseline it disagreed with.
+tools/probe/baseline/*.actual.png

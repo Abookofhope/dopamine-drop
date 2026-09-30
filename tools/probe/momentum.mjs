@@ -120,6 +120,13 @@ for (let i = 1; i <= 16 && !stopped; i++){
       return !h.hidden && /Stage 1\b/i.test(h.querySelector('em').textContent);
     });
   }
+  if (i === 10){
+    /* A stage beat now also offers three charms and the run waits for an answer. The bot takes the
+       nap (yarn instead), which is the one answer that changes nothing about the run: a charm
+       such as the Bell Collar moves the streak rungs, and these checks are about the rungs. */
+    await page.waitForSelector('.draftbox .dfskip', { timeout: 4000 }).catch(() => {});
+    if (await page.$('.draftbox .dfskip')) await page.click('.draftbox .dfskip');
+  }
   if (want[i]){
     const [h, m] = want[i];
     const gotH = await heat(), gotM = await streakText();

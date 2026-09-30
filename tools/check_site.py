@@ -233,6 +233,18 @@ dead = sorted(used_bare - declared)
 check("every custom property a var() names is defined somewhere", not dead,
       "never defined: " + ", ".join(dead) if dead else "")
 
+# A label that points at an id nothing has is not a label. The volume slider shipped
+# with aria-labelledby="volLbl" and no element called volLbl: to a screen reader it was
+# an unnamed slider, and nothing but axe, three minutes into a browser probe, said so.
+# This reads the page's own markup (before the script, where ids are written by hand),
+# so an id that only script creates is not in scope; those are tested by playing.
+_markup = html[:html.find("<script")] if "<script" in html else html
+_ids = set(re.findall(r'\bid="([^"]+)"', _markup))
+_dangling = sorted({x for m in re.finditer(r'aria-(?:labelledby|describedby|controls)="([^"]+)"', _markup)
+                    for x in m.group(1).split() if x not in _ids})
+check("every aria label/description/controls points at an id that exists", not _dangling,
+      "nothing has the id: " + ", ".join(_dangling) if _dangling else "")
+
 # Word banks are player-visible content in four languages, and the failure
 # mode is silent: a word of the wrong length just renders a puzzle with a
 # letter too few. This has already shipped twice — once as a truncated

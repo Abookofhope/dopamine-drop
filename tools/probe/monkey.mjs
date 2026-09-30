@@ -12,6 +12,9 @@
  *   - a HANG: the page no longer answers a trivial evaluate within 4 seconds,
  *     which is what a generator stuck in a while-loop looks like from outside
  *   - an end state that is neither a live board, the results screen nor the menu
+ *   - the play area changing size or place under a board that is still the same
+ *     board (a prompt that wraps to a second line does this, and nothing else
+ *     notices: the board is fine at every moment it is looked at, and it moved)
  *
  *   node tools/probe/monkey.mjs               a mid-game save
  *   MAX=1 node tools/probe/monkey.mjs         maximum difficulty, where the
@@ -48,10 +51,19 @@ const alive = () => Promise.race([
   new Promise(r => setTimeout(() => r(false), 4000)),
 ]);
 
+/* The board is tagged when it is dealt and every tap is measured against it, so a
+   round that ends and is dealt again is not mistaken for the board moving. */
+const tagBoard = () => page.evaluate(() => { document.querySelectorAll('[data-lsb]').forEach(e => e.removeAttribute('data-lsb'));
+  const b = [...document.getElementById('surface').children].find(c => c.id !== 'count' && !c.classList.contains('swap'));
+  if (b) b.setAttribute('data-lsb', '1'); return !!b; }).catch(() => false);
+const rectOfBoard = () => page.evaluate(() => { const b = document.querySelector('[data-lsb]'); if (!b || !b.isConnected) return null;
+  const r = document.getElementById('surface').getBoundingClientRect(); return [Math.round(r.top), Math.round(r.height)]; }).catch(() => null);
+
 const results = [];
 for (const id of ids){
   errs = [];
   let note = '', won = false, lost = false, ended = false;
+  const moved = [];
   try {
     await openApp(page, Object.assign({ reduceMotion: false, sound: false, haptics: false }, PROF));
     await openModeList(page);
@@ -60,8 +72,11 @@ for (const id of ids){
       .some(c => c.id !== 'count' && !c.classList.contains('swap')), null, { timeout: 9000, polling: 60 })
       .catch(() => { note = 'the board never appeared'; });
 
+    await page.waitForTimeout(1300);          // let the board's own entrance and the how-to line settle
+    await tagBoard();
     for (let i = 0; i < TAPS && !note; i++){
       if (!(await alive())){ note = 'HANG: the page stopped answering'; break; }
+      const before = await rectOfBoard();
       const box = await (await page.$('#surface')).boundingBox().catch(() => null);
       if (!box) break;
       const x = box.x + 8 + rnd() * (box.width - 16), y = box.y + 8 + rnd() * (box.height - 16);
@@ -73,6 +88,9 @@ for (const id of ids){
         await page.mouse.click(x, y);
       }
       await page.waitForTimeout(140 + rnd() * 330);
+      const after = await rectOfBoard();
+      if (before && after && (before[0] !== after[0] || before[1] !== after[1])) moved.push(`${before.join('/')} -> ${after.join('/')}`);
+      if (!after) await tagBoard();          // a new round: measure that one from here
       /* Did anything actually resolve? A monkey whose taps never win or lose a
          round exercises none of the code it exists to exercise, and would pass
          every time. */
@@ -94,6 +112,7 @@ for (const id of ids){
   } catch (e){ note = 'probe error: ' + String(e.message).split('\n')[0].slice(0, 90); }
 
   const problems = [...new Set(errs)].slice(0, 2);
+  if (moved.length) problems.push(`the board moved under a live round (top/height): ${moved.slice(0, 2).join('; ')}`);
   results.push({ id, note, problems, won, lost, ended });
   console.log(`${note || problems.length ? 'FAIL' : 'ok  '} ${id.padEnd(9)}`
     + ` ${won ? 'W' : '-'}${lost ? 'L' : '-'}${ended ? 'E' : '-'}`
@@ -105,14 +124,45 @@ for (const id of ids){
     page = await makePage();
   }
 }
+/* Random taps win a round only now and then (none at all in some runs), and the claim below is that the
+   shell's win path ran with motion on and threw nothing. That claim should not depend on luck, so if the
+   monkey did not win by itself one round of Odd Skein is won on purpose, by reading which tile is the odd
+   one out, with motion on and error capture running. It is counted separately and said aloud. */
+let scriptedWin = false;
+if (!results.some(r => r.won) && ids.includes('odd')){
+  errs = [];
+  try {
+    await openApp(page, Object.assign({ reduceMotion: false, sound: false, haptics: false }, PROF));
+    await openModeList(page); await clickMode(page, 'odd');
+    await page.waitForFunction(() => document.querySelector('#surface .grid button:not([disabled])'), null, { timeout: 9000, polling: 60 });
+    await page.waitForTimeout(1500);
+    for (let k = 0; k < 8 && !scriptedWin; k++){
+      const did = await page.evaluate(() => {
+        const tiles = [...document.querySelectorAll('#surface .grid button:not([disabled])')];
+        const col = b => getComputedStyle(b).backgroundColor, seen = new Map();
+        tiles.forEach(b => seen.set(col(b), (seen.get(col(b)) || 0) + 1));
+        const odd = tiles.find(b => seen.get(col(b)) === 1); if (!odd) return false;
+        window.__lastTile = tiles[0]; odd.click(); return true;
+      });
+      if (!did) break;
+      await page.waitForTimeout(260);
+      scriptedWin = await page.evaluate(() => { const p = document.querySelector('.prompt'); return !!p && /\bwon\b/.test(p.className); });
+      if (!scriptedWin) await page.waitForTimeout(500);
+    }
+  } catch (e){ errs.push('scripted win: ' + String(e.message).split('\n')[0].slice(0, 90)); }
+  if (errs.length) results.push({ id: 'odd (scripted win)', note: '', problems: [...new Set(errs)].slice(0, 2), won: false, lost: false, ended: false });
+  else if (scriptedWin) results.push({ id: 'odd (scripted win)', note: '', problems: [], won: true, lost: false, ended: false, scripted: true });
+  console.log(`${errs.length ? 'FAIL' : scriptedWin ? 'ok  ' : 'note'} odd (scripted win)  the monkey won nothing by itself, so a round was won on purpose: ${scriptedWin ? 'won, with motion on' : 'the round was not won'}`);
+}
 await browser.close();
 floorOrDie('monkey', results.length, Math.min(40, ids.length));
 const failed = results.filter(r => r.note || r.problems.length);
-const wins = results.filter(r => r.won).length, losses = results.filter(r => r.lost).length;
+const modeCount = results.filter(r => !r.scripted && r.id !== 'odd (scripted win)').length;
+const wins = results.filter(r => r.won && !r.scripted).length + (scriptedWin ? 1 : 0), losses = results.filter(r => r.lost).length;
 const finished = results.filter(r => r.ended).length;
-console.log(`\n${results.length - failed.length}/${results.length} modes survived ${TAPS} random taps and drags`
+console.log(`\n${modeCount - failed.filter(r => r.id !== 'odd (scripted win)').length}/${modeCount} modes survived ${TAPS} random taps and drags`
   + `${MAX ? ' at maximum difficulty' : ''}, motion on`);
-console.log(`reached: a WIN in ${wins} modes, a MISS in ${losses}, the results screen in ${finished}`);
+console.log(`reached: a WIN in ${wins} modes${scriptedWin ? ' (scripted: the monkey won none itself)' : ''}, a MISS in ${losses}, the results screen in ${finished}`);
 /* What a clean run can honestly claim depends on what it reached, so the counts
    above are the point and the floors below only guard the minimum. Random taps
    resolve a round in a minority of modes (most are multi-step puzzles a monkey
@@ -123,7 +173,7 @@ console.log(`reached: a WIN in ${wins} modes, a MISS in ${losses}, the results s
    nothing. The floors are exactly that: at least one of each. An earlier version
    demanded 8 wins and 25 misses, numbers guessed before seeing any data, and
    failed a clean run for it. */
-console.log(`modes where a round actually resolved: ${results.filter(r => r.won || r.lost).length} of ${results.length}`);
+console.log(`modes where a round actually resolved: ${results.filter(r => (r.won || r.lost) && !r.scripted).length} of ${modeCount}`);
 if (ids.length >= 40 && (wins < 1 || losses < 1 || finished < 1)){
   console.log('the monkey never reached a win, a miss and the results screen: it is not testing the shell. Raise TAPS.');
   process.exit(1);

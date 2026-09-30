@@ -145,14 +145,31 @@ if (want('arc')){
 }
 
 /* ── Snip ───────────────────────────────────────────────────────────────── */
-if (want('slice')){
+/* A round that ends while this is measuring is a new board, not a failed cut: on a
+   busy machine the setup alone can use up a round's clock. So each attempt is
+   measured against the piece it tagged, and an attempt whose piece went away is
+   thrown out and run again on a fresh round. */
+const snip = async (record) => {
   const page = await start('slice');
   await settle(page, '.bit');
-  const bits = (await centres(page, '.bit')).filter(b => !/\brot\b/.test(b.cls));
+  const all = await centres(page, '.bit');
+  const bits = all.filter(b => !/\brot\b/.test(b.cls));
   const box = await (await page.$('.slicebox')).boundingBox();
-  const target = bits.find(b => b.y - 45 > box.y + 6) || bits[0];
-  const dy = target.y - 45 > box.y + 6 ? -45 : 45;
+  /* The stroke is only as long as it needs to be, and is laid where it touches nothing but
+     the piece it is about. A stroke across the whole board passes through its neighbours,
+     and one of those can be a rotten piece: that is a miss, the round is locked, and the
+     control stroke that follows is ignored. It read as "a stroke through a piece does not
+     cut it", and it came and went with how the pieces happened to fall. */
+  const HALF = 70, CLEAR = 50;
+  const clear = (t, yy) => all.every(o => o === t || Math.hypot(Math.max(0, Math.abs(o.x - t.x) - HALF), o.y - yy) >= CLEAR);
+  let target = null, dy = -45;
+  outer: for (const b of bits) for (const d of [-45, 45]){
+    if (b.y + d < box.y + 6 || b.y + d > box.y + box.height - 6) continue;
+    if (clear(b, b.y + d)){ target = b; dy = d; break outer; }
+  }
+  if (!target){ target = bits.find(b => b.y - 45 > box.y + 6) || bits[0]; dy = target.y - 45 > box.y + 6 ? -45 : 45; }
   const y = target.y + dy;
+  const x0 = Math.max(box.x + 4, target.x - HALF), x1 = Math.min(box.x + box.width - 4, target.x + HALF);
   /* Tag the piece now. Looking it up by position afterwards finds nothing once
      it has been cut (it shrinks away), and "found nothing" reads as "not cut",
      which is how the first version of this check passed on a broken build. */
@@ -164,32 +181,64 @@ if (want('slice')){
   const tagged = () => page.evaluate(() => { const e = document.querySelector('[data-probe]'); return e ? e.classList.contains('cut') : null; });
   /* A stroke along a line 45px from the piece's centre: the piece is 64px
      across, so that is 13px clear of its edge. */
-  await page.mouse.move(box.x + 4, y); await page.mouse.down();
-  await page.mouse.move(box.x + box.width * 0.5, y, { steps: 6 });
+  await page.mouse.move(x0, y); await page.mouse.down();
+  await page.mouse.move(target.x, y, { steps: 6 });
   const trail = await page.evaluate(() => {
     const pl = document.querySelector('.slicetrail polyline'), svg = pl.ownerSVGElement, m = svg.getScreenCTM();
     const pts = pl.getAttribute('points').trim().split(/\s+/).map(s => s.split(',').map(Number));
     const last = pts[pts.length - 1], p = svg.createSVGPoint(); p.x = last[0]; p.y = last[1]; const q = p.matrixTransform(m);
     return { x: q.x, y: q.y };
   });
-  const gap = Math.hypot(trail.x - (box.x + box.width * 0.5), trail.y - y);
-  console.log(`   Snip: trail end is ${gap.toFixed(1)}px from the finger`);
-  check(gap < 2, 'Snip: the trail ends under the finger');
-  await page.mouse.move(box.x + box.width - 4, y, { steps: 6 });
+  const gap = Math.hypot(trail.x - target.x, trail.y - y);
+  record.info = `   Snip: trail end is ${gap.toFixed(1)}px from the finger`;
+  record.push([gap < 2, 'Snip: the trail ends under the finger']);
+  await page.mouse.move(x1, y, { steps: 6 });
   await page.mouse.up(); await page.waitForTimeout(200);
   const missed = await tagged();
   if (process.env.DEBUG) console.log('   snip: all pieces (x,y,dist to stroke, rot):', JSON.stringify((await centres(page, '.bit')).map(b => [Math.round(b.x), Math.round(b.y), Math.round(Math.abs(b.y - y)), /\brot\b/.test(b.cls) ? 'rot' : ''])));
   if (process.env.DEBUG) console.log('   snip: target', Math.round(target.x), Math.round(target.y), 'stroke y', Math.round(y), 'box', JSON.stringify(box), 'cut states', JSON.stringify(await page.evaluate(() => [...document.querySelectorAll('.bit')].map(e => e.className.replace('bit', '').trim() || '-'))));
-  check(missed === false, 'Snip: a stroke 45px from a piece does not cut it' + (missed === null ? ' (piece not found: the check proves nothing)' : ''));
+  if (missed === null){ await page.close(); return 'replaced'; }
+  record.push([missed === false, 'Snip: a stroke 45px from a piece does not cut it']);
 
   /* The control: a short stroke straight through the same piece must cut it, or
      the check above would pass on a mode that never cuts anything. It is short
      so that it cannot reach a neighbour, which are always further apart. */
-  await page.mouse.move(target.x - 18, target.y); await page.mouse.down();
-  await page.mouse.move(target.x + 18, target.y, { steps: 4 });
+  const now = await page.evaluate(() => { const e = document.querySelector('[data-probe]'); if (!e || !e.isConnected) return null;
+    const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+  if (!now){ await page.close(); return 'replaced'; }
+  await page.mouse.move(now.x - 18, now.y); await page.mouse.down();
+  await page.mouse.move(now.x + 18, now.y, { steps: 4 });
   await page.mouse.up(); await page.waitForTimeout(200);
-  check(await tagged() === true, 'Snip: and a stroke through it does');
+  const cut = await tagged();
+  if (cut === null){ await page.close(); return 'replaced'; }
+  record.push([cut === true, 'Snip: and a stroke through it does']);
+  if (cut !== true){
+    /* A failure here has come and gone with no cause found, so when it happens it says what the
+       page looked like, which is the only thing that can explain it afterwards. */
+    record.diag = await page.evaluate(() => ({
+      prompt: (document.querySelector('.prompt') || {}).className + ' | ' + ((document.querySelector('.prompt') || {}).textContent || ''),
+      pieces: [...document.querySelectorAll('.bit')].map(e => e.className.replace('bit', '').trim() || '-'),
+      lives: document.querySelectorAll('#hudLives span').length, over: !document.getElementById('over').hidden,
+      disabled: [...document.querySelectorAll('#surface button')].filter(b => b.disabled).length,
+      probe: (document.querySelector('[data-probe]') || { className: 'gone' }).className
+    }));
+  }
   await page.close();
+  return 'done';
+};
+if (want('slice')){
+  /* What an attempt finds is held until it is known to count: a thrown-out attempt
+     prints one line saying so and none of its checks. */
+  let res = 'replaced', rec = [];
+  for (let attempt = 1; attempt <= 4 && res === 'replaced'; attempt++){
+    rec = [];
+    res = await snip(rec);
+    if (res === 'replaced') console.log(`   Snip: attempt ${attempt} was thrown out, the round ended while it was being measured`);
+  }
+  if (rec.info) console.log(rec.info);
+  if (rec.diag) console.log('   Snip: the page when the control stroke did not cut: ' + JSON.stringify(rec.diag));
+  rec.forEach(([ok, msg]) => check(ok, msg));
+  check(res === 'done', 'Snip: was measured on a round that held still');
 }
 
 if (errs.length){ bad++; console.log('PAGE ERRORS', [...new Set(errs)].slice(0, 3)); }
