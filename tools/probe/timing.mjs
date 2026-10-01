@@ -80,8 +80,8 @@ const sample = () => {
   step();
 };
 
-/* A round that ends on ONE tap, so this can be driven without knowing how to
- * play forty-two games. Most modes are multi-step (one tap on Spool Shots fires
+/* A round that ends on a tap or two, so this can be driven without knowing how to
+ * play forty-three games. Most modes are multi-step (one tap on Spool Shots fires
  * a shot and the round carries on), so the run has to be dealt one of these
  * first. Just Play deals in a shuffled order from Math.random, which is seeded
  * here: scan seeds until the first mode is a single-choice one. Seeding, not
@@ -120,10 +120,16 @@ for (let base = 1; base <= 40 && !live; base += 8){
 let got = null;
 if (live){
   await live.evaluate(sample);
+  /* A round can be several boards in a row now (Odd Skein and Dye Trap ask for a few answers at the higher levels), so keep
+     answering until the first plate shows; after that, the sampler is the only thing touching the page. */
   await live.evaluate(() => {
-    const b = document.querySelector('#surface button:not([disabled])'); if (b) b.click();
+    window.__tap = setInterval(() => {
+      if (window.__log.some(x => x.plate)){ clearInterval(window.__tap); return; }
+      const b = document.querySelector('#surface button:not([disabled])'); if (b) b.click();
+    }, 150);
   });
   await live.waitForTimeout(3400);
+  await live.evaluate(() => clearInterval(window.__tap));
   const log = await live.evaluate(() => { clearInterval(window.__int); return window.__log; });
   if (log.some(x => x.plate)) got = log;
   else console.log(`   sampler recorded ${log.length} frames over ${log.length ? Math.round(log[log.length-1].t - log[0].t) : 0}ms; `

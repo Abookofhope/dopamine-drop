@@ -3168,6 +3168,52 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 /* Patchwork: the colour rule, stated on the quilt. */
 .fnote{position:absolute;right:2px;top:-2px;z-index:3;padding:3px 9px;border-radius:99px;border:1px solid var(--edge);background:#0d0918d9;
   color:var(--haze);font-family:var(--f-data);font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;pointer-events:none}
+/* ── Loaf Box: kittens asleep in a cardboard box, and loaves to fit round them ─────────────────── */
+.lbx{position:relative;gap:10px;--face:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 8.4 5.2 3.2 9.8 6.4M20 8.4 18.8 3.2 14.2 6.4' fill='%232a1f3a' fill-opacity='.55'/%3E%3Cellipse cx='8.2' cy='12.4' rx='1.5' ry='2.1' fill='%232a1f3a' fill-opacity='.8'/%3E%3Cellipse cx='15.8' cy='12.4' rx='1.5' ry='2.1' fill='%232a1f3a' fill-opacity='.8'/%3E%3Cpath d='M10.8 15.7h2.4l-1.2 1.4z' fill='%23E0607F'/%3E%3Cpath d='M12 17.1q-1.4 1.8-3 .8M12 17.1q1.4 1.8 3 .8' stroke='%232a1f3a' stroke-opacity='.7' fill='none' stroke-width='.9' stroke-linecap='round'/%3E%3C/svg%3E");--kit:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20c0-5.2 3-8.8 8-8.8s8 3.6 8 8.8z' fill='%23B7A9E0'/%3E%3Cpath d='M5.6 12.6 5.2 6.2l4.6 3M18.4 12.6l.4-6.4-4.6 3' fill='%23B7A9E0'/%3E%3Cpath d='M8.2 15.4q1.3 1.1 2.6 0M13.2 15.4q1.3 1.1 2.6 0' fill='none' stroke='%232a1f3a' stroke-width='1.1' stroke-linecap='round'/%3E%3Cpath d='M11.2 17.2h1.6l-.8.9z' fill='%23E88BA8'/%3E%3C/svg%3E")}
+.lbx .fgrid{position:relative;gap:3px;padding:6px;border-radius:14px;
+  background:repeating-linear-gradient(90deg,#0000001a 0 3px,transparent 3px 9px),linear-gradient(180deg,#6a4c33,#523a27);
+  box-shadow:0 0 0 3px #9a7249,0 10px 22px #0007}
+.lbx .fcell{position:relative;border-radius:6px;background:#0000003d}
+.lbx .fcell.nap{background:#33264a var(--kit) center/92% no-repeat}
+.lbx .fcell.set,.lbx .fbit.on{--br:0 0 #0000;--bb:0 0 #0000;--bd:0 0 #0000;--sh:0 0 #0000;
+  background:var(--pc);border-radius:3px;box-shadow:var(--br),var(--bb),var(--bd),var(--sh)}
+.lbx .fcell.set:not(.e-r),.lbx .fbit.on:not(.e-r){--br:3px 0 0 0 var(--pc)}
+.lbx .fcell.set:not(.e-b),.lbx .fbit.on:not(.e-b){--bb:0 3px 0 0 var(--pc)}
+.lbx .fcell.set:not(.e-r):not(.e-b),.lbx .fbit.on:not(.e-r):not(.e-b){--bd:3px 3px 0 0 var(--pc)}
+.lbx .fcell.set.e-b,.lbx .fbit.on.e-b{--sh:inset 0 -4px 0 #0000002e}
+.lbx .e-t.e-l{border-top-left-radius:12px}
+.lbx .e-t.e-r{border-top-right-radius:12px}
+.lbx .e-b.e-l{border-bottom-left-radius:12px}
+.lbx .e-b.e-r{border-bottom-right-radius:12px}
+.lbx .fcell.m::after,.lbx .fbit.m::after{content:"";position:absolute;inset:8%;background:var(--face) center/contain no-repeat;pointer-events:none}
+.lbx .fbit{position:relative;width:16px;height:16px;background:transparent}
+.lbx .fbits{gap:3px}
+.lbx .fcell.laid{filter:brightness(1.35)}
+.lbx .fcell.drop-ok{background:#5BD98C55;box-shadow:inset 0 0 0 2px #5BD98C}
+.lbx .fcell.drop-bad{background:#ff3d6e33;box-shadow:inset 0 0 0 2px var(--bad)}
+.lbx .fcell.willpop{outline:2px solid #FFC53D;outline-offset:-2px;filter:brightness(1.3)}
+.lbx .fcell.hint{background:#FFC53D55;box-shadow:inset 0 0 0 2px #FFC53D;animation:quilthint .7s ease-in-out 3}
+.lbx .fcell.pop{animation:lbxpop .38s ease-out forwards}
+@keyframes lbxpop{0%{filter:brightness(1.9);opacity:1}100%{opacity:0}}
+.lbx .fgrid.made .fcell.set{filter:brightness(1.1)}
+.lbx .fpiece{padding:8px;border-radius:10px;border:2px solid var(--edge-soft);background:var(--ink-2);touch-action:none}
+.lbx .fpiece.fsel{border-color:#FFC53D;transform:none}
+.lbx .fpiece.hinted{border-color:#FFC53D;box-shadow:0 0 0 3px #FFC53D55}
+.lbx .fnote{position:static;align-self:center;margin:-2px 0}
+.lbx .fpiece .fbit{width:14px;height:14px}
+.lbx .fpiece{padding:7px}
+.tidepips{position:absolute;top:10px;left:0;right:0;display:flex;gap:9px;justify-content:center;pointer-events:none;z-index:2}
+.tidepip{width:20px;height:20px;border-radius:50%;border:2px solid #7be38a55;box-sizing:border-box;
+  background:conic-gradient(#7be38a calc(var(--f,0)*360deg),#00000040 0)}
+.tidepip.on{border-color:#7be38a;box-shadow:0 0 8px #7be38a88}
+/* ── Last of the plain pieces: paw prints, knitted planks, wound bobbins, crochet loops ───────────── */
+.cell.given.on,.cell.mcell.on{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff' fill-opacity='.6'%3E%3Cellipse cx='12' cy='16' rx='5.2' ry='4.2'/%3E%3Cellipse cx='5.4' cy='11' rx='2.2' ry='2.9'/%3E%3Cellipse cx='9.6' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='14.4' cy='6.4' rx='2.2' ry='2.9'/%3E%3Cellipse cx='18.6' cy='11' rx='2.2' ry='2.9'/%3E%3C/svg%3E");background-size:58%;background-position:center;background-repeat:no-repeat}
+.brcell.plank{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'%3E%3Cpath d='M.8 .8 4 5.2 7.2 .8' fill='none' stroke='%23fff' stroke-opacity='.3' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 0 0/8px 6px,#C08BFF}
+.brgrid.good .brcell.plank{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'%3E%3Cpath d='M.8 .8 4 5.2 7.2 .8' fill='none' stroke='%23fff' stroke-opacity='.3' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 0 0/8px 6px,var(--cool)}
+.lvrload{border-radius:7px 7px 3px 3px;
+  background:repeating-linear-gradient(90deg,#ffffff2e 0 2px,transparent 2px 6px),linear-gradient(160deg,#c9b6ff,#7a5fd6)}
+.ltccell.notch{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'%3E%3Cpath d='M.8 .8 4 5.2 7.2 .8' fill='none' stroke='%23fff' stroke-opacity='.3' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/8px 6px,#C08BFF}
+.ltccell{border-radius:50%;background:radial-gradient(circle closest-side,#ffffff1c 0 55%,#ffffff08 56%)}
 </style>
 
 <div class="cab">
@@ -3854,7 +3900,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.96.0';
+const VERSION_TAG = 'v0.97.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4470,7 +4516,7 @@ const STRINGS = {
     'survival.title':'Survival Protocol', 'survival.sub':'Any mode, three lives, waves of ten',
     'survival.wave':'Wave {n}', 'survival.boss':'Boss wave', 'survival.bossDesc':'Harder than usual — just this once',
     'survival.extraLife':'Extra life', 'survival.extraLifeDesc':'Wave cleared',
-    'chaos.title':'Chaos Gauntlet', 'chaos.sub':'All 42, with the occasional twist', 'chaos.modifier':'Modifier',
+    'chaos.title':'Chaos Gauntlet', 'chaos.sub':'All {n}, with the occasional twist', 'chaos.modifier':'Modifier',
     'chaos.x2':'Double points', 'chaos.x2Desc':'This round only', 'chaos.fog':'Fog', 'chaos.fogDesc':'The board just got harder to read',
     'mix.build':'Build your rotation',
     'mix.pickNote':'Pick the modes you actually like — Mixtape shuffles only those. Two or more makes a rotation.', 'mix.all':'All', 'mix.none':'None', 'mix.clear':'Clear', 'mix.chosen':'{n} chosen', 'mix.selectAll':'Select all', 'mix.done':'Done',
@@ -4478,7 +4524,7 @@ const STRINGS = {
     'daily.bonusEyebrow':'Streak bonus', 'daily.bonusTitle':'{n}-day streak!', 'daily.bonusXp':'+{n} XP',
     'zen.title':'Fidget Loop', 'zen.sub':'No timer, no score',
     'discover.title':'Taste Test', 'discover.left':'{n} left to try', 'discover.doneTitle':'All rated',
-    'discover.doneDesc':'Every one of the 42 has a verdict now.', 'discover.ask':'Did you like it?',
+    'discover.doneDesc':'Every one of the {n} has a verdict now.', 'discover.ask':'Did you like it?',
     'discover.yes':'Liked it', 'discover.no':'Not for me', 'discover.progress':'{n} more to try',
     'discover.lastOne':'Last one',
     'marathon.title':'Marathon', 'marathon.sub':'One mode, three lives',
@@ -4492,7 +4538,7 @@ const STRINGS = {
     'ach.star':'First Star', 'ach.star.d':'Earn a star on any mode.',
     'ach.master':'Mastered', 'ach.master.d':'3-star a mode for the first time.',
     'ach.family':'Whole Family', 'ach.family.d':'3-star every mode in one family.',
-    'ach.complete':'Completionist', 'ach.complete.d':'3-star all 42 modes.',
+    'ach.complete':'Completionist', 'ach.complete.d':'3-star all {n} modes.',
     'ach.explorer':'Explorer', 'ach.explorer.d':'Play every mode at least once.',
     'ach.streak10':'On a Roll', 'ach.streak10.d':'Hit a 10-solve streak.',
     'ach.streak20':'Unstoppable', 'ach.streak20.d':'Hit a 20-solve streak.',
@@ -4915,6 +4961,12 @@ const STRINGS = {
     'q.halve.w3':'Fair shares', 'q.halve.m1':'Still uneven', 'q.halve.m2':'Out of moves',
     /* Patchwork */
     'forge.rule':'Same colours apart',
+    /* Loaf Box */
+    'm.loaf':'Loaf Box|Slide cat loaves into the box — a full row or column clears', 'p.loaf':'Clear {n} more — fill a whole row or column', 'loaf.empty':'Box, column {x} row {y}, empty',
+    'loaf.kitten':'Box, column {x} row {y}, a sleeping kitten', 'loaf.cat':'Box, column {x} row {y}, a cat loaf', 'loaf.part':'A cat loaf of {n} squares',
+    'loaf.jam':'Nothing left fits — undo a loaf', 'loaf.spare':'One loaf is spare', 'loaf.pop':'A line of cats wanders off — {n} to go',
+    'q.loaf.w1':'Snug as a loaf', 'q.loaf.w2':'Everyone fits', 'q.loaf.w3':'A box full of purrs',
+    'q.loaf.m1':'The box is jammed', 'q.loaf.m2':'Out of moves',
   },
 
   fr: {
@@ -4931,7 +4983,7 @@ const STRINGS = {
     'survival.title':'Protocole de survie', 'survival.sub':'N’importe quel mode, trois vies, vagues de dix',
     'survival.wave':'Vague {n}', 'survival.boss':'Vague de boss', 'survival.bossDesc':'Plus dure que d’habitude — juste cette fois',
     'survival.extraLife':'Vie supplémentaire', 'survival.extraLifeDesc':'Vague nettoyée',
-    'chaos.title':'Gant du chaos', 'chaos.sub':'Les 42, avec parfois un twist', 'chaos.modifier':'Modificateur',
+    'chaos.title':'Gant du chaos', 'chaos.sub':'Les {n}, avec parfois un twist', 'chaos.modifier':'Modificateur',
     'chaos.x2':'Points doublés', 'chaos.x2Desc':'Cette manche seulement', 'chaos.fog':'Brouillard', 'chaos.fogDesc':'Le plateau est plus dur à lire maintenant',
     'mix.build':'Composez votre rotation',
     'mix.pickNote':'Choisissez les modes que vous aimez vraiment — la playlist ne mélange que ceux-là. Deux au minimum pour une rotation.', 'mix.all':'Tous', 'mix.none':'Aucun', 'mix.clear':'Vider', 'mix.chosen':'{n} choisis', 'mix.selectAll':'Tout choisir', 'mix.done':'Terminé',
@@ -4939,7 +4991,7 @@ const STRINGS = {
     'daily.bonusEyebrow':'Bonus de série', 'daily.bonusTitle':'Série de {n} jours !', 'daily.bonusXp':'+{n} XP',
     'zen.title':'Boucle calme', 'zen.sub':'Sans chrono, sans score',
     'discover.title':'Dégustation', 'discover.left':'{n} restants à essayer', 'discover.doneTitle':'Tout noté',
-    'discover.doneDesc':'Les 42 ont chacun un avis, maintenant.', 'discover.ask':'Vous avez aimé ?',
+    'discover.doneDesc':'Les {n} ont chacun un avis, maintenant.', 'discover.ask':'Vous avez aimé ?',
     'discover.yes':'Aimé', 'discover.no':'Pas pour moi', 'discover.progress':'{n} de plus à essayer',
     'discover.lastOne':'Dernier',
     'marathon.title':'Marathon', 'marathon.sub':'Un seul mode, trois vies',
@@ -4953,7 +5005,7 @@ const STRINGS = {
     'ach.star':'Première étoile', 'ach.star.d':'Gagnez une étoile sur un mode.',
     'ach.master':'Maîtrisé', 'ach.master.d':'Obtenez 3 étoiles sur un mode pour la première fois.',
     'ach.family':'Famille au complet', 'ach.family.d':'Obtenez 3 étoiles sur tous les modes d’une famille.',
-    'ach.complete':'Perfectionniste', 'ach.complete.d':'Obtenez 3 étoiles sur les 42 modes.',
+    'ach.complete':'Perfectionniste', 'ach.complete.d':'Obtenez 3 étoiles sur les {n} modes.',
     'ach.explorer':'Explorateur', 'ach.explorer.d':'Jouez à chaque mode au moins une fois.',
     'ach.streak10':'Lancé', 'ach.streak10.d':'Atteignez une série de 10 bonnes réponses.',
     'ach.streak20':'Imparable', 'ach.streak20.d':'Atteignez une série de 20 bonnes réponses.',
@@ -5376,6 +5428,12 @@ const STRINGS = {
     'q.halve.w3':'Partage équitable', 'q.halve.m1':'Toujours inégal', 'q.halve.m2':'Plus de coups',
     /* Patchwork */
     'forge.rule':'Couleurs séparées',
+    /* Loaf Box */
+    'm.loaf':'Boîte à Chats|Glissez les chats dans la boîte — une ligne pleine disparaît', 'p.loaf':'Encore {n} à vider — remplissez une ligne ou une colonne entière', 'loaf.empty':'Boîte, colonne {x} ligne {y}, vide',
+    'loaf.kitten':'Boîte, colonne {x} ligne {y}, un chaton endormi', 'loaf.cat':'Boîte, colonne {x} ligne {y}, un chat en boule', 'loaf.part':'Un chat en boule de {n} cases',
+    'loaf.jam':'Plus rien ne rentre — annulez un chat', 'loaf.spare':'Un chat en trop', 'loaf.pop':'Une ligne de chats s’éloigne — encore {n}',
+    'q.loaf.w1':'Bien au chaud', 'q.loaf.w2':'Tout le monde rentre', 'q.loaf.w3':'Une boîte pleine de ronrons',
+    'q.loaf.m1':'La boîte est coincée', 'q.loaf.m2':'Plus de coups',
   },
 
   es: {
@@ -5392,7 +5450,7 @@ const STRINGS = {
     'survival.title':'Protocolo de supervivencia', 'survival.sub':'Cualquier modo, tres vidas, oleadas de diez',
     'survival.wave':'Oleada {n}', 'survival.boss':'Oleada de jefe', 'survival.bossDesc':'Más difícil de lo normal — solo esta vez',
     'survival.extraLife':'Vida extra', 'survival.extraLifeDesc':'Oleada superada',
-    'chaos.title':'Guantelete del caos', 'chaos.sub':'Los 42, con algún giro de vez en cuando', 'chaos.modifier':'Modificador',
+    'chaos.title':'Guantelete del caos', 'chaos.sub':'Los {n}, con algún giro de vez en cuando', 'chaos.modifier':'Modificador',
     'chaos.x2':'Puntos dobles', 'chaos.x2Desc':'Solo esta ronda', 'chaos.fog':'Niebla', 'chaos.fogDesc':'El tablero ahora cuesta más de leer',
     'mix.build':'Arma tu rotación',
     'mix.pickNote':'Elige los modos que de verdad te gustan: la lista solo mezcla esos. Dos o más forman una rotación.', 'mix.all':'Todos', 'mix.none':'Ninguno', 'mix.clear':'Vaciar', 'mix.chosen':'{n} elegidos', 'mix.selectAll':'Elegir todos', 'mix.done':'Listo',
@@ -5400,7 +5458,7 @@ const STRINGS = {
     'daily.bonusEyebrow':'Bono de racha', 'daily.bonusTitle':'¡Racha de {n} días!', 'daily.bonusXp':'+{n} XP',
     'zen.title':'Modo calma', 'zen.sub':'Sin reloj, sin puntos',
     'discover.title':'Cata', 'discover.left':'{n} por probar', 'discover.doneTitle':'Todo valorado',
-    'discover.doneDesc':'Los 42 ya tienen un veredicto.', 'discover.ask':'¿Te ha gustado?',
+    'discover.doneDesc':'Los {n} ya tienen un veredicto.', 'discover.ask':'¿Te ha gustado?',
     'discover.yes':'Me gustó', 'discover.no':'No es para mí', 'discover.progress':'{n} más por probar',
     'discover.lastOne':'El último',
     'marathon.title':'Maratón', 'marathon.sub':'Un modo, tres vidas',
@@ -5414,7 +5472,7 @@ const STRINGS = {
     'ach.star':'Primera estrella', 'ach.star.d':'Gana una estrella en cualquier modo.',
     'ach.master':'Dominado', 'ach.master.d':'Consigue 3 estrellas en un modo por primera vez.',
     'ach.family':'Familia completa', 'ach.family.d':'Consigue 3 estrellas en todos los modos de una familia.',
-    'ach.complete':'Coleccionista', 'ach.complete.d':'Consigue 3 estrellas en los 42 modos.',
+    'ach.complete':'Coleccionista', 'ach.complete.d':'Consigue 3 estrellas en los {n} modos.',
     'ach.explorer':'Explorador', 'ach.explorer.d':'Juega cada modo al menos una vez.',
     'ach.streak10':'En racha', 'ach.streak10.d':'Consigue una racha de 10 aciertos.',
     'ach.streak20':'Imparable', 'ach.streak20.d':'Consigue una racha de 20 aciertos.',
@@ -5837,6 +5895,12 @@ const STRINGS = {
     'q.halve.w3':'Reparto justo', 'q.halve.m1':'Sigue desigual', 'q.halve.m2':'Sin movimientos',
     /* Patchwork */
     'forge.rule':'Colores separados',
+    /* Loaf Box */
+    'm.loaf':'Caja de Gatos|Mete a los gatos en la caja: una fila llena se despeja', 'p.loaf':'Quedan {n} por despejar: llena una fila o columna entera', 'loaf.empty':'Caja, columna {x} fila {y}, vacía',
+    'loaf.kitten':'Caja, columna {x} fila {y}, un gatito dormido', 'loaf.cat':'Caja, columna {x} fila {y}, un gato hecho un pan', 'loaf.part':'Un gato de {n} casillas',
+    'loaf.jam':'Ya no cabe nada: deshaz un gato', 'loaf.spare':'Un gato de sobra', 'loaf.pop':'Una fila de gatos se va — quedan {n}',
+    'q.loaf.w1':'Calentitos como panes', 'q.loaf.w2':'Cabemos todos', 'q.loaf.w3':'Una caja llena de ronroneos',
+    'q.loaf.m1':'La caja se atascó', 'q.loaf.m2':'Sin movimientos',
   },
 
   de: {
@@ -5853,7 +5917,7 @@ const STRINGS = {
     'survival.title':'Überlebensprotokoll', 'survival.sub':'Jeder Modus, drei Leben, Wellen zu zehnt',
     'survival.wave':'Welle {n}', 'survival.boss':'Bosswelle', 'survival.bossDesc':'Schwerer als sonst — nur dieses eine Mal',
     'survival.extraLife':'Extra-Leben', 'survival.extraLifeDesc':'Welle geschafft',
-    'chaos.title':'Chaos-Parcours', 'chaos.sub':'Alle 42, mit gelegentlichem Twist', 'chaos.modifier':'Modifikator',
+    'chaos.title':'Chaos-Parcours', 'chaos.sub':'Alle {n}, mit gelegentlichem Twist', 'chaos.modifier':'Modifikator',
     'chaos.x2':'Doppelte Punkte', 'chaos.x2Desc':'Nur diese Runde', 'chaos.fog':'Nebel', 'chaos.fogDesc':'Das Feld ist jetzt schwerer zu lesen',
     'mix.build':'Stelle deine Rotation zusammen',
     'mix.pickNote':'Wähle die Modi, die dir wirklich gefallen — die Playlist mischt nur diese. Ab zwei wird es eine Rotation.', 'mix.all':'Alle', 'mix.none':'Keine', 'mix.clear':'Leeren', 'mix.chosen':'{n} gewählt', 'mix.selectAll':'Alle wählen', 'mix.done':'Fertig',
@@ -5861,7 +5925,7 @@ const STRINGS = {
     'daily.bonusEyebrow':'Serien-Bonus', 'daily.bonusTitle':'{n} Tage in Folge!', 'daily.bonusXp':'+{n} XP',
     'zen.title':'Ruhemodus', 'zen.sub':'Ohne Uhr, ohne Punkte',
     'discover.title':'Kostprobe', 'discover.left':'Noch {n} zum Ausprobieren', 'discover.doneTitle':'Alles bewertet',
-    'discover.doneDesc':'Alle 42 haben jetzt ein Urteil.', 'discover.ask':'Hat es dir gefallen?',
+    'discover.doneDesc':'Alle {n} haben jetzt ein Urteil.', 'discover.ask':'Hat es dir gefallen?',
     'discover.yes':'Gefällt mir', 'discover.no':'Nichts für mich', 'discover.progress':'Noch {n} zum Ausprobieren',
     'discover.lastOne':'Der Letzte',
     'marathon.title':'Marathon', 'marathon.sub':'Ein Modus, drei Leben',
@@ -5875,7 +5939,7 @@ const STRINGS = {
     'ach.star':'Erster Stern', 'ach.star.d':'Verdiene einen Stern in einem beliebigen Modus.',
     'ach.master':'Gemeistert', 'ach.master.d':'Hole zum ersten Mal 3 Sterne in einem Modus.',
     'ach.family':'Ganze Familie', 'ach.family.d':'Hole 3 Sterne in jedem Modus einer Familie.',
-    'ach.complete':'Komplettist', 'ach.complete.d':'Hole 3 Sterne in allen 42 Modi.',
+    'ach.complete':'Komplettist', 'ach.complete.d':'Hole 3 Sterne in allen {n} Modi.',
     'ach.explorer':'Entdecker', 'ach.explorer.d':'Spiele jeden Modus mindestens einmal.',
     'ach.streak10':'Im Lauf', 'ach.streak10.d':'Erreiche eine Serie von 10 Lösungen.',
     'ach.streak20':'Unaufhaltsam', 'ach.streak20.d':'Erreiche eine Serie von 20 Lösungen.',
@@ -6298,6 +6362,12 @@ const STRINGS = {
     'q.halve.w3':'Gerechte Teile', 'q.halve.m1':'Noch ungleich', 'q.halve.m2':'Keine Züge mehr',
     /* Patchwork */
     'forge.rule':'Farben getrennt',
+    /* Loaf Box */
+    'm.loaf':'Katzenkiste|Schieb die Katzen in die Kiste — eine volle Reihe verschwindet', 'p.loaf':'Noch {n} räumen — füll eine ganze Reihe oder Spalte', 'loaf.empty':'Kiste, Spalte {x} Zeile {y}, leer',
+    'loaf.kitten':'Kiste, Spalte {x} Zeile {y}, ein schlafendes Kätzchen', 'loaf.cat':'Kiste, Spalte {x} Zeile {y}, eine Katze als Laib', 'loaf.part':'Eine Katze aus {n} Feldern',
+    'loaf.jam':'Nichts passt mehr — nimm eine Katze zurück', 'loaf.spare':'Eine Katze zu viel', 'loaf.pop':'Eine Reihe Katzen zieht ab — noch {n}',
+    'q.loaf.w1':'Kuschelig wie ein Laib', 'q.loaf.w2':'Alle passen rein', 'q.loaf.w3':'Eine Kiste voller Schnurren',
+    'q.loaf.m1':'Die Kiste klemmt', 'q.loaf.m2':'Keine Züge mehr',
   }
 };
 
@@ -6402,6 +6472,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.97.0', date:'2026-10-01', items:[
+    'A new mode: Loaf Box. Sleeping kittens fill a cardboard box, and cat loaves in the tray are yours to fit around them. Drag a loaf in (it follows your finger and lands on the nearest place it fits), tap a loaf to turn it, and when a row or a column is full it clears and gives the room back. The preview lights where the loaf will land and which lines it will finish. Undo takes a loaf back, Hint shows a place, and from level 6 there is one loaf too many, so you have to choose. Every box is built backwards from a way through it and replayed before you see it.',
+    'Purr has something to count with: a paw for every purr you owe, filling as you hold the band. From level 8 the band wanders on a second, quicker beat as well, and it gets a little narrower as you climb.',
+    'Mirror Stitch is paw prints, Darning is knitted stitches, Latch Hook is crochet loops, and the loads on Balance are wound bobbins.',
+    'Lifting a patch or a loaf out of the tray can no longer resize the board under your finger: the tray keeps the height it had when it was full.',
+  ] },
   { v:'0.96.0', date:'2026-09-30', items:[
     'A square is a slot. The board used to grow in from 97% and slide up a few pixels as it appeared, so every square in every mode shrank and moved for a quarter of a second each round, and a square shrank again under a thumb, when it was picked, and when it was eaten. Now the board fades in and nothing changes size or place: pressing, selecting and eating change how bright a square is and what it is outlined with. A new probe watches every box on every board and fails on any that moves.',
     'Bigger boards. Odd Skein is 3 to 8 across, Stitch Count 4 to 6, Mirror Stitch 6 to 10, Let the Cat Out 5 to 7, Tumble Dryer 5 to 7, Latch Hook up to 10 columns and 6 rows, Darning 6 to 9, Mending 4 to 6, Peekaboo 4 to 6, Kittens Out 5 to 7, Yarn Shop 4 by 4 and up, Spool Shots 5 to 6, plus more pegs, balls, threads, lamps, skeins and stitches in the rest.',
@@ -8897,10 +8973,17 @@ const MODES = {
     build(ctx){
       const need = clamp(3 + Math.floor(ctx.level/5), 3, 7);
       const speed = 0.045 + Math.min(0.03, ctx.level*0.0015);
+      const sway = clamp((ctx.level - 7) * 0.012, 0, 0.07);   /* from level 8 the band wanders on a second, quicker beat as well */
+      const tol0 = clamp(0.09 - ctx.level*0.0008, 0.06, 0.09); /* and it gets a little narrower */
       let size = 0.35, target = 0.6, phase = ctx.rnd()*Math.PI*2, held = false;
       let inBand = 0, done = 0, raf2 = 0;
 
       const box = mk('div','tidebox');
+      /* One paw for every purr you owe, filling as you hold the band: you can see how far through you are, not only how many
+         are left. */
+      const pips = mk('div','tidepips');
+      const pipEls = Array.from({ length: need }, () => { const e = mk('i','tidepip'); pips.appendChild(e); return e; });
+      box.appendChild(pips);
       const band = mk('div','tideband'); box.appendChild(band);
       const bub = mk('div','tidebub'); box.appendChild(bub);
       /* A cat asleep: the bubble is the cat, and it swells and settles as it purrs. */
@@ -8910,9 +8993,9 @@ const MODES = {
 
       const frame = () => {
         phase += speed * 0.06;
-        target = 0.52 + Math.sin(phase)*0.26;
+        target = 0.52 + Math.sin(phase)*0.26 + Math.sin(phase*2.3 + 1)*sway;
         size = clamp(size + (held ? 0.007 : -0.006), 0.18, 0.95);
-        const tol = 0.085;
+        const tol = tol0;
         const ok = Math.abs(size - target) < tol;
         /* From level 6, the middle of the band is golden: sit right in it and the purr builds twice as fast. */
         const gold = ctx.level >= 6 && Math.abs(size - target) < tol*0.42;
@@ -8924,9 +9007,10 @@ const MODES = {
         if (ok){
           inBand += gold ? 32 : 16;
           if (inBand > 1500){ inBand = 0; done++; sfx.good(done); buzz('good');
-            if (done >= need){ cancelAnimationFrame(raf2); return ctx.win(bub); }
+            if (done >= need){ pipEls.forEach(e => { e.classList.add('on'); e.style.setProperty('--f', 1); }); cancelAnimationFrame(raf2); return ctx.win(bub); }
             ctx.prompt(t('p.tide', { n: need - done })); }
         } else if (inBand > 0) inBand = Math.max(0, inBand - 26);
+        pipEls.forEach((e, i) => { const f = i < done ? 1 : i === done ? inBand / 1500 : 0; e.classList.toggle('on', i < done); e.style.setProperty('--f', f.toFixed(3)); });
         raf2 = requestAnimationFrame(frame);
       };
       raf2 = requestAnimationFrame(frame);
@@ -11238,6 +11322,8 @@ const MODES = {
         });
       };
       const fitBoard = () => {
+        /* The tray holds the height it had when full, so taking a patch out of it cannot resize the quilt under the finger. */
+        if (!tray.style.minHeight && tray.offsetHeight) tray.style.minHeight = tray.offsetHeight + 'px';
         const left = ctx.surface.clientHeight - tray.offsetHeight - tools.offsetHeight - 24;
         const side = Math.max(120, Math.min(ctx.surface.clientWidth, left));
         grid.style.width = side + 'px'; grid.style.aspectRatio = '1'; grid.style.height = 'auto';
@@ -13284,6 +13370,524 @@ const MODES = {
       paint();
     }
   },
+
+  /* ── Loaf Box — fit the cats in, and a full row goes ─────────────────────
+     Patchwork is exact: every square of the quilt is covered, nothing left over. This is the
+     opposite appetite. The box is already part full of sleeping kittens, the loaves in the tray
+     are whatever you have to hand, and nothing has to be used at all: only rows or columns have
+     to fill, and a full one clears, which gives the room back. So the question is not "does this
+     fit the hole" but "which hole, and in what order" — and a spare loaf is there to tempt you.
+     Built backwards from a play that works: the lines to clear are chosen first, loaves are
+     dropped into them until the gaps are the shape of the loaves, then the rest is kittens. The
+     finished board is replayed through the very same put-and-sweep the player uses before it is
+     shipped, so "solvable" is something that was run, not something that was hoped. */
+  loaf: {
+    name:'Loaf Box', blurb:'Slide cat loaves into the box — a full row or column clears', cat:'logic', par:17000, bonus:4400,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11.5c0-3.5 2.2-5.8 5-5.8s5 2.3 5 5.8z" fill="#FFA24D"/><path d="M8 7.4 8.3 4l2.4 1.8M16 7.4 15.7 4l-2.4 1.8" fill="none" stroke="#FFA24D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 11h17l-1.6 8.6a1.6 1.6 0 0 1-1.6 1.4H6.7a1.6 1.6 0 0 1-1.6-1.4z" fill="none" stroke="#33E6C8" stroke-width="2" stroke-linejoin="round"/></svg>',
+    build(ctx){
+      const GAP = 3;
+      /* As wide as the room allows: a square under about 44px is a square you have to aim at. */
+      const lines = clamp(2 + Math.floor(ctx.level/4), 2, 6);   /* rows or columns the level asks you to clear */
+      /* The box gets what the loaves, the note, the tools and the move counter leave, and a square under about 38px is one you
+         have to aim at, so the room caps the size of the box and difficulty is more lines and more loaves instead. */
+      const estLoaves = clamp(Math.ceil(Math.min(lines, 5) * 0.8), 2, 4) + (ctx.level >= 6 ? 1 : 0);
+      const under = (ctx.level >= 6 ? 34 : 0) + Math.ceil(estLoaves / 5) * 84 + 56 + 30 + 40;
+      const room = Math.min((ctx.surface.clientWidth || 350) - 12, (ctx.surface.clientHeight || 600) - under);
+      const maxG = Math.max(5, Math.floor((room - 12 + GAP) / (38 + GAP)));
+      const g = clamp(ctx.level < 6 ? 6 : ctx.level < 14 ? 7 : 8, 5, maxG);
+      const rows = Math.min(lines, g - 2, 5);
+      const K = clamp(Math.ceil(rows * 0.8), 2, 4);             /* loaves the way through needs: a loaf can finish more than one line */
+      const spare = ctx.level >= 6 ? 1 : 0;                     /* and one more that it does not */
+      const N = g * g;
+
+      const norm = cs => { const mx = Math.min(...cs.map(c=>c[0])), my = Math.min(...cs.map(c=>c[1]));
+        return cs.map(c=>[c[0]-mx, c[1]-my]).sort((a,b)=> a[1]-b[1] || a[0]-b[0]); };
+      const key  = cs => cs.map(c=>c.join(',')).join(' ');
+      const turn = cs => norm(cs.map(c => [-c[1], c[0]]));
+      const BASE = [
+        [[0,0],[1,0]],                       /* pair    */
+        [[0,0],[1,0],[2,0]],                 /* bar 3   */
+        [[0,0],[1,0],[0,1]],                 /* corner  */
+        [[0,0],[1,0],[0,1],[1,1]],           /* square  */
+        [[0,0],[1,0],[2,0],[1,1]],           /* tee     */
+        [[0,0],[1,0],[2,0],[2,1]],           /* ell     */
+        [[1,0],[2,0],[0,1],[1,1]],           /* zed     */
+        [[0,0],[1,0],[2,0],[3,0]],           /* bar 4   */
+        [[1,0],[0,1],[1,1],[2,1],[1,2]],     /* plus    */
+        [[0,0],[1,0],[0,1],[1,1],[0,2]]      /* pea     */
+      ];
+      const usable = BASE.slice(0, ctx.level < 3 ? 4 : ctx.level < 9 ? 7 : ctx.level < 14 ? 8 : 10);
+      const turnsOf = b => { const out = []; let c = norm(b);
+        for (let r = 0; r < 4; r++){ if (!out.some(s => key(s) === key(c))) out.push(c); c = turn(c); } return out; };
+      const dims = o => [Math.max(...o.map(c=>c[0])) + 1, Math.max(...o.map(c=>c[1])) + 1];
+
+      /* ── The rules, as pure functions on the two arrays, so the shipped board and the played board
+            cannot disagree about them ── */
+      const put = (nap, own, cells, part) => { cells.forEach(i => { own[i] = part; }); };
+      const sweep = (nap, own) => {
+        const filled = i => nap[i] || own[i] >= 0;
+        const rs = [], cs = [];
+        for (let y = 0; y < g; y++){ let all = true; for (let x = 0; x < g && all; x++) all = !!filled(y*g + x); if (all) rs.push(y); }
+        for (let x = 0; x < g; x++){ let all = true; for (let y = 0; y < g && all; y++) all = !!filled(y*g + x); if (all) cs.push(x); }
+        const gone = new Set();
+        rs.forEach(y => { for (let x = 0; x < g; x++) gone.add(y*g + x); });
+        cs.forEach(x => { for (let y = 0; y < g; y++) gone.add(y*g + x); });
+        return { n: rs.length + cs.length, rows: rs.length, cols: cs.length, gone };
+      };
+      const wipe = (nap, own, gone) => gone.forEach(i => { nap[i] = 0; own[i] = -1; });
+
+      /* ── Building the board ── */
+      const gen = () => {
+        for (let attempt = 0; attempt < 400; attempt++){
+          const vertical = ctx.level >= 5 && ctx.rnd() < 0.5;
+          const r0 = Math.floor(ctx.rnd() * (g - rows + 1));
+          const taken = new Map();                 /* cell -> loaf, in "rows" form */
+          const loaves = [];
+          let bad = false;
+          for (let p = 0; p < K && !bad; p++){
+            let placed = false;
+            for (let tries = 0; tries < 10 && !placed; tries++){
+              const o = pick(turnsOf(pick(usable, ctx.rnd)), ctx.rnd), [w, h] = dims(o);
+              let at = [];
+              for (let ay = r0; ay + h <= r0 + rows; ay++) for (let ax = 0; ax + w <= g; ax++)
+                if (o.every(c => !taken.has((ay + c[1])*g + ax + c[0]))) at.push([ax, ay]);
+              /* When the loaves left are only just enough to reach every line, each has to reach a new one. */
+              const bare = [];
+              for (let y = r0; y < r0 + rows; y++){ let any = false; for (let x = 0; x < g; x++) if (taken.has(y*g + x)) any = true; if (!any) bare.push(y); }
+              if (bare.length >= K - p){
+                const fresh = at.filter(([ax, ay]) => o.some(c => bare.includes(ay + c[1])));
+                if (fresh.length) at = fresh;
+              }
+              if (!at.length) continue;
+              const [ax, ay] = pick(at, ctx.rnd);
+              const cells = o.map(c => (ay + c[1])*g + ax + c[0]);
+              cells.forEach(i => taken.set(i, p));
+              loaves.push({ cells, o });
+              placed = true;
+            }
+            if (!placed) bad = true;
+          }
+          if (bad) continue;
+          /* Every line has to have something to fill, or it starts out full. */
+          let each = true;
+          for (let y = r0; y < r0 + rows && each; y++){ let any = false; for (let x = 0; x < g; x++) if (taken.has(y*g + x)) any = true; each = any; }
+          if (!each) continue;
+          /* The rows have to read as nearly full — kittens in most of every one and a gap or two to fill — or the box looks
+             empty and you cannot tell what you are meant to fill. */
+          let crowded = taken.size > Math.floor(rows * g * 0.6);
+          for (let y = r0; y < r0 + rows && !crowded; y++){ let n = 0; for (let x = 0; x < g; x++) if (taken.has(y*g + x)) n++; crowded = n > g - 2; }
+          if (crowded) continue;
+
+          const napCells = new Set();
+          for (let y = r0; y < r0 + rows; y++) for (let x = 0; x < g; x++) if (!taken.has(y*g + x)) napCells.add(y*g + x);
+          /* Kittens elsewhere, as clutter: never enough to fill a column that the rows would finish, and never
+             a whole line of their own. */
+          const perCol = new Array(g).fill(rows), perRow = new Array(g).fill(0);
+          let decoys = clamp(2 + Math.floor(ctx.level/2), 2, 12), guard = 0;
+          while (decoys > 0 && guard++ < 200){
+            const x = Math.floor(ctx.rnd() * g), y = Math.floor(ctx.rnd() * g), i = y*g + x;
+            if ((y >= r0 && y < r0 + rows) || napCells.has(i)) continue;
+            if (perCol[x] >= g - 1 || perRow[y] >= g - 2) continue;
+            napCells.add(i); perCol[x]++; perRow[y]++; decoys--;
+          }
+          /* Turn it on its side half the time. */
+          const flip = i => vertical ? (i % g) * g + Math.floor(i / g) : i;
+          const out = { vertical, nap: new Uint8Array(N), plan: [], fallback: false };
+          napCells.forEach(i => { out.nap[flip(i)] = 1; });
+          loaves.forEach(l => out.plan.push(l.cells.map(flip)));
+          return out;
+        }
+        return null;
+      };
+      /* The always-works board: every row missing a pair at the left. */
+      const fixed = () => {
+        const nap = new Uint8Array(N), plan = [];
+        for (let y = 0; y < rows; y++){ for (let x = 2; x < g; x++) nap[y*g + x] = 1; plan.push([y*g, y*g + 1]); }
+        return { vertical: false, nap, plan, fallback: true };
+      };
+
+      /* Replay the plan through the real rules. A board whose own plan does not clear enough lines is not shipped. */
+      const replay = b => {
+        const nap = b.nap.slice(), own = new Int8Array(N).fill(-1);
+        let n = 0;
+        b.plan.forEach((cells, p) => {
+          if (cells.some(i => nap[i] || own[i] >= 0)) { n = -99; return; }
+          put(nap, own, cells, p);
+          const s = sweep(nap, own); wipe(nap, own, s.gone); n += s.n;
+        });
+        return n;
+      };
+      let board = null;
+      for (let tries = 0; tries < 12 && !board; tries++){ const b = gen(); if (b && replay(b) >= rows) board = b; }
+      if (!board) board = fixed();
+      const R = rows;                                          /* what the plan really clears, and so what you are asked for */
+
+      /* ── The loaves ── */
+      const COATS = shuffle(['#F2A65A', '#B9C2D6', '#F4E6C8', '#9D8CC9', '#E88BA8'], ctx.rnd);
+      const parts = board.plan.map((cells, p) => {
+        const mx = Math.min(...cells.map(i => i % g)), my = Math.min(...cells.map(i => Math.floor(i / g)));
+        return { sh: norm(cells.map(i => [(i % g) - mx, Math.floor(i / g) - my])), plan: cells };
+      });
+      if (spare){ const o = pick(turnsOf(pick(usable, ctx.rnd)), ctx.rnd); parts.push({ sh: o, plan: null }); }
+      const order = shuffle(parts.map((_, i) => i), ctx.rnd);
+      const loaves = order.map(i => parts[i]);                  /* tray order is not plan order */
+      const coat = loaves.map((_, i) => COATS[i % COATS.length]);
+      const rot = loaves.map(() => Math.floor(ctx.rnd() * 4));
+      const orient = i => { let c = loaves[i].sh; for (let r = 0; r < rot[i]; r++) c = turn(c); return c; };
+
+      /* ── State ── */
+      const nap = board.nap.slice(), own = new Int8Array(N).fill(-1);
+      const used = new Set(), placedAt = new Map(), history = [];
+      const fading = new Map();
+      let cleared = 0, held = null, done = false, hints = 2, sel = null;
+      const occ = i => !!(nap[i] || own[i] >= 0);
+      const inTray = i => !used.has(i) && !(held && held.part === i);
+
+      /* ── DOM ── */
+      const wrap = mk('div','forgewrap lbx');
+      if (board.fallback) wrap.dataset.fallback = '1';
+      const grid = mk('div','fgrid');
+      grid.style.gridTemplateColumns = 'repeat(' + g + ',1fr)';
+      const cellEls = [];
+      for (let i = 0; i < N; i++){ const c = mk('i','fcell'); c.setAttribute('role','img'); grid.appendChild(c); cellEls.push(c); }
+      wrap.appendChild(grid);
+      let note = null;
+      if (spare){ note = mk('span','fnote'); note.textContent = t('loaf.spare'); wrap.appendChild(note); }
+      const tray = mk('div','ftray'); wrap.appendChild(tray);
+      const tools = mk('div','ftools'); wrap.appendChild(tools);
+      const undoBtn = mk('button','ftool'); undoBtn.type = 'button';
+      undoBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5M4 12h11a5 5 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><b></b>';
+      undoBtn.querySelector('b').textContent = t('forge.undo'); undoBtn.setAttribute('aria-label', t('forge.undo'));
+      const hintBtn = mk('button','ftool'); hintBtn.type = 'button';
+      hintBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><ellipse cx="12" cy="16" rx="5.2" ry="4.2"/><ellipse cx="5.4" cy="11" rx="2.2" ry="2.9"/><ellipse cx="9.6" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="14.4" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="18.6" cy="11" rx="2.2" ry="2.9"/></svg><b></b>';
+      tools.appendChild(undoBtn); tools.appendChild(hintBtn);
+      ctx.surface.appendChild(wrap);
+
+      const budget = moveBudget(ctx, board.plan.length);
+      const say = (key, args) => ctx.prompt(t(key || 'p.loaf', args || { n: Math.max(0, R - cleared) }));
+
+      /* ── What goes where ── */
+      const spot = (o, ax, ay) => {
+        const cells = [];
+        for (const c of o){
+          const x = ax + c[0], y = ay + c[1];
+          if (x < 0 || y < 0 || x >= g || y >= g) return null;
+          const i = y*g + x;
+          if (occ(i)) return null;
+          cells.push(i);
+        }
+        return cells;
+      };
+      const anyFits = () => {
+        for (let i = 0; i < loaves.length; i++){
+          if (used.has(i)) continue;
+          let c = loaves[i].sh;
+          for (let r = 0; r < 4; r++, c = turn(c)){
+            const [w, h] = dims(c);
+            for (let ay = 0; ay + h <= g; ay++) for (let ax = 0; ax + w <= g; ax++) if (spot(c, ax, ay)) return true;
+          }
+        }
+        return false;
+      };
+      /* Which lines a drop would finish, for the preview. */
+      const wouldClear = cells => {
+        const n2 = nap.slice(), o2 = own.slice(); put(n2, o2, cells, 99);
+        return sweep(n2, o2).gone;
+      };
+      /* A way through from here: the shipped plan if you are still on it, else a bounded search. */
+      const solve = () => {
+        const left = loaves.map((_, i) => i).filter(i => !used.has(i));
+        const on = [...used].every(p => loaves[p].plan && placedAt.has(p) && placedAt.get(p).length === loaves[p].plan.length && placedAt.get(p).every(i => loaves[p].plan.includes(i)));
+        if (on){
+          const p = left.find(i => loaves[i].plan);
+          if (p !== undefined && R - cleared > 0) return { sol: [{ part: p, cells: loaves[p].plan, o: loaves[p].sh }], gaveUp: false };
+        }
+        let nodes = 0, sol = null;
+        const go = (o, rest, got, acc) => {
+          if (sol || nodes++ > 4000) return;
+          if (got >= R){ sol = acc.slice(); return; }
+          if (!rest.length) return;
+          const rowN = new Array(g).fill(0), colN = new Array(g).fill(0);
+          for (let i = 0; i < N; i++) if (o[i]){ rowN[Math.floor(i/g)]++; colN[i % g]++; }
+          const cands = [];
+          for (const i of rest){
+            const seen = new Set(); let c = loaves[i].sh;
+            for (let r = 0; r < 4; r++, c = turn(c)){
+              const k = key(c); if (seen.has(k)) continue; seen.add(k);
+              const [w, h] = dims(c);
+              for (let ay = 0; ay + h <= g; ay++) for (let ax = 0; ax + w <= g; ax++){
+                let ok = true, score = 0; const cells = [];
+                for (const q of c){ const idx = (ay + q[1])*g + ax + q[0]; if (o[idx]){ ok = false; break; } cells.push(idx); score += rowN[ay + q[1]] + colN[ax + q[0]]; }
+                if (ok) cands.push({ i, c, cells, score });
+              }
+            }
+          }
+          cands.sort((a, b) => b.score - a.score);
+          for (const cd of cands.slice(0, 12)){
+            const o2 = o.slice(); cd.cells.forEach(x => { o2[x] = 1; });
+            const rs = [], cs = [];
+            for (let y = 0; y < g; y++) if (Array.from({ length: g }, (_, x) => o2[y*g + x]).every(Boolean)) rs.push(y);
+            for (let x = 0; x < g; x++) if (Array.from({ length: g }, (_, y) => o2[y*g + x]).every(Boolean)) cs.push(x);
+            rs.forEach(y => { for (let x = 0; x < g; x++) o2[y*g + x] = 0; });
+            cs.forEach(x => { for (let y = 0; y < g; y++) o2[y*g + x] = 0; });
+            go(o2, rest.filter(j => j !== cd.i), got + rs.length + cs.length, acc.concat([{ part: cd.i, cells: cd.cells, o: cd.c }]));
+            if (sol) return;
+          }
+        };
+        go(Uint8Array.from({ length: N }, (_, i) => occ(i) ? 1 : 0), left, cleared, []);
+        /* Not finding a way in a small search is not the same as there being none: offer a loaf from the shipped plan whose
+           place is still free, which is at least somewhere it fits. */
+        if (!sol){
+          const p = left.find(i => loaves[i].plan && loaves[i].plan.every(c => !occ(c)));
+          if (p !== undefined) return { sol: [{ part: p, cells: loaves[p].plan, o: loaves[p].sh }], gaveUp: true };
+        }
+        return { sol, gaveUp: !sol && nodes > 4000 };
+      };
+
+      /* ── Drawing ── */
+      const markerOf = pid => { const pl = placedAt.get(pid); return pl ? pl.find(i => own[i] === pid) : undefined; };
+      const paint = () => {
+        cellEls.forEach((c, i) => {
+          const pid = own[i], x = i % g, y = Math.floor(i / g);
+          let cls = 'fcell', label = t('loaf.empty', { x: x + 1, y: y + 1 });
+          c.style.removeProperty('--pc');
+          if (pid >= 0){
+            cls += ' set'; c.style.setProperty('--pc', coat[pid]);
+            const same = n => own[n] === pid;
+            if (y === 0 || !same(i-g)) cls += ' e-t';
+            if (x === g-1 || !same(i+1)) cls += ' e-r';
+            if (y === g-1 || !same(i+g)) cls += ' e-b';
+            if (x === 0 || !same(i-1)) cls += ' e-l';
+            if (i === markerOf(pid)) cls += ' m';
+            label = t('loaf.cat', { x: x + 1, y: y + 1 });
+          } else if (nap[i]){ cls += ' nap'; label = t('loaf.kitten', { x: x + 1, y: y + 1 }); }
+          else if (fading.has(i)){
+            const f = fading.get(i);
+            cls += f.coat ? ' set pop e-t e-r e-b e-l' : ' nap pop';
+            if (f.coat) c.style.setProperty('--pc', f.coat);
+          }
+          c.className = cls;
+          c.setAttribute('aria-label', label);
+        });
+        undoBtn.disabled = !history.length;
+        hintBtn.querySelector('b').textContent = t('forge.hint') + ' ' + hints;
+        hintBtn.disabled = !hints || done;
+        hintBtn.setAttribute('aria-label', t('forge.hint') + ': ' + hints);
+      };
+      const bitsOf = (o, pc) => {
+        const [w, h] = dims(o), has = (x, y) => o.some(c => c[0] === x && c[1] === y);
+        const frag = mk('span','fbits'); frag.style.gridTemplateColumns = 'repeat(' + w + ',1fr)';
+        frag.style.setProperty('--pc', pc);
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){
+          if (!has(x, y)){ frag.appendChild(mk('i','fbit')); continue; }
+          let cls = 'fbit on';
+          if (!has(x, y-1)) cls += ' e-t'; if (!has(x+1, y)) cls += ' e-r'; if (!has(x, y+1)) cls += ' e-b'; if (!has(x-1, y)) cls += ' e-l';
+          if (x === o[0][0] && y === o[0][1]) cls += ' m';
+          frag.appendChild(mk('i', cls));
+        }
+        return frag;
+      };
+      const drawTray = () => {
+        tray.innerHTML = '';
+        loaves.forEach((p, i) => {
+          if (!inTray(i)) return;
+          const e = mk('button','fpiece'); e.type = 'button'; e.dataset.idx = i;
+          if (sel === i) e.classList.add('fsel');
+          e.appendChild(bitsOf(orient(i), coat[i]));
+          e.setAttribute('aria-label', t('loaf.part', { n: p.sh.length }) + '. ' + t('forge.turn'));
+          e.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); sel = i; rot[i] = (rot[i]+1)%4; drawTray(); } });
+          tray.appendChild(e);
+        });
+      };
+      const fitBoard = () => {
+        /* The tray keeps the height it had when it was full, so lifting a loaf out of it can never change the size of the box
+           under the finger. */
+        if (!tray.style.minHeight && tray.offsetHeight) tray.style.minHeight = tray.offsetHeight + 'px';
+        /* Everything under the box, and the gap above each of them, comes out of the height before the box gets any. */
+        const under = [note, tray, tools].reduce((n, e) => n + (e ? e.offsetHeight + 10 : 0), 0);
+        const side = Math.max(120, Math.min(ctx.surface.clientWidth - 8, ctx.surface.clientHeight - under - 6));
+        grid.style.width = side + 'px'; grid.style.aspectRatio = '1'; grid.style.height = 'auto';
+      };
+      const redraw = () => { drawTray(); paint(); };
+      redraw(); fitBoard(); say();
+      requestAnimationFrame(fitBoard);
+
+      /* ── The hand ── */
+      const gridRect = () => { const a = cellEls[0].getBoundingClientRect(), z = cellEls[N-1].getBoundingClientRect();
+        return { left: a.left, top: a.top, width: z.right - a.left, height: z.bottom - a.top }; };
+      const pitch = () => (gridRect().width + GAP) / g;
+      let ghost = null;
+      const clearPreview = () => cellEls.forEach(c => c.classList.remove('drop-ok', 'drop-bad', 'hint', 'willpop'));
+      const makeGhost = () => {
+        if (ghost) ghost.remove();
+        ghost = mk('div','fghost');
+        const pt = pitch(), o = orient(held.part), [w, h] = dims(o), has = (x, y) => o.some(c => c[0] === x && c[1] === y);
+        ghost.style.width = (w*pt - GAP) + 'px'; ghost.style.height = (h*pt - GAP) + 'px';
+        ghost.style.gridTemplateColumns = 'repeat(' + w + ',1fr)'; ghost.style.setProperty('--pc', coat[held.part]);
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){
+          if (!has(x, y)){ ghost.appendChild(mk('i','fbit')); continue; }
+          let cls = 'fbit on';
+          if (!has(x, y-1)) cls += ' e-t'; if (!has(x+1, y)) cls += ' e-r'; if (!has(x, y+1)) cls += ' e-b'; if (!has(x-1, y)) cls += ' e-l';
+          if (x === o[0][0] && y === o[0][1]) cls += ' m';
+          ghost.appendChild(mk('i', cls));
+        }
+        wrap.appendChild(ghost);
+      };
+      /* The nearest place it fits, for a loaf whose middle is at (cx, cy) on the screen. `reach` is how far, in squares. */
+      const nearest = (part, cx, cy, reach) => {
+        const o = orient(part), gr = gridRect(), pt = pitch(), [w, h] = dims(o);
+        let best = null, bestBad = null;
+        for (let ay = -(h-1); ay < g; ay++) for (let ax = -(w-1); ax < g; ax++){
+          const mx = gr.left + (ax + w/2) * pt - GAP/2, my = gr.top + (ay + h/2) * pt - GAP/2;
+          const d = Math.hypot(mx - cx, my - cy);
+          const cells = spot(o, ax, ay);
+          if (cells){ if (!best || d < best.d) best = { d, cells, o }; }
+          else if (!bestBad || d < bestBad.d){
+            const inb = o.every(c => ax + c[0] >= 0 && ax + c[0] < g && ay + c[1] >= 0 && ay + c[1] < g);
+            if (inb) bestBad = { d, cells: o.map(c => (ay + c[1])*g + ax + c[0]) };
+          }
+        }
+        return { best: best && best.d <= reach * pt ? best : null, bad: bestBad && bestBad.d <= 1.0 * pt ? bestBad : null };
+      };
+      let lastXY = [0, 0];
+      const follow = (x, y) => {
+        lastXY = [x, y];
+        if (!ghost) return;
+        const wr = wrap.getBoundingClientRect(), gh = ghost.offsetHeight, gw = ghost.offsetWidth;
+        const cx = x, cy = y - (gh / 2 + 34);
+        ghost.style.transform = 'translate(' + Math.round(cx - wr.left - gw/2) + 'px,' + Math.round(cy - wr.top - gh/2) + 'px)';
+        clearPreview();
+        const n = nearest(held.part, cx, cy, 1.75);
+        held.snap = n.best;
+        if (n.best){
+          n.best.cells.forEach(i => cellEls[i].classList.add('drop-ok'));
+          wouldClear(n.best.cells).forEach(i => cellEls[i].classList.add('willpop'));
+        } else if (n.bad) n.bad.cells.forEach(i => cellEls[i].classList.add('drop-bad'));
+      };
+
+      /* Putting a loaf down: the state, then the sweep, then the words. */
+      const lay = (part, cells) => {
+        history.push({ nap: nap.slice(), own: own.slice(), used: new Set(used), placedAt: new Map(placedAt), cleared });
+        put(nap, own, cells, part); used.add(part); placedAt.set(part, cells.slice());
+        const s = sweep(nap, own);
+        s.gone.forEach(i => fading.set(i, { coat: own[i] >= 0 ? coat[own[i]] : null }));
+        wipe(nap, own, s.gone); cleared += s.n;
+        sel = null;
+        redraw();
+        cells.forEach(i => { if (cellEls[i].classList.contains('set')) cellEls[i].classList.add('laid'); });
+        ctx.after(260, () => cells.forEach(i => cellEls[i] && cellEls[i].classList.remove('laid')));
+        if (s.n){
+          sfx.good(Math.min(10, s.n + 2)); buzz('tap');
+          ctx.after(380, () => { s.gone.forEach(i => fading.delete(i)); if (!done) paint(); });
+        } else sfx.tap();
+        if (cleared >= R){
+          done = true; grid.classList.add('made');
+          const lead = Pals.on()[0] || PAL_BY_ID.biscuit;
+          const cat = mk('div','fcat'); cat.innerHTML = catSvg(lead.coat, { pose: 'sleep' }); grid.appendChild(cat);
+          ctx.win(grid); return;
+        }
+        if (s.n) say('loaf.pop', { n: R - cleared });
+        else if (!anyFits()){ say('loaf.jam'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge')); }
+        else say();
+        budget.spend(cellEls[cells[0]]);
+      };
+      const dropIt = () => {
+        const h = held; held = null;
+        if (ghost){ ghost.remove(); ghost = null; }
+        clearPreview();
+        if (!h) return;
+        if (h.snap) lay(h.part, h.snap.cells); else { redraw(); say(); }
+      };
+      const pickUp = part => { held = { part, snap: null }; sel = null; redraw(); makeGhost(); follow(lastXY[0], lastXY[1]); };
+      const turnHeld = () => { if (!held) return; rot[held.part] = (rot[held.part] + 1) % 4; makeGhost(); follow(lastXY[0], lastXY[1]); sfx.tap(); };
+      /* Tap a loaf to turn it and choose it, then tap the box: it goes to the nearest place it fits, for anyone who would
+         rather not drag. */
+      const placeNear = (part, cell) => {
+        const gr = gridRect(), pt = pitch(), x = cell % g, y = Math.floor(cell / g);
+        const n = nearest(part, gr.left + (x + 0.5) * pt - GAP/2, gr.top + (y + 0.5) * pt - GAP/2, 2.6);
+        if (n.best) lay(part, n.best.cells);
+        else { cellEls[cell].classList.add('drop-bad'); ctx.after(300, () => cellEls[cell] && cellEls[cell].classList.remove('drop-bad')); sfx.tap(); }
+      };
+
+      const undo = () => {
+        if (done || held || !history.length) return;
+        const h = history.pop();
+        nap.set(h.nap); own.set(h.own); used.clear(); h.used.forEach(p => used.add(p));
+        placedAt.clear(); h.placedAt.forEach((v, k) => placedAt.set(k, v)); cleared = h.cleared;
+        fading.clear(); sel = null; budget.refund();
+        redraw(); say(); sfx.tap();
+      };
+      onTap(undoBtn, undo);
+      onTap(hintBtn, () => {
+        if (done || held || hints <= 0) return;
+        const s = solve();
+        if (!s.sol || !s.sol.length){ say('loaf.jam'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge')); return; }
+        hints--;
+        const pl = s.sol[0];
+        let r = 0, c = loaves[pl.part].sh;
+        while (key(c) !== key(pl.o) && r < 4){ c = turn(c); r++; }
+        rot[pl.part] = r % 4;
+        redraw();
+        pl.cells.forEach(i => cellEls[i].classList.add('hint'));
+        const te = tray.querySelector('.fpiece[data-idx="' + pl.part + '"]'); if (te) te.classList.add('hinted');
+        ctx.after(2200, () => { pl.cells.forEach(i => cellEls[i] && cellEls[i].classList.remove('hint')); if (te) te.classList.remove('hinted'); });
+        hintBtn.querySelector('b').textContent = t('forge.hint') + ' ' + hints;
+      });
+
+      /* ── One pointer is the hand; a second one turns what it holds ── */
+      let hand = null;
+      const pieceAt = (x, y) => {
+        const e = document.elementFromPoint(x, y);
+        if (!e || !e.closest) return null;
+        const pc = e.closest('.fpiece'); if (pc && tray.contains(pc)) return { part: Number(pc.dataset.idx), from: 'tray' };
+        const cl = e.closest('.fcell'); if (cl && grid.contains(cl)) return { part: -1, from: 'cell', cell: cellEls.indexOf(cl) };
+        return null;
+      };
+      wrap.addEventListener('pointerdown', ev => {
+        if (done || ev.button) return;
+        if (hand && ev.pointerId !== hand.id){ if (held){ ev.preventDefault(); turnHeld(); } return; }
+        if (ev.target.closest && ev.target.closest('.ftool')) return;
+        const at = pieceAt(ev.clientX, ev.clientY);
+        if (!at || (at.from === 'cell' && sel === null)) return;
+        ev.preventDefault();
+        hand = { id: ev.pointerId, part: at.part, from: at.from, cell: at.cell, x0: ev.clientX, y0: ev.clientY, moved: false };
+        lastXY = [ev.clientX, ev.clientY];
+        try { wrap.setPointerCapture(ev.pointerId); } catch(e){}
+      });
+      wrap.addEventListener('pointermove', ev => {
+        if (!hand || ev.pointerId !== hand.id) return;
+        ev.preventDefault();
+        lastXY = [ev.clientX, ev.clientY];
+        if (!hand.moved){
+          if (Math.hypot(ev.clientX - hand.x0, ev.clientY - hand.y0) < 7) return;
+          hand.moved = true;
+          if (hand.from === 'tray') pickUp(hand.part);
+        }
+        if (held) follow(ev.clientX, ev.clientY);
+      });
+      const letGo = ev => {
+        if (!hand || ev.pointerId !== hand.id) return;
+        const h = hand; hand = null;
+        try { wrap.releasePointerCapture(ev.pointerId); } catch(e){}
+        if (done) return;
+        if (!h.moved){
+          if (h.from === 'tray'){ sel = h.part; rot[h.part] = (rot[h.part] + 1) % 4; drawTray(); sfx.tap(); }
+          else if (h.from === 'cell' && sel !== null && inTray(sel)) placeNear(sel, h.cell);
+          return;
+        }
+        if (held) dropIt();
+      };
+      wrap.addEventListener('pointerup', letGo);
+      wrap.addEventListener('pointercancel', ev => { if (hand && ev.pointerId === hand.id){ hand = null; if (held){ held = null; if (ghost){ ghost.remove(); ghost = null; } clearPreview(); redraw(); } } });
+      /* A screen reader's "activate" arrives as a click with no pointer: it places the chosen loaf too. */
+      cellEls.forEach((c, i) => c.addEventListener('click', ev => { if (ev.detail === 0 && !done && sel !== null && inTray(sel)) placeNear(sel, i); }));
+      const onKey = ev => {
+        if (!wrap.isConnected){ document.removeEventListener('keydown', onKey); return; }
+        if ((ev.key === 'r' || ev.key === 'R') && held){ ev.preventDefault(); turnHeld(); }
+      };
+      document.addEventListener('keydown', onKey);
+    }
+  },
 };
 
 /* ═══ Phrase bank ═════════════════════════════════════════════════════════
@@ -13638,7 +14242,7 @@ function announceToast(x){
 }
 function announceAchievement(a){
   announceToast({ ink: a.ink, glyph: a.glyph, eyebrow: t('ach.unlocked'),
-    title: t('ach.' + a.id), desc: t('ach.' + a.id + '.d') + ' · ' + t('wish.reward', { y: a.y || 30 }) });
+    title: t('ach.' + a.id), desc: t('ach.' + a.id + '.d', { n: MODE_IDS.length }) + ' · ' + t('wish.reward', { y: a.y || 30 }) });
 }
 function drainToast(){
   const x = toastQueue.shift();
@@ -15879,7 +16483,7 @@ function startRun(kind, modeId, twistId){
   if (kind === 'discover' && MODE_IDS.every(id => (save.verdict || {})[id])){
     announceToast({ ink:'#33E6C8',
       glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-      eyebrow: t('discover.title'), title: t('discover.doneTitle'), desc: t('discover.doneDesc') });
+      eyebrow: t('discover.title'), title: t('discover.doneTitle'), desc: t('discover.doneDesc', { n: MODE_IDS.length }) });
     return;
   }
   run = {
@@ -16476,7 +17080,7 @@ function paintPlay(){
     : t('survival.sub');
   $('chaosMeta').textContent = save.pbChaos
     ? t('play.carryBest', { n: fmt(save.pbChaos) })
-    : t('chaos.sub');
+    : t('chaos.sub', { n: MODE_IDS.length });
   {
     const left = MODE_IDS.filter(id => !(save.verdict || {})[id]).length;
     $('discoverMeta').textContent = left === 0 ? t('discover.doneTitle') : t('discover.left', { n: left });
@@ -16853,7 +17457,7 @@ function paintAchievements(){
     card.querySelector('.g').innerHTML = a.glyph;
     card.querySelector('.ay').textContent = t('wish.reward', { y: a.y || 30 });
     card.querySelector('b').textContent = t('ach.' + a.id);
-    card.querySelector('small').textContent = t('ach.' + a.id + '.d');
+    card.querySelector('small').textContent = t('ach.' + a.id + '.d', { n: MODE_IDS.length });
     frag.appendChild(card);
   });
   $('achGrid').replaceChildren(frag);

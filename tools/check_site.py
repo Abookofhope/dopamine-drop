@@ -352,7 +352,7 @@ _starts = [(m.start(), m.group(1)) for m in re.finditer(r"\n  ([a-zA-Z0-9_]+): \
 # quietly drops and every other check still passes. The floor is the only thing
 # that can catch it. RAISE IT when a mode is added. Lower it ONLY in the same
 # commit that deliberately retires modes — never to turn a red check green.
-MODE_FLOOR = 42
+MODE_FLOOR = 43
 check(f"the game still has at least {MODE_FLOOR} modes",
       len(_starts) >= MODE_FLOOR,
       f"found {len(_starts)}" + ("" if len(_starts) >= MODE_FLOOR else
