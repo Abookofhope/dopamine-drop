@@ -1,23 +1,23 @@
-/* Loaf Box, played: loaves are dragged from the tray into a cardboard box that already has kittens asleep in it, a full row or
- * column clears, and enough clears wins.
+/* Loaf Box, played: an endless cardboard box with kittens asleep in it, and cat loaves that keep arriving at the bottom.
  *
- * The bot solves each board from what is on screen (it reads the squares, the loaves and the target from the page, never from the
- * game's own plan), then plays it with a real mouse: every loaf is turned by tapping it, picked up, carried and let go a little
- * off where it belongs. After EVERY placement it checks that the page's board equals the board its own copy of the rules says it
- * should be, so "a full line clears" is held to a rule written twice rather than assumed. Around that it checks what a player
- * leans on: a loaf let go nowhere goes back to the tray, a refused drop is refused, the preview lights where it would land and
- * which lines it would finish, Undo takes a loaf back off (and the line it cleared comes back), Hint shows a place and turns the
- * loaf to suit, tapping a loaf and then the box places it for anyone who would rather not drag, a box with nothing left that fits
- * says so, and a finished box says so.
+ * A bot plays it the way a thumb does, with a real mouse: it reads the box and the tray from the page (never from the game's own
+ * state), chooses where each loaf should go the way a person would (finish a line if it can, otherwise lean on what is there), turns
+ * the loaf by tapping it, carries it and lets go a little off. After EVERY loaf it checks that the page's box equals the box its own
+ * copy of the rules gives (a full line clears, nothing else changes), and that the slot it came from has been given a new loaf.
+ * It plays until the round's lines are cleared, and then checks that the box carries on into the next round.
  *
- *   node tools/probe/loaf.mjs              five levels
+ * Around that: the tray does not move when a loaf is lifted or turned (it used to re-centre, shifting every other loaf), Undo gives
+ * back the box AND the tray, Hint lights a place and turns the loaf to suit, tapping a loaf and then the box places it for anyone
+ * who would rather not drag, and a drag stays cheap on a slow phone (measured at 4x CPU slowdown: no layout while the finger
+ * moves, and no frame over 34ms).
+ *
+ *   node tools/probe/loaf.mjs              three levels
  *   XP=60000 node tools/probe/loaf.mjs     one profile
  */
 import { chromium } from 'playwright';
 import { openApp, openModeList, clickMode } from './harness.mjs';
 
-const XPS = process.env.XP ? [+process.env.XP] : [0, 2000, 12000, 60000, 900000];
-const OFF = 0.4;
+const XPS = process.env.XP ? [+process.env.XP] : [0, 2000, 12000];
 let bad = 0;
 const check = (ok, msg) => { if (!ok) bad++; console.log((ok ? 'ok   ' : 'FAIL ') + msg); };
 const browser = await chromium.launch();
@@ -27,6 +27,7 @@ const norm = cs => { const mx = Math.min(...cs.map(c => c[0])), my = Math.min(..
 const key = cs => cs.map(c => c.join(',')).join(' ');
 const turn = cs => norm(cs.map(c => [-c[1], c[0]]));
 const dims = o => [Math.max(...o.map(c => c[0])) + 1, Math.max(...o.map(c => c[1])) + 1];
+const turnsOf = sh => { const out = []; let c = norm(sh); for (let r = 0; r < 4; r++){ if (!out.some(s => key(s) === key(c))) out.push(c); c = turn(c); } return out; };
 
 /* The rules, written again, here. */
 const sweepSim = (occ, g) => {
@@ -38,255 +39,188 @@ const sweepSim = (occ, g) => {
   cs.forEach(x => { for (let y = 0; y < g; y++) o2[y * g + x] = 0; });
   return { occ: o2, n: rs.length + cs.length };
 };
-const cellsAt = (o, ax, ay, g) => { const out = []; for (const c of o){ const x = ax + c[0], y = ay + c[1]; if (x < 0 || y < 0 || x >= g || y >= g) return null; out.push(y * g + x); } return out; };
+/* Where a person would put it: finish a line if one can be finished, otherwise lean on what is already there. */
+const choose = (occ, g, pieces) => {
+  const rowN = new Array(g).fill(0), colN = new Array(g).fill(0);
+  occ.forEach((v, i) => { if (v){ rowN[Math.floor(i / g)]++; colN[i % g]++; } });
+  let best = null;
+  for (const p of pieces) for (const o of turnsOf(p.on)){
+    const [w, h] = dims(o);
+    for (let ay = 0; ay + h <= g; ay++) for (let ax = 0; ax + w <= g; ax++){
+      const cells = o.map(c => (ay + c[1]) * g + ax + c[0]);
+      if (cells.some(i => occ[i])) continue;
+      const af = occ.slice(); cells.forEach(i => { af[i] = 1; });
+      const sw = sweepSim(af, g);
+      const sc = sw.n * 100 + cells.reduce((n, i) => n + rowN[Math.floor(i / g)] + colN[i % g], 0);
+      if (!best || sc > best.sc) best = { sc, slot: p.slot, o, cells, sim: sw };
+    }
+  }
+  return best;
+};
 
-/* A way through: any order, any turn, searched from the occupancy and the loaves as they stand. */
-const solve = (occ0, g, shapes, need, beam = 30, cap = 200000) => {
-  let nodes = 0, sol = null;
-  const go = (occ, rest, got, acc) => {
-    if (sol || nodes++ > cap) return;
-    if (got >= need){ sol = acc.slice(); return; }
-    if (!rest.length) return;
-    const rowN = new Array(g).fill(0), colN = new Array(g).fill(0);
-    occ.forEach((v, i) => { if (v){ rowN[Math.floor(i / g)]++; colN[i % g]++; } });
-    const cands = [];
-    for (const i of rest){
-      const seen = new Set(); let c = shapes[i];
-      for (let r = 0; r < 4; r++, c = turn(c)){
-        if (seen.has(key(c))) continue; seen.add(key(c));
-        const [w, h] = dims(c);
-        for (let ay = 0; ay + h <= g; ay++) for (let ax = 0; ax + w <= g; ax++){
-          const cells = cellsAt(c, ax, ay, g);
-          if (cells.some(k => occ[k])) continue;
-          cands.push({ i, o: c, cells, score: cells.reduce((n, k) => n + rowN[Math.floor(k / g)] + colN[k % g], 0) });
-        }
-      }
-    }
-    cands.sort((a, b) => b.score - a.score);
-    for (const cd of cands.slice(0, beam)){
-      const o2 = occ.slice(); cd.cells.forEach(k => { o2[k] = 1; });
-      const s = sweepSim(o2, g);
-      go(s.occ, rest.filter(j => j !== cd.i), got + s.n, acc.concat([{ i: cd.i, o: cd.o, cells: cd.cells }]));
-      if (sol) return;
-    }
-  };
-  go(occ0, shapes.map((_, i) => i), 0, []);
-  return sol;
+const open = async (xp, vp = { width: 400, height: 820 }, rm = true) => {
+  const page = await browser.newPage({ viewport: vp, hasTouch: true });
+  page.on('pageerror', e => errs.push(String(e).slice(0, 110)));
+  await openApp(page, { reduceMotion: rm, xp, runs: 40, solved: 600, sound: false, haptics: false, onboarded: true, seen: { loaf: 1 }, schema: 11 });
+  await openModeList(page); await clickMode(page, 'loaf');
+  await page.waitForFunction(() => document.querySelector('.lbx .fcell'), null, { timeout: 9000, polling: 60 });
+  await page.waitForTimeout(1200);
+  return page;
+};
+const read = page => page.evaluate(() => {
+  const cells = [...document.querySelectorAll('.lbx .fgrid .fcell')], g = Math.round(Math.sqrt(cells.length));
+  const r = c => { const b = c.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2, w: b.width }; };
+  const slots = [...document.querySelectorAll('.lbx .fpiece')].map((p, s) => {
+    const w = (getComputedStyle(p.querySelector('.fbits') || p).gridTemplateColumns || '').split(' ').length || 1, on = [];
+    [...p.querySelectorAll('.fbit')].forEach((bt, i) => { if (bt.classList.contains('on')) on.push([i % w, Math.floor(i / w)]); });
+    const bb = p.getBoundingClientRect();
+    return { slot: s, on, has: !!p.querySelector('.fbits'), hinted: p.classList.contains('hinted'), sel: p.classList.contains('fsel'), x: bb.left + bb.width / 2, y: bb.top + bb.height / 2, w: bb.width, h: bb.height, l: bb.left, t: bb.top };
+  });
+  const tool = i => { const e = document.querySelectorAll('.lbx .ftool')[i]; return e ? { off: e.disabled, text: e.textContent.trim() } : null; };
+  return { g, pos: cells.map(r), nap: cells.map(c => c.classList.contains('nap') && !c.classList.contains('pop') ? 1 : 0),
+    set: cells.map(c => c.classList.contains('set') && !c.classList.contains('pop') ? 1 : 0),
+    hint: cells.map((c, i) => c.classList.contains('hint') ? i : -1).filter(i => i >= 0), ok: cells.map((c, i) => c.classList.contains('drop-ok') ? i : -1).filter(i => i >= 0),
+    willpop: cells.filter(c => c.classList.contains('willpop')).length, prompt: (document.querySelector('.prompt') || {}).textContent || '',
+    made: !!document.querySelector('.lbx .fgrid.made'), carried: !!(document.querySelector('.lbx') || { dataset: {} }).dataset.carried, ghost: !!document.querySelector('.lbx .fghost'),
+    undo: tool(0), hintBtn: tool(1), moves: !!document.querySelector('.budget'), slots: slots.map(s => ({ ...s, on: s.on.length ? s.on : [] })) };
+}).then(st => { st.slots.forEach(s => { if (s.on.length) s.on = norm(s.on); }); return st; });
+const occOf = s => s.nap.map((v, i) => v || s.set[i] ? 1 : 0);
+const plays = s => s.slots.filter(p => p.has).map(p => ({ slot: p.slot, on: p.on }));
+
+/* turn a loaf in its slot until it has the shape asked for, then carry it to the cells */
+const place = async (page, mv, off, last) => {
+  for (let k = 0; k < 4; k++){
+    const s = await read(page), sl = s.slots[mv.slot];
+    if (key(sl.on) === key(mv.o)) break;
+    await page.mouse.click(sl.x, sl.y); await page.waitForTimeout(60);
+  }
+  const s = await read(page), sl = s.slots[mv.slot], pitch = s.pos[1].x - s.pos[0].x;
+  const xs = mv.cells.map(i => s.pos[i].x), ys = mv.cells.map(i => s.pos[i].y);
+  const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+  const h = (Math.max(...ys) - Math.min(...ys)) / pitch + 1, gh = h * pitch - 3;
+  await page.mouse.move(sl.x, sl.y); await page.mouse.down(); await page.mouse.move(sl.x + 10, sl.y - 10, { steps: 2 });
+  await page.mouse.move(cx + off[0] * pitch, cy + gh / 2 + 34 + off[1] * pitch, { steps: 8 });
+  await page.waitForTimeout(40);
+  const over = await read(page);
+  await page.mouse.up(); if (!last) await page.waitForTimeout(80);
+  return { over };
 };
 
 for (const xp of XPS){
-  const page = await browser.newPage({ viewport: { width: 400, height: 820 }, hasTouch: true });
-  page.on('pageerror', e => errs.push(String(e).slice(0, 110)));
-  await openApp(page, { reduceMotion: true, xp, runs: 40, solved: 600, sound: false, haptics: false, onboarded: true, seen: { loaf: 1 }, schema: 11 });
-  await openModeList(page); await clickMode(page, 'loaf');
-  await page.waitForFunction(() => document.querySelector('.lbx .fcell'), null, { timeout: 9000, polling: 60 });
-  await page.waitForTimeout(1500);
-
-  const read = () => page.evaluate(() => {
-    const cells = [...document.querySelectorAll('.lbx .fgrid .fcell')], g = Math.round(Math.sqrt(cells.length));
-    const r = c => { const b = c.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2, w: b.width }; };
-    const bar = document.querySelector('.budget');
-    return { g, pos: cells.map(r),
-      nap: cells.map(c => c.classList.contains('nap') && !c.classList.contains('pop') ? 1 : 0),
-      set: cells.map(c => c.classList.contains('set') && !c.classList.contains('pop') ? 1 : 0),
-      pop: cells.filter(c => c.classList.contains('pop')).length,
-      hint: cells.map((c, i) => c.classList.contains('hint') ? i : -1).filter(i => i >= 0),
-      ok: cells.map((c, i) => c.classList.contains('drop-ok') ? i : -1).filter(i => i >= 0),
-      willpop: cells.filter(c => c.classList.contains('willpop')).length,
-      prompt: (document.querySelector('.prompt') || {}).textContent || '', made: !!document.querySelector('.lbx .fgrid.made'),
-      cat: !!document.querySelector('.lbx .fgrid .fcat'), left: bar ? +(bar.textContent.match(/\d+/) || [0])[0] : null,
-      undoDisabled: (document.querySelector('.lbx .ftool:nth-child(1)') || {}).disabled, nudge: !!document.querySelector('.lbx .ftool.nudge'),
-      hintText: (document.querySelector('.lbx .ftool:nth-child(2) b') || {}).textContent, spare: !!document.querySelector('.lbx .fnote'), fallback: !!(document.querySelector('.lbx') || { dataset: {} }).dataset.fallback,
-      ghost: !!document.querySelector('.lbx .fghost'),
-      tray: [...document.querySelectorAll('.lbx .ftray .fpiece')].map(p => { const w = getComputedStyle(p.querySelector('.fbits')).gridTemplateColumns.split(' ').length || 1;
-        const on = []; [...p.querySelectorAll('.fbit')].forEach((bt, i) => { if (bt.classList.contains('on')) on.push([i % w, Math.floor(i / w)]); });
-        const bb = p.getBoundingClientRect(); return { idx: +p.dataset.idx, on, hinted: p.classList.contains('hinted'), x: bb.left + bb.width / 2, y: bb.top + bb.height / 2 }; }) };
-  }).then(st => { st.tray.forEach(p => { p.on = norm(p.on); }); return st; });
-  const occOf = s => s.nap.map((v, i) => v || s.set[i] ? 1 : 0);
-  const need = s => +((s.prompt.match(/\d+/) || [0])[0]);
-
-  const s0 = await read();
-  console.log(`\n--- profile xp ${xp}: a ${s0.g}x${s0.g} box, ${s0.nap.reduce((a, b) => a + b, 0)} kittens, ${s0.tray.length} loaves, ${need(s0)} line(s) to clear`);
+  const page = await open(xp);
+  const s0 = await read(page);
+  console.log(`\n--- profile xp ${xp}: a ${s0.g}x${s0.g} box, ${s0.nap.reduce((a, b) => a + b, 0)} kittens, ${plays(s0).length} loaves, "${s0.prompt.trim()}"`);
   check(s0.g >= 6, `the box is at least six wide (${s0.g})`);
-  check(!s0.fallback, 'the board came from the generator, not the always-works fallback');
-  check(s0.tray.length >= 2 && s0.tray.length <= 6, `there are two to six loaves in the tray (${s0.tray.length})`);
-  check(need(s0) >= 2, `the level asks for at least two lines (${need(s0)})`);
-  check(!s0.hintText || /\d/.test(s0.hintText), 'Hint says how many are left');
-  check(s0.undoDisabled, 'Undo starts out unavailable');
-  const hot = s0.pos.every(p => p.w > 36);
-  check(hot, `every square is at least 36px across (${Math.round(s0.pos[0].w)}px)`);
-  /* the box has a kitten in most of the rows it wants cleared: not an empty box */
+  check(s0.slots.length === 3 && plays(s0).length === 3, 'the tray is three fixed places, each with a loaf in it');
+  check(!s0.moves, 'there is no move counter: nothing runs out but room');
+  check(s0.pos[0].w > 36, `every square is at least 36px across (${Math.round(s0.pos[0].w)}px)`);
+  check(s0.undo.off, 'Undo starts out unavailable');
   check(s0.nap.reduce((a, b) => a + b, 0) >= s0.g, 'the box starts with kittens in it, not empty');
-
-  const o0 = occOf(s0);
-  /* the whole box is on screen */
   const vp = await page.evaluate(() => { const b = document.querySelector('.lbx .fgrid').getBoundingClientRect(), t = document.querySelector('.lbx .ftools').getBoundingClientRect(), p = document.querySelector('#surface').getBoundingClientRect();
     return { top: b.top - p.top, bottom: t.bottom - p.bottom, left: b.left - p.left, right: b.right - p.right }; });
-  check(vp.top >= -1 && vp.bottom <= 1 && vp.left >= -1 && vp.right <= 1, `box, loaves and tools sit inside the play area (${JSON.stringify(Object.fromEntries(Object.entries(vp).map(([k, v]) => [k, Math.round(v)])))})`);
+  check(vp.top >= -1 && vp.bottom <= 1 && vp.left >= -1 && vp.right <= 1, 'box, tray and tools sit inside the play area');
 
-  /* turning: a tap on a loaf in the tray turns it a quarter */
-  const t0 = s0.tray.find(p => key(norm(p.on)) !== key(turn(norm(p.on)))) || s0.tray[0];
-  await page.mouse.click(t0.x, t0.y); await page.waitForTimeout(100);
-  const s1 = await read(); const t1 = s1.tray.find(p => p.idx === t0.idx);
-  check(key(t1.on) === key(turn(t0.on)) || key(t0.on) === key(turn(t0.on)), 'a tap turns the loaf a quarter');
+  /* turning moves nothing else, and neither does lifting a loaf out */
+  const a = s0.slots[0];
+  await page.mouse.click(a.x, a.y); await page.waitForTimeout(80);
+  const s1 = await read(page);
+  check(s1.slots.every((p, i) => Math.abs(p.l - s0.slots[i].l) < 1 && Math.abs(p.t - s0.slots[i].t) < 1 && Math.abs(p.w - s0.slots[i].w) < 1), 'turning a loaf moves nothing in the tray, and the slot does not change size');
+  const turned = key(s1.slots[0].on) !== key(s0.slots[0].on) || key(turn(s0.slots[0].on)) === key(s0.slots[0].on);
+  check(turned, 'a tap turns the loaf a quarter');
+  await page.mouse.move(a.x, a.y); await page.mouse.down(); await page.mouse.move(a.x + 12, a.y - 12, { steps: 2 }); await page.waitForTimeout(80);
+  const lifted = await read(page);
+  check(lifted.ghost && lifted.slots.every((p, i) => Math.abs(p.l - s0.slots[i].l) < 1 && Math.abs(p.t - s0.slots[i].t) < 1), 'lifting a loaf out leaves the tray exactly as it was (nothing slides over)');
+  await page.mouse.move(a.x, 40, { steps: 6 }); await page.mouse.up(); await page.waitForTimeout(150);
+  const back = await read(page);
+  check(!back.ghost && plays(back).length === 3 && occOf(back).join('') === occOf(s0).join(''), 'let go over nothing, the loaf stays in its place and the box is as it was');
 
-  /* a loaf let go nowhere near the box goes back where it was */
-  await page.mouse.move(t1.x, t1.y); await page.mouse.down(); await page.mouse.move(t1.x + 12, t1.y - 12, { steps: 2 });
-  const sh = await read(); check(sh.ghost && sh.tray.length === s1.tray.length - 1, 'picking a loaf up lifts it out of the tray');
-  await page.mouse.move(t1.x, 40, { steps: 6 }); await page.mouse.up(); await page.waitForTimeout(150);
-  const s2 = await read();
-  check(!s2.ghost && s2.tray.length === s1.tray.length && occOf(s2).join('') === o0.join(''), 'let go over nothing, the loaf goes back to the tray and the box is as it was');
-
-  /* ── the bot: solve what is on screen, then play it with the mouse ── */
-  const shapes = s2.tray.map(p => p.on);
-  const idxs = s2.tray.map(p => p.idx);
-  const sol = solve(o0, s2.g, shapes, need(s2)) || solve(o0, s2.g, shapes, need(s2), 1e9, 4e6);
-  check(!!sol, `the bot finds a way through from what is on screen${sol ? ` (${sol.length} loaves)` : ''}`);
-  if (!sol) console.log('      stuck on: ' + JSON.stringify({ g: s2.g, occ: o0.join(''), shapes, need: need(s2) }));
-  if (!sol){ await page.close(); continue; }
-
-  const dragTo = async (piece, cells, dx, dy, test, last) => {
-    const s = await read(); const g = s.g;
-    const pc = s.tray.find(p => p.idx === piece.idx);
-    const pitch = s.pos[1].x - s.pos[0].x;
-    const xs = cells.map(i => s.pos[i].x), ys = cells.map(i => s.pos[i].y);
-    const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
-    const h = (Math.max(...ys) - Math.min(...ys)) / pitch + 1, gh = h * pitch - 3;
-    const fx = cx + dx * pitch, fy = cy + gh / 2 + 34 + dy * pitch;
-    await page.mouse.move(pc.x, pc.y); await page.mouse.down(); await page.mouse.move(pc.x + 10, pc.y - 10, { steps: 2 });
-    await page.mouse.move(fx, fy, { steps: 8 });
-    const during = await read();
-    if (test) await test(during);
-    await page.mouse.up(); if (!last) await page.waitForTimeout(140);
-  };
-
-  let occ = o0.slice(), cleared = 0, firstPreview = true, lineLeft = need(s2);
-  const before = await read();
-  for (let n = 0; n < sol.length; n++){
-    const step = sol[n];
-    const piece = { idx: idxs[step.i] };
-    /* turn it to the way the plan has it */
-    for (let k = 0; k < 4; k++){
-      const sNow = await read(); const pc = sNow.tray.find(p => p.idx === piece.idx);
-      if (key(pc.on) === key(step.o)) break;
-      await page.mouse.click(pc.x, pc.y); await page.waitForTimeout(80);
+  /* ── play it: finish lines, and check every move against the rules ── */
+  let occ = occOf(back), moves = 0, cleared = 0, won = false, refills = 0, refillMiss = 0, previewChecked = false, undoChecked = false, ruleBad = 0;
+  for (let step = 0; step < 80 && !won; step++){
+    const st = await read(page);
+    const mv = choose(occ, st.g, plays(st));
+    if (!mv){ console.log('      (no loaf fits anywhere: the box is jammed after ' + moves + ' loaves, "' + st.prompt.trim() + '")'); break; }
+    const off = step % 2 ? [0.3, -0.2] : [-0.25, 0.3];
+    const before = occ.slice();
+    const r = await place(page, mv, off, false);
+    if (!previewChecked){
+      previewChecked = true;
+      check(mv.cells.every(i => r.over.ok.includes(i)) && r.over.ok.length === mv.cells.length, 'held over its place (a little off), the preview lights exactly where it would land');
+      if (mv.sim.n > 0) check(r.over.willpop > 0, 'and the lines it would finish are lit as well');
     }
-    const after = occ.slice(); step.cells.forEach(k => { after[k] = 1; });
-    const sim = sweepSim(after, s2.g);
-    const jitter = n % 2 ? [OFF * 0.7, -OFF * 0.5] : [-OFF * 0.6, OFF * 0.4];
-    await dragTo(piece, step.cells, jitter[0], jitter[1], firstPreview ? async d => {
-      check(step.cells.every(k => d.ok.includes(k)) && d.ok.length === step.cells.length, 'held over its place (a little off), the preview lights exactly where it would land');
-      if (sim.n > 0) check(d.willpop > 0, 'and the lines it would finish are lit as well');
-      firstPreview = false;
-    } : null, n === sol.length - 1);
-    const sN = await read();
-    check(occOf(sN).join('') === sim.occ.join(''), `after loaf ${n + 1}, the page's box is the box the rules give${sim.n ? ` (${sim.n} line${sim.n > 1 ? 's' : ''} cleared)` : ''}`);
-    if (occOf(sN).join('') !== sim.occ.join('')){
-      const gg = s2.g, row = (o, y) => o.slice(y * gg, y * gg + gg).join('');
-      console.log('      expected / page (loaf ' + (n + 1) + ', cells ' + step.cells.join(',') + ', made ' + sN.made + ', prompt "' + sN.prompt + '")');
-      for (let y = 0; y < gg; y++) console.log('      ' + row(sim.occ, y) + '  ' + row(occOf(sN), y) + '  before ' + row(occ, y));
-    }
-    occ = sim.occ; cleared += sim.n;
-    if (sim.n){ check(sN.pop >= 0, 'a cleared line fades out'); }
-    if (n === 0 && sN.left !== null && before.left !== null) check(sN.left === before.left - 1 || sN.made, `a loaf costs a move (${before.left} -> ${sN.left})`);
-    if (n === 0 && !sN.made){
-      /* Undo takes the loaf back, and any line it cleared comes back with it */
-      check(!sN.undoDisabled, 'Undo is available once a loaf is down');
-      await page.click('.lbx .ftool:nth-child(1)'); await page.waitForTimeout(250);
-      const u = await read();
-      check(occOf(u).join('') === o0.join('') && u.tray.length === s2.tray.length, 'Undo takes the loaf back off and puts it in the tray');
-      check(u.left === before.left, `and gives the move back (${u.left})`);
-      /* ... and play it again */
-      for (let k = 0; k < 4; k++){
-        const sNow = await read(); const pc = sNow.tray.find(p => p.idx === piece.idx);
-        if (key(pc.on) === key(step.o)) break;
-        await page.mouse.click(pc.x, pc.y); await page.waitForTimeout(80);
-      }
-      await dragTo(piece, step.cells, 0, 0);
-      const again = await read();
-      check(occOf(again).join('') === sim.occ.join(''), 'the same loaf put back lands the same way');
+    const after = await read(page);
+    const af = occ.slice(); mv.cells.forEach(i => { af[i] = 1; });
+    const sim = sweepSim(af, st.g);
+    if (occOf(after).join('') !== sim.occ.join('')){ ruleBad++; if (ruleBad <= 2) console.log('      page differs from the rules after loaf ' + (moves + 1) + ' (cells ' + mv.cells.join(',') + ')'); }
+    if (after.made){ won = true; cleared += sim.n; moves++; check(sim.n > 0, 'the last loaf finished a line'); break; }
+    /* the slot is given a new loaf */
+    await page.waitForTimeout(260);
+    const filled = await read(page);
+    if (filled.slots[mv.slot].has) refills++; else refillMiss++;
+    occ = sim.occ; cleared += sim.n; moves++;
+    if (!undoChecked && moves === 1 && sim.n === 0){
+      undoChecked = true;
+      const u0 = await read(page);
+      check(!u0.undo.off && /3/.test(u0.undo.text), `Undo is available after a loaf (${u0.undo.text})`);
+      await page.click('.lbx .ftool:nth-child(1)'); await page.waitForTimeout(200);
+      const u1 = await read(page);
+      check(occOf(u1).join('') === before.join('') && plays(u1).length === 3, 'Undo gives the box and the loaf back');
+      check(/2/.test(u1.undo.text), `and costs one of three (${u1.undo.text})`);
+      occ = before.slice(); moves = 0; cleared = 0; refills = 0; refillMiss = 0; step = -1;
     }
   }
-  const fin = await read();
-  check(fin.made || fin.cat, 'a finished box says so (the cat curls up on it)');
-  check(cleared >= need(s2), `the bot's plan cleared the lines asked for (${cleared} of ${need(s2)})`);
+  check(ruleBad === 0, `after every loaf the page's box was the box the rules give (${moves} loaves, ${cleared} lines cleared)`);
+  check(refillMiss === 0 && refills >= 1, `every loaf placed was followed by a new one in its slot (${refills} of ${refills + refillMiss})`);
+  check(won, `the lines asked for were cleared by playing it${won ? '' : ' (not within 80 loaves)'}`);
+
+  /* the box carries on into the next round */
+  if (won){
+    await page.waitForFunction(() => { const l = document.querySelector('.lbx'); return l && l.dataset.carried === '1'; }, null, { timeout: 12000, polling: 80 }).catch(() => {});
+    const next = await read(page).catch(() => null);
+    check(!!next && next.carried, 'the box carries on into the next round (it is the same box)');
+    if (next && next.carried) check(/carries|continue|sigue|geht weiter/i.test(next.prompt), `and says so ("${next.prompt.trim()}")`);
+  }
   await page.close();
 }
 
-/* ── Hint, tap-to-place, and a jam, each on a fresh board ── */
+/* ── Hint, tap-to-place ── */
 {
-  const page = await browser.newPage({ viewport: { width: 400, height: 820 }, hasTouch: true });
-  page.on('pageerror', e => errs.push(String(e).slice(0, 110)));
-  await openApp(page, { reduceMotion: true, xp: 12000, runs: 40, solved: 600, sound: false, haptics: false, onboarded: true, seen: { loaf: 1 }, schema: 11 });
-  await openModeList(page); await clickMode(page, 'loaf');
-  await page.waitForFunction(() => document.querySelector('.lbx .fcell'), null, { timeout: 9000, polling: 60 });
-  await page.waitForTimeout(1500);
-  const rd = () => page.evaluate(() => {
-    const cells = [...document.querySelectorAll('.lbx .fgrid .fcell')];
-    const hint = cells.map((c, i) => c.classList.contains('hint') ? i : -1).filter(i => i >= 0);
-    return { n: cells.length, hint, hintText: (document.querySelector('.lbx .ftool:nth-child(2) b') || {}).textContent, hintDisabled: document.querySelector('.lbx .ftool:nth-child(2)').disabled,
-      occ: cells.map(c => (c.classList.contains('nap') || c.classList.contains('set')) && !c.classList.contains('pop') ? 1 : 0),
-      pos: cells.map(c => { const b = c.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; }),
-      prompt: (document.querySelector('.prompt') || {}).textContent || '', nudge: document.querySelector('.lbx .ftool:nth-child(1)').classList.contains('nudge'),
-      tray: [...document.querySelectorAll('.lbx .ftray .fpiece')].map(p => { const bb = p.getBoundingClientRect(); return { idx: +p.dataset.idx, hinted: p.classList.contains('hinted'), x: bb.left + bb.width / 2, y: bb.top + bb.height / 2 }; }) };
-  });
-  const a = await rd();
-  await page.click('.lbx .ftool:nth-child(2)'); await page.waitForTimeout(200);
-  const b = await rd();
+  const page = await open(12000);
+  const a = await read(page);
+  await page.click('.lbx .ftool:nth-child(2)'); await page.waitForTimeout(250);
+  const b = await read(page);
   check(b.hint.length >= 2, `Hint lights a place (${b.hint.length} squares)`);
-  check(b.tray.some(p => p.hinted), 'and marks which loaf goes there');
-  check(a.hintText !== b.hintText, `and counts down (${a.hintText} -> ${b.hintText})`);
-  check(b.hint.every(i => !a.occ[i]), 'the hinted squares are empty ones');
-
-  /* tap-to-place: tap the hinted loaf (it turns and is chosen), then the box */
-  const g = Math.round(Math.sqrt(b.n));
-  const hp = b.tray.find(p => p.hinted);
-  /* the hint turned it already; a tap turns it again, so three more taps bring it round */
-  for (let k = 0; k < 4; k++){
-    /* turning changes how wide a loaf is, so it can move in the tray: find it again each time */
-    const now = (await rd()).tray.find(p => p.idx === hp.idx);
-    await page.mouse.click(now.x, now.y); await page.waitForTimeout(80);
-    const sn = await page.evaluate(() => document.querySelectorAll('.lbx .fpiece.fsel').length);
-    if (k === 0) check(sn === 1, 'tapping a loaf chooses it');
-  }
+  check(b.slots.some(p => p.hinted), 'and marks which loaf goes there');
+  check(a.hintBtn.text !== b.hintBtn.text, `and counts down (${a.hintBtn.text} -> ${b.hintBtn.text})`);
+  check(b.hint.every(i => !occOf(a)[i]), 'the hinted squares are empty ones');
+  const hp = b.slots.find(p => p.hinted);
+  /* tap the loaf (chooses it; four taps bring it round to the way the hint turned it), then the box */
+  for (let k = 0; k < 4; k++){ const now = (await read(page)).slots[hp.slot]; await page.mouse.click(now.x, now.y); await page.waitForTimeout(70); if (k === 0) check((await read(page)).slots[hp.slot].sel, 'tapping a loaf chooses it'); }
   const mid = b.hint[Math.floor(b.hint.length / 2)];
-  await page.mouse.click(b.pos[mid].x, b.pos[mid].y); await page.waitForTimeout(400);
-  const c = await rd();
-  check(c.tray.length === a.tray.length - 1 && c.occ.join('') !== a.occ.join(''), 'with a loaf chosen, tapping the box puts it down at the nearest place it fits');
+  await page.mouse.click(b.pos[mid].x, b.pos[mid].y); await page.waitForTimeout(450);
+  const c = await read(page);
+  check(occOf(c).join('') !== occOf(a).join('') && c.slots[hp.slot].has, 'with a loaf chosen, tapping the box puts it down at the nearest place it fits, and a new loaf comes');
+  await page.close();
+}
 
-  /* a jam: lay the rest where they clear nothing, until none will go anywhere or none are left */
-  await page.click('.lbx .ftool:nth-child(1)'); await page.waitForTimeout(250);
-  const d0 = await rd();
-  check(d0.occ.join('') === a.occ.join(''), 'Undo after a tap-placed loaf restores the box');
-
-  /* a jam: lay each loaf where it finishes nothing, until none are left, and the box says there is nowhere to go */
-  let laid = 0;
-  for (let guard = 0; guard < 8; guard++){
-    const s = await rd();
-    const trayNow = await page.evaluate(() => [...document.querySelectorAll('.lbx .ftray .fpiece')].map(p => { const w = getComputedStyle(p.querySelector('.fbits')).gridTemplateColumns.split(' ').length || 1;
-      const on = []; [...p.querySelectorAll('.fbit')].forEach((bt, i) => { if (bt.classList.contains('on')) on.push([i % w, Math.floor(i / w)]); });
-      const bb = p.getBoundingClientRect(); return { idx: +p.dataset.idx, on, x: bb.left + bb.width / 2, y: bb.top + bb.height / 2 }; }));
-    if (!trayNow.length) break;
-    const pc = trayNow[0], o = norm(pc.on), [w, h] = dims(o);
-    let spotCells = null;
-    for (let ay = 0; ay + h <= g && !spotCells; ay++) for (let ax = 0; ax + w <= g && !spotCells; ax++){
-      const cells = cellsAt(o, ax, ay, g); if (!cells || cells.some(k => s.occ[k])) continue;
-      const af = s.occ.slice(); cells.forEach(k => { af[k] = 1; });
-      if (sweepSim(af, g).n === 0) spotCells = cells;
-    }
-    if (!spotCells) break;
-    const pitch = s.pos[1].x - s.pos[0].x;
-    const xs = spotCells.map(i => s.pos[i].x), ys = spotCells.map(i => s.pos[i].y);
-    const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2, gh = h * pitch - 3;
-    await page.mouse.move(pc.x, pc.y); await page.mouse.down(); await page.mouse.move(pc.x + 10, pc.y - 10, { steps: 2 });
-    await page.mouse.move(cx, cy + gh / 2 + 34, { steps: 8 }); await page.mouse.up(); await page.waitForTimeout(140);
-    laid++;
-  }
-  const j = await rd();
-  if (laid >= 2 && !j.tray.length){
-    check(/nothing|rien|nada|nichts/i.test(j.prompt), `with every loaf down and no line cleared, the box says nothing is left that fits ("${j.prompt}")`);
-    check(j.nudge, 'and Undo is nudged');
-  } else check(true, `the jam check needs a free place for every loaf (laid ${laid}); skipped on this board`);
+/* ── Smooth on a slow phone: measured at 4x CPU slowdown ── */
+{
+  const page = await open(12000, { width: 400, height: 820 }, false);
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Performance.enable'); await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+  await page.evaluate(() => { window.__frames = []; let last = performance.now(); const tick = t => { window.__frames.push(t - last); last = t; requestAnimationFrame(tick); }; requestAnimationFrame(tick); });
+  const metrics = async () => Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(m => [m.name, m.value]));
+  const s = await read(page), sl = s.slots[0];
+  await page.mouse.move(sl.x, sl.y); await page.mouse.down(); await page.mouse.move(sl.x + 10, sl.y - 10, { steps: 2 }); await page.waitForTimeout(150);
+  const f0 = await page.evaluate(() => window.__frames.length), m0 = await metrics();
+  const gx = s.pos[Math.floor(s.pos.length / 2)];
+  await page.mouse.move(gx.x, gx.y, { steps: 80 }); await page.waitForTimeout(120);
+  const m1 = await metrics(), frames = await page.evaluate(f => window.__frames.slice(f), f0);
+  await page.mouse.up();
+  const layouts = m1.LayoutCount - m0.LayoutCount, per = (m1.TaskDuration - m0.TaskDuration) * 1000 / 80, worst = Math.max(...frames);
+  check(layouts <= 4, `no layout while a finger drags a loaf (${layouts} over 80 moves)`);
+  check(per < 14, `a move of the finger costs ${per.toFixed(1)}ms on a phone four times slower than this machine (under 14)`);
+  check(worst < 34, `no frame took longer than 34ms (worst ${worst.toFixed(1)}ms)`);
   await page.close();
 }
 

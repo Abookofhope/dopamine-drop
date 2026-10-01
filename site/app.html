@@ -3191,12 +3191,12 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .lbx .e-b.e-l{border-bottom-left-radius:12px}
 .lbx .e-b.e-r{border-bottom-right-radius:12px}
 .lbx .fcell.m::after,.lbx .fbit.m::after{content:"";position:absolute;inset:8%;background:var(--face) center/contain no-repeat;pointer-events:none}
-.lbx .fbit{position:relative;width:16px;height:16px;background:transparent}
+.lbx .fbit{position:relative;width:var(--bit,16px);height:var(--bit,16px);background:transparent}
 .lbx .fbits{gap:3px}
 .lbx .fcell.laid{filter:brightness(1.35)}
 .lbx .fcell.drop-ok{background:#5BD98C55;box-shadow:inset 0 0 0 2px #5BD98C}
 .lbx .fcell.drop-bad{background:#ff3d6e33;box-shadow:inset 0 0 0 2px var(--bad)}
-.lbx .fcell.willpop{outline:2px solid #FFC53D;outline-offset:-2px;filter:brightness(1.3)}
+.lbx .fcell.willpop{outline:2px solid #FFC53D;outline-offset:-2px}
 .lbx .fcell.hint{background:#FFC53D55;box-shadow:inset 0 0 0 2px #FFC53D;animation:quilthint .7s ease-in-out 3}
 .lbx .fcell.pop{animation:lbxpop .38s ease-out forwards}
 @keyframes lbxpop{0%{filter:brightness(1.9);opacity:1}100%{opacity:0}}
@@ -3204,9 +3204,6 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .lbx .fpiece{padding:8px;border-radius:10px;border:2px solid var(--edge-soft);background:var(--ink-2);touch-action:none}
 .lbx .fpiece.fsel{border-color:#FFC53D;transform:none}
 .lbx .fpiece.hinted{border-color:#FFC53D;box-shadow:0 0 0 3px #FFC53D55}
-.lbx .fnote{position:static;align-self:center;margin:-2px 0}
-.lbx .fpiece .fbit{width:14px;height:14px}
-.lbx .fpiece{padding:7px}
 .tidepips{position:absolute;top:10px;left:0;right:0;display:flex;gap:9px;justify-content:center;pointer-events:none;z-index:2}
 .tidepip{width:20px;height:20px;border-radius:50%;border:2px solid #7be38a55;box-sizing:border-box;
   background:conic-gradient(#7be38a calc(var(--f,0)*360deg),#00000040 0)}
@@ -3263,6 +3260,19 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .cell.bug:not(.gone){background:transparent!important;border-color:transparent}
 .cell.bug:not(.gone)::before,.cell.bug:not(.gone)::after{display:none}
 .cell.bug .art{filter:drop-shadow(0 1px 1.5px #0009)}
+/* Loaf Box, smooth: fixed slots so nothing in the tray moves when a loaf is lifted or turned, no easing on the squares (a preview
+   has to be there the frame it is wanted), the carried loaf on its own layer, and the box and the tray isolated from each other. */
+.lbx{touch-action:none}
+.lbx .fgrid{contain:layout style}
+.lbx .fcell{transition:none}
+.ltray{display:grid;grid-template-columns:repeat(3,var(--slot));gap:10px;justify-content:center;width:100%;flex:none;min-height:0;contain:layout style}
+.lbx .lslot{width:var(--slot);height:var(--slot);padding:0;display:grid;place-items:center;box-sizing:border-box;transition:none}
+.lbx .lslot.empty{background:#ffffff08;border:2px dashed var(--edge-soft);cursor:default}
+.lbx .lslot.lifted .fbits{visibility:hidden}
+.lbx .lslot.arrive .fbits{animation:lbxin .22s ease-out}
+@keyframes lbxin{0%{opacity:0}100%{opacity:1}}
+.lbx .fghost{will-change:transform;filter:none;box-shadow:none}
+.lbx .fghost .fbit.on{box-shadow:var(--br),var(--bb),var(--bd),var(--sh),0 8px 10px #0000007a}
 </style>
 
 <div class="cab">
@@ -3949,7 +3959,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.99.0';
+const VERSION_TAG = 'v0.100.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -5011,15 +5021,17 @@ const STRINGS = {
     /* Patchwork */
     'forge.rule':'Same colours apart',
     /* Loaf Box */
-    'm.loaf':'Loaf Box|Slide cat loaves into the box — a full row or column clears', 'p.loaf':'Clear {n} more — fill a whole row or column', 'loaf.empty':'Box, column {x} row {y}, empty',
+    'm.loaf':'Loaf Box|Cat loaves keep coming — a full row or column clears', 'p.loaf':'Clear {n} more — fill a whole row or column', 'loaf.empty':'Box, column {x} row {y}, empty',
     'loaf.kitten':'Box, column {x} row {y}, a sleeping kitten', 'loaf.cat':'Box, column {x} row {y}, a cat loaf', 'loaf.part':'A cat loaf of {n} squares',
-    'loaf.jam':'Nothing left fits — undo a loaf', 'loaf.spare':'One loaf is spare', 'loaf.pop':'A line of cats wanders off — {n} to go',
+    'loaf.jam':'Nothing left fits — undo a loaf', 'loaf.pop':'A line of cats wanders off — {n} to go',
     'q.loaf.w1':'Snug as a loaf', 'q.loaf.w2':'Everyone fits', 'q.loaf.w3':'A box full of purrs',
     'q.loaf.m1':'The box is jammed', 'q.loaf.m2':'Out of moves',
     /* Spool Shots aim */
     'volley.aim':'This shot paints {n}', 'volley.aimBad':'Wrong colour for what it reaches — pull off the board to cancel',
     /* Ripples, Snip and Needle Pass depth */
     'ripple.wind':'Breeze', 'slice.combo':'Clean sweep — {n} in one snip, {m} more to cut', 'p.skimClean':'A clean stitch — {n} skips to go',
+    /* Loaf Box, endless */
+    'loaf.carry':'The box carries on — clear {n} more', 'loaf.fresh':'A fresh box',
   },
 
   fr: {
@@ -5482,15 +5494,17 @@ const STRINGS = {
     /* Patchwork */
     'forge.rule':'Couleurs séparées',
     /* Loaf Box */
-    'm.loaf':'Boîte à Chats|Glissez les chats dans la boîte — une ligne pleine disparaît', 'p.loaf':'Encore {n} à vider — remplissez une ligne ou une colonne entière', 'loaf.empty':'Boîte, colonne {x} ligne {y}, vide',
+    'm.loaf':'Boîte à Chats|Les chats n’arrêtent pas d’arriver — une ligne pleine disparaît', 'p.loaf':'Encore {n} à vider — remplissez une ligne ou une colonne entière', 'loaf.empty':'Boîte, colonne {x} ligne {y}, vide',
     'loaf.kitten':'Boîte, colonne {x} ligne {y}, un chaton endormi', 'loaf.cat':'Boîte, colonne {x} ligne {y}, un chat en boule', 'loaf.part':'Un chat en boule de {n} cases',
-    'loaf.jam':'Plus rien ne rentre — annulez un chat', 'loaf.spare':'Un chat en trop', 'loaf.pop':'Une ligne de chats s’éloigne — encore {n}',
+    'loaf.jam':'Plus rien ne rentre — annulez un chat', 'loaf.pop':'Une ligne de chats s’éloigne — encore {n}',
     'q.loaf.w1':'Bien au chaud', 'q.loaf.w2':'Tout le monde rentre', 'q.loaf.w3':'Une boîte pleine de ronrons',
     'q.loaf.m1':'La boîte est coincée', 'q.loaf.m2':'Plus de coups',
     /* Spool Shots aim */
     'volley.aim':'Ce tir peint {n}', 'volley.aimBad':'Mauvaise couleur pour ce qu’il touche — tirez hors du plateau pour annuler',
     /* Ripples, Snip and Needle Pass depth */
     'ripple.wind':'Brise', 'slice.combo':'Coup net — {n} d’un trait, encore {m}', 'p.skimClean':'Un point net — encore {n} ricochets',
+    /* Loaf Box, endless */
+    'loaf.carry':'La boîte continue — encore {n} à vider', 'loaf.fresh':'Une boîte toute neuve',
   },
 
   es: {
@@ -5953,15 +5967,17 @@ const STRINGS = {
     /* Patchwork */
     'forge.rule':'Colores separados',
     /* Loaf Box */
-    'm.loaf':'Caja de Gatos|Mete a los gatos en la caja: una fila llena se despeja', 'p.loaf':'Quedan {n} por despejar: llena una fila o columna entera', 'loaf.empty':'Caja, columna {x} fila {y}, vacía',
+    'm.loaf':'Caja de Gatos|Los gatos no paran de llegar: una fila llena se despeja', 'p.loaf':'Quedan {n} por despejar: llena una fila o columna entera', 'loaf.empty':'Caja, columna {x} fila {y}, vacía',
     'loaf.kitten':'Caja, columna {x} fila {y}, un gatito dormido', 'loaf.cat':'Caja, columna {x} fila {y}, un gato hecho un pan', 'loaf.part':'Un gato de {n} casillas',
-    'loaf.jam':'Ya no cabe nada: deshaz un gato', 'loaf.spare':'Un gato de sobra', 'loaf.pop':'Una fila de gatos se va — quedan {n}',
+    'loaf.jam':'Ya no cabe nada: deshaz un gato', 'loaf.pop':'Una fila de gatos se va — quedan {n}',
     'q.loaf.w1':'Calentitos como panes', 'q.loaf.w2':'Cabemos todos', 'q.loaf.w3':'Una caja llena de ronroneos',
     'q.loaf.m1':'La caja se atascó', 'q.loaf.m2':'Sin movimientos',
     /* Spool Shots aim */
     'volley.aim':'Este tiro pinta {n}', 'volley.aimBad':'Color equivocado para lo que alcanza: sácalo del tablero para cancelar',
     /* Ripples, Snip and Needle Pass depth */
     'ripple.wind':'Brisa', 'slice.combo':'Corte limpio: {n} de una vez, quedan {m}', 'p.skimClean':'Un punto limpio: quedan {n} saltos',
+    /* Loaf Box, endless */
+    'loaf.carry':'La caja sigue: quedan {n} por despejar', 'loaf.fresh':'Una caja nueva',
   },
 
   de: {
@@ -6424,15 +6440,17 @@ const STRINGS = {
     /* Patchwork */
     'forge.rule':'Farben getrennt',
     /* Loaf Box */
-    'm.loaf':'Katzenkiste|Schieb die Katzen in die Kiste — eine volle Reihe verschwindet', 'p.loaf':'Noch {n} räumen — füll eine ganze Reihe oder Spalte', 'loaf.empty':'Kiste, Spalte {x} Zeile {y}, leer',
+    'm.loaf':'Katzenkiste|Es kommen immer neue Katzen — eine volle Reihe verschwindet', 'p.loaf':'Noch {n} räumen — füll eine ganze Reihe oder Spalte', 'loaf.empty':'Kiste, Spalte {x} Zeile {y}, leer',
     'loaf.kitten':'Kiste, Spalte {x} Zeile {y}, ein schlafendes Kätzchen', 'loaf.cat':'Kiste, Spalte {x} Zeile {y}, eine Katze als Laib', 'loaf.part':'Eine Katze aus {n} Feldern',
-    'loaf.jam':'Nichts passt mehr — nimm eine Katze zurück', 'loaf.spare':'Eine Katze zu viel', 'loaf.pop':'Eine Reihe Katzen zieht ab — noch {n}',
+    'loaf.jam':'Nichts passt mehr — nimm eine Katze zurück', 'loaf.pop':'Eine Reihe Katzen zieht ab — noch {n}',
     'q.loaf.w1':'Kuschelig wie ein Laib', 'q.loaf.w2':'Alle passen rein', 'q.loaf.w3':'Eine Kiste voller Schnurren',
     'q.loaf.m1':'Die Kiste klemmt', 'q.loaf.m2':'Keine Züge mehr',
     /* Spool Shots aim */
     'volley.aim':'Dieser Schuss malt {n}', 'volley.aimBad':'Falsche Farbe für das, was er trifft — zieh vom Brett weg, um abzubrechen',
     /* Ripples, Snip and Needle Pass depth */
     'ripple.wind':'Brise', 'slice.combo':'Glatter Schnitt — {n} auf einmal, noch {m}', 'p.skimClean':'Ein sauberer Stich — noch {n} Sprünge',
+    /* Loaf Box, endless */
+    'loaf.carry':'Die Kiste geht weiter — noch {n} räumen', 'loaf.fresh':'Eine frische Kiste',
   }
 };
 
@@ -6537,6 +6555,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.100.0', date:'2026-10-01', items:[
+    'Loaf Box never ends on its own. Three loaves wait at the bottom, and the moment you place one, a new one slides into its place, so the tray is always full and the box carries on from round to round: the squares you left filled are still there, and you only need to clear a few more lines to win the next round. The round only ends when nothing in the tray fits anywhere (undo and hint are there to prevent it).',
+    'Loaf Box is smooth. The tray no longer shuffles when you lift a loaf, the box no longer resizes under your finger, and the loaf in your hand follows your finger straight away with only the squares that changed being redrawn. At 4x slower CPU the same drag now costs about a quarter of what it did and never forces a layout.',
+    'Every screen is lighter. The score bar and level readouts were being rewritten every frame, which made the page re-lay-out about 60 times a second even when nothing changed; they are now only written when they change.',
+  ] },
   { v:'0.99.0', date:'2026-10-01', items:[
     'Pieces are things now, not coloured tiles with a face on. Tumble Dryer has socks, with ribbing, a heel, a toe and a paw print on the leg. Spool Belt has spools of thread with cat ears on the top flange and a loose end. Dye Pots has dye jars with eared corks, and a jar you have filled is full of the colour. Tidy Up has balls of yarn with ears, going into woven baskets whose handles are ears. Dye Trap has drops of dye.',
     'Kittens Out is a basket of yarn the kittens bat about, not berries.',
@@ -13664,34 +13687,36 @@ const MODES = {
     }
   },
 
-  /* ── Loaf Box — fit the cats in, and a full row goes ─────────────────────
-     Patchwork is exact: every square of the quilt is covered, nothing left over. This is the
-     opposite appetite. The box is already part full of sleeping kittens, the loaves in the tray
-     are whatever you have to hand, and nothing has to be used at all: only rows or columns have
-     to fill, and a full one clears, which gives the room back. So the question is not "does this
-     fit the hole" but "which hole, and in what order" — and a spare loaf is there to tempt you.
-     Built backwards from a play that works: the lines to clear are chosen first, loaves are
-     dropped into them until the gaps are the shape of the loaves, then the rest is kittens. The
-     finished board is replayed through the very same put-and-sweep the player uses before it is
-     shipped, so "solvable" is something that was run, not something that was hoped. */
+  /* ── Loaf Box — an endless box ───────────────────────────────────────────
+     Kittens are asleep in a cardboard box and cat loaves arrive at the bottom, three at a time, to be fitted round them. A full
+     row or column clears and gives the room back. Placing a loaf brings the next one into its place, so there is no last loaf:
+     the only way the round ends is a box with no room left for anything in the tray. A round asks for a few lines, and the box
+     is kept for the next round (the cat curls up on it for a moment and the box carries on), so a good player goes on for as long
+     as they can keep it tidy and a poor one is jammed in a minute.
+
+     Fair, not random: a new loaf is always one that fits somewhere, and often one that fits a gap that is nearly a line, because
+     an endless game that deals you a loaf with nowhere to go is not hard, it is rude.
+
+     It is built to be smooth under a thumb on a slow phone. The tray is three fixed slots, so lifting a loaf or turning one moves
+     nothing else; the geometry of the box is measured once when a loaf is picked up and not again until it is put down; the
+     preview is redrawn only when the place it would land changes, not on every move of the finger; and a square's drawing is
+     only touched when what it shows has changed. Squares are never resized or moved, only faded. */
   loaf: {
-    name:'Loaf Box', blurb:'Slide cat loaves into the box — a full row or column clears', cat:'logic', par:17000, bonus:4400,
+    name:'Loaf Box', blurb:'Cat loaves keep coming — a full row or column clears', cat:'logic', par:17000, bonus:4400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11.5c0-3.5 2.2-5.8 5-5.8s5 2.3 5 5.8z" fill="#FFA24D"/><path d="M8 7.4 8.3 4l2.4 1.8M16 7.4 15.7 4l-2.4 1.8" fill="none" stroke="#FFA24D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 11h17l-1.6 8.6a1.6 1.6 0 0 1-1.6 1.4H6.7a1.6 1.6 0 0 1-1.6-1.4z" fill="none" stroke="#33E6C8" stroke-width="2" stroke-linejoin="round"/></svg>',
     build(ctx){
-      const GAP = 3;
-      /* As wide as the room allows: a square under about 44px is a square you have to aim at. */
-      const lines = clamp(2 + Math.floor(ctx.level/4), 2, 6);   /* rows or columns the level asks you to clear */
-      /* The box gets what the loaves, the note, the tools and the move counter leave, and a square under about 38px is one you
-         have to aim at, so the room caps the size of the box and difficulty is more lines and more loaves instead. */
-      const estLoaves = clamp(Math.ceil(Math.min(lines, 5) * 0.8), 2, 4) + (ctx.level >= 6 ? 1 : 0);
-      const under = (ctx.level >= 6 ? 34 : 0) + Math.ceil(estLoaves / 5) * 84 + 56 + 30 + 40;
-      const room = Math.min((ctx.surface.clientWidth || 350) - 12, (ctx.surface.clientHeight || 600) - under);
+      const GAP = 3, SLOTS = 3;
+      const lines = clamp(2 + Math.floor(ctx.level/12), 2, 4);      /* rows or columns a round asks for; the box carries on after it */
+      const clutter = clamp(0.2 + ctx.level*0.006, 0.2, 0.42);      /* how much of a new box is already kittens */
+      /* The box gets what the tray, the tools and the line above leave, and a square under about 38px is one you have to aim at. */
+      const W = ctx.surface.clientWidth || 350;
+      const slot = Math.max(58, Math.min(92, Math.floor((W - 12 - (SLOTS - 1) * 10) / SLOTS)));
+      const under = slot + 56 + 30 + 20;
+      const room = Math.min(W - 12, (ctx.surface.clientHeight || 600) - under);
       const maxG = Math.max(5, Math.floor((room - 12 + GAP) / (38 + GAP)));
-      const g = clamp(ctx.level < 6 ? 6 : ctx.level < 14 ? 7 : 8, 5, maxG);
-      const rows = Math.min(lines, g - 2, 5);
-      const K = clamp(Math.ceil(rows * 0.8), 2, 4);             /* loaves the way through needs: a loaf can finish more than one line */
-      const spare = ctx.level >= 6 ? 1 : 0;                     /* and one more that it does not */
+      const g = clamp(ctx.level < 8 ? 6 : ctx.level < 18 ? 7 : 8, 5, maxG);
       const N = g * g;
+      const bit = clamp(Math.floor((slot - 14 - 3*3) / 4), 11, 18);
 
       const norm = cs => { const mx = Math.min(...cs.map(c=>c[0])), my = Math.min(...cs.map(c=>c[1]));
         return cs.map(c=>[c[0]-mx, c[1]-my]).sort((a,b)=> a[1]-b[1] || a[0]-b[0]); };
@@ -13710,267 +13735,140 @@ const MODES = {
         [[0,0],[1,0],[0,1],[1,1],[0,2]]      /* pea     */
       ];
       const usable = BASE.slice(0, ctx.level < 3 ? 4 : ctx.level < 9 ? 7 : ctx.level < 14 ? 8 : 10);
-      const turnsOf = b => { const out = []; let c = norm(b);
-        for (let r = 0; r < 4; r++){ if (!out.some(s => key(s) === key(c))) out.push(c); c = turn(c); } return out; };
       const dims = o => [Math.max(...o.map(c=>c[0])) + 1, Math.max(...o.map(c=>c[1])) + 1];
+      const COATS = shuffle(['#F2A65A', '#B9C2D6', '#F4E6C8', '#9D8CC9', '#E88BA8'], ctx.rnd);
 
-      /* ── The rules, as pure functions on the two arrays, so the shipped board and the played board
-            cannot disagree about them ── */
-      const put = (nap, own, cells, part) => { cells.forEach(i => { own[i] = part; }); };
+      /* ── The rules, as pure functions on the two arrays ── */
+      const filledAt = (nap, own, i) => nap[i] || own[i] >= 0;
       const sweep = (nap, own) => {
-        const filled = i => nap[i] || own[i] >= 0;
         const rs = [], cs = [];
-        for (let y = 0; y < g; y++){ let all = true; for (let x = 0; x < g && all; x++) all = !!filled(y*g + x); if (all) rs.push(y); }
-        for (let x = 0; x < g; x++){ let all = true; for (let y = 0; y < g && all; y++) all = !!filled(y*g + x); if (all) cs.push(x); }
+        for (let y = 0; y < g; y++){ let all = true; for (let x = 0; x < g && all; x++) all = !!filledAt(nap, own, y*g + x); if (all) rs.push(y); }
+        for (let x = 0; x < g; x++){ let all = true; for (let y = 0; y < g && all; y++) all = !!filledAt(nap, own, y*g + x); if (all) cs.push(x); }
         const gone = new Set();
         rs.forEach(y => { for (let x = 0; x < g; x++) gone.add(y*g + x); });
         cs.forEach(x => { for (let y = 0; y < g; y++) gone.add(y*g + x); });
-        return { n: rs.length + cs.length, rows: rs.length, cols: cs.length, gone };
+        return { n: rs.length + cs.length, gone };
       };
-      const wipe = (nap, own, gone) => gone.forEach(i => { nap[i] = 0; own[i] = -1; });
 
-      /* ── Building the board ── */
-      const gen = () => {
-        for (let attempt = 0; attempt < 400; attempt++){
-          const vertical = ctx.level >= 5 && ctx.rnd() < 0.5;
-          const r0 = Math.floor(ctx.rnd() * (g - rows + 1));
-          const taken = new Map();                 /* cell -> loaf, in "rows" form */
-          const loaves = [];
-          let bad = false;
-          for (let p = 0; p < K && !bad; p++){
-            let placed = false;
-            for (let tries = 0; tries < 10 && !placed; tries++){
-              const o = pick(turnsOf(pick(usable, ctx.rnd)), ctx.rnd), [w, h] = dims(o);
-              let at = [];
-              for (let ay = r0; ay + h <= r0 + rows; ay++) for (let ax = 0; ax + w <= g; ax++)
-                if (o.every(c => !taken.has((ay + c[1])*g + ax + c[0]))) at.push([ax, ay]);
-              /* When the loaves left are only just enough to reach every line, each has to reach a new one. */
-              const bare = [];
-              for (let y = r0; y < r0 + rows; y++){ let any = false; for (let x = 0; x < g; x++) if (taken.has(y*g + x)) any = true; if (!any) bare.push(y); }
-              if (bare.length >= K - p){
-                const fresh = at.filter(([ax, ay]) => o.some(c => bare.includes(ay + c[1])));
-                if (fresh.length) at = fresh;
-              }
-              if (!at.length) continue;
-              const [ax, ay] = pick(at, ctx.rnd);
-              const cells = o.map(c => (ay + c[1])*g + ax + c[0]);
-              cells.forEach(i => taken.set(i, p));
-              loaves.push({ cells, o });
-              placed = true;
-            }
-            if (!placed) bad = true;
-          }
-          if (bad) continue;
-          /* Every line has to have something to fill, or it starts out full. */
-          let each = true;
-          for (let y = r0; y < r0 + rows && each; y++){ let any = false; for (let x = 0; x < g; x++) if (taken.has(y*g + x)) any = true; each = any; }
-          if (!each) continue;
-          /* The rows have to read as nearly full — kittens in most of every one and a gap or two to fill — or the box looks
-             empty and you cannot tell what you are meant to fill. */
-          let crowded = taken.size > Math.floor(rows * g * 0.6);
-          for (let y = r0; y < r0 + rows && !crowded; y++){ let n = 0; for (let x = 0; x < g; x++) if (taken.has(y*g + x)) n++; crowded = n > g - 2; }
-          if (crowded) continue;
-
-          const napCells = new Set();
-          for (let y = r0; y < r0 + rows; y++) for (let x = 0; x < g; x++) if (!taken.has(y*g + x)) napCells.add(y*g + x);
-          /* Kittens elsewhere, as clutter: never enough to fill a column that the rows would finish, and never
-             a whole line of their own. */
-          const perCol = new Array(g).fill(rows), perRow = new Array(g).fill(0);
-          let decoys = clamp(2 + Math.floor(ctx.level/2), 2, 12), guard = 0;
-          while (decoys > 0 && guard++ < 200){
-            const x = Math.floor(ctx.rnd() * g), y = Math.floor(ctx.rnd() * g), i = y*g + x;
-            if ((y >= r0 && y < r0 + rows) || napCells.has(i)) continue;
-            if (perCol[x] >= g - 1 || perRow[y] >= g - 2) continue;
-            napCells.add(i); perCol[x]++; perRow[y]++; decoys--;
-          }
-          /* Turn it on its side half the time. */
-          const flip = i => vertical ? (i % g) * g + Math.floor(i / g) : i;
-          const out = { vertical, nap: new Uint8Array(N), plan: [], fallback: false };
-          napCells.forEach(i => { out.nap[flip(i)] = 1; });
-          loaves.forEach(l => out.plan.push(l.cells.map(flip)));
-          return out;
+      /* ── State: the box is carried over from the round before when it was won in this run ── */
+      const keep = (typeof run !== 'undefined' && run && run.loafKeep && run.loafKeep.g === g && run.loafKeep.solved === (run.solved | 0)) ? run.loafKeep : null;
+      const nap = new Uint8Array(N), own = new Int16Array(N).fill(-1);
+      const coatOf = [];
+      let nextId = 0;
+      if (keep){ nap.set(keep.nap); own.set(keep.own); keep.coat.forEach((c, i) => { coatOf[i] = c; }); nextId = keep.nextId; }
+      else {
+        /* Kittens scattered about, never so many in a row or a column that a line is nearly made. */
+        const perRow = new Array(g).fill(0), perCol = new Array(g).fill(0);
+        for (let want = Math.round(N * clutter), guard = 0; want > 0 && guard < 400; guard++){
+          const x = Math.floor(ctx.rnd() * g), y = Math.floor(ctx.rnd() * g), i = y*g + x;
+          if (nap[i] || perRow[y] >= g - 3 || perCol[x] >= g - 3) continue;
+          nap[i] = 1; perRow[y]++; perCol[x]++; want--;
         }
-        return null;
-      };
-      /* The always-works board: every row missing a pair at the left. */
-      const fixed = () => {
-        const nap = new Uint8Array(N), plan = [];
-        for (let y = 0; y < rows; y++){ for (let x = 2; x < g; x++) nap[y*g + x] = 1; plan.push([y*g, y*g + 1]); }
-        return { vertical: false, nap, plan, fallback: true };
-      };
-
-      /* Replay the plan through the real rules. A board whose own plan does not clear enough lines is not shipped. */
-      const replay = b => {
-        const nap = b.nap.slice(), own = new Int8Array(N).fill(-1);
-        let n = 0;
-        b.plan.forEach((cells, p) => {
-          if (cells.some(i => nap[i] || own[i] >= 0)) { n = -99; return; }
-          put(nap, own, cells, p);
-          const s = sweep(nap, own); wipe(nap, own, s.gone); n += s.n;
-        });
-        return n;
-      };
-      let board = null;
-      for (let tries = 0; tries < 12 && !board; tries++){ const b = gen(); if (b && replay(b) >= rows) board = b; }
-      if (!board) board = fixed();
-      const R = rows;                                          /* what the plan really clears, and so what you are asked for */
-
-      /* ── The loaves ── */
-      const COATS = shuffle(['#F2A65A', '#B9C2D6', '#F4E6C8', '#9D8CC9', '#E88BA8'], ctx.rnd);
-      const parts = board.plan.map((cells, p) => {
-        const mx = Math.min(...cells.map(i => i % g)), my = Math.min(...cells.map(i => Math.floor(i / g)));
-        return { sh: norm(cells.map(i => [(i % g) - mx, Math.floor(i / g) - my])), plan: cells };
-      });
-      if (spare){ const o = pick(turnsOf(pick(usable, ctx.rnd)), ctx.rnd); parts.push({ sh: o, plan: null }); }
-      const order = shuffle(parts.map((_, i) => i), ctx.rnd);
-      const loaves = order.map(i => parts[i]);                  /* tray order is not plan order */
-      const coat = loaves.map((_, i) => COATS[i % COATS.length]);
-      const rot = loaves.map(() => Math.floor(ctx.rnd() * 4));
-      const orient = i => { let c = loaves[i].sh; for (let r = 0; r < rot[i]; r++) c = turn(c); return c; };
-
-      /* ── State ── */
-      const nap = board.nap.slice(), own = new Int8Array(N).fill(-1);
-      const used = new Set(), placedAt = new Map(), history = [];
-      const fading = new Map();
-      let cleared = 0, held = null, done = false, hints = 2, sel = null;
+      }
       const occ = i => !!(nap[i] || own[i] >= 0);
-      const inTray = i => !used.has(i) && !(held && held.part === i);
+      let cleared = 0, done = false, hints = 2, undos = 3, held = null, sel = null, jamToken = 0;
+      const history = [];
+      const fading = new Map();
+
+      /* Every place a loaf of this shape could go, as lists of cell indices. */
+      const spots = o => {
+        const [w, h] = dims(o), out = [];
+        for (let ay = 0; ay + h <= g; ay++) for (let ax = 0; ax + w <= g; ax++){
+          const cells = [];
+          for (const c of o){ const i = (ay + c[1])*g + ax + c[0]; if (occ(i)) break; cells.push(i); }
+          if (cells.length === o.length) out.push({ ax, ay, cells, o });
+        }
+        return out;
+      };
+      const turnsOf = sh => { const out = []; let c = sh; for (let r = 0; r < 4; r++){ if (!out.some(s => key(s) === key(c))) out.push(c); c = turn(c); } return out; };
+      const fitsAnywhere = sh => turnsOf(sh).some(o => {
+        const [w, h] = dims(o);
+        for (let ay = 0; ay + h <= g; ay++) for (let ax = 0; ax + w <= g; ax++){
+          let ok = true; for (const c of o){ if (occ((ay + c[1])*g + ax + c[0])){ ok = false; break; } } if (ok) return true; }
+        return false; });
+      /* How good a place is: lines it finishes, and how much it leans on what is already there. */
+      const rowN = () => { const r = new Array(g).fill(0), c = new Array(g).fill(0); for (let i = 0; i < N; i++) if (occ(i)){ r[Math.floor(i/g)]++; c[i % g]++; } return { r, c }; };
+      const scoreOf = (cells, fill) => {
+        const n2 = nap.slice(), o2 = own.slice(); cells.forEach(i => { o2[i] = 9999; });
+        const s = sweep(n2, o2);
+        let lean = 0; cells.forEach(i => { lean += fill.r[Math.floor(i/g)] + fill.c[i % g]; });
+        return s.n * 100 + lean;
+      };
+      const bestFor = sh => { const fill = rowN(); let best = null;
+        for (const o of turnsOf(sh)) for (const sp of spots(o)){ const sc = scoreOf(sp.cells, fill); if (!best || sc > best.sc) best = { sc, cells: sp.cells, o }; }
+        return best; };
+
+      /* ── The stream of loaves: always one that fits, and often one that helps ── */
+      const help = clamp(0.55 - ctx.level*0.012, 0.15, 0.55);
+      const newPiece = () => {
+        const fits = usable.filter(sh => fitsAnywhere(sh));
+        if (!fits.length) return null;
+        let sh;
+        if (ctx.rnd() < help){
+          /* of four at random, the one with the best place to go */
+          let top = null;
+          for (let k = 0; k < 4; k++){ const c = pick(fits, ctx.rnd), b = bestFor(c); if (b && (!top || b.sc > top.sc)) top = { sc: b.sc, sh: c }; }
+          sh = top ? top.sh : pick(fits, ctx.rnd);
+        } else sh = pick(fits, ctx.rnd);
+        const id = nextId++;
+        coatOf[id] = COATS[id % COATS.length];
+        return { id, sh: norm(sh), rot: Math.floor(ctx.rnd() * 4) };
+      };
+      const orient = p => { let c = p.sh; for (let r = 0; r < p.rot; r++) c = turn(c); return c; };
+      const tray = Array.from({ length: SLOTS }, () => null);
+      tray.forEach((_, s) => { tray[s] = newPiece(); });
 
       /* ── DOM ── */
       const wrap = mk('div','forgewrap lbx');
-      if (board.fallback) wrap.dataset.fallback = '1';
+      wrap.style.setProperty('--slot', slot + 'px'); wrap.style.setProperty('--bit', bit + 'px');
+      if (keep) wrap.dataset.carried = '1';
       const grid = mk('div','fgrid');
       grid.style.gridTemplateColumns = 'repeat(' + g + ',1fr)';
       const cellEls = [];
-      for (let i = 0; i < N; i++){ const c = mk('i','fcell'); c.setAttribute('role','img'); grid.appendChild(c); cellEls.push(c); }
+      for (let i = 0; i < N; i++){ const c = mk('i','fcell'); c.setAttribute('role','img'); c.dataset.i = i; grid.appendChild(c); cellEls.push(c); }
       wrap.appendChild(grid);
-      let note = null;
-      if (spare){ note = mk('span','fnote'); note.textContent = t('loaf.spare'); wrap.appendChild(note); }
-      const tray = mk('div','ftray'); wrap.appendChild(tray);
+      const trayEl = mk('div','ftray ltray'); wrap.appendChild(trayEl);
+      const slotEls = tray.map((_, s) => { const b = mk('button','fpiece lslot empty'); b.type = 'button'; b.dataset.idx = s; trayEl.appendChild(b); return b; });
       const tools = mk('div','ftools'); wrap.appendChild(tools);
       const undoBtn = mk('button','ftool'); undoBtn.type = 'button';
       undoBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5M4 12h11a5 5 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><b></b>';
-      undoBtn.querySelector('b').textContent = t('forge.undo'); undoBtn.setAttribute('aria-label', t('forge.undo'));
       const hintBtn = mk('button','ftool'); hintBtn.type = 'button';
       hintBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><ellipse cx="12" cy="16" rx="5.2" ry="4.2"/><ellipse cx="5.4" cy="11" rx="2.2" ry="2.9"/><ellipse cx="9.6" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="14.4" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="18.6" cy="11" rx="2.2" ry="2.9"/></svg><b></b>';
       tools.appendChild(undoBtn); tools.appendChild(hintBtn);
       ctx.surface.appendChild(wrap);
+      const say = (k, a) => ctx.prompt(t(k || (keep && cleared === 0 ? 'loaf.carry' : 'p.loaf'), a || { n: Math.max(0, lines - cleared) }));
 
-      const budget = moveBudget(ctx, board.plan.length);
-      const say = (key, args) => ctx.prompt(t(key || 'p.loaf', args || { n: Math.max(0, R - cleared) }));
-
-      /* ── What goes where ── */
-      const spot = (o, ax, ay) => {
-        const cells = [];
-        for (const c of o){
-          const x = ax + c[0], y = ay + c[1];
-          if (x < 0 || y < 0 || x >= g || y >= g) return null;
-          const i = y*g + x;
-          if (occ(i)) return null;
-          cells.push(i);
+      /* ── Drawing: a square is touched only when what it shows has changed ── */
+      const marker = new Map();
+      const refreshMarkers = () => { marker.clear(); for (let i = 0; i < N; i++) if (own[i] >= 0 && !marker.has(own[i])) marker.set(own[i], i); };
+      const sigOf = i => {
+        const pid = own[i];
+        if (pid >= 0){
+          const x = i % g, y = Math.floor(i / g), same = n => own[n] === pid;
+          return 'L' + pid + (y === 0 || !same(i-g) ? 't' : '') + (x === g-1 || !same(i+1) ? 'r' : '') + (y === g-1 || !same(i+g) ? 'b' : '') + (x === 0 || !same(i-1) ? 'l' : '') + (marker.get(pid) === i ? 'm' : '');
         }
-        return cells;
+        if (nap[i]) return 'N';
+        if (fading.has(i)) return 'F' + (fading.get(i) === null ? 'n' : fading.get(i));
+        return 'E';
       };
-      const anyFits = () => {
-        for (let i = 0; i < loaves.length; i++){
-          if (used.has(i)) continue;
-          let c = loaves[i].sh;
-          for (let r = 0; r < 4; r++, c = turn(c)){
-            const [w, h] = dims(c);
-            for (let ay = 0; ay + h <= g; ay++) for (let ax = 0; ax + w <= g; ax++) if (spot(c, ax, ay)) return true;
-          }
-        }
-        return false;
+      const lastSig = new Array(N).fill('');
+      const paintCell = i => {
+        const sg = sigOf(i); if (sg === lastSig[i]) return; lastSig[i] = sg;
+        const c = cellEls[i], x = i % g + 1, y = Math.floor(i / g) + 1, k = sg[0];
+        let cls = 'fcell', label;
+        if (k === 'L'){ const e = sg.replace(/^L\d+/, ''); c.style.setProperty('--pc', coatOf[own[i]]);
+          cls = 'fcell set' + (e.includes('t') ? ' e-t' : '') + (e.includes('r') ? ' e-r' : '') + (e.includes('b') ? ' e-b' : '') + (e.includes('l') ? ' e-l' : '') + (e.includes('m') ? ' m' : '');
+          label = t('loaf.cat', { x, y }); }
+        else if (k === 'N'){ cls += ' nap'; c.style.removeProperty('--pc'); label = t('loaf.kitten', { x, y }); }
+        else if (k === 'F'){ const col = fading.get(i); cls += col ? ' set pop e-t e-r e-b e-l' : ' nap pop'; if (col) c.style.setProperty('--pc', col); else c.style.removeProperty('--pc'); label = t('loaf.empty', { x, y }); }
+        else { c.style.removeProperty('--pc'); label = t('loaf.empty', { x, y }); }
+        c.className = cls; c.setAttribute('aria-label', label);
       };
-      /* Which lines a drop would finish, for the preview. */
-      const wouldClear = cells => {
-        const n2 = nap.slice(), o2 = own.slice(); put(n2, o2, cells, 99);
-        return sweep(n2, o2).gone;
-      };
-      /* A way through from here: the shipped plan if you are still on it, else a bounded search. */
-      const solve = () => {
-        const left = loaves.map((_, i) => i).filter(i => !used.has(i));
-        const on = [...used].every(p => loaves[p].plan && placedAt.has(p) && placedAt.get(p).length === loaves[p].plan.length && placedAt.get(p).every(i => loaves[p].plan.includes(i)));
-        if (on){
-          const p = left.find(i => loaves[i].plan);
-          if (p !== undefined && R - cleared > 0) return { sol: [{ part: p, cells: loaves[p].plan, o: loaves[p].sh }], gaveUp: false };
-        }
-        let nodes = 0, sol = null;
-        const go = (o, rest, got, acc) => {
-          if (sol || nodes++ > 4000) return;
-          if (got >= R){ sol = acc.slice(); return; }
-          if (!rest.length) return;
-          const rowN = new Array(g).fill(0), colN = new Array(g).fill(0);
-          for (let i = 0; i < N; i++) if (o[i]){ rowN[Math.floor(i/g)]++; colN[i % g]++; }
-          const cands = [];
-          for (const i of rest){
-            const seen = new Set(); let c = loaves[i].sh;
-            for (let r = 0; r < 4; r++, c = turn(c)){
-              const k = key(c); if (seen.has(k)) continue; seen.add(k);
-              const [w, h] = dims(c);
-              for (let ay = 0; ay + h <= g; ay++) for (let ax = 0; ax + w <= g; ax++){
-                let ok = true, score = 0; const cells = [];
-                for (const q of c){ const idx = (ay + q[1])*g + ax + q[0]; if (o[idx]){ ok = false; break; } cells.push(idx); score += rowN[ay + q[1]] + colN[ax + q[0]]; }
-                if (ok) cands.push({ i, c, cells, score });
-              }
-            }
-          }
-          cands.sort((a, b) => b.score - a.score);
-          for (const cd of cands.slice(0, 12)){
-            const o2 = o.slice(); cd.cells.forEach(x => { o2[x] = 1; });
-            const rs = [], cs = [];
-            for (let y = 0; y < g; y++) if (Array.from({ length: g }, (_, x) => o2[y*g + x]).every(Boolean)) rs.push(y);
-            for (let x = 0; x < g; x++) if (Array.from({ length: g }, (_, y) => o2[y*g + x]).every(Boolean)) cs.push(x);
-            rs.forEach(y => { for (let x = 0; x < g; x++) o2[y*g + x] = 0; });
-            cs.forEach(x => { for (let y = 0; y < g; y++) o2[y*g + x] = 0; });
-            go(o2, rest.filter(j => j !== cd.i), got + rs.length + cs.length, acc.concat([{ part: cd.i, cells: cd.cells, o: cd.c }]));
-            if (sol) return;
-          }
-        };
-        go(Uint8Array.from({ length: N }, (_, i) => occ(i) ? 1 : 0), left, cleared, []);
-        /* Not finding a way in a small search is not the same as there being none: offer a loaf from the shipped plan whose
-           place is still free, which is at least somewhere it fits. */
-        if (!sol){
-          const p = left.find(i => loaves[i].plan && loaves[i].plan.every(c => !occ(c)));
-          if (p !== undefined) return { sol: [{ part: p, cells: loaves[p].plan, o: loaves[p].sh }], gaveUp: true };
-        }
-        return { sol, gaveUp: !sol && nodes > 4000 };
-      };
-
-      /* ── Drawing ── */
-      const markerOf = pid => { const pl = placedAt.get(pid); return pl ? pl.find(i => own[i] === pid) : undefined; };
-      const paint = () => {
-        cellEls.forEach((c, i) => {
-          const pid = own[i], x = i % g, y = Math.floor(i / g);
-          let cls = 'fcell', label = t('loaf.empty', { x: x + 1, y: y + 1 });
-          c.style.removeProperty('--pc');
-          if (pid >= 0){
-            cls += ' set'; c.style.setProperty('--pc', coat[pid]);
-            const same = n => own[n] === pid;
-            if (y === 0 || !same(i-g)) cls += ' e-t';
-            if (x === g-1 || !same(i+1)) cls += ' e-r';
-            if (y === g-1 || !same(i+g)) cls += ' e-b';
-            if (x === 0 || !same(i-1)) cls += ' e-l';
-            if (i === markerOf(pid)) cls += ' m';
-            label = t('loaf.cat', { x: x + 1, y: y + 1 });
-          } else if (nap[i]){ cls += ' nap'; label = t('loaf.kitten', { x: x + 1, y: y + 1 }); }
-          else if (fading.has(i)){
-            const f = fading.get(i);
-            cls += f.coat ? ' set pop e-t e-r e-b e-l' : ' nap pop';
-            if (f.coat) c.style.setProperty('--pc', f.coat);
-          }
-          c.className = cls;
-          c.setAttribute('aria-label', label);
-        });
-        undoBtn.disabled = !history.length;
-        hintBtn.querySelector('b').textContent = t('forge.hint') + ' ' + hints;
-        hintBtn.disabled = !hints || done;
-        hintBtn.setAttribute('aria-label', t('forge.hint') + ': ' + hints);
-      };
+      const paintCells = list => { refreshMarkers(); list.forEach(paintCell); };
+      const paintAll = () => { refreshMarkers(); for (let i = 0; i < N; i++) paintCell(i); };
       const bitsOf = (o, pc) => {
         const [w, h] = dims(o), has = (x, y) => o.some(c => c[0] === x && c[1] === y);
-        const frag = mk('span','fbits'); frag.style.gridTemplateColumns = 'repeat(' + w + ',1fr)';
-        frag.style.setProperty('--pc', pc);
+        const frag = mk('span','fbits'); frag.style.gridTemplateColumns = 'repeat(' + w + ',var(--bit))'; frag.style.setProperty('--pc', pc);
         for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){
           if (!has(x, y)){ frag.appendChild(mk('i','fbit')); continue; }
           let cls = 'fbit on';
@@ -13980,43 +13878,48 @@ const MODES = {
         }
         return frag;
       };
-      const drawTray = () => {
-        tray.innerHTML = '';
-        loaves.forEach((p, i) => {
-          if (!inTray(i)) return;
-          const e = mk('button','fpiece'); e.type = 'button'; e.dataset.idx = i;
-          if (sel === i) e.classList.add('fsel');
-          e.appendChild(bitsOf(orient(i), coat[i]));
-          e.setAttribute('aria-label', t('loaf.part', { n: p.sh.length }) + '. ' + t('forge.turn'));
-          e.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); sel = i; rot[i] = (rot[i]+1)%4; drawTray(); } });
-          tray.appendChild(e);
-        });
+      /* A slot is drawn on its own: nothing else in the tray is touched, and the slot never changes size. */
+      const drawSlot = (s, arrive) => {
+        const b = slotEls[s], p = tray[s];
+        b.replaceChildren();
+        b.classList.toggle('empty', !p); b.classList.toggle('fsel', !!p && sel === s); b.classList.remove('lifted');
+        if (!p){ b.removeAttribute('aria-label'); b.tabIndex = -1; return; }
+        b.tabIndex = 0;
+        b.appendChild(bitsOf(orient(p), coatOf[p.id]));
+        b.setAttribute('aria-label', t('loaf.part', { n: p.sh.length }) + '. ' + t('forge.turn'));
+        if (arrive){ b.classList.remove('arrive'); void b.offsetWidth; b.classList.add('arrive'); }
+      };
+      const paintTools = () => {
+        undoBtn.querySelector('b').textContent = t('forge.undo') + ' ' + undos; undoBtn.disabled = !history.length || !undos || done;
+        undoBtn.setAttribute('aria-label', t('forge.undo') + ': ' + undos);
+        hintBtn.querySelector('b').textContent = t('forge.hint') + ' ' + hints; hintBtn.disabled = !hints || done;
+        hintBtn.setAttribute('aria-label', t('forge.hint') + ': ' + hints);
       };
       const fitBoard = () => {
-        /* The tray keeps the height it had when it was full, so lifting a loaf out of it can never change the size of the box
-           under the finger. */
-        if (!tray.style.minHeight && tray.offsetHeight) tray.style.minHeight = tray.offsetHeight + 'px';
-        /* Everything under the box, and the gap above each of them, comes out of the height before the box gets any. */
-        const under = [note, tray, tools].reduce((n, e) => n + (e ? e.offsetHeight + 10 : 0), 0);
-        const side = Math.max(120, Math.min(ctx.surface.clientWidth - 8, ctx.surface.clientHeight - under - 6));
+        const wrapH = ctx.surface.clientHeight, used = trayEl.offsetHeight + tools.offsetHeight + 20 + 6;
+        const side = Math.max(120, Math.min(ctx.surface.clientWidth - 8, wrapH - used));
         grid.style.width = side + 'px'; grid.style.aspectRatio = '1'; grid.style.height = 'auto';
       };
-      const redraw = () => { drawTray(); paint(); };
-      redraw(); fitBoard(); say();
+      paintAll(); tray.forEach((_, s) => drawSlot(s, false)); paintTools(); fitBoard(); say();
       requestAnimationFrame(fitBoard);
 
-      /* ── The hand ── */
-      const gridRect = () => { const a = cellEls[0].getBoundingClientRect(), z = cellEls[N-1].getBoundingClientRect();
-        return { left: a.left, top: a.top, width: z.right - a.left, height: z.bottom - a.top }; };
-      const pitch = () => (gridRect().width + GAP) / g;
-      let ghost = null;
-      const clearPreview = () => cellEls.forEach(c => c.classList.remove('drop-ok', 'drop-bad', 'hint', 'willpop'));
+      /* ── The hand: geometry is measured once, when a loaf is picked up ── */
+      let geo = null, ghost = null, ghostSize = [0, 0], want = null, frame = 0, preview = { ok: [], pop: [], bad: [] }, hintCells = [];
+      const measure = () => {
+        const a = cellEls[0].getBoundingClientRect(), z = cellEls[N-1].getBoundingClientRect(), wr = wrap.getBoundingClientRect();
+        geo = { left: a.left, top: a.top, pitch: (z.right - a.left + GAP) / g, wx: wr.left, wy: wr.top };
+      };
+      const clearPreview = () => {
+        preview.ok.forEach(i => cellEls[i].classList.remove('drop-ok')); preview.pop.forEach(i => cellEls[i].classList.remove('willpop'));
+        preview.bad.forEach(i => cellEls[i].classList.remove('drop-bad')); hintCells.forEach(i => cellEls[i].classList.remove('hint')); hintCells = [];
+        preview = { ok: [], pop: [], bad: [] };
+      };
       const makeGhost = () => {
         if (ghost) ghost.remove();
+        const o = orient(held.p), [w, h] = dims(o), has = (x, y) => o.some(c => c[0] === x && c[1] === y), pt = geo.pitch;
         ghost = mk('div','fghost');
-        const pt = pitch(), o = orient(held.part), [w, h] = dims(o), has = (x, y) => o.some(c => c[0] === x && c[1] === y);
         ghost.style.width = (w*pt - GAP) + 'px'; ghost.style.height = (h*pt - GAP) + 'px';
-        ghost.style.gridTemplateColumns = 'repeat(' + w + ',1fr)'; ghost.style.setProperty('--pc', coat[held.part]);
+        ghost.style.gridTemplateColumns = 'repeat(' + w + ',1fr)'; ghost.style.setProperty('--pc', coatOf[held.p.id]);
         for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){
           if (!has(x, y)){ ghost.appendChild(mk('i','fbit')); continue; }
           let cls = 'fbit on';
@@ -14024,126 +13927,159 @@ const MODES = {
           if (x === o[0][0] && y === o[0][1]) cls += ' m';
           ghost.appendChild(mk('i', cls));
         }
+        ghostSize = [w*pt - GAP, h*pt - GAP];
         wrap.appendChild(ghost);
       };
-      /* The nearest place it fits, for a loaf whose middle is at (cx, cy) on the screen. `reach` is how far, in squares. */
-      const nearest = (part, cx, cy, reach) => {
-        const o = orient(part), gr = gridRect(), pt = pitch(), [w, h] = dims(o);
-        let best = null, bestBad = null;
+      /* The nearest place it fits, for a loaf whose middle is at (cx, cy) on the screen: pure arithmetic on the numbers measured at
+         pickup, so a move of the finger costs no layout. */
+      const nearest = (p, cx, cy, reach) => {
+        const o = orient(p), [w, h] = dims(o), pt = geo.pitch;
+        let best = null, bad = null;
         for (let ay = -(h-1); ay < g; ay++) for (let ax = -(w-1); ax < g; ax++){
-          const mx = gr.left + (ax + w/2) * pt - GAP/2, my = gr.top + (ay + h/2) * pt - GAP/2;
-          const d = Math.hypot(mx - cx, my - cy);
-          const cells = spot(o, ax, ay);
-          if (cells){ if (!best || d < best.d) best = { d, cells, o }; }
-          else if (!bestBad || d < bestBad.d){
-            const inb = o.every(c => ax + c[0] >= 0 && ax + c[0] < g && ay + c[1] >= 0 && ay + c[1] < g);
-            if (inb) bestBad = { d, cells: o.map(c => (ay + c[1])*g + ax + c[0]) };
-          }
+          const mx = geo.left + (ax + w/2) * pt - GAP/2, my = geo.top + (ay + h/2) * pt - GAP/2, d = Math.hypot(mx - cx, my - cy);
+          if (best && d >= best.d && (bad && d >= bad.d)) continue;
+          const cells = []; let ok = true, inb = true;
+          for (const c of o){ const x = ax + c[0], y = ay + c[1];
+            if (x < 0 || y < 0 || x >= g || y >= g){ ok = false; inb = false; break; }
+            const i = y*g + x; if (occ(i)) ok = false; cells.push(i); }
+          if (ok){ if (!best || d < best.d) best = { d, cells, o }; }
+          else if (inb && (!bad || d < bad.d)) bad = { d, cells };
         }
-        return { best: best && best.d <= reach * pt ? best : null, bad: bestBad && bestBad.d <= 1.0 * pt ? bestBad : null };
+        return { best: best && best.d <= reach * pt ? best : null, bad: bad && bad.d <= pt ? bad : null };
       };
-      let lastXY = [0, 0];
-      const follow = (x, y) => {
-        lastXY = [x, y];
-        if (!ghost) return;
-        const wr = wrap.getBoundingClientRect(), gh = ghost.offsetHeight, gw = ghost.offsetWidth;
-        const cx = x, cy = y - (gh / 2 + 34);
-        ghost.style.transform = 'translate(' + Math.round(cx - wr.left - gw/2) + 'px,' + Math.round(cy - wr.top - gh/2) + 'px)';
-        clearPreview();
-        const n = nearest(held.part, cx, cy, 1.75);
+      const wouldClear = cells => { const n2 = nap.slice(), o2 = own.slice(); cells.forEach(i => { o2[i] = 9999; }); return sweep(n2, o2).gone; };
+      /* One update a frame, however many moves the finger made, and the preview only when the place it lands has changed. */
+      const apply = () => {
+        frame = 0; if (!held || !want || !ghost) return;
+        const [x, y] = want, gw = ghostSize[0], gh = ghostSize[1], cx = x, cy = y - (gh / 2 + 34);
+        ghost.style.transform = 'translate3d(' + Math.round(cx - geo.wx - gw/2) + 'px,' + Math.round(cy - geo.wy - gh/2) + 'px,0)';
+        const n = nearest(held.p, cx, cy, 1.75), snapKey = n.best ? 'o' + n.best.cells.join(',') : n.bad ? 'b' + n.bad.cells.join(',') : '';
         held.snap = n.best;
+        if (snapKey === held.snapKey) return;
+        held.snapKey = snapKey; clearPreview();
         if (n.best){
-          n.best.cells.forEach(i => cellEls[i].classList.add('drop-ok'));
-          wouldClear(n.best.cells).forEach(i => cellEls[i].classList.add('willpop'));
-        } else if (n.bad) n.bad.cells.forEach(i => cellEls[i].classList.add('drop-bad'));
+          preview.ok = n.best.cells; preview.ok.forEach(i => cellEls[i].classList.add('drop-ok'));
+          preview.pop = Array.from(wouldClear(n.best.cells)); preview.pop.forEach(i => cellEls[i].classList.add('willpop'));
+        } else if (n.bad){ preview.bad = n.bad.cells; preview.bad.forEach(i => cellEls[i].classList.add('drop-bad')); }
       };
+      const follow = (x, y) => { want = [x, y]; if (!frame) frame = requestAnimationFrame(apply); };
 
-      /* Putting a loaf down: the state, then the sweep, then the words. */
-      const lay = (part, cells) => {
-        history.push({ nap: nap.slice(), own: own.slice(), used: new Set(used), placedAt: new Map(placedAt), cleared });
-        put(nap, own, cells, part); used.add(part); placedAt.set(part, cells.slice());
-        const s = sweep(nap, own);
-        s.gone.forEach(i => fading.set(i, { coat: own[i] >= 0 ? coat[own[i]] : null }));
-        wipe(nap, own, s.gone); cleared += s.n;
-        sel = null;
-        redraw();
-        cells.forEach(i => { if (cellEls[i].classList.contains('set')) cellEls[i].classList.add('laid'); });
-        ctx.after(260, () => cells.forEach(i => cellEls[i] && cellEls[i].classList.remove('laid')));
-        if (s.n){
-          sfx.good(Math.min(10, s.n + 2)); buzz('tap');
-          ctx.after(380, () => { s.gone.forEach(i => fading.delete(i)); if (!done) paint(); });
+      /* ── Putting a loaf down ── */
+      const snapshot = () => ({ nap: nap.slice(), own: own.slice(), tray: tray.map(p => p && { ...p }), cleared, nextId });
+      const freshMessage = () => { say('loaf.fresh'); };
+      const jamCheck = () => {
+        if (done) return;
+        if (tray.some(p => p && fitsAnywhere(p.sh))) { jamToken++; return; }
+        const token = ++jamToken;
+        if (ctx.relaxed){
+          /* Fidget Loop has no losing: a full box is simply emptied. */
+          ctx.after(900, () => { if (token !== jamToken || done) return; nap.fill(0); own.fill(-1); paintAll(); tray.forEach((_, s) => { tray[s] = newPiece(); drawSlot(s, true); }); freshMessage(); });
+          return;
+        }
+        say('loaf.jam'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge'));
+        ctx.after(undos && history.length ? 2800 : 1100, () => {
+          if (token !== jamToken || done) return;
+          done = true; if (typeof run !== 'undefined' && run) run.loafKeep = null;
+          ctx.miss(grid);
+        });
+      };
+      const lay = (s, cells) => {
+        const p = tray[s];
+        history.push(snapshot());
+        cells.forEach(i => { own[i] = p.id; });
+        const sw = sweep(nap, own), changed = new Set(cells);
+        sw.gone.forEach(i => { fading.set(i, own[i] >= 0 ? coatOf[own[i]] : null); nap[i] = 0; own[i] = -1; changed.add(i); });
+        cleared += sw.n; sel = null; tray[s] = null;
+        /* a square's neighbours may have changed their edges */
+        const around = new Set(changed); changed.forEach(i => { const x = i % g, y = Math.floor(i / g); if (x > 0) around.add(i-1); if (x < g-1) around.add(i+1); if (y > 0) around.add(i-g); if (y < g-1) around.add(i+g); });
+        paintCells(around);
+        drawSlot(s, false);
+        cells.forEach(i => { if (own[i] >= 0){ cellEls[i].classList.add('laid'); } });
+        ctx.after(240, () => cells.forEach(i => cellEls[i] && cellEls[i].classList.remove('laid')));
+        if (sw.n){
+          sfx.good(Math.min(10, sw.n + 2)); buzz('tap');
+          ctx.after(380, () => { const was = [...sw.gone]; was.forEach(i => fading.delete(i)); paintCells(was); });
         } else sfx.tap();
-        if (cleared >= R){
-          done = true; grid.classList.add('made');
+        if (cleared >= lines){
+          done = true; jamToken++; grid.classList.add('made');
+          if (typeof run !== 'undefined' && run) run.loafKeep = { g, nap: nap.slice(), own: own.slice(), coat: coatOf.slice(), nextId, solved: ((run.solved | 0) + 1) };
           const lead = Pals.on()[0] || PAL_BY_ID.biscuit;
           const cat = mk('div','fcat'); cat.innerHTML = catSvg(lead.coat, { pose: 'sleep' }); grid.appendChild(cat);
-          ctx.win(grid); return;
+          paintTools(); ctx.win(grid); return;
         }
-        if (s.n) say('loaf.pop', { n: R - cleared });
-        else if (!anyFits()){ say('loaf.jam'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge')); }
-        else say();
-        budget.spend(cellEls[cells[0]]);
+        /* The next loaf is dealt now, so it is fair to the box as it now stands, and appears a moment later. */
+        tray[s] = newPiece();
+        ctx.after(170, () => { if (!done) drawSlot(s, true); });
+        paintTools();
+        if (sw.n) say('loaf.pop', { n: lines - cleared }); else say();
+        jamCheck();
       };
       const dropIt = () => {
-        const h = held; held = null;
+        const h = held;
+        /* settle on where the finger finished, not where the last frame saw it */
+        if (want){ if (frame){ cancelAnimationFrame(frame); frame = 0; } apply(); }
+        held = null; want = null;
         if (ghost){ ghost.remove(); ghost = null; }
         clearPreview();
-        if (!h) return;
-        if (h.snap) lay(h.part, h.snap.cells); else { redraw(); say(); }
+        slotEls[h.s].classList.remove('lifted');
+        if (h.snap) lay(h.s, h.snap.cells); else drawSlot(h.s, false);
       };
-      const pickUp = part => { held = { part, snap: null }; sel = null; redraw(); makeGhost(); follow(lastXY[0], lastXY[1]); };
-      const turnHeld = () => { if (!held) return; rot[held.part] = (rot[held.part] + 1) % 4; makeGhost(); follow(lastXY[0], lastXY[1]); sfx.tap(); };
-      /* Tap a loaf to turn it and choose it, then tap the box: it goes to the nearest place it fits, for anyone who would
-         rather not drag. */
-      const placeNear = (part, cell) => {
-        const gr = gridRect(), pt = pitch(), x = cell % g, y = Math.floor(cell / g);
-        const n = nearest(part, gr.left + (x + 0.5) * pt - GAP/2, gr.top + (y + 0.5) * pt - GAP/2, 2.6);
-        if (n.best) lay(part, n.best.cells);
+      const pickUp = s => {
+        held = { s, p: tray[s], snap: null, snapKey: '' }; sel = null;
+        slotEls.forEach(b => b.classList.remove('fsel'));
+        slotEls[s].classList.add('lifted');
+        measure(); makeGhost();
+        if (lastXY) follow(lastXY[0], lastXY[1]);
+      };
+      let lastXY = null;
+      const turnSlot = s => { const p = tray[s]; if (!p) return; p.rot = (p.rot + 1) % 4; drawSlot(s, false); };
+      const turnHeld = () => { if (!held) return; held.p.rot = (held.p.rot + 1) % 4; held.snapKey = ''; makeGhost(); if (lastXY) follow(lastXY[0], lastXY[1]); sfx.tap(); };
+      /* Tap a loaf to turn it and choose it, then tap the box: it goes to the nearest place it fits, for anyone who would rather not
+         drag. */
+      const placeNear = (s, cell) => {
+        const p = tray[s]; if (!p) return;
+        measure();
+        const x = cell % g, y = Math.floor(cell / g), n = nearest(p, geo.left + (x + 0.5) * geo.pitch - GAP/2, geo.top + (y + 0.5) * geo.pitch - GAP/2, 2.6);
+        if (n.best) lay(s, n.best.cells);
         else { cellEls[cell].classList.add('drop-bad'); ctx.after(300, () => cellEls[cell] && cellEls[cell].classList.remove('drop-bad')); sfx.tap(); }
       };
 
       const undo = () => {
-        if (done || held || !history.length) return;
-        const h = history.pop();
-        nap.set(h.nap); own.set(h.own); used.clear(); h.used.forEach(p => used.add(p));
-        placedAt.clear(); h.placedAt.forEach((v, k) => placedAt.set(k, v)); cleared = h.cleared;
-        fading.clear(); sel = null; budget.refund();
-        redraw(); say(); sfx.tap();
+        if (done || held || !history.length || !undos) return;
+        const h = history.pop(); undos--; jamToken++;
+        nap.set(h.nap); own.set(h.own); cleared = h.cleared; fading.clear();
+        h.tray.forEach((p, s) => { tray[s] = p; });
+        sel = null; lastSig.fill(''); paintAll(); tray.forEach((_, s) => drawSlot(s, false));
+        paintTools(); say(); sfx.tap();
       };
       onTap(undoBtn, undo);
       onTap(hintBtn, () => {
         if (done || held || hints <= 0) return;
-        const s = solve();
-        if (!s.sol || !s.sol.length){ say('loaf.jam'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge')); return; }
+        let top = null;
+        tray.forEach((p, s) => { if (!p) return; const b = bestFor(p.sh); if (b && (!top || b.sc > top.sc)) top = { ...b, s, p }; });
+        if (!top){ say('loaf.jam'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge')); return; }
         hints--;
-        const pl = s.sol[0];
-        let r = 0, c = loaves[pl.part].sh;
-        while (key(c) !== key(pl.o) && r < 4){ c = turn(c); r++; }
-        rot[pl.part] = r % 4;
-        redraw();
-        pl.cells.forEach(i => cellEls[i].classList.add('hint'));
-        const te = tray.querySelector('.fpiece[data-idx="' + pl.part + '"]'); if (te) te.classList.add('hinted');
-        ctx.after(2200, () => { pl.cells.forEach(i => cellEls[i] && cellEls[i].classList.remove('hint')); if (te) te.classList.remove('hinted'); });
-        hintBtn.querySelector('b').textContent = t('forge.hint') + ' ' + hints;
+        let r = 0, c = top.p.sh; while (key(c) !== key(top.o) && r < 4){ c = turn(c); r++; }
+        top.p.rot = r % 4; drawSlot(top.s, false);
+        clearPreview(); hintCells = top.cells; top.cells.forEach(i => cellEls[i].classList.add('hint')); slotEls[top.s].classList.add('hinted');
+        ctx.after(2200, () => { top.cells.forEach(i => cellEls[i] && cellEls[i].classList.remove('hint')); slotEls[top.s].classList.remove('hinted'); });
+        paintTools();
       });
 
       /* ── One pointer is the hand; a second one turns what it holds ── */
       let hand = null;
-      const pieceAt = (x, y) => {
-        const e = document.elementFromPoint(x, y);
-        if (!e || !e.closest) return null;
-        const pc = e.closest('.fpiece'); if (pc && tray.contains(pc)) return { part: Number(pc.dataset.idx), from: 'tray' };
-        const cl = e.closest('.fcell'); if (cl && grid.contains(cl)) return { part: -1, from: 'cell', cell: cellEls.indexOf(cl) };
-        return null;
-      };
       wrap.addEventListener('pointerdown', ev => {
         if (done || ev.button) return;
         if (hand && ev.pointerId !== hand.id){ if (held){ ev.preventDefault(); turnHeld(); } return; }
-        if (ev.target.closest && ev.target.closest('.ftool')) return;
-        const at = pieceAt(ev.clientX, ev.clientY);
-        if (!at || (at.from === 'cell' && sel === null)) return;
+        const tg = ev.target;
+        if (!tg || !tg.closest || tg.closest('.ftool')) return;
+        const pc = tg.closest('.fpiece'), cl = tg.closest('.fcell');
+        let at = null;
+        if (pc && trayEl.contains(pc)){ const s = +pc.dataset.idx; if (tray[s]) at = { s, from: 'slot' }; }
+        else if (cl && grid.contains(cl) && sel !== null && tray[sel]) at = { s: -1, from: 'cell', cell: +cl.dataset.i };
+        if (!at) return;
         ev.preventDefault();
-        hand = { id: ev.pointerId, part: at.part, from: at.from, cell: at.cell, x0: ev.clientX, y0: ev.clientY, moved: false };
+        hand = { id: ev.pointerId, s: at.s, from: at.from, cell: at.cell, x0: ev.clientX, y0: ev.clientY, moved: false };
         lastXY = [ev.clientX, ev.clientY];
         try { wrap.setPointerCapture(ev.pointerId); } catch(e){}
       });
@@ -14154,7 +14090,7 @@ const MODES = {
         if (!hand.moved){
           if (Math.hypot(ev.clientX - hand.x0, ev.clientY - hand.y0) < 7) return;
           hand.moved = true;
-          if (hand.from === 'tray') pickUp(hand.part);
+          if (hand.from === 'slot') pickUp(hand.s);
         }
         if (held) follow(ev.clientX, ev.clientY);
       });
@@ -14164,21 +14100,24 @@ const MODES = {
         try { wrap.releasePointerCapture(ev.pointerId); } catch(e){}
         if (done) return;
         if (!h.moved){
-          if (h.from === 'tray'){ sel = h.part; rot[h.part] = (rot[h.part] + 1) % 4; drawTray(); sfx.tap(); }
-          else if (h.from === 'cell' && sel !== null && inTray(sel)) placeNear(sel, h.cell);
+          if (h.from === 'slot'){ sel = h.s; slotEls.forEach((b, i) => b.classList.toggle('fsel', i === sel)); turnSlot(h.s); sfx.tap(); }
+          else if (h.from === 'cell' && sel !== null && tray[sel]) placeNear(sel, h.cell);
           return;
         }
         if (held) dropIt();
       };
       wrap.addEventListener('pointerup', letGo);
-      wrap.addEventListener('pointercancel', ev => { if (hand && ev.pointerId === hand.id){ hand = null; if (held){ held = null; if (ghost){ ghost.remove(); ghost = null; } clearPreview(); redraw(); } } });
+      wrap.addEventListener('pointercancel', ev => { if (hand && ev.pointerId === hand.id){ hand = null; if (held){ const s = held.s; held = null; want = null; if (frame){ cancelAnimationFrame(frame); frame = 0; } if (ghost){ ghost.remove(); ghost = null; } clearPreview(); slotEls[s].classList.remove('lifted'); } } });
+      slotEls.forEach((b, s) => b.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); sel = s; slotEls.forEach((x, i) => x.classList.toggle('fsel', i === s)); turnSlot(s); } }));
       /* A screen reader's "activate" arrives as a click with no pointer: it places the chosen loaf too. */
-      cellEls.forEach((c, i) => c.addEventListener('click', ev => { if (ev.detail === 0 && !done && sel !== null && inTray(sel)) placeNear(sel, i); }));
+      cellEls.forEach((c, i) => c.addEventListener('click', ev => { if (ev.detail === 0 && !done && sel !== null && tray[sel]) placeNear(sel, i); }));
       const onKey = ev => {
         if (!wrap.isConnected){ document.removeEventListener('keydown', onKey); return; }
         if ((ev.key === 'r' || ev.key === 'R') && held){ ev.preventDefault(); turnHeld(); }
       };
       document.addEventListener('keydown', onKey);
+      /* If the box is already jammed (carried over and unlucky), say so, and let it be undone or ended. */
+      jamCheck();
     }
   },
 };
@@ -16100,6 +16039,14 @@ function setFamily(modeId){
   setFamilyTone(modeId);
 }
 
+/* renderHud runs every frame. A write that changes nothing is still a mutation: it makes the browser recalculate style and lay the
+   page out again, sixty times a second, in every mode, and it is the first thing a slow phone feels as a stutter under a finger.
+   So each of these compares with what is on the page and does nothing when the write would be the same. */
+const hudText = (node, v) => { if (node.textContent !== v) node.textContent = v; };
+const hudAttr = (node, name, v) => { if (node.getAttribute(name) !== v) node.setAttribute(name, v); };
+const hudHide = (node, v) => { v = !!v; if (node.hidden !== v) node.hidden = v; };
+const hudProp = (node, name, v) => { v = String(v); if (node.style.getPropertyValue(name) !== v) node.style.setProperty(name, v); };
+
 function renderHud(){
   if (!run) return;
   const k = KINDS[run.kind];
@@ -16109,18 +16056,18 @@ function renderHud(){
      and in the player's own language: MODES[id].name is the English original,
      which is why the header used to disagree with the card that launched it. */
   const nowId = run.curMode ? modeIdOf(run.curMode) : run.mode;
-  $('hudKind').textContent = (nowId ? modeName(nowId) : kindName(run.kind))
-    + (run.twist ? ' \u00B7 ' + t('twist.' + run.twist) : '');
-  $('hudScore').textContent = k.scored ? fmt(run.score) : fmt(run.solved) + ' solved';
+  hudText($('hudKind'), (nowId ? modeName(nowId) : kindName(run.kind))
+    + (run.twist ? ' \u00B7 ' + t('twist.' + run.twist) : ''));
+  hudText($('hudScore'), k.scored ? fmt(run.score) : fmt(run.solved) + ' solved');
   /* A multiplier that climbs in silence is not something anyone plays for.
      It carries its own level now, so ×5 looks like it was earned, and a ring
      round it fills with how close the next step is — the "almost" is the part
      that makes people push. */
   const m = multiplier();
   const chip = $('hudStreak');
-  chip.textContent = '×' + m;
+  hudText(chip, '×' + m);
   chip.classList.toggle('hot', m > 1);
-  chip.style.setProperty('--lvl', m);
+  hudProp(chip, '--lvl', m);
   /* The whole screen warms with the streak (see #play::before and #surface).
      Written only when it changes: this function runs every frame, and a style
      write on the play screen sixty times a second is a recalculation nobody
@@ -16128,12 +16075,12 @@ function renderHud(){
   const heat = clamp((m - 1) / 4, 0, 1);
   if (run.heat !== heat){ run.heat = heat; el.play.style.setProperty('--heat', String(heat)); }
   const step = MULT_STEP[Math.min(3, Perk.lv('zeal') + Fx.zeal(run))];
-  chip.style.setProperty('--to', m >= 5 ? 1 : (run.streak % step) / step);
+  hudProp(chip, '--to', m >= 5 ? 1 : (run.streak % step) / step);
   chip.classList.toggle('maxed', m >= 5);
   /* Styled since the multiplier ring was built, never actually turned on. */
   chip.classList.toggle('blaze', m >= 5);
-  chip.setAttribute('aria-label', t('hud.mult', { m, n: m >= 5 ? 0 : step - (run.streak % step) }));
-  chip.hidden = !k.scored;
+  hudAttr(chip, 'aria-label', t('hud.mult', { m, n: m >= 5 ? 0 : step - (run.streak % step) }));
+  hudHide(chip, !k.scored);
 
   const cat = $('hudCat');
   if (cat){
@@ -16151,17 +16098,17 @@ function renderHud(){
     }
     cat.classList.toggle('hot', m > 1);
     cat.classList.toggle('blazing', m >= 5);
-    cat.hidden = !k.scored;
+    hudHide(cat, !k.scored);
   }
 
   if (k.timed){
-    $('hudMeter').hidden = false; $('hudLives').hidden = true;
+    hudHide($('hudMeter'), false); hudHide($('hudLives'), true);
     $('hudMeterFill').style.transform = 'scaleX(' + clamp(run.time / capOf(k), 0, 1) + ')';
     $('hudMeter').classList.toggle('warn', run.time < 10000);
   } else if (k.lives){
-    $('hudMeter').hidden = true;
+    hudHide($('hudMeter'), true);
     const box = $('hudLives');
-    box.hidden = false;
+    hudHide(box, false);
     /* The markup carried exactly three of these, so a run with more lives than
        three showed three and quietly lied about the rest. Build them from the
        run's own starting count. */
@@ -16173,7 +16120,7 @@ function renderHud(){
     box.classList.toggle('many', max > 6);
     Array.from(box.children).forEach((sp,i) => sp.classList.toggle('out', i >= run.lives));
   } else {
-    $('hudMeter').hidden = true; $('hudLives').hidden = true;
+    hudHide($('hudMeter'), true); hudHide($('hudLives'), true);
   }
 
   /* A run with no clock and no lives showed nothing at all about where it was.
@@ -16181,7 +16128,7 @@ function renderHud(){
      screen uses, so the record you end with is the one you watched fill. */
   const rib = $('hudRounds');
   if (rib){
-    rib.hidden = !k.rounds;
+    hudHide(rib, !k.rounds);
     if (k.rounds){
       const log = run.log || [];
       if (rib.childNodes.length !== k.rounds){
@@ -16190,11 +16137,12 @@ function renderHud(){
       }
       Array.from(rib.children).forEach((pip, i) => {
         const e = log[i];
-        pip.className = !e ? 'todo' : (e.ok ? 'won' : 'lost');
-        if (e) pip.style.setProperty('--fam', CAT_INK[catOf(e.id)] || 'var(--haze)');
-        else pip.style.removeProperty('--fam');
+        const cls = !e ? 'todo' : (e.ok ? 'won' : 'lost');
+        if (pip.className !== cls) pip.className = cls;
+        if (e) hudProp(pip, '--fam', CAT_INK[catOf(e.id)] || 'var(--haze)');
+        else if (pip.style.getPropertyValue('--fam')) pip.style.removeProperty('--fam');
       });
-      rib.setAttribute('aria-label', t('hud.rounds',
+      hudAttr(rib, 'aria-label', t('hud.rounds',
         { a: log.filter(e => e.ok).length, b: k.rounds }));
     }
   }
