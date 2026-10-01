@@ -310,6 +310,68 @@ if (!only || only.includes('sift')){
   await page.close();
 }
 
+/* ── Tangle Watch: a thread drawn from one drifting dot to the one it will meet ───────────────────── */
+if (!only || only.includes('drift')){
+  const readDots = page => page.evaluate(() => [...document.querySelectorAll('.ddot')].map(e => { const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width }; }));
+  const page = await open('drift', '.ddot', 12000);
+  const p0 = await readDots(page); const t0 = Date.now(); await page.waitForTimeout(500); const p1 = await readDots(page); const dt = Date.now() - t0;
+  let best = null;
+  for (let i = 0; i < p1.length; i++) for (let j = i + 1; j < p1.length; j++){
+    const px = p1[i].x - p1[j].x, py = p1[i].y - p1[j].y, vx = ((p1[i].x - p0[i].x) - (p1[j].x - p0[j].x)) / dt, vy = ((p1[i].y - p0[i].y) - (p1[j].y - p0[j].y)) / dt;
+    const vv = vx * vx + vy * vy, ms = vv < 1e-12 ? 0 : Math.max(0, Math.min(12000, -(px * vx + py * vy) / vv));
+    const d = Math.hypot(px + vx * ms, py + vy * ms);
+    if (!best || d < best.d) best = { i, j, d };
+  }
+  check(p1.length >= 6 && best && best.d < p1[0].w, `the bot reads the pair from how the dots drift (${p1.length} dots, ${best && Math.round(best.d)}px at the nearest)`);
+  const now = await readDots(page); const a = now[best.i], b = now[best.j];
+  await page.mouse.move(a.x, a.y); await page.mouse.down(); await page.mouse.move(a.x + (b.x - a.x) * 0.4, a.y + (b.y - a.y) * 0.4, { steps: 4 });
+  const mid = await page.evaluate(() => ({ thread: !!document.querySelector('.driftthread.on'), sel: document.querySelectorAll('.ddot.dsel').length }));
+  check(mid.thread, 'pulling away from a dot draws a thread from it');
+  check(mid.sel === 1, 'the dot that was pressed is chosen');
+  const b2 = (await readDots(page))[best.j];
+  await page.mouse.move(b2.x + 3, b2.y - 3, { steps: 6 }); await page.mouse.up(); await page.waitForTimeout(150);
+  check(await page.evaluate(() => document.querySelectorAll('.ddot.dhit').length === 2), 'letting go over the other dot of the pair wins the round');
+  await page.close();
+
+  /* A thread let go over nothing is just a tap on the first dot: it stays chosen and nothing is lost. */
+  const page2 = await open('drift', '.ddot', 12000);
+  const q = (await readDots(page2))[0];
+  await page2.mouse.move(q.x, q.y); await page2.mouse.down(); await page2.mouse.move(q.x + 12, q.y + 12, { steps: 3 });
+  await page2.mouse.move(q.x + 40, q.y + 5, { steps: 4 }); await page2.mouse.up(); await page2.waitForTimeout(120);
+  const after = await page2.evaluate(() => ({ sel: document.querySelectorAll('.ddot.dsel').length, thread: !!document.querySelector('.driftthread.on'), over: !document.querySelector('.stagepips') && !!document.querySelector('.over:not([hidden])') }));
+  check(after.sel === 1 && !after.thread, 'a thread let go over nothing leaves its first dot chosen and the thread gone');
+  await page2.close();
+}
+
+/* ── Spool Shots: a spool is pulled and let go, with a look at what it would paint first ───────────── */
+if (!only || only.includes('volley')){
+  const page = await open('volley', '.vgun', 12000);
+  const left = () => page.evaluate(() => { const b = document.querySelector('.budget'); return b ? +(b.textContent.match(/\d+/) || [0])[0] : null; });
+  const bare = () => page.evaluate(() => document.querySelectorAll('.vpix.bare').length);
+  const box = await page.evaluate(() => { const r = document.querySelector('.vbox').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top, w: r.width, h: r.height }; });
+  const l0 = await left(), b0 = await bare();
+  const g = await centre(page, '.vgun', 0);
+  await page.mouse.move(g.x, g.y); await page.mouse.down();
+  const prev = await page.evaluate(() => ({ aim: document.querySelectorAll('.vpix.aim, .vpix.aimbad').length, aiming: document.querySelectorAll('.vgun.aiming').length, prompt: (document.querySelector('.prompt') || {}).textContent || '' }));
+  check(prev.aim >= 1 && prev.aiming === 1, `pressing a spool outlines the squares its shot would reach (${prev.aim})`);
+  check(/paint|peint|pinta|malt|colou?r|couleur|color|farbe/i.test(prev.prompt), `and the line above says what it would do ("${prev.prompt}")`);
+  await page.mouse.move(box.x, box.y - 45, { steps: 6 }); await page.mouse.up(); await page.waitForTimeout(200);
+  const cancelled = await page.evaluate(() => ({ aim: document.querySelectorAll('.vpix.aim, .vpix.aimbad').length }));
+  check(cancelled.aim === 0 && await left() === l0 && await bare() === b0, 'pulled off the board and let go, nothing is fired and nothing is spent');
+  /* a spool that fits: pulled in and let go over the board, it paints */
+  const fits = await page.evaluate(() => { const gs = [...document.querySelectorAll('.vgun')]; const i = gs.findIndex(x => x.classList.contains('fits')); return i; });
+  const f = await centre(page, '.vgun', fits >= 0 ? fits : 0);
+  await page.mouse.move(f.x, f.y); await page.mouse.down(); await page.mouse.move(box.x, box.y + box.h / 2, { steps: 8 }); await page.mouse.up(); await page.waitForTimeout(300);
+  check(await left() === l0 - 1, `pulled across the board and let go, the shot is fired and costs a move (${l0} -> ${await left()})`);
+  if (fits >= 0) check(await bare() < b0, 'and it painted some of the picture');
+  /* and a plain tap is the same press and release */
+  const fits2 = await page.evaluate(() => [...document.querySelectorAll('.vgun')].findIndex(x => x.classList.contains('fits')));
+  const t2 = await centre(page, '.vgun', fits2 >= 0 ? fits2 : 1); const l1 = await left();
+  await page.mouse.click(t2.x, t2.y); await page.waitForTimeout(300);
+  check(await left() === l1 - 1, 'a tap on a spool still fires it');
+  await page.close();
+}
+
 check(errs.length === 0, 'no script errors' + (errs.length ? ': ' + errs[0] : ''));
 await browser.close();
 console.log(bad ? `\n${bad} FAILED` : '\nevery piece can be carried');

@@ -3214,6 +3214,18 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
   background:repeating-linear-gradient(90deg,#ffffff2e 0 2px,transparent 2px 6px),linear-gradient(160deg,#c9b6ff,#7a5fd6)}
 .ltccell.notch{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'%3E%3Cpath d='M.8 .8 4 5.2 7.2 .8' fill='none' stroke='%23fff' stroke-opacity='.3' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/8px 6px,#C08BFF}
 .ltccell{border-radius:50%;background:radial-gradient(circle closest-side,#ffffff1c 0 55%,#ffffff08 56%)}
+.driftthread{opacity:0;transition:opacity var(--t-fast)}
+.driftthread.on{opacity:1}
+.driftthread line{stroke:var(--cream);stroke-width:2.4;stroke-dasharray:none;stroke-linecap:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 2px #000a)}
+.vpix.aim{outline:2px solid #FFC53D;outline-offset:-2px;filter:brightness(1.3)}
+.vpix.aimbad{outline:2px dashed var(--bad);outline-offset:-2px}
+.vgun.aiming{filter:brightness(1.3);box-shadow:0 0 0 2px #FFC53D}
+.vbox,.vgun{touch-action:none}
+.windvane{position:absolute;right:10px;top:10px;width:30px;height:30px;color:#4a6d8f;opacity:.8;pointer-events:none;z-index:2;
+  background:#ffffff59;border-radius:50%;padding:4px;box-sizing:border-box}
+.windvane svg{width:100%;height:100%;display:block}
+.skimzone::before{content:"";position:absolute;top:0;bottom:0;left:32%;right:32%;background:#FFC53D2e;border-radius:var(--r-sm);pointer-events:none}
+.skimpips i.on.clean{background:#FFD76A;box-shadow:0 0 6px #FFD76Aaa}
 </style>
 
 <div class="cab">
@@ -3900,7 +3912,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.97.0';
+const VERSION_TAG = 'v0.98.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4647,12 +4659,12 @@ const STRINGS = {
     'p.forge':'{n} squares of the pattern still bare', 'forge.hole':'Pattern, column {x} row {y}', 'forge.solid':'Backing, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Patchwork|Drag each patch onto the quilt, turn it to fit — nothing left over',
     'p.gather':'{n} more to catch — let the dark ones fall', 'gather.pail':'Your basket', 'gather.keep':'A ripe one, worth catching', 'gather.dud':'A dud, let it fall', 'm.gather':'Catch the Balls|Catch the good ones, let the tangles fall',
     'p.chalk':'Chalk ramps for the yarn — then press Drop', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball of yarn', 'chalk.basket':'The cat’s basket', 'm.chalk':'Chalk Line|Chalk the ramps, peek, then drop the yarn in the basket',
-    'p.drift':'Two are on a collision course — tap them both', 'drift.dot':'Drifting dot {n}', 'm.drift':'Tangle Watch|Two of these will meet — find them before they tangle',
+    'p.drift':'Two are on a collision course — tap both, or draw a thread between them', 'drift.dot':'Drifting dot {n}', 'm.drift':'Tangle Watch|Two of these will meet — find them before they tangle',
     'p.cairn':'{n} more to stack', 'cairn.tap':'Tap to drop the stone', 'm.cairn':'Folds|Stack the knits — every overhang is gone for good',
 
     'p.siphon':'{n} jars still empty', 'sip.source':'source', 'sip.wants':'Jar wanting {c}', 'sip.done':'jar, filled', 'sip.empty':'source, emptied', 'm.siphon':'Dye Pots|Pour each dye into the pot that wants it',
     'p.descent':'{n} gaps below', 'm.descent':'Dropped Stitch|Steer the falling bobbin through every gap',
-    'p.ripple':'{n} gates to drift through', 'm.ripple':'Ripples|Tap the water — the ripples carry the leaf',
+    'p.ripple':'{n} gates to drift through', 'm.ripple':'Ripples|Tap or stir the water — the ripples carry the leaf',
     'p.slice':'{n} more to cut', 'slice.good':'Ripe', 'slice.rotten':'Rotten — do not cut', 'm.slice':'Snip|One snip cuts every thread it crosses — miss the knots',
 
     
@@ -4967,6 +4979,10 @@ const STRINGS = {
     'loaf.jam':'Nothing left fits — undo a loaf', 'loaf.spare':'One loaf is spare', 'loaf.pop':'A line of cats wanders off — {n} to go',
     'q.loaf.w1':'Snug as a loaf', 'q.loaf.w2':'Everyone fits', 'q.loaf.w3':'A box full of purrs',
     'q.loaf.m1':'The box is jammed', 'q.loaf.m2':'Out of moves',
+    /* Spool Shots aim */
+    'volley.aim':'This shot paints {n}', 'volley.aimBad':'Wrong colour for what it reaches — pull off the board to cancel',
+    /* Ripples, Snip and Needle Pass depth */
+    'ripple.wind':'Breeze', 'slice.combo':'Clean sweep — {n} in one snip, {m} more to cut', 'p.skimClean':'A clean stitch — {n} skips to go',
   },
 
   fr: {
@@ -5114,12 +5130,12 @@ const STRINGS = {
     'p.forge':'Encore {n} cases du motif', 'forge.hole':'Motif, colonne {x} ligne {y}', 'forge.solid':'Fond, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Patchwork|Glissez chaque pièce sur la courtepointe et tournez-la pour l’ajuster — rien en trop',
     'p.gather':'Encore {n} à attraper — laissez tomber les sombres', 'gather.pail':'Votre panier', 'gather.keep':'Un mûr, à attraper', 'gather.dud':'Un gâté, laissez-le tomber', 'm.gather':'Attrapez les Pelotes|Attrapez les bonnes, laissez tomber les nœuds',
     'p.chalk':'Tracez des rampes pour la pelote — puis Lâcher', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La pelote de laine', 'chalk.basket':'Le panier du chat', 'm.chalk':'Trait de Craie|Tracez les rampes, jetez un œil, puis lâchez la pelote dans le panier',
-    'p.drift':'Deux vont se percuter — touchez-les tous les deux', 'drift.dot':'Point dérivant {n}', 'm.drift':'Guet des Nœuds|Deux vont se croiser — trouvez-les avant le nœud',
+    'p.drift':'Deux vont se percuter — touchez-les, ou tracez un fil entre eux', 'drift.dot':'Point dérivant {n}', 'm.drift':'Guet des Nœuds|Deux vont se croiser — trouvez-les avant le nœud',
     'p.cairn':'Encore {n} à empiler', 'cairn.tap':'Touchez pour poser la pierre', 'm.cairn':'Pliage|Empilez les tricots — tout débord est perdu',
 
     'p.siphon':'{n} bocaux vides', 'sip.source':'source', 'sip.wants':'Bocal attendant {c}', 'sip.done':'bocal, rempli', 'sip.empty':'source, vidée', 'm.siphon':'Pots de Teinture|Versez chaque teinture dans le bon pot',
     'p.descent':'{n} passages plus bas', 'm.descent':'Maille Filée|Guidez la bobine qui tombe dans chaque trou',
-    'p.ripple':'{n} anneaux à franchir', 'm.ripple':'Ondes|Touchez l’eau — les ondes portent la feuille',
+    'p.ripple':'{n} anneaux à franchir', 'm.ripple':'Ondes|Touchez ou remuez l’eau — les ondes portent la feuille',
     'p.slice':'Encore {n} à trancher', 'slice.good':'Mûr', 'slice.rotten':'Pourri — à éviter', 'm.slice':'Coup de Ciseaux|Un coup coupe tous les fils croisés — évitez les nœuds',
 
     
@@ -5434,6 +5450,10 @@ const STRINGS = {
     'loaf.jam':'Plus rien ne rentre — annulez un chat', 'loaf.spare':'Un chat en trop', 'loaf.pop':'Une ligne de chats s’éloigne — encore {n}',
     'q.loaf.w1':'Bien au chaud', 'q.loaf.w2':'Tout le monde rentre', 'q.loaf.w3':'Une boîte pleine de ronrons',
     'q.loaf.m1':'La boîte est coincée', 'q.loaf.m2':'Plus de coups',
+    /* Spool Shots aim */
+    'volley.aim':'Ce tir peint {n}', 'volley.aimBad':'Mauvaise couleur pour ce qu’il touche — tirez hors du plateau pour annuler',
+    /* Ripples, Snip and Needle Pass depth */
+    'ripple.wind':'Brise', 'slice.combo':'Coup net — {n} d’un trait, encore {m}', 'p.skimClean':'Un point net — encore {n} ricochets',
   },
 
   es: {
@@ -5581,12 +5601,12 @@ const STRINGS = {
     'p.forge':'Quedan {n} casillas del patrón', 'forge.hole':'Patrón, columna {x} fila {y}', 'forge.solid':'Fondo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Retales|Arrastra cada retal a la colcha y gíralo para encajarlo — sin sobras',
     'p.gather':'{n} más que atrapar — deja caer los oscuros', 'gather.pail':'Tu cesta', 'gather.keep':'Uno maduro, para atrapar', 'gather.dud':'Uno malo, déjalo caer', 'm.gather':'Atrapa Ovillos|Atrapa los buenos, deja caer los enredos',
     'p.chalk':'Dibuja rampas para el ovillo — luego Soltar', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'El ovillo', 'chalk.basket':'La cesta del gato', 'm.chalk':'Línea de Tiza|Dibuja las rampas, ojea y suelta el ovillo en la cesta',
-    'p.drift':'Dos van a chocar — toca los dos', 'drift.dot':'Punto a la deriva {n}', 'm.drift':'Vigila el Enredo|Dos se van a cruzar — encuéntralos antes del nudo',
+    'p.drift':'Dos van a chocar — toca los dos, o traza un hilo entre ellos', 'drift.dot':'Punto a la deriva {n}', 'm.drift':'Vigila el Enredo|Dos se van a cruzar — encuéntralos antes del nudo',
     'p.cairn':'{n} más para apilar', 'cairn.tap':'Toca para soltar la piedra', 'm.cairn':'Pliegues|Apila los tejidos — lo que sobresale se pierde',
 
     'p.siphon':'{n} frascos vacíos', 'sip.source':'fuente', 'sip.wants':'Frasco que pide {c}', 'sip.done':'frasco, lleno', 'sip.empty':'fuente, vacía', 'm.siphon':'Tintes|Vierte cada tinte en el bote que lo pide',
     'p.descent':'{n} huecos más abajo', 'm.descent':'Punto Caído|Guía la bobina que cae por cada hueco',
-    'p.ripple':'Faltan {n} aros', 'm.ripple':'Ondas|Toca el agua — las ondas llevan la hoja',
+    'p.ripple':'Faltan {n} aros', 'm.ripple':'Ondas|Toca o remueve el agua: las ondas llevan la hoja',
     'p.slice':'Corta {n} más', 'slice.good':'Maduro', 'slice.rotten':'Podrido — no cortar', 'm.slice':'Tijeretazo|Un corte siega todo hilo que cruza — evita los nudos',
 
     
@@ -5901,6 +5921,10 @@ const STRINGS = {
     'loaf.jam':'Ya no cabe nada: deshaz un gato', 'loaf.spare':'Un gato de sobra', 'loaf.pop':'Una fila de gatos se va — quedan {n}',
     'q.loaf.w1':'Calentitos como panes', 'q.loaf.w2':'Cabemos todos', 'q.loaf.w3':'Una caja llena de ronroneos',
     'q.loaf.m1':'La caja se atascó', 'q.loaf.m2':'Sin movimientos',
+    /* Spool Shots aim */
+    'volley.aim':'Este tiro pinta {n}', 'volley.aimBad':'Color equivocado para lo que alcanza: sácalo del tablero para cancelar',
+    /* Ripples, Snip and Needle Pass depth */
+    'ripple.wind':'Brisa', 'slice.combo':'Corte limpio: {n} de una vez, quedan {m}', 'p.skimClean':'Un punto limpio: quedan {n} saltos',
   },
 
   de: {
@@ -6048,12 +6072,12 @@ const STRINGS = {
     'p.forge':'Noch {n} Felder des Musters frei', 'forge.hole':'Muster, Spalte {x} Zeile {y}', 'forge.solid':'Grund, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Flickwerk|Zieh jeden Flicken auf die Decke und dreh ihn passend — nichts bleibt übrig',
     'p.gather':'Noch {n} zu fangen — die dunklen fallen lassen', 'gather.pail':'Dein Korb', 'gather.keep':'Ein reifer, den fängst du', 'gather.dud':'Ein fauler, lass ihn fallen', 'm.gather':'Knäuel Fangen|Fang die guten, lass die Knoten fallen',
     'p.chalk':'Zeichne Rampen für das Knäuel — dann Fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Das Wollknäuel', 'chalk.basket':'Der Korb der Katze', 'm.chalk':'Kreidestrich|Zeichne die Rampen, wirf einen Blick darauf und lass das Knäuel in den Korb fallen',
-    'p.drift':'Zwei laufen aufeinander zu — tippe beide an', 'drift.dot':'Treibender Punkt {n}', 'm.drift':'Knotenwache|Zwei treffen sich — finde sie vor dem Knoten',
+    'p.drift':'Zwei laufen aufeinander zu — tippe beide an oder zieh einen Faden dazwischen', 'drift.dot':'Treibender Punkt {n}', 'm.drift':'Knotenwache|Zwei treffen sich — finde sie vor dem Knoten',
     'p.cairn':'Noch {n} zu stapeln', 'cairn.tap':'Tippen, um den Stein zu setzen', 'm.cairn':'Falten|Staple die Strickstücke — jeder Überhang ist für immer weg',
 
     'p.siphon':'Noch {n} Gläser leer', 'sip.source':'Quelle', 'sip.wants':'Glas will {c}', 'sip.done':'Glas, gefüllt', 'sip.empty':'Quelle, geleert', 'm.siphon':'Färbetöpfe|Gieß jede Farbe in den passenden Topf',
     'p.descent':'Noch {n} Lücken', 'm.descent':'Fallmasche|Lenke die fallende Spule durch jede Lücke',
-    'p.ripple':'Noch {n} Ringe', 'm.ripple':'Wellen|Tippe aufs Wasser — die Wellen tragen das Blatt',
+    'p.ripple':'Noch {n} Ringe', 'm.ripple':'Wellen|Tippe aufs Wasser oder rühre darin — die Wellen tragen das Blatt',
     'p.slice':'Noch {n} schneiden', 'slice.good':'Reif', 'slice.rotten':'Faul — nicht schneiden', 'm.slice':'Schnipp|Ein Schnitt trennt jeden Faden — meide die Knoten',
 
     
@@ -6368,6 +6392,10 @@ const STRINGS = {
     'loaf.jam':'Nichts passt mehr — nimm eine Katze zurück', 'loaf.spare':'Eine Katze zu viel', 'loaf.pop':'Eine Reihe Katzen zieht ab — noch {n}',
     'q.loaf.w1':'Kuschelig wie ein Laib', 'q.loaf.w2':'Alle passen rein', 'q.loaf.w3':'Eine Kiste voller Schnurren',
     'q.loaf.m1':'Die Kiste klemmt', 'q.loaf.m2':'Keine Züge mehr',
+    /* Spool Shots aim */
+    'volley.aim':'Dieser Schuss malt {n}', 'volley.aimBad':'Falsche Farbe für das, was er trifft — zieh vom Brett weg, um abzubrechen',
+    /* Ripples, Snip and Needle Pass depth */
+    'ripple.wind':'Brise', 'slice.combo':'Glatter Schnitt — {n} auf einmal, noch {m}', 'p.skimClean':'Ein sauberer Stich — noch {n} Sprünge',
   }
 };
 
@@ -6472,6 +6500,14 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.98.0', date:'2026-10-01', items:[
+    'Draw a thread. In Tangle Watch, press a dot and pull a thread to the one you think it will meet, then let go: it is the same as tapping both. A thread let go over nothing leaves the first dot chosen, and tapping both still works.',
+    'Pull a spool and let go. In Spool Shots, pressing a spool outlines the squares its shot would paint (dashed red if it would land the wrong colour), letting go fires it, and pulling off the board first cancels it for free. A tap still fires.',
+    'Ripples has weather. From level 8 a breeze leans on the leaf and veers as it blows, with a vane that shows which way, and you can stir the water with a dragged finger for a softer ripple every few steps.',
+    'Snip rewards a good stroke: three threads in one snip is worth two more, five is worth three more again. From level 9 the threads sway on the spot, and are cut where they are.',
+    'Needle Pass has clean stitches. Through the middle of the window lights the pip gold and the next window is not made as hard; from level 14 the window itself sways.',
+    'Every coloured piece wears a kitten face now (with colour assist on, each colour still keeps its own shape).',
+  ] },
   { v:'0.97.0', date:'2026-10-01', items:[
     'A new mode: Loaf Box. Sleeping kittens fill a cardboard box, and cat loaves in the tray are yours to fit around them. Drag a loaf in (it follows your finger and lands on the nearest place it fits), tap a loaf to turn it, and when a row or a column is full it clears and gives the room back. The preview lights where the loaf will land and which lines it will finish. Undo takes a loaf back, Hint shows a place, and from level 6 there is one loaf too many, so you have to choose. Every box is built backwards from a way through it and replayed before you see it.',
     'Purr has something to count with: a paw for every purr you owe, filling as you hold the band. From level 8 the band wanders on a second, quicker beat as well, and it gets a little narrower as you climb.',
@@ -7206,12 +7242,12 @@ const modeBlurb = id => (t('m.'+id).split('|')[1]) || MODES[id].blurb;
 const inkName   = ink => t('c.'+ink.name);
 const shapeWord = shape => t('s.'+shape);
 /* Every piece wears a mark now, not only when colour assist is on. With assist
-   off they all wear the same yarn ball, so a board reads as a basket of wool
-   instead of a grid of flat swatches, and hue is still the only thing that
-   tells one piece from another — the modes built on colour distance stay
+   off they all wear the same little cat face, so a board reads as a basket of
+   kittens instead of a grid of flat swatches, and hue is still the only thing
+   that tells one piece from another — the modes built on colour distance stay
    exactly as hard as they were. With assist on, each colour keeps its own
    character and the shape is the answer, which is what it was always for. */
-const mark = (shape, stroke) => shapeSvg(assistOn() ? shape : 'yarn', stroke);
+const mark = (shape, stroke) => shapeSvg(assistOn() ? shape : 'face', stroke);
 
 /* Five faces, one per multiplier step: eyes go from open, to pleased, to shut
    tight, to delighted. Rebuilt only when the step actually changes, because
@@ -7325,7 +7361,11 @@ const SHAPE_PATH = {
        + '<circle cx="50" cy="34" r="7"/><circle cx="69" cy="42" r="7"/>',
   fish:  '<path d="M26 50 Q45 31 64 50 Q45 69 26 50 Z"/><path d="M64 50 L80 38 L80 62 Z"/>',
   bell:  '<path d="M34 61 Q34 30 50 30 Q66 30 66 61 Z"/><path d="M27 61 H73"/><path d="M50 69 v3"/>',
-  mouse: '<circle cx="45" cy="55" r="19"/><circle cx="33" cy="35" r="9"/><path d="M64 60 Q79 64 75 76"/>'
+  mouse: '<circle cx="45" cy="55" r="19"/><circle cx="33" cy="35" r="9"/><path d="M64 60 Q79 64 75 76"/>',
+  /* The one everything wears when colour assist is off: a kitten, ears and all. Eyes are zero-length strokes, which the round
+     caps turn into dots. */
+  face:  '<path d="M29 46 Q30 32 28 22 L43 33 Q50 31 57 33 L72 22 Q70 32 71 46 Q73 76 50 76 Q27 76 29 46 Z"/>'
+       + '<path d="M40 55 h.1M60 55 h.1" stroke-width="10"/><path d="M45 64 L50 68 L55 64"/>'
 };
 function shapeSvg(shape, stroke){
   return '<svg viewBox="0 0 100 100" aria-hidden="true" class="shp">'
@@ -9368,7 +9408,10 @@ const MODES = {
       let speed = 0.55 + Math.min(0.7, ctx.level*0.03);
       /* From level 10 a window sometimes has a knot in it: a short red stretch the needle must not be stopped on. */
       const knotP = clamp(0.1 + (ctx.level - 8)*0.03, 0.1, 0.6);
-      let pos = 8, dir = 1, hits = 0, zone = 50, live = true, raf2 = 0, knotW = 0, knotOff = 0;
+      /* From level 14 the window itself sways, so the needle is not the only thing to read. */
+      const sway = clamp((ctx.level - 13) * 0.5, 0, 6);
+      let pos = 8, dir = 1, hits = 0, zone = 50, zone0 = 50, live = true, raf2 = 0, knotW = 0, knotOff = 0, tick = 0;
+      const clean = [];
 
       const track = mk('div','skimtrack');
       const stars = mk('div','skimstars'); track.appendChild(stars);
@@ -9390,13 +9433,14 @@ const MODES = {
 
       const drawPips = () => {
         pips.replaceChildren();
-        for (let i=0;i<need;i++){ const p = mk('i', i < hits ? 'on' : ''); pips.appendChild(p); }
+        for (let i=0;i<need;i++){ const p = mk('i', i < hits ? (clean[i] ? 'on clean' : 'on') : ''); pips.appendChild(p); }
       };
       const place = () => {
         /* Never flush against an edge: a window you can only reach at the exact
            turnaround is a coin flip, not a read. */
         const half = width/2;
-        zone = (half + 6) + ctx.rnd() * (100 - 2*(half + 6));
+        zone0 = (half + 6 + sway) + ctx.rnd() * Math.max(0, 100 - 2*(half + 6 + sway));
+        zone = zone0;
         band.style.left = (zone - half) + '%';
         band.style.width = width + '%';
         knotW = ctx.level >= 10 && ctx.rnd() < knotP ? Math.max(3, width*0.26) : 0;
@@ -9414,6 +9458,7 @@ const MODES = {
         if (pos >= 96){ pos = 96; dir = -1; }
         if (pos <= 4){ pos = 4; dir = 1; }
         mark.style.left = pos + '%';
+        if (sway){ tick++; zone = zone0 + Math.sin(tick * 0.021) * sway; band.style.left = (zone - width/2) + '%'; }
         track.classList.toggle('hot', clear());
         raf2 = requestAnimationFrame(frame);
       };
@@ -9423,14 +9468,17 @@ const MODES = {
       onTap(hit, () => {
         if (!live) return;
         if (!clear()){ stop(); return ctx.miss(hit); }
+        /* Through the middle of the window is a clean stitch: it lights its pip gold and the next window is not made as hard. */
+        const centred = Math.abs(pos - (zone + (knotW ? 0 : 0))) <= width * 0.18;
+        clean[hits] = centred;
         hits++;
         drawPips();
-        sfx.good(hits); buzz('good');
+        sfx.good(hits + (centred ? 2 : 0)); buzz('good');
         if (hits >= need){ stop(); return ctx.win(hit); }
-        width = Math.max(7, width * 0.84);
-        speed *= 1.12;
+        width = Math.max(7, width * (centred ? 0.92 : 0.84));
+        speed *= centred ? 1.05 : 1.12;
         place();
-        ctx.prompt(t('p.skim', { n: need - hits }));
+        ctx.prompt(t(centred ? 'p.skimClean' : 'p.skim', { n: need - hits }));
       });
       ctx.prompt(t('p.skim', { n: need }));
     }
@@ -9860,6 +9908,7 @@ const MODES = {
       const need  = clamp(5 + Math.floor(ctx.level/2), 5, 18);
       const total = clamp(7 + Math.floor(ctx.level/1.4), 7, 22);
       const rotten = clamp(Math.floor(ctx.level/5), 0, 6);
+      const bob = clamp((ctx.level - 8) * 0.14, 0, 2.2);      /* from level 9 the threads sway on the spot, and more as you climb */
       const R = 8.5;
 
       const box = mk('div','slicebox');
@@ -9878,7 +9927,7 @@ const MODES = {
         let x=0,y=0,ok=false;
         for (let a=0;a<260 && !ok;a++){
           x = R + ctx.rnd()*(100-2*R); y = R + ctx.rnd()*(100-2*R);
-          ok = bits.every(p => Math.hypot(p.x-x, (p.y-y)*arBuild) > R*2.3);
+          ok = bits.every(p => Math.hypot(p.x-x, (p.y-y)*arBuild) > R*(bob ? 2.5 : 2.3));
         }
         if (!ok) continue;
         const bad = i >= good;
@@ -9887,16 +9936,30 @@ const MODES = {
         e.setAttribute('role','img');
         e.setAttribute('aria-label', bad ? t('slice.rotten') : t('slice.good'));
         box.appendChild(e);
-        bits.push({ e, x, y, bad });
+        bits.push({ e, x, y, bad, bx: x, by: y, amp: bob ? bob * (0.6 + ctx.rnd()*0.4) : 0, ph: ctx.rnd() * 6.283 });
       }
       shuffle(bits, ctx.rnd);
       /* From level 8 one of the good ones is golden, and is worth three. */
       if (ctx.level >= 8){ const g = bits.find(p => !p.bad); if (g){ g.gold = true; g.e.classList.add('gold'); } }
       box.appendChild(ink);
 
-      let cut = 0, done = false, path = [];
+      let cut = 0, done = false, path = [], strokeCut = 0, got3 = false, got5 = false;
       const say = () => ctx.prompt(t('p.slice', { n: Math.max(0, need - cut) }));
       say();
+      /* The ones that sway are drawn from where they are, and cut from there too. */
+      if (bob){
+        let raf3 = 0, t0 = performance.now();
+        const sway = () => {
+          if (done) return;
+          const ms = performance.now() - t0;
+          bits.forEach(p => { if (p.gone) return;
+            p.x = p.bx + Math.cos(p.ph + ms * 0.0011) * p.amp; p.y = p.by + Math.sin(p.ph * 1.3 + ms * 0.0014) * p.amp;
+            p.e.style.left = p.x + '%'; p.e.style.top = p.y + '%'; });
+          raf3 = requestAnimationFrame(sway);
+        };
+        raf3 = requestAnimationFrame(sway);
+        ctx.after(600000, () => cancelAnimationFrame(raf3));
+      }
 
       /* Distance from a point to the segment just drawn — a stroke cuts what it
          passes THROUGH, not what happens to be near where it stopped. */
@@ -9918,7 +9981,15 @@ const MODES = {
           if (p.bad){ hitBad = p; return; }
           p.gone = true; p.e.classList.add('cut'); cut += p.gold ? 3 : 1; got++;
         });
-        if (got){ sfx.good(cut); buzz(HAPTIC.grow(got)); say(); }
+        strokeCut += got;
+        /* Several in one stroke is what the scissors are for: three at once is worth two more, five worth three more again. */
+        let bonus = 0;
+        if (strokeCut >= 3 && !got3){ got3 = true; bonus += 2; }
+        if (strokeCut >= 5 && !got5){ got5 = true; bonus += 3; }
+        if (bonus){ cut += bonus; sfx.good(cut + 2); }
+        /* While a stroke is a combo, the line above says so, and keeps the count as it goes. */
+        if (bonus || got) ctx.prompt(strokeCut >= 3 ? t('slice.combo', { n: strokeCut, m: Math.max(0, need - cut) }) : t('p.slice', { n: Math.max(0, need - cut) }));
+        if (got){ sfx.good(cut); buzz(HAPTIC.grow(got)); }
         if (hitBad){
           hitBad.e.classList.add('hitrot');
           done = true;
@@ -9928,7 +9999,7 @@ const MODES = {
       };
 
       onDrag(box, {
-        start: q => { path = [q]; trail.setAttribute('points', q.x+','+q.y); },
+        start: q => { path = [q]; strokeCut = 0; got3 = got5 = false; trail.setAttribute('points', q.x+','+q.y); },
         move:  q => {
           if (done || !path.length) return;
           const last = path[path.length-1];
@@ -9962,6 +10033,9 @@ const MODES = {
          A ripple should nudge. This lands one tap at roughly a tenth of the
          pool, so a route is several deliberate taps rather than one heave. */
       const push  = 0.155 + Math.min(0.085, ctx.level*0.0035);
+      /* From level 8 a breeze leans on the leaf, and it veers a little as it blows: the leaf drifts where you did not send it. */
+      const gust  = clamp((ctx.level - 7) * 0.00025, 0, 0.0035);
+      let wind = ctx.rnd() * Math.PI * 2, wt = 0;
       let lx = 50, ly = 82, vx = 0, vy = 0, done = false, raf2 = 0, hit = 0;
 
       const pool = mk('div','ripplepool');
@@ -9992,6 +10066,13 @@ const MODES = {
         pool.appendChild(e); sleepers.push({ x, y }); k++;
       }
       pool.appendChild(leaf);
+      /* A cat's tail for a wind vane: it points the way the breeze is pushing. */
+      let vane = null;
+      if (gust > 0){
+        vane = mk('div','windvane'); vane.setAttribute('role','img'); vane.setAttribute('aria-label', t('ripple.wind'));
+        vane.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h15M13 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        pool.appendChild(vane);
+      }
 
       const say = () => ctx.prompt(t('p.ripple', { n: gates - hit }));
       say();
@@ -10008,10 +10089,15 @@ const MODES = {
           /* Only the wavefront pushes, not the whole disc — that is what makes
              the delay legible instead of feeling like a magnet. */
           if (Math.abs(d - w.r) < 4 && d > 0.5){
-            const f = push * (1 - w.r/34);
+            const f = push * (1 - w.r/34) * (w.k || 1);
             vx += (lx-w.x)/d * f; vy += (ly-w.y)/d * f;
           }
           if (w.r > 34){ w.el.remove(); waves.splice(i,1); }
+        }
+        if (gust){
+          wt += 1; wind += Math.sin(wt * 0.011) * 0.012;
+          vx += Math.cos(wind) * gust; vy += Math.sin(wind) * gust;
+          vane.style.transform = 'rotate(' + wind.toFixed(3) + 'rad)';
         }
         vx *= 0.93; vy *= 0.93;          /* settle quickly, so a nudge is readable */
         lx += vx; ly += vy;
@@ -10041,17 +10127,34 @@ const MODES = {
       };
       raf2 = requestAnimationFrame(frame);
 
-      onTap(pool, ev => {
-        if (done) return;
+      const splash = (ev, k) => {
         const r = pool.getBoundingClientRect();
         const x = (ev.clientX - r.left) / r.width * 100;
         const y = (ev.clientY - r.top) / r.height * 100;
         const e = mk('div','wave');
         e.style.left = x+'%'; e.style.top = y+'%';
         pool.insertBefore(e, leaf);
-        waves.push({ x, y, r: 1, el: e });
+        waves.push({ x, y, r: 1, el: e, k });
         sfx.tap(); buzz('tap');
+      };
+      onTap(pool, ev => { if (!done) splash(ev, 1); });
+      /* Or drag a finger through the water: a softer ripple every few steps along the way, so a stroke is a push in a direction
+         rather than a drumroll. */
+      let stir = null;
+      pool.addEventListener('pointerdown', ev => {
+        if (ev.button || stir) return;
+        stir = { id: ev.pointerId, x: ev.clientX, y: ev.clientY, t: ev.timeStamp };
+        try { pool.setPointerCapture(ev.pointerId); } catch (e) {}
       });
+      pool.addEventListener('pointermove', ev => {
+        if (!stir || ev.pointerId !== stir.id || done) return;
+        const r = pool.getBoundingClientRect();
+        if (Math.hypot(ev.clientX - stir.x, ev.clientY - stir.y) < r.width * 0.08 || ev.timeStamp - stir.t < 80) return;
+        stir.x = ev.clientX; stir.y = ev.clientY; stir.t = ev.timeStamp;
+        splash(ev, 0.6);
+      });
+      const unstir = ev => { if (stir && ev.pointerId === stir.id) stir = null; };
+      pool.addEventListener('pointerup', unstir); pool.addEventListener('pointercancel', unstir);
     }
   },
 
@@ -10482,6 +10585,58 @@ const MODES = {
       });
       tools.appendChild(scout); col.appendChild(tools);
       const sel = new Set();
+      /* Choosing a dot, by tap or by the end of a drawn thread: the same thing either way. */
+      const choose = d => {
+        if (done) return;
+        const e = d.e;
+        if (sel.has(d)){ sel.delete(d); e.classList.remove('dsel'); return; }
+        sel.add(d); e.classList.add('dsel');
+        if (sel.size < 2) return;
+        done = true; cancelAnimationFrame(raf2); wire.classList.remove('on');
+        if (sel.has(pa) && sel.has(pb)){
+          pa.e.classList.add('dhit'); pb.e.classList.add('dhit');
+          return ctx.win(pa.e);
+        }
+        return ctx.miss(e);
+      };
+      /* The thread you draw from one dot to the other: it is pinned to the dot you pressed, which keeps drifting, and its far end
+         follows the finger. */
+      const wire = document.createElementNS(svgNS, 'svg');
+      wire.setAttribute('viewBox', '0 0 100 100'); wire.setAttribute('preserveAspectRatio', 'none'); wire.setAttribute('class', 'drifttrails driftthread');
+      const wline = document.createElementNS(svgNS, 'line'); wire.appendChild(wline); field.appendChild(wire);
+      let drag = null;
+      const pin = () => { if (!drag || !drag.moved) return; const q = at(drag.from, performance.now() - start); wline.setAttribute('x1', q.x); wline.setAttribute('y1', q.y); };
+      const dotAt = (x, y) => {
+        for (const el of document.elementsFromPoint(x, y)){ const hit = dots.find(d => d.e === el); if (hit) return hit; }
+        /* A thumb lets go a little off: the nearest dot within a dot and a half. */
+        let best = null, bd = Infinity;
+        dots.forEach(d => { const r = d.e.getBoundingClientRect(), dd = Math.hypot(x - (r.left + r.width/2), y - (r.top + r.height/2));
+          if (dd < r.width * 0.75 + 12 && dd < bd){ bd = dd; best = d; } });
+        return best;
+      };
+      field.addEventListener('pointermove', ev => {
+        if (!drag || ev.pointerId !== drag.id) return;
+        if (!drag.moved){
+          if (Math.hypot(ev.clientX - drag.x0, ev.clientY - drag.y0) < 9) return;
+          drag.moved = true; wire.classList.add('on');
+        }
+        const r = field.getBoundingClientRect();
+        wline.setAttribute('x2', (ev.clientX - r.left) / r.width * 100); wline.setAttribute('y2', (ev.clientY - r.top) / r.height * 100);
+        pin();
+      });
+      const letGo = ev => {
+        if (!drag || ev.pointerId !== drag.id) return;
+        const g = drag; drag = null; wire.classList.remove('on');
+        try { field.releasePointerCapture(ev.pointerId); } catch(e){}
+        if (!g.moved || done || ev.type === 'pointercancel') return;
+        const to = dotAt(ev.clientX, ev.clientY);
+        /* The press that began the thread may have un-chosen its dot (it was chosen already): a thread is two dots joined, so both
+           are chosen when it is finished, and a thread let go over nothing leaves things as they were. */
+        if (to && to !== g.from){ if (!sel.has(g.from)) choose(g.from); choose(to); }
+        else if (g.wasSel && !sel.has(g.from)) choose(g.from);
+      };
+      field.addEventListener('pointerup', letGo);
+      field.addEventListener('pointercancel', letGo);
 
       dots.forEach((d, i) => {
         const e = mk('i','ddot');
@@ -10489,18 +10644,14 @@ const MODES = {
         e.setAttribute('role','button');
         e.setAttribute('aria-label', t('drift.dot', { n: i + 1 }));
         d.e = e; field.appendChild(e);
-        onTap(e, () => {
-          if (done) return;
-          if (sel.has(d)){ sel.delete(d); e.classList.remove('dsel'); return; }
-          sel.add(d); e.classList.add('dsel');
-          if (sel.size < 2) return;
-          done = true; cancelAnimationFrame(raf2);
-          if (sel.has(pa) && sel.has(pb)){
-            pa.e.classList.add('dhit'); pb.e.classList.add('dhit');
-            return ctx.win(pa.e);
-          }
-          return ctx.miss(e);
+        e.addEventListener('pointerdown', ev => {
+          if (done || ev.button || drag) return;
+          drag = { id: ev.pointerId, from: d, x0: ev.clientX, y0: ev.clientY, moved: false, wasSel: sel.has(d) };
+          try { field.setPointerCapture(ev.pointerId); } catch(err){}
+          const q = at(d, performance.now() - start);
+          wline.setAttribute('x1', q.x); wline.setAttribute('y1', q.y); wline.setAttribute('x2', q.x); wline.setAttribute('y2', q.y);
         });
+        onTap(e, () => choose(d));
       });
 
       ctx.prompt(t('p.drift'));
@@ -10512,6 +10663,7 @@ const MODES = {
           d.e.style.left = (q.x - R) + '%';
           d.e.style.top  = (q.y - R) + '%';
         });
+        pin();
         const a = at(pa, ms), b = at(pb, ms);
         if (Math.hypot(a.x-b.x, a.y-b.y) < 2*R){
           done = true; cancelAnimationFrame(raf2);
@@ -13061,7 +13213,44 @@ const MODES = {
         });
       };
 
-      gunEls.forEach((b, gi) => onTap(b, () => { if (done || busy) return; fire(gi); }));
+      /* A spool is pulled and let go. Pressing it shows what the shot would paint (squares it reaches are outlined, or dashed red
+         if it would land the wrong colour); letting go fires it, and pulling off the board first cancels it, which costs nothing.
+         A plain tap is the same press and release, so it fires; Enter and Space on the spool fire it too. */
+      let aim = null;
+      const clearAim = () => { pix.forEach(b => b.classList.remove('aim', 'aimbad')); gunEls.forEach(b => b.classList.remove('aiming')); };
+      const showAim = gi => {
+        clearAim();
+        const hit = shot(grid, guns[gi]), wrong = !hit.length || hit.some(i => target[i] !== tint[gi]);
+        hit.forEach(i => pix[i].classList.add(wrong ? 'aimbad' : 'aim'));
+        gunEls[gi].classList.add('aiming');
+        ctx.prompt(wrong ? t('volley.aimBad') : t('volley.aim', { n: hit.length }));
+      };
+      const letGo = (ev, cancelled) => {
+        if (!aim || ev.pointerId !== aim.id) return;
+        const a = aim; aim = null;
+        try { box.releasePointerCapture(ev.pointerId); } catch (e) {}
+        clearAim(); paint();
+        if (cancelled || done || busy) return;
+        const r = box.getBoundingClientRect();
+        const inside = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
+        if (!a.moved || inside) fire(a.gi);
+        else sfx.tap();
+      };
+      gunEls.forEach((b, gi) => {
+        b.addEventListener('pointerdown', ev => {
+          if (done || busy || ev.button || aim) return;
+          ev.preventDefault();
+          aim = { id: ev.pointerId, gi, x0: ev.clientX, y0: ev.clientY, moved: false };
+          try { box.setPointerCapture(ev.pointerId); } catch (e) {}
+          showAim(gi);
+        });
+        b.addEventListener('click', ev => { if (ev.detail === 0 && !done && !busy) fire(gi); });
+      });
+      box.addEventListener('pointermove', ev => {
+        if (aim && ev.pointerId === aim.id && Math.hypot(ev.clientX - aim.x0, ev.clientY - aim.y0) > 9) aim.moved = true;
+      });
+      box.addEventListener('pointerup', ev => letGo(ev, false));
+      box.addEventListener('pointercancel', ev => letGo(ev, true));
 
       /* A shot you cannot take back would make this a mode you lose to one bad
          guess. Tapping any square the last shot painted winds it off the board,
