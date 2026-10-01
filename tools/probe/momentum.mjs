@@ -44,7 +44,7 @@ const play = (wrong = false) => page.evaluate(w => {
     const name = word.textContent.trim().toLowerCase();
     const right = swatches.find(b => reversed
       ? (b.getAttribute('aria-label') || '').toLowerCase() === name
-      : getComputedStyle(b).backgroundColor === ink);
+      : (b.dataset.hex ? 'rgb(' + [1, 3, 5].map(i => parseInt(b.dataset.hex.slice(i, i + 2), 16)).join(', ') + ')' : getComputedStyle(b).backgroundColor) === ink);
     if (!right) return 'dye: could not find the answer';
     const pick = w ? swatches.find(b => b !== right) : right;
     window.__last = swatches[0]; pick.click(); return 'dye';

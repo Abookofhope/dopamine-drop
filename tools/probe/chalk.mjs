@@ -104,8 +104,10 @@ for (const [xp, lvl] of PROFILES){
   const page = await boot(12000); const s = await read(page);
   /* the chalk runs out: a long scribble stops at the budget and says so */
   await stroke(page, s, Array.from({ length: 420 }, (_, i) => { const row = Math.floor(i / 42), c = i % 42; return [row % 2 ? 92 - c * 2 : 8 + c * 2, 14 + row * 7]; }));
+  /* the bar eases down as the chalk is spent: read it once it has stopped, not mid-way */
+  await page.waitForTimeout(500);
   const dry = await read(page);
-  check(dry.inkFrac < 0.02 && dry.lowInk, 'the chalk runs out');
+  check(dry.inkFrac < 0.02 && dry.lowInk, `the chalk runs out (${(dry.inkFrac * 100).toFixed(1)}% left, ${dry.lines} lines, low ${dry.lowInk})`);
   check(/out|plus|acab|alle/i.test(dry.prompt), `and says so (${dry.prompt.trim()})`);
   await page.locator('.ctool').nth(0).click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(120);
   const back = await read(page);
@@ -117,10 +119,26 @@ for (const [xp, lvl] of PROFILES){
   await page.close();
 }
 
+/* a round with nothing useful drawn is lost on EVERY board: a bumper can send the ball into the basket on its own, and a board like that is not a puzzle */
+{
+  const results = [];
+  for (let k = 0; k < 6; k++){
+    const page = await boot(k % 2 ? 12000 : 2000); const s = await read(page);
+    /* Drop wants a line drawn, so the least that can be: a short one in the bottom corner, below the basket's mouth, where no ball
+       can use it. (A line in the middle of the field is sometimes a real ramp for the board it lands on.) */
+    await stroke(page, s, [[96, 97], [93, 97.2], [90, 97.4]]);
+    await page.locator('.ctool.drop').click({ position: { x: 20, y: 18 } });
+    results.push(await outcome(page));
+    await page.close();
+  }
+  const free = results.filter(r => r === 'win').length;
+  check(free === 0, `dropping the ball with only a harmless line drawn never wins (${results.join(', ')})`);
+}
+
 /* a round with nothing useful drawn is lost, not stuck */
 {
   const page = await boot(2000); const s = await read(page);
-  await stroke(page, s, [[5, 50], [14, 50.5], [23, 51]]);
+  await stroke(page, s, [[96, 97], [93, 97.2], [90, 97.4]]);
   await page.locator('.ctool.drop').click({ position: { x: 20, y: 18 } });
   const out = await outcome(page);
   check(out === 'miss' || out === 'over', `a line that does not help loses the round (${out})`);

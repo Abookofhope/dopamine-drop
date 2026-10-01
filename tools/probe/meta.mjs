@@ -33,7 +33,7 @@ const play = (page, wrong = false) => page.evaluate(w => {
     const word = surf.querySelector('.stroopword.ul') || surf.querySelector('.stroopword'); if (!word) return 'dye: no word';
     const reversed = !!surf.querySelector('.stroopwrap.reversed') || /name of the underlined/i.test((document.querySelector('.prompt') || {}).textContent || '');
     const ink = getComputedStyle(word).color, name = word.textContent.trim().toLowerCase();
-    const right = swatches.find(b => reversed ? (b.getAttribute('aria-label') || '').toLowerCase() === name : getComputedStyle(b).backgroundColor === ink);
+    const right = swatches.find(b => reversed ? (b.getAttribute('aria-label') || '').toLowerCase() === name : (b.dataset.hex ? 'rgb(' + [1, 3, 5].map(i => parseInt(b.dataset.hex.slice(i, i + 2), 16)).join(', ') + ')' : getComputedStyle(b).backgroundColor) === ink);
     if (!right) return 'dye: no answer';
     window.__last = swatches[0]; (w ? swatches.find(b => b !== right) : right).click(); return 'dye';
   }

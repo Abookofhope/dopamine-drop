@@ -153,7 +153,7 @@ if (!only || only.includes('tumble')){
   const page = await open('tumble', '.cell.sock.full', 12000);
   const n0 = await page.evaluate(() => document.querySelectorAll('.cell.sock.full').length), cells = await page.evaluate(() => document.querySelectorAll('.cell.sock').length);
   check(Math.round(Math.sqrt(cells)) >= 5, `the drum is at least five squares across (${Math.round(Math.sqrt(cells))})`);
-  const pair = await page.evaluate(() => { const f = [...document.querySelectorAll('.cell.sock.full')]; const by = {}; f.forEach((e, i) => (by[e.style.background] = by[e.style.background] || []).push(i)); const k = Object.values(by).find(v => v.length >= 2); return k ? [k[0], k[1]] : null; });
+  const pair = await page.evaluate(() => { const f = [...document.querySelectorAll('.cell.sock.full')]; const by = {}; f.forEach((e, i) => (by[e.dataset.hex] = by[e.dataset.hex] || []).push(i)); const k = Object.values(by).find(v => v.length >= 2); return k ? [k[0], k[1]] : null; });
   const slots = await page.evaluate(p => { const all = [...document.querySelectorAll('.cell.sock')], f = [...document.querySelectorAll('.cell.sock.full')]; return p.map(i => all.indexOf(f[i])); }, pair);
   const a = await centre(page, '.cell.sock.full', pair[0]), b = await centre(page, '.cell.sock.full', pair[1]);
   const r = await drag(page, a, b);
@@ -256,8 +256,19 @@ if (!only || only.includes('arc')){
   const pegs = await page.evaluate(() => document.querySelectorAll('.arcdot').length);
   check(pegs >= 6, `there are at least six pegs (${pegs})`);
   const from = await centre(page, '.arcdot.lit', 0);
-  const idx = await page.evaluate(() => [...document.querySelectorAll('.arcdot')].findIndex(d => d.classList.contains('near')));
-  if (idx >= 0){
+  /* A peg in reach is taken the moment the finger is over it, so a finger run to the far peg takes every peg it crosses on the way. Aim at
+     a peg in reach whose straight path from the lit one crosses no other peg, or the answer depends on where the board happened to put them. */
+  const pick = await page.evaluate(() => {
+    const dots = [...document.querySelectorAll('.arcdot')], c = d => { const r = d.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width }; };
+    const f = c(dots.find(d => d.classList.contains('lit')));
+    const seg = (p, a, b) => { const dx = b.x - a.x, dy = b.y - a.y, L = dx * dx + dy * dy, t = L ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / L)) : 0; return Math.hypot(p.x - (a.x + dx * t), p.y - (a.y + dy * t)); };
+    const clear = i => dots.every((d, j) => j === i || d.classList.contains('lit') || seg(c(d), f, c(dots[i])) > c(d).w * 0.8);
+    const near = dots.map((d, i) => i).filter(i => dots[i].classList.contains('near'));
+    return { any: near.length, idx: near.find(clear) ?? -1 };
+  });
+  const idx = pick.idx;
+  if (pick.any && idx < 0) check(true, 'every peg in reach has another on the way to it; skipped');
+  else if (idx >= 0){
     const to = await centre(page, '.arcdot', idx);
     await page.mouse.move(from.x, from.y); await page.mouse.down(); await page.mouse.move(to.x, to.y, { steps: 8 }); await page.mouse.up(); await page.waitForTimeout(100);
     check(await page.evaluate(() => document.querySelectorAll('.arcdot.lit').length) === 2, 'running a finger from the lit peg to one in reach loops it in');
@@ -370,6 +381,38 @@ if (!only || only.includes('volley')){
   await page.mouse.click(t2.x, t2.y); await page.waitForTimeout(300);
   check(await left() === l1 - 1, 'a tap on a spool still fires it');
   await page.close();
+}
+
+/* ── Tidy Up: pieces start on the floor, stay under the finger, and go into their own basket ───────── */
+if (!only || only.includes('tidy')){
+  /* Pieces were once stacked down the board by a style rule that beat the one placing them: on the baskets, under them, or off the
+     board, and offset from the finger by however many pieces were above them. */
+  for (const vp of [{ width: 400, height: 820 }, { width: 320, height: 568 }]){
+    const page = await open('tidy', '.tidyitem', 12000, vp);
+    const geo = await page.evaluate(() => {
+      const bins = [...document.querySelectorAll('.tidybin')].map(b => b.getBoundingClientRect()), box = document.querySelector('.tidybox').getBoundingClientRect();
+      const items = [...document.querySelectorAll('.tidyitem')].map(i => i.getBoundingClientRect());
+      return { n: items.length,
+        over: items.filter(r => bins.some(b => r.left < b.right && r.right > b.left && r.top < b.bottom && r.bottom > b.top)).length,
+        outside: items.filter(r => r.left < box.left - 1 || r.right > box.right + 1 || r.top < box.top - 1 || r.bottom > box.bottom + 1).length };
+    });
+    check(geo.n >= 6 && geo.over === 0 && geo.outside === 0, `${vp.width}px wide: ${geo.n} pieces, none on a basket (${geo.over}), none off the board (${geo.outside})`);
+    if (vp.width === 400){
+      const pick = await page.evaluate(() => { const its = [...document.querySelectorAll('.tidyitem')], i = its.length - 1, r = its[i].getBoundingClientRect(), b = document.querySelector('.tidybox').getBoundingClientRect();
+        /* a step towards the middle of the floor, so the edge of the board cannot be what stops it */
+        return { i, x: r.left + r.width / 2, y: r.top + r.height / 2, hex: its[i].dataset.hex, dx: (r.left + r.width / 2 < b.left + b.width / 2) ? 40 : -40, dy: (r.top + r.height / 2 < b.top + b.height * 0.3) ? 30 : -30 }; });
+      await page.mouse.move(pick.x, pick.y); await page.mouse.down(); await page.mouse.move(pick.x + pick.dx, pick.y + pick.dy, { steps: 5 });
+      const under = await page.evaluate(([i, x, y]) => { const r = document.querySelectorAll('.tidyitem')[i].getBoundingClientRect(); return { dx: Math.abs(r.left + r.width / 2 - x), dy: Math.abs(r.top + r.height / 2 - y) }; }, [pick.i, pick.x + pick.dx, pick.y + pick.dy]);
+      check(under.dx < 6 && under.dy < 6, `a piece sits under the finger while it is carried (${Math.round(under.dx)}px, ${Math.round(under.dy)}px off)`);
+      const bin = await page.evaluate(hex => { const b = [...document.querySelectorAll('.tidybin')].find(x => x.dataset.hex === hex); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }, pick.hex);
+      if (bin){
+        const before = await page.evaluate(() => (document.querySelector('.prompt') || {}).textContent);
+        await page.mouse.move(bin.x, bin.y, { steps: 8 }); await page.mouse.up(); await page.waitForTimeout(250);
+        check(await page.evaluate(() => (document.querySelector('.prompt') || {}).textContent) !== before || await page.evaluate(() => !!document.querySelector('.tidyitem.binned')), 'let go over its own basket, it is counted');
+      } else { await page.mouse.up(); check(true, 'no basket carries that colour (a lost-and-found round)'); }
+    }
+    await page.close();
+  }
 }
 
 check(errs.length === 0, 'no script errors' + (errs.length ? ': ' + errs[0] : ''));

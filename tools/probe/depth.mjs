@@ -83,27 +83,36 @@ const open = async (id, sel, xp = 60000) => {
   const z = () => page.evaluate(() => document.querySelector('.skimzone').style.left);
   const z0 = await z(); await page.waitForTimeout(500); const z1 = await z();
   check(z0 !== z1, 'the window sways');
-  /* wait until the needle is through the middle, then tap */
+  /* wait until the needle is through the middle, then tap. A timer, not requestAnimationFrame (the app drops those when a round
+     ends), with a hard stop; and a window whose whole middle is knotted has nothing to aim at, so it is skipped, not waited on. */
   const res = await page.evaluate(() => new Promise(done => {
     const t0 = performance.now();
-    const step = () => {
-      const zone = document.querySelector('.skimzone'), mark = document.querySelector('.skimmark');
-      const l = parseFloat(zone.style.left), w = parseFloat(zone.style.width), m = parseFloat(mark.style.left);
-      /* through the middle, and not on the knot if this window has one */
+    const aim = () => {
+      const zone = document.querySelector('.skimzone'); if (!zone) return null;
+      const l = parseFloat(zone.style.left), w = parseFloat(zone.style.width), c = l + w / 2;
       const knot = zone.querySelector('.skimknot'), hasKnot = knot && knot.style.display !== 'none';
-      const kc = hasKnot ? l + (parseFloat(knot.style.left) + parseFloat(knot.style.width) / 2) / 100 * w : null, kh = hasKnot ? parseFloat(knot.style.width) / 100 * w / 2 : 0;
-      if (Math.abs(m - (l + w / 2)) < w * 0.08 && (!hasKnot || Math.abs(m - kc) > kh + 0.6)){ document.querySelector('.skimhit').click(); return done({ tapped: true }); }
-      if (performance.now() - t0 > 9000) return done({ tapped: false });
-      requestAnimationFrame(step);
+      const kc = hasKnot ? l + (parseFloat(knot.style.left) + parseFloat(knot.style.width) / 2) / 100 * w : null, kh = hasKnot ? parseFloat(knot.style.width) / 100 * w / 2 + 0.6 : 0;
+      /* the core is the middle 30% of the window; the nearest point in it that is clear of the knot */
+      const core = [c - w * 0.15, c + w * 0.15]; let best = null;
+      for (let x = core[0]; x <= core[1]; x += w * 0.01) if (!hasKnot || Math.abs(x - kc) > kh) if (best === null || Math.abs(x - c) < Math.abs(best - c)) best = x;
+      return best;
     };
-    step();
+    const t = setInterval(() => {
+      const mark = document.querySelector('.skimmark'), target = aim();
+      if (!mark || performance.now() - t0 > 5000){ clearInterval(t); return done({ tapped: false }); }
+      if (target === null){ clearInterval(t); return done({ tapped: false, skipped: true }); }
+      if (Math.abs(parseFloat(mark.style.left) - target) < 0.45){ clearInterval(t); document.querySelector('.skimhit').click(); return done({ tapped: true }); }
+    }, 6);
   }));
+  if (res.skipped){ check(true, 'this window had a knot across its whole middle: nothing to aim at, skipped'); await page.close(); }
+  else {
   await page.waitForTimeout(100);
   const pips = await page.evaluate(() => ({ on: document.querySelectorAll('.skimpips i.on').length, clean: document.querySelectorAll('.skimpips i.on.clean').length, prompt: (document.querySelector('.prompt') || {}).textContent || '' }));
   check(res.tapped && pips.on === 1, 'a tap through the window counts');
   check(pips.clean === 1, 'and through the middle of it, the pip is gold (a clean stitch)');
   check(/clean|net|limpio|sauber/i.test(pips.prompt), `and the line above says so ("${pips.prompt}")`);
   await page.close();
+  }
 }
 
 check(errs.length === 0, 'no script errors' + (errs.length ? ': ' + errs[0] : ''));

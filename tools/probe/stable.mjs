@@ -30,17 +30,20 @@ const watch = async ms => page.evaluate(ms => new Promise(done => {
   const s = document.getElementById('surface'); let sb = s.getBoundingClientRect();
   const ids = new WeakMap(); let n = 0; const rec = new Map();
   const vis = (e, cs) => cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) > 0.05;
-  const boxy = cs => (cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || cs.backgroundImage !== 'none' || parseFloat(cs.borderTopWidth) > 0 || cs.boxShadow !== 'none');
+  /* A drawn piece (svg.art) is a square in everything but name: it has no box of its own, so it is counted by what it is. */
+  const boxy = (cs, e) => (cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || cs.backgroundImage !== 'none' || parseFloat(cs.borderTopWidth) > 0 || cs.boxShadow !== 'none' || (e.classList && e.classList.contains('art')));
   const tick = () => {
     sb = s.getBoundingClientRect();   /* the whole board shakes on a miss; only a piece moving against the board counts */
     for (const e of s.querySelectorAll('*')){
-      const cs = getComputedStyle(e); if (!vis(e, cs) || !boxy(cs)) continue;
+      const cs = getComputedStyle(e); if (!vis(e, cs) || !boxy(cs, e)) continue;
       const r = e.getBoundingClientRect(); if (r.width < 14 || r.height < 14 || r.width > sb.width * 0.96) continue;
       let id = ids.get(e); if (!id){ id = ++n; ids.set(e, id); }
       /* opacity counts: an element still fading in is not yet a square */
       const o = parseFloat(cs.opacity) * (e.parentElement ? 1 : 1);
       if (o < 0.9) continue;
-      const m = rec.get(id) || { e, w0: r.width, h0: r.height, x0: r.left - sb.left, y0: r.top - sb.top, dw: 0, dh: 0, dx: 0, dy: 0 };
+      /* Which ancestors it sat under, written down now: a piece that is redrawn before the watch ends has no parents left to ask. */
+      let chain = '', q = e; while (q && q !== s){ chain += ' ' + (q.className && q.className.baseVal === undefined ? q.className : ''); q = q.parentElement; }
+      const m = rec.get(id) || { e, chain, w0: r.width, h0: r.height, x0: r.left - sb.left, y0: r.top - sb.top, dw: 0, dh: 0, dx: 0, dy: 0 };
       m.dw = Math.max(m.dw, Math.abs(r.width - m.w0)); m.dh = Math.max(m.dh, Math.abs(r.height - m.h0));
       m.dx = Math.max(m.dx, Math.abs(r.left - sb.left - m.x0)); m.dy = Math.max(m.dy, Math.abs(r.top - sb.top - m.y0));
       rec.set(id, m);
@@ -49,8 +52,7 @@ const watch = async ms => page.evaluate(ms => new Promise(done => {
   const t = setInterval(tick, 16);
   setTimeout(() => { clearInterval(t); const out = [];
     rec.forEach(m => { if (m.dw > 1.5 || m.dh > 1.5 || m.dx > 2 || m.dy > 2){
-      let cls = m.e.className && m.e.className.baseVal === undefined ? m.e.className : (m.e.tagName), anc = '', p = m.e;
-      while (p && p !== s){ anc += ' ' + (p.className && p.className.baseVal === undefined ? p.className : ''); p = p.parentElement; }
+      let cls = m.e.className && m.e.className.baseVal === undefined ? m.e.className : (m.e.tagName), anc = m.chain;
       out.push({ cls: String(cls).slice(0, 40), anc: anc.trim().slice(0, 120), d: [Math.round(m.dw * 10) / 10, Math.round(m.dh * 10) / 10, Math.round(m.dx * 10) / 10, Math.round(m.dy * 10) / 10], w: Math.round(m.w0), h: Math.round(m.h0) }); } });
     done(out); }, ms);
 }), ms);

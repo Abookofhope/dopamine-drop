@@ -10,6 +10,9 @@
  *   overlays   a drawing laid over the board (a thread, a trail) stretches with
  *              the board. An SVG that keeps a square and sits in the middle of a
  *              tall box draws every line the wrong place.
+ *   offboard   a piece you can tap has its middle inside the play area. Tidy Up's
+ *              pieces were once stacked down the page by a style rule that beat
+ *              the one placing them, and lay on the baskets and below the board.
  *   overlap    pieces you can tap do not sit on top of one another, so a tap is
  *              never ambiguous. Reported, not failed: some boards stack on purpose.
  *
@@ -97,8 +100,15 @@ const inspect = () => page.evaluate(() => {
     const frac = ix * iy / Math.min(a.r.width * a.r.height, b.r.width * b.r.height);
     if (frac > 0.35) overlap.push(`${name(a.e)} and ${name(b.e)} overlap ${Math.round(frac * 100)}%`);
   }
+  /* offboard: the middle of anything tappable is inside the play area */
+  const sr = s.getBoundingClientRect();
+  /* Things that enter from outside on purpose: Descent's bars scroll up from below, Catch the Balls' drops fall in from above. */
+  const arrives = e => /(^|\s)(dbar|gdrop)(\s|$)/.test(e.className || '');
+  const offboard = taps.filter(o => !arrives(o.e)).filter(o => { const cx = o.r.left + o.r.width / 2, cy = o.r.top + o.r.height / 2;
+    return cx < sr.left - 2 || cx > sr.right + 2 || cy < sr.top - 2 || cy > sr.bottom + 2; })
+    .map(o => `${name(o.e)} is centred at ${Math.round(o.r.left + o.r.width / 2 - sr.left)},${Math.round(o.r.top + o.r.height / 2 - sr.top)} in a ${Math.round(sr.width)}x${Math.round(sr.height)} area`);
   const uniq = a => [...new Set(a)];
-  return { tiles: uniq(tiles), circles: uniq(circles).slice(0, 4), overlays: uniq(overlays), overlap: uniq(overlap).slice(0, 3) };
+  return { tiles: uniq(tiles), circles: uniq(circles).slice(0, 4), overlays: uniq(overlays), offboard: uniq(offboard).slice(0, 3), overlap: uniq(overlap).slice(0, 3) };
 });
 
 const rows = [];
@@ -116,7 +126,7 @@ await browser.close();
 
 let hard = 0, soft = 0, clean = 0;
 for (const r of rows){
-  const h = (r.err ? 1 : 0) + (r.tiles || []).length + (r.circles || []).length + (r.overlays || []).length;
+  const h = (r.err ? 1 : 0) + (r.tiles || []).length + (r.circles || []).length + (r.overlays || []).length + (r.offboard || []).length;
   const o = (r.overlap || []).length;
   if (!h && !o){ clean++; continue; }
   console.log(`${h ? 'FAIL' : 'note'} ${r.id}`);
@@ -124,6 +134,7 @@ for (const r of rows){
   (r.tiles || []).forEach(x => console.log(`    tiles    : ${x}`));
   (r.circles || []).forEach(x => console.log(`    circles  : ${x}`));
   (r.overlays || []).forEach(x => console.log(`    overlays : ${x}`));
+  (r.offboard || []).forEach(x => console.log(`    offboard : ${x}`));
   (r.overlap || []).forEach(x => console.log(`    overlap  : ${x}`));
   hard += h ? 1 : 0; soft += !h && o ? 1 : 0;
 }

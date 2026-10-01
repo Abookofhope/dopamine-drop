@@ -808,7 +808,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   overflow:hidden;box-shadow:inset 0 -3px 0 #00000030;
   transition:left var(--t-fast),top var(--t-fast),opacity var(--t-med),transform var(--t-fast)}
 .tidyitem .shp{padding:20%;box-sizing:border-box;width:100%;height:100%}
-.tidyitem.held{transform:translate(-50%,-50%) scale(1.18);box-shadow:0 6px 18px #00000066;z-index:3}
+.tidyitem.held{transform:translate(-50%,-50%) scale(1.18);box-shadow:0 6px 18px #00000066;z-index:3;
+  /* Carried, it is under the finger, not catching up with it: the easing is for the way back after a short drop. */
+  transition:transform var(--t-fast),opacity var(--t-med)}
 .tidyitem.binned{opacity:0;transform:translate(-50%,-50%) scale(.35)}
 .tidyitem.wrong{box-shadow:0 0 0 3px var(--bad)}
 .tidybins{position:absolute;left:4%;right:4%;bottom:4%;height:22%;display:flex;gap:8px}
@@ -2830,7 +2832,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 
 /* Patches: a woven face and a running stitch. Numbers and glyphs sit above both. */
 :is(.cell.tile,.cell.num,.cell.sock,.cell.bug,.cell.given,.tidyitem,.spltile,.hlvchip,.vial,.swatch,.fpiece,.abtn,.duelbtn){position:relative;isolation:isolate}
-:is(.tidyitem){position:absolute}
+/* An :is() list is as specific as its most specific member, so the rule above (position:relative, for every tile type at once) beat a bare
+   `.tidyitem{position:absolute}` and the pieces stacked in the flow, one piece-height lower than the last, with their percentages added on
+   top: on the baskets, under them, or off the board. Said again here, with a parent, so it wins. */
+.tidyfloor>.tidyitem{position:absolute}
 :is(.cell.tile,.cell.num,.cell.sock,.cell.bug,.cell.given,.tidyitem,.spltile,.hlvchip,.vial,.swatch)::before{
   content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
   background:
@@ -3226,6 +3231,38 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .windvane svg{width:100%;height:100%;display:block}
 .skimzone::before{content:"";position:absolute;top:0;bottom:0;left:32%;right:32%;background:#FFC53D2e;border-radius:var(--r-sm);pointer-events:none}
 .skimpips i.on.clean{background:#FFD76A;box-shadow:0 0 6px #FFD76Aaa}
+/* ── Real pieces: the drawing is the piece, so the tile behind it goes ─────────────────────────────── */
+.art{display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
+.cell.sock.full{background:transparent;box-shadow:none;border-color:transparent}
+.cell.sock.full::before,.cell.sock.full::after{display:none}
+.cell.sock.full .art{filter:drop-shadow(0 2px 2px #0008)}
+.cell.sock.sel{box-shadow:none;filter:brightness(1.2) drop-shadow(0 0 5px var(--cream))}
+/* Spool Belt, Dye Pots, Tidy Up, Dye Trap and Kittens Out: the drawing is the piece. */
+.bslot.full,.bkt,.grain,.falling{background:transparent;border-color:transparent;box-shadow:none}
+.bslot.mouth.full{box-shadow:inset 0 0 0 2px #ffffff7a}
+.bslot .art,.bkt .art,.grain .art,.falling .art{filter:drop-shadow(0 1px 1.5px #0009)}
+.bkt{width:46px;height:44px;overflow:visible}
+.bkt::before{display:none}
+.vial{background:none;box-shadow:none;overflow:visible}
+.vial::before,.vial::after{display:none}
+.vial,.jar{align-items:end}
+.jar{border-color:transparent;background:none;overflow:visible}
+.jar.aim{background:color-mix(in srgb, var(--vk) 24%, transparent);border-color:transparent}
+.jar.full{background:none;border-color:transparent}
+.jar.reject{background:#ff3d6e2e;border-color:var(--bad)}
+.jar.half,.jar.mixed,.jar.mixed.full{box-shadow:none;border-style:solid;border-width:2px;border-color:transparent}
+.vial .art,.jar .art{filter:drop-shadow(0 2px 2px #0008)}
+.tidyitem{background:none;box-shadow:none}
+.tidyitem::before,.tidyitem::after{display:none}
+.tidyitem .art{filter:drop-shadow(0 2px 2px #0008)}
+.tidybin{display:grid;place-items:center}
+.tidybin .art{width:100%;height:auto;max-height:100%;aspect-ratio:1}
+.swatch.dyedrop{background:transparent;border-color:transparent;overflow:visible;box-shadow:none;width:64px;height:68px}
+.swatch.dyedrop::before,.swatch.dyedrop::after{display:none}
+.swatch.dyedrop .art{filter:drop-shadow(0 2px 2px #0008)}
+.cell.bug:not(.gone){background:transparent!important;border-color:transparent}
+.cell.bug:not(.gone)::before,.cell.bug:not(.gone)::after{display:none}
+.cell.bug .art{filter:drop-shadow(0 1px 1.5px #0009)}
 </style>
 
 <div class="cab">
@@ -3912,7 +3949,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.98.0';
+const VERSION_TAG = 'v0.99.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4642,7 +4679,7 @@ const STRINGS = {
     'how.drag':'drag a finger across the board', 'how.tapdrag':'tap first, then drag to aim',
 
     
-    'p.forage':'{n} berries left', 'forage.cell':'{k}, row {r} column {c}', 'forage.gone':'Eaten, row {r} column {c}', 'forage.slot':'Kitten waiting on {k}, {n} left', 'forage.free':'Empty basket slot', 'forage.full':'Basket full — call a kitten home, or open the way for one', 'm.forage':'Kittens Out|Send the kittens at a colour — only so many out at once',
+    'p.forage':'{n} balls of yarn left', 'forage.cell':'{k}, row {r} column {c}', 'forage.gone':'Cleared, row {r} column {c}', 'forage.slot':'Kitten waiting on {k}, {n} left', 'forage.free':'Empty basket slot', 'forage.full':'Basket full — call a kitten home, or open the way for one', 'm.forage':'Kittens Out|Send the kittens at a colour — only so many out at once',
     'p.meld':'{n} more to take', 'meld.cell':'Ball {v}, worth {p}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'meld.band':'Level {v} pays {p} today', 'meld.selling':'Tap again to sell the {v} for {p}', 'm.meld':'Yarn Shop|Merge the balls up, sell them on, reach the day’s takings', 'how.meld':'drag a ball onto its twin to squash them into one; tap a ball, then tap it again to sell it. One level pays triple today, and merging past it loses money',
     'p.volley':'{n} squares still bare', 'volley.cell':'{k}, row {r} column {c}', 'volley.blank':'Wants {k}, row {r} column {c}', 'volley.gunL':'{k} spool, fires right along row {n}', 'volley.gunR':'{k} spool, fires left along row {n}', 'volley.gunT':'{k} spool, fires down column {n}', 'volley.gunB':'{k} spool, fires up column {n}', 'volley.stuck':'Every spool is spent or wrong — wind a shot back', 'm.volley':'Spool Shots|Fire the spools in an order that paints the picture', 'how.volley':'tap a spool to fire it; the ball paints the bare squares it crosses and stops at the first one already painted. Tap a square the last shot painted to wind it back',
     'p.sift':'{n} more to catch', 'sift.slot':'Belt slot {n}, {k} spool', 'sift.bare':'Belt slot {n}, empty', 'sift.put':'Put a {k} spool on the belt', 'sift.jam':'Belt is full — knock the front spool off to make room', 'm.sift':'Spool Belt|Put spools on the belt before their thread runs out',
@@ -5113,7 +5150,7 @@ const STRINGS = {
     'how.drag':'glissez un doigt sur le plateau', 'how.tapdrag':'touchez d’abord, puis glissez pour viser',
 
     
-    'p.forage':'{n} baies restantes', 'forage.cell':'{k}, ligne {r} colonne {c}', 'forage.gone':'Mangée, ligne {r} colonne {c}', 'forage.slot':'Chaton en attente de {k}, {n} restantes', 'forage.free':'Emplacement libre', 'forage.full':'Panier plein — rappelez un chaton, ou dégagez-lui le passage', 'm.forage':'Lâchez les Chatons|Envoyez les chatons sur une couleur — pas trop à la fois',
+    'p.forage':'{n} pelotes restantes', 'forage.cell':'{k}, ligne {r} colonne {c}', 'forage.gone':'Dégagée, ligne {r} colonne {c}', 'forage.slot':'Chaton en attente de {k}, {n} restantes', 'forage.free':'Emplacement libre', 'forage.full':'Panier plein — rappelez un chaton, ou dégagez-lui le passage', 'm.forage':'Lâchez les Chatons|Envoyez les chatons sur une couleur — pas trop à la fois',
     'p.meld':'Encore {n} à encaisser', 'meld.cell':'Pelote {v}, valant {p}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'meld.band':'Le niveau {v} rapporte {p} aujourd’hui', 'meld.selling':'Touchez encore pour vendre la {v} à {p}', 'm.meld':'Boutique de Laine|Fusionnez les pelotes, vendez-les, faites la recette du jour', 'how.meld':'glissez une pelote sur sa jumelle pour n’en faire qu’une ; touchez une pelote, puis touchez-la encore pour la vendre. Un niveau rapporte triple aujourd’hui, et fusionner au-delà fait perdre de l’argent',
     'p.volley':'{n} cases encore vides', 'volley.cell':'{k}, ligne {r} colonne {c}', 'volley.blank':'Attend {k}, ligne {r} colonne {c}', 'volley.gunL':'Bobine {k}, tire vers la droite sur la ligne {n}', 'volley.gunR':'Bobine {k}, tire vers la gauche sur la ligne {n}', 'volley.gunT':'Bobine {k}, tire vers le bas sur la colonne {n}', 'volley.gunB':'Bobine {k}, tire vers le haut sur la colonne {n}', 'volley.stuck':'Toutes les bobines sont épuisées ou fausses — annulez un tir', 'm.volley':'Tirs de Bobines|Tirez les bobines dans l’ordre qui peint l’image', 'how.volley':'touchez une bobine pour tirer ; la bille peint les cases vides qu’elle traverse et s’arrête à la première déjà peinte. Touchez une case du dernier tir pour l’annuler',
     'p.sift':'Encore {n} à attraper', 'sift.slot':'Emplacement {n}, bobine {k}', 'sift.bare':'Emplacement {n}, vide', 'sift.put':'Poser une bobine {k} sur le tapis', 'sift.jam':'Tapis plein — faites tomber la bobine de tête pour faire de la place', 'm.sift':'Tapis à Bobines|Posez les bobines avant que leur fil ne file',
@@ -5584,7 +5621,7 @@ const STRINGS = {
     'how.drag':'desliza un dedo por el tablero', 'how.tapdrag':'toca primero y luego desliza para apuntar',
 
     
-    'p.forage':'Quedan {n} bayas', 'forage.cell':'{k}, fila {r} columna {c}', 'forage.gone':'Comida, fila {r} columna {c}', 'forage.slot':'Gatito esperando {k}, quedan {n}', 'forage.free':'Hueco libre en la cesta', 'forage.full':'Cesta llena — llama a un gatito, o ábrele el paso', 'm.forage':'Suelta los Gatitos|Manda gatitos a un color — solo unos pocos a la vez',
+    'p.forage':'Quedan {n} ovillos', 'forage.cell':'{k}, fila {r} columna {c}', 'forage.gone':'Despejada, fila {r} columna {c}', 'forage.slot':'Gatito esperando {k}, quedan {n}', 'forage.free':'Hueco libre en la cesta', 'forage.full':'Cesta llena — llama a un gatito, o ábrele el paso', 'm.forage':'Suelta los Gatitos|Manda gatitos a un color — solo unos pocos a la vez',
     'p.meld':'Faltan {n} para la caja', 'meld.cell':'Ovillo {v}, vale {p}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'meld.band':'El nivel {v} paga {p} hoy', 'meld.selling':'Toca otra vez para vender la {v} por {p}', 'm.meld':'Tienda de Lanas|Fusiona los ovillos, véndelos, alcanza la caja del día', 'how.meld':'arrastra un ovillo sobre su gemelo para hacerlos uno; toca un ovillo y tócalo otra vez para venderlo. Un nivel paga el triple hoy, y fusionar más allá pierde dinero',
     'p.volley':'{n} casillas aún vacías', 'volley.cell':'{k}, fila {r} columna {c}', 'volley.blank':'Quiere {k}, fila {r} columna {c}', 'volley.gunL':'Carrete {k}, dispara a la derecha por la fila {n}', 'volley.gunR':'Carrete {k}, dispara a la izquierda por la fila {n}', 'volley.gunT':'Carrete {k}, dispara hacia abajo por la columna {n}', 'volley.gunB':'Carrete {k}, dispara hacia arriba por la columna {n}', 'volley.stuck':'Todos los carretes están gastados o son erróneos — deshaz un disparo', 'm.volley':'Disparo de Carretes|Dispara los carretes en el orden que pinta el dibujo', 'how.volley':'toca un carrete para disparar; la bola pinta las casillas vacías que cruza y se para en la primera ya pintada. Toca una casilla del último disparo para deshacerlo',
     'p.sift':'Faltan {n} por atrapar', 'sift.slot':'Hueco {n}, carrete {k}', 'sift.bare':'Hueco {n}, vacío', 'sift.put':'Poner un carrete {k} en la cinta', 'sift.jam':'Cinta llena — tira el carrete delantero para hacer sitio', 'm.sift':'Cinta de Carretes|Pon carretes antes de que se acabe su hilo',
@@ -6055,7 +6092,7 @@ const STRINGS = {
     'how.drag':'zieh einen Finger über das Feld', 'how.tapdrag':'erst tippen, dann zum Zielen ziehen',
 
     
-    'p.forage':'Noch {n} Beeren', 'forage.cell':'{k}, Zeile {r} Spalte {c}', 'forage.gone':'Gefressen, Zeile {r} Spalte {c}', 'forage.slot':'Kätzchen wartet auf {k}, noch {n}', 'forage.free':'Freier Korbplatz', 'forage.full':'Korb voll — ruf ein Kätzchen zurück, oder mach ihm den Weg frei', 'm.forage':'Kätzchen Los|Schick die Kätzchen auf eine Farbe — nur so viele auf einmal',
+    'p.forage':'Noch {n} Knäuel', 'forage.cell':'{k}, Zeile {r} Spalte {c}', 'forage.gone':'Geräumt, Zeile {r} Spalte {c}', 'forage.slot':'Kätzchen wartet auf {k}, noch {n}', 'forage.free':'Freier Korbplatz', 'forage.full':'Korb voll — ruf ein Kätzchen zurück, oder mach ihm den Weg frei', 'm.forage':'Kätzchen Los|Schick die Kätzchen auf eine Farbe — nur so viele auf einmal',
     'p.meld':'Noch {n} bis zur Tageskasse', 'meld.cell':'Knäuel {v}, {p} wert, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'meld.band':'Stufe {v} zahlt heute {p}', 'meld.selling':'Nochmal tippen, um die {v} für {p} zu verkaufen', 'm.meld':'Wollladen|Führe die Knäuel zusammen, verkaufe sie, schaff die Tageskasse', 'how.meld':'zieh ein Knäuel auf sein Gegenstück, damit eins daraus wird; tippe ein Knäuel an und dann nochmal, um es zu verkaufen. Eine Stufe zahlt heute das Dreifache, und darüber hinaus zu verschmelzen kostet Geld',
     'p.volley':'Noch {n} leere Felder', 'volley.cell':'{k}, Zeile {r} Spalte {c}', 'volley.blank':'Will {k}, Zeile {r} Spalte {c}', 'volley.gunL':'{k}-Spule, schießt nach rechts durch Zeile {n}', 'volley.gunR':'{k}-Spule, schießt nach links durch Zeile {n}', 'volley.gunT':'{k}-Spule, schießt nach unten durch Spalte {n}', 'volley.gunB':'{k}-Spule, schießt nach oben durch Spalte {n}', 'volley.stuck':'Jede Spule ist verbraucht oder falsch — nimm einen Schuss zurück', 'm.volley':'Spulenschüsse|Schieß die Spulen in der Reihenfolge, die das Bild malt', 'how.volley':'tippe eine Spule an, um zu schießen; die Kugel malt die leeren Felder, die sie überquert, und hält am ersten bereits bemalten. Tippe ein Feld des letzten Schusses an, um ihn zurückzunehmen',
     'p.sift':'Noch {n} zu fangen', 'sift.slot':'Bandplatz {n}, {k}-Spule', 'sift.bare':'Bandplatz {n}, leer', 'sift.put':'Eine {k}-Spule aufs Band stellen', 'sift.jam':'Band ist voll — stoß die vorderste Spule herunter', 'm.sift':'Spulenband|Setz Spulen aufs Band, bevor ihr Faden ausgeht',
@@ -6500,6 +6537,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.99.0', date:'2026-10-01', items:[
+    'Pieces are things now, not coloured tiles with a face on. Tumble Dryer has socks, with ribbing, a heel, a toe and a paw print on the leg. Spool Belt has spools of thread with cat ears on the top flange and a loose end. Dye Pots has dye jars with eared corks, and a jar you have filled is full of the colour. Tidy Up has balls of yarn with ears, going into woven baskets whose handles are ears. Dye Trap has drops of dye.',
+    'Kittens Out is a basket of yarn the kittens bat about, not berries.',
+    'With colour assist on, each piece wears its colour’s own shape as a badge in the corner, as before.',
+  ] },
   { v:'0.98.0', date:'2026-10-01', items:[
     'Draw a thread. In Tangle Watch, press a dot and pull a thread to the one you think it will meet, then let go: it is the same as tapping both. A thread let go over nothing leaves the first dot chosen, and tapping both still works.',
     'Pull a spool and let go. In Spool Shots, pressing a spool outlines the squares its shot would paint (dashed red if it would land the wrong colour), letting go fires it, and pulling off the board first cancels it for free. A tap still fires.',
@@ -7375,6 +7417,57 @@ function shapeSvg(shape, stroke){
 }
 const assistOn = () => save.colorAssist;
 
+/* ═══ Real pieces ═════════════════════════════════════════════════════════
+   A tile with a face on it is a colour with decoration. These are the things themselves, drawn the way a child would draw them
+   if the child lived in a craft room with cats: a sock with a paw print on it, a spool with ears, a dye jar with a cork that has
+   ears, a ball of yarn that is nearly a kitten, a basket with ears for handles, a drop of dye. Colour is still the answer, so the
+   colour is the biggest thing in each, and with colour assist on each piece wears its colour's own shape as a badge, which is what
+   the shape was always for. */
+const PIECE = (() => {
+  const K = '#0D0918';
+  const svg = (inner, ink) => '<svg viewBox="0 0 64 64" aria-hidden="true" class="art">' + inner
+    + (ink && assistOn() ? '<svg x="40" y="40" width="22" height="22" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fff" fill-opacity=".92"/>'
+      + '<g fill="none" stroke="' + K + '" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">' + SHAPE_PATH[ink.shape] + '</g></svg>' : '')
+    + '</svg>';
+  const o = 'stroke="' + K + '" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"';
+  const paw = (x, y, a) => '<g fill="' + K + '" fill-opacity="' + (a || .45) + '"><ellipse cx="' + x + '" cy="' + (y + 3) + '" rx="3.8" ry="3"/>'
+    + '<circle cx="' + (x - 5) + '" cy="' + (y - 2) + '" r="1.7"/><circle cx="' + (x - 1.7) + '" cy="' + (y - 4.6) + '" r="1.7"/>'
+    + '<circle cx="' + (x + 1.7) + '" cy="' + (y - 4.6) + '" r="1.7"/><circle cx="' + (x + 5) + '" cy="' + (y - 2) + '" r="1.7"/></g>';
+  return {
+    /* A sock, upright, with ribbing at the top, a heel and a toe patch, and a paw on the leg. */
+    sock: ink => svg('<path d="M20 6H40V30C40 34 44 36 50 38C58 40 60 50 54 54C50 57 44 56 38 56H26C21 56 20 52 20 48Z" fill="' + ink.hex + '" ' + o + '/>'
+      + '<path d="M20 6H40V14H20Z" fill="#fff" fill-opacity=".4"/><path d="M24 6V14M28 6V14M32 6V14M36 6V14" stroke="' + K + '" stroke-opacity=".28" stroke-width="1.4"/>'
+      + '<ellipse cx="27" cy="49" rx="5.5" ry="5.5" fill="#fff" fill-opacity=".32"/><path d="M48 40C56 42 59 49 54 53C51 55 47 55 45 53Z" fill="#fff" fill-opacity=".32"/>'
+      + paw(30, 25), ink),
+    /* A spool of thread with cat ears on the top flange and a loose end. */
+    spool: ink => svg('<path d="M15 6L17 0.5L23 6M41 6L47 0.5L49 6" fill="#D9B27A" ' + o + '/>'
+      + '<path d="M48 44Q58 46 56 56" fill="none" stroke="' + K + '" stroke-width="5.2" stroke-linecap="round"/><path d="M48 44Q58 46 56 56" fill="none" stroke="' + ink.hex + '" stroke-width="2.8" stroke-linecap="round"/>'
+      + '<rect x="16" y="15" width="32" height="34" fill="' + ink.hex + '" ' + o + '/>'
+      + '<path d="M16 22 48 27M16 30 48 35M16 38 48 43" stroke="#000" stroke-opacity=".22" stroke-width="2"/><path d="M20.5 17V47" stroke="#fff" stroke-opacity=".34" stroke-width="4" stroke-linecap="round"/>'
+      + '<rect x="12" y="6" width="40" height="9" rx="3" fill="#D9B27A" ' + o + '/><rect x="12" y="49" width="40" height="9" rx="3" fill="#D9B27A" ' + o + '/>', ink),
+    /* A dye jar: glass, liquid, and a cork with ears. Empty, it is the place the colour goes, and its cork is the colour. */
+    jar: (ink, empty) => svg('<path d="M21 13L23 6L28 13M36 13L41 6L43 13" fill="' + (empty ? ink.hex : '#B88A5A') + '" ' + o + '/>'
+      + '<path d="M18 25C18 23 20 22 22 22H42C44 22 46 23 46 25V52C46 56 43 58 40 58H24C21 58 18 56 18 52Z" fill="#fff" fill-opacity="' + (empty ? .2 : .14) + '" ' + (empty ? 'stroke="' + ink.hex + '" stroke-width="2.8" stroke-linejoin="round"' : o) + '/>'
+      + (empty ? '' : '<path d="M19.2 34H44.8V52C44.8 55.2 42.4 57 40 57H24C21.6 57 19.2 55.2 19.2 52Z" fill="' + ink.hex + '"/><path d="M19 34Q25 31 32 34T45 34" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2"/>')
+      + '<path d="M23 27V50" stroke="#fff" stroke-opacity=".36" stroke-width="3" stroke-linecap="round"/>'
+      + '<rect x="21" y="13" width="22" height="9" rx="2.5" fill="' + (empty ? ink.hex : '#B88A5A') + '" ' + o + '/>' + (empty ? '' : paw(33, 47, .4)), ink),
+    /* A ball of yarn with ears, wound in loops, with a tail. */
+    yarn: ink => svg('<path d="M15 22L13 8L26 15M49 22L51 8L38 15" fill="' + ink.hex + '" ' + o + '/>'
+      + '<path d="M46 52Q59 53 56 60Q54 63 47 60" fill="none" stroke="' + K + '" stroke-width="5.2" stroke-linecap="round"/><path d="M46 52Q59 53 56 60Q54 63 47 60" fill="none" stroke="' + ink.hex + '" stroke-width="2.8" stroke-linecap="round"/>'
+      + '<circle cx="32" cy="36" r="22" fill="' + ink.hex + '" ' + o + '/>'
+      + '<path d="M14 32Q32 48 50 32M13.5 40Q32 56 50.5 40M18 24Q34 36 49 26" fill="none" stroke="#000" stroke-opacity=".24" stroke-width="2.2" stroke-linecap="round"/>'
+      + '<path d="M17 28Q31 40 48 30" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="2" stroke-linecap="round"/>'
+      + '<ellipse cx="24" cy="27" rx="6" ry="4" fill="#fff" fill-opacity=".34" transform="rotate(-30 24 27)"/>', ink),
+    /* A woven basket whose handles are ears, and whose rim is the colour of what goes in it. */
+    basket: ink => svg('<path d="M10 22L12 11L21 22M43 22L52 11L54 22" fill="' + ink.hex + '" ' + o + '/>'
+      + '<path d="M10 28H54L48 56H16Z" fill="#B88A5A" ' + o + '/><path d="M12 37H52M14 46H50M20 28L22 56M30 28L30 56M40 28L40 56M48 28L46 56" stroke="#000" stroke-opacity=".26" stroke-width="1.6"/>'
+      + '<rect x="8" y="22" width="48" height="9" rx="3" fill="' + ink.hex + '" ' + o + '/>', ink),
+    /* A drop of dye. */
+    drop: ink => svg('<path d="M32 5C32 5 14 27 14 40A18 18 0 0 0 50 40C50 27 32 5 32 5Z" fill="' + ink.hex + '" ' + o + '/>'
+      + '<ellipse cx="25" cy="38" rx="4" ry="7.5" fill="#fff" fill-opacity=".42" transform="rotate(20 25 38)"/>' + paw(34, 46, .35), ink)
+  };
+})();
+
 /* Odd One Out used to offset the odd tile by a fixed number of HSL hue
    degrees. Hue degrees are not a perceptual unit: the same seven degrees is
    nearly four times more visible at cyan than at yellow-green, where it falls
@@ -7852,10 +7945,10 @@ const MODES = {
 
       const row = mk('div','swatches');
       shuffle(pool.slice(), ctx.rnd).forEach(c => {
-        const b = mk('button','swatch');
+        const b = mk('button','swatch dyedrop');
         b.type = 'button';
-        b.style.background = c.hex;
-        b.innerHTML = mark(c.shape, 'var(--ink)');
+        b.dataset.hex = c.hex;
+        b.innerHTML = PIECE.drop(c);
         b.setAttribute('aria-label', inkName(c));
         onTap(b, () => c === correct ? ctx.win(b) : ctx.miss(b));
         row.appendChild(b);
@@ -8865,6 +8958,9 @@ const MODES = {
         if (i >= 0) link(i, true);
       });
       ctx.surface.appendChild(box);
+      /* The first reach was painted before the box was in the page, from the shape the board was built for; paint it again now it
+         is, so the pegs marked in reach are the pegs inside the circle you can see, to the pixel. */
+      paintReach();
       ctx.prompt(t('p.arc', { n: n - 1 }));
     }
   },
@@ -9310,11 +9406,11 @@ const MODES = {
         e.classList.toggle('full', !!v);
         e.classList.remove('sel','tangled');
         if (v){
-          e.style.background = v.ink.hex;
-          e.innerHTML = mark(v.ink.shape, 'var(--ink)');
+          e.dataset.hex = v.ink.hex;
+          e.innerHTML = PIECE.sock(v.ink);
           e.setAttribute('aria-label', inkName(v.ink));
         } else {
-          e.style.background = '';
+          delete e.dataset.hex;
           e.innerHTML = '';
           e.setAttribute('aria-label', t('a.emptySlot'));
         }
@@ -9720,7 +9816,8 @@ const MODES = {
         e.style.setProperty('--bink', ink.hex);
         e.setAttribute('role','img');
         e.setAttribute('aria-label', inkName(ink) + ' bin');
-        e.innerHTML = mark(ink.shape, ink.hex);
+        e.dataset.hex = ink.hex;
+        e.innerHTML = PIECE.basket(ink);
         binRow.appendChild(e);
         return { el:e, ink };
       });
@@ -9740,10 +9837,10 @@ const MODES = {
         const e = mk('div','tidyitem');
         e.style.left = x+'%'; e.style.top = y+'%';
         e.style.width = (R*2) + '%';
-        e.style.background = ink.hex;
         e.setAttribute('role','button');
         e.setAttribute('aria-label', inkName(ink) + ' item');
-        e.innerHTML = mark(ink.shape, 'var(--ink)');
+        e.dataset.hex = ink.hex;
+        e.innerHTML = PIECE.yarn(ink);
         floor.appendChild(e);
         items.push({ el:e, ink, x, y, home:{x,y} });
       }
@@ -10292,7 +10389,8 @@ const MODES = {
         e.style.setProperty('--vk', ink.hex);
         e.setAttribute('role','button');
         e.setAttribute('aria-label', inkName(ink) + ' ' + t('sip.source'));
-        e.innerHTML = '<span class="shpwrap">' + mark(ink.shape, 'var(--ink)') + '</span>';
+        e.dataset.hex = ink.hex;
+        e.innerHTML = PIECE.jar(ink, false);
         top.appendChild(e);
         return { e, ink, spent:false };
       });
@@ -10301,7 +10399,8 @@ const MODES = {
         e.style.setProperty('--vk', ink.hex);
         e.setAttribute('role','button');
         e.setAttribute('aria-label', t('sip.wants', { c: inkName(ink) }));
-        e.innerHTML = '<span class="shpwrap">' + mark(ink.shape, ink.hex) + '</span>';
+        e.dataset.hex = ink.hex;
+        e.innerHTML = PIECE.jar(ink, true);
         bottom.appendChild(e);
         const isMix = ink === mixInk;
         if (isMix) e.classList.add('mixed');
@@ -10354,9 +10453,10 @@ const MODES = {
           src.e.classList.add('empty');
           src.e.setAttribute('aria-label', inkName(src.ink) + ' ' + t('sip.empty'));
           sfx.tap();
-          if (j.needs.size){ j.e.classList.add('half'); return; }        /* the first of two dyes */
+          if (j.needs.size){ j.e.classList.add('half'); j.e.innerHTML = PIECE.jar({ hex: src.ink.hex, shape: j.ink.shape }, false); return; }        /* the first of two dyes */
           j.filled = true;
           j.e.classList.add('full');
+          j.e.innerHTML = PIECE.jar(j.ink, false);
           j.e.setAttribute('aria-label', inkName(j.ink) + ' ' + t('sip.done'));
           src.e.classList.add('empty');
           src.e.setAttribute('aria-label', inkName(src.ink) + ' ' + t('sip.empty'));
@@ -10876,9 +10976,13 @@ const MODES = {
         }
         return null;
       };
+      /* A field the ball already crosses to the basket with no chalk at all (a bumper can send it there) is not a puzzle: it is thrown back,
+         whatever the shape of the screen. */
+      const freeWin = () => [A0, A0*0.95, A0*1.05].some(a => runAll(world(a), [], 0).status === 'caught');
       for (let attempt = 0; attempt < 6 && !answer; attempt++){
         place();
         for (let k = 0; k < attempt*2; k++) THIN[k] && THIN[k]();
+        if (freeWin()) continue;
         answer = cascade(world(A0), [A0*0.95, A0*1.05].map(world), evals + 120);
       }
       /* Nothing on the field at all always has an answer; it is searched for the same way rather than assumed. */
@@ -12599,8 +12703,8 @@ const MODES = {
           b.className = 'cell bug' + (v === GONE ? ' gone' : '')
             + (v !== GONE && nbrs(i).some(j => g[j] === GONE) ? ' near' : '')
             + (v !== GONE && out.indexOf(v) >= 0 ? ' waited' : '');
-          b.style.background = v === GONE ? '' : inks[v].hex;
-          b.innerHTML = v !== GONE ? mark(inks[v].shape, '#0D0918') : '';
+          if (v !== GONE) b.dataset.hex = inks[v].hex; else delete b.dataset.hex;
+          b.innerHTML = v !== GONE ? PIECE.yarn(inks[v]) : '';
           b.setAttribute('aria-label', v === GONE
             ? t('forage.gone', { r: Math.floor(i/N) + 1, c: (i % N) + 1 })
             : t('forage.cell', { k: inkName(inks[v]), r: Math.floor(i/N) + 1, c: (i % N) + 1 }));
@@ -13311,8 +13415,8 @@ const MODES = {
       const tray = mk('div','tray');
       const btns = inks.map((c, ci) => { const b = mk('button','bkt');
         b.type = 'button';
-        b.style.background = c.hex;
-        b.innerHTML = mark(c.shape, '#0D0918');
+        b.dataset.hex = c.hex;
+        b.innerHTML = PIECE.spool(c);
         b.setAttribute('aria-label', t('sift.put', { k: inkName(c) }));
         tray.appendChild(b); return b; });
       box.appendChild(tray);
@@ -13328,9 +13432,9 @@ const MODES = {
       let at = 0, caught = 0, done = false, timer = null;
 
       const dress = (el, v) => {
-        el.style.background = v === null || v === undefined ? '' : inks[v].hex;
-        el.innerHTML = (v !== null && v !== undefined)
-          ? mark(inks[v].shape, '#0D0918') : '';
+        const on = v !== null && v !== undefined;
+        if (on) el.dataset.hex = inks[v].hex; else delete el.dataset.hex;
+        el.innerHTML = on ? PIECE.spool(inks[v]) : '';
       };
 
       const paint = () => {
