@@ -2162,8 +2162,6 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.given.on{background:var(--flare);border-color:var(--flare)}
 .cell.mcell{background:#ffffff08;border-color:color-mix(in srgb, var(--fam,var(--edge-soft)) 22%, var(--edge-soft))}
 .cell.mcell.on{background:var(--cool);border-color:var(--cool)}
-.cell.mcell.tempt{border-color:var(--flare);box-shadow:inset 0 0 0 1px var(--flare)}
-.cell.mcell.tempt.on{border-color:var(--cool);box-shadow:none}
 .riser{position:absolute;border-radius:50%;transform:translate(-50%,-50%);background:var(--flare);border:2px solid var(--zap)}
 /* Worth two toward the goal, decays faster than a normal target — going
    for it over whatever else is live is a real bet, not a reflex tap, so it
@@ -3325,31 +3323,57 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .jel .art{filter:drop-shadow(0 2px 2px #0008)}
 .jelfly{background:none}
 .till small{font-size:clamp(10px,2.1vh,12px);color:var(--haze);letter-spacing:.04em;margin-left:2px}
-/* ── The Gateway: three moods at the top of Play ───────────────────────────────────────────────────────────── */
-.gate{margin-bottom:26px}
-.gateTitle{font-family:var(--f-disp);font-weight:800;font-size:22px;line-height:1.05;text-transform:uppercase;color:var(--cream);margin-bottom:4px}
-.gateSub{font-size:13px;color:var(--haze);margin-bottom:16px}
+/* ── The menu: a header, Daily Drop, three kinds of game, and Custom ───────────────────────────────────────── */
+.meChip{display:flex;align-items:center;gap:9px;padding:0;color:var(--cream)}
+.avatar{position:relative;flex:none;width:34px;height:34px;border-radius:50%;background:conic-gradient(var(--flare) var(--p,0%), var(--ink-3) 0);display:grid;place-items:center}
+.avatar .face{width:28px;height:28px;border-radius:50%;background:#2F2350;display:grid;place-items:center}
+.avatar .face svg{width:22px;height:22px;display:block}
+.meChip b{font-family:var(--f-disp);font-weight:800;font-size:14px;letter-spacing:.02em}
+.dailyCard{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;padding:0 14px;margin-bottom:18px;border-radius:20px;
+  border:1.5px solid color-mix(in srgb, var(--flare) 40%, transparent);background:var(--ink-2);color:var(--cream);text-align:left}
+.dailyCard .di{flex:none;width:36px;height:36px;border-radius:12px;background:color-mix(in srgb, var(--flare) 16%, transparent);color:var(--flare);display:grid;place-items:center}
+.dailyCard .di svg{width:22px;height:22px}
+.dailyCard .dt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.dailyCard .dt b{font-family:var(--f-disp);font-weight:800;font-size:16px}
+.dailyCard .dt small{font-size:12.5px;color:var(--haze)}
+.dailyCard .ggo{width:18px;height:18px;color:var(--haze);flex:none}
+.dailyCard.streaking{border-color:var(--zap)}
+.gate{margin-bottom:8px}
+.gateTitle{font-family:var(--f-disp);font-weight:800;font-size:20px;line-height:1.1;text-transform:uppercase;color:var(--cream);margin-bottom:14px}
 .gatelist{display:flex;flex-direction:column;gap:12px}
-.gateBtn{display:grid;grid-template-columns:44px 1fr;column-gap:14px;align-items:center;width:100%;min-height:96px;padding:14px 18px;text-align:left;
-  border-radius:var(--r-xl);border:1.5px solid color-mix(in srgb, var(--gk) 55%, transparent);color:var(--cream);box-shadow:var(--lift);
-  background:linear-gradient(155deg, color-mix(in srgb, var(--gk) 24%, #1B1330), color-mix(in srgb, var(--gk) 8%, #140D26));
-  transition:transform var(--t-fast),border-color var(--t-fast),box-shadow var(--t-fast)}
-.gateBtn:active{transform:scale(.98);box-shadow:var(--lift-press)}
-.gateBtn .g{grid-row:1 / span 3;width:44px;height:44px;display:grid;place-items:center;color:var(--gk);border-radius:50%;
-  background:color-mix(in srgb, var(--gk) 16%, transparent)}
-.gateBtn .g svg{width:28px;height:28px;display:block}
-.gateBtn b{font-family:var(--f-disp);font-weight:800;font-size:19px;text-transform:uppercase;letter-spacing:-.01em;line-height:1.1}
-.gateBtn small{font-size:11.5px;color:var(--gk);letter-spacing:.02em;margin-top:2px}
-.gateBtn em{font-style:normal;font-size:13px;color:var(--cream);opacity:.86;margin-top:4px;line-height:1.3}
-.gateHead{display:grid;grid-template-columns:44px 1fr;column-gap:14px;align-items:center;padding:14px 18px;margin-bottom:14px;border-radius:var(--r-xl);
-  border:1.5px solid color-mix(in srgb, var(--gk, #E8D5B7) 55%, transparent);
-  background:linear-gradient(155deg, color-mix(in srgb, var(--gk, #E8D5B7) 24%, #1B1330), color-mix(in srgb, var(--gk, #E8D5B7) 8%, #140D26))}
-.gateHead .g{grid-row:1 / span 3;width:44px;height:44px;display:grid;place-items:center;color:var(--gk, #E8D5B7);border-radius:50%;background:color-mix(in srgb, var(--gk, #E8D5B7) 16%, transparent)}
-.gateHead .g svg{width:28px;height:28px;display:block}
-.gateHead b{font-family:var(--f-disp);font-weight:800;font-size:19px;text-transform:uppercase;line-height:1.1}
-.gateHead small{font-size:11.5px;color:var(--gk, #E8D5B7);margin-top:2px}
-.gateHead em{font-style:normal;font-size:13px;opacity:.86;margin-top:4px;line-height:1.3}
-#gateAll{margin-top:16px}
+.gateBtn{display:flex;align-items:center;gap:14px;width:100%;box-sizing:border-box;padding:16px 14px;border-radius:26px;text-align:left;
+  background:var(--gbg);color:var(--gfg);box-shadow:0 12px 26px -16px var(--gbg),inset 0 -4px 0 #00000014;transition:transform var(--t-fast)}
+.gateBtn:active{transform:scale(.98)}
+.gateBtn .g,.gateHead .g{flex:none;width:64px;height:64px;border-radius:50%;background:#00000014;display:grid;place-items:center}
+.gateBtn .g svg,.gateHead .g svg{width:46px;height:46px;display:block}
+.gateBtn .gtxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.gateBtn b{font-family:var(--f-disp);font-weight:800;font-size:22px;line-height:1.05}
+.gateBtn small{font-size:12px;font-weight:800;color:var(--gsub)}
+.gateBtn em{font-style:normal;font-size:14px;font-weight:700;line-height:1.3;margin-top:2px}
+.gateBtn .gcount{text-decoration:none;font-size:12px;font-weight:800;color:var(--gsub);margin-top:4px}
+.gateBtn .ggo{width:20px;height:20px}
+.customCard{display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:0 16px;border-radius:22px;border:1.5px dashed var(--edge);color:var(--cream);text-align:left}
+.customCard .g{flex:none;width:40px;height:40px;border-radius:50%;background:#ffffff0d;color:var(--haze);display:grid;place-items:center}
+.customCard .g svg{width:22px;height:22px}
+.customCard .gtxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.customCard b{font-family:var(--f-disp);font-weight:800;font-size:17px}
+.customCard small{font-size:12.5px;color:var(--haze)}
+.customCard .ggo{width:18px;height:18px;color:var(--haze);flex:none}
+.gateHead{display:grid;grid-template-columns:64px 1fr;column-gap:14px;align-items:center;padding:16px 14px;margin-bottom:12px;border-radius:26px;background:var(--gbg);color:var(--gfg)}
+.gateHead .g{grid-row:1 / span 3}
+.gateHead b{font-family:var(--f-disp);font-weight:800;font-size:22px;line-height:1.05}
+.gateHead small{font-size:12px;font-weight:800;color:var(--gsub)}
+.gateHead em{font-style:normal;font-size:14px;font-weight:700;margin-top:2px}
+.justPlay{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:56px;margin-bottom:6px;border-radius:20px;
+  background:linear-gradient(180deg,var(--flare),var(--flare-deep));color:#1A0A04;font-family:var(--f-disp);font-weight:800;font-size:18px;box-shadow:inset 0 -3px 0 #00000026}
+.justPlay svg{width:22px;height:22px}
+.ysub{display:flex;gap:4px;padding:4px;margin-bottom:14px;border-radius:16px;background:var(--ink-2);flex:none}
+.ysub button{flex:1;height:38px;border-radius:12px;color:var(--haze);font-weight:800;font-size:14px}
+.ysub button[aria-pressed="true"]{background:var(--flare);color:#1A0A04}
+.tab{font-size:11.5px;letter-spacing:.02em;text-transform:none;font-weight:700}
+.tab .ti{display:grid;place-items:center;width:52px;height:30px;border-radius:15px;transition:background var(--t-fast)}
+.tab .ti svg{width:22px;height:22px}
+.tab[aria-current="page"] .ti{background:color-mix(in srgb, var(--flare) 18%, transparent)}
 </style>
 
 <div class="cab">
@@ -3366,17 +3390,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
   <header class="chrome" id="chrome">
     <h1 class="wordmark">Dopamine<span>&nbsp;Drop</span></h1>
     <span class="sp"></span>
-    <button class="langchip" id="langBtn" type="button" data-i18n-aria="set.lang">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
-      <b id="langCode">EN</b>
+    <button class="meChip" id="meChip" type="button" data-i18n-aria="me.open">
+      <span class="avatar" id="lvlRing"><span class="face"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 21L12.5 11L21 16M34 21L35.5 11L27 16" fill="#F2B47A" stroke="#0D0918" stroke-width="1.6" stroke-linejoin="round"/><circle cx="24" cy="27" r="11" fill="#F2B47A" stroke="#0D0918" stroke-width="1.6"/><circle cx="20" cy="26" r="1.6" fill="#0D0918"/><circle cx="28" cy="26" r="1.6" fill="#0D0918"/><path d="M22.5 30L24 31.6L25.5 30Z" fill="#D9707F"/></svg></span></span>
+      <b id="lvlTitle">Level 1</b>
     </button>
-    <div class="lvlchip" id="lvlChip">
-      <span class="ring" id="lvlRing"><i id="lvlNum">1</i></span>
-      <span>
-        <b id="lvlXp">0/50</b><br>
-        <small>XP</small>
-      </span>
-    </div>
   </header>
 
   <main id="stage">
@@ -3388,68 +3405,56 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
         <!-- Home: exactly three choices, ever, on this screen. Each leads to
              its own focused sub-screen instead of showing everything at once. -->
         <div id="playHome">
-          <button class="statusline" id="dailyStatus" type="button">
-            <span class="dot" aria-hidden="true"></span>
-            <span id="dailyStatusLine"></span>
-            <b aria-hidden="true">&rarr;</b>
+          <button class="dailyCard" id="dailyStatus" type="button">
+            <span class="di" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C12 3 6 10 6 14a6 6 0 0 0 12 0C18 10 12 3 12 3z"/></svg></span>
+            <span class="dt"><b data-i18n="daily.title">Daily Drop</b><small id="dailyStatusLine"></small></span>
+            <svg class="ggo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
           </button>
 
-          <!-- The gateway: not a list of games but three moods. Each opens the games that suit it, and every game is still one tap away. -->
+          <!-- Three kinds of game, and a place to make your own. Every game belongs to one of the three. -->
           <div class="gate" id="gate">
             <div class="gateTitle" data-i18n="gate.title">How is your brain today?</div>
-            <div class="gateSub" data-i18n="gate.sub">Pick the one that sounds like you — the games are chosen to match.</div>
             <div class="gatelist">
-              <button class="gateBtn" data-gate="calm" type="button" style="--gk:#B9A6F2">
-                <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><path d="M5 10q7 5 14 0M5.5 14.5q6.5 4.5 13 0M8 6.2q5 4 9.5 1.6"/><path d="M18 17q3 1 2.5 3.5"/></svg></span>
-                <b data-i18n="gate.calm">Calm &amp; Collect</b>
-                <small data-i18n="gate.calmWho">(Predominantly Inattentive)</small>
-                <em data-i18n="gate.calmVibe">Soothing, repetitive, low-pressure.</em>
+              <button class="gateBtn" data-gate="calm" type="button" style="--gbg:#CDBCF7;--gfg:#2A1B4D;--gsub:#4A3A78;--gk:#CDBCF7">
+                <span class="g" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M30 33c8 0 12-5 10-10" fill="none" stroke="#2A1B4D" stroke-width="3" stroke-linecap="round"/><ellipse cx="21" cy="32" rx="15" ry="9" fill="#F6EBD9" stroke="#2A1B4D" stroke-width="2"/><path d="M9 26L8 17L15 21M23 22L26 15L30 23" fill="#F6EBD9" stroke="#2A1B4D" stroke-width="2" stroke-linejoin="round"/><circle cx="14" cy="27" r="7" fill="#F6EBD9" stroke="#2A1B4D" stroke-width="2"/><path d="M11 27q1.6 1.6 3.2 0M15 27q1.6 1.6 3.2 0" fill="none" stroke="#2A1B4D" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+                <span class="gtxt">
+                  <b data-i18n="gate.calm"></b>
+                  <small data-i18n="gate.calmWho"></small>
+                  <em data-i18n="gate.calmVibe"></em>
+                  <u class="gcount" data-count="calm"></u>
+                </span>
+                <svg class="ggo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
               </button>
-              <button class="gateBtn" data-gate="quick" type="button" style="--gk:#F2A65A">
-                <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="15.5" rx="4.2" ry="3.4"/><circle cx="6.3" cy="10.5" r="1.8"/><circle cx="10" cy="7.2" r="1.8"/><circle cx="14" cy="7.2" r="1.8"/><circle cx="17.7" cy="10.5" r="1.8"/></svg></span>
-                <b data-i18n="gate.quick">Quick Paws</b>
-                <small data-i18n="gate.quickWho">(Predominantly Hyperactive-Impulsive)</small>
-                <em data-i18n="gate.quickVibe">Fast, satisfying, action-oriented.</em>
+              <button class="gateBtn" data-gate="quick" type="button" style="--gbg:#F7C089;--gfg:#4A2300;--gsub:#7A3D00;--gk:#F7C089">
+                <span class="g" aria-hidden="true"><svg viewBox="0 0 48 48"><ellipse cx="26" cy="31" rx="9" ry="7.5" fill="#FFF3DF" stroke="#4A2300" stroke-width="2"/><ellipse cx="14" cy="22" rx="3.6" ry="4.4" fill="#FFF3DF" stroke="#4A2300" stroke-width="2" transform="rotate(-20 14 22)"/><ellipse cx="21" cy="15.5" rx="3.6" ry="4.6" fill="#FFF3DF" stroke="#4A2300" stroke-width="2" transform="rotate(-6 21 15.5)"/><ellipse cx="31" cy="15.5" rx="3.6" ry="4.6" fill="#FFF3DF" stroke="#4A2300" stroke-width="2" transform="rotate(6 31 15.5)"/><ellipse cx="38" cy="22" rx="3.6" ry="4.4" fill="#FFF3DF" stroke="#4A2300" stroke-width="2" transform="rotate(20 38 22)"/><path d="M3 30h6M2 36h8M5 42h6" stroke="#4A2300" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+                <span class="gtxt">
+                  <b data-i18n="gate.quick"></b>
+                  <small data-i18n="gate.quickWho"></small>
+                  <em data-i18n="gate.quickVibe"></em>
+                  <u class="gcount" data-count="quick"></u>
+                </span>
+                <svg class="ggo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
               </button>
-              <button class="gateBtn" data-gate="full" type="button" style="--gk:#E8D5B7">
-                <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9L4 3.5l5 2.8M19 9l1-5.5-5 2.8"/><path d="M5 9c-1.5 2-1.5 5 0 7 1.8 2.6 4.4 3.5 7 3.5s5.2-.9 7-3.5c1.5-2 1.5-5 0-7"/><circle cx="9.3" cy="12.5" r=".9" fill="currentColor"/><circle cx="14.7" cy="12.5" r=".9" fill="currentColor"/><path d="M10.7 15.2h2.6l-1.3 1.3z"/></svg></span>
-                <b data-i18n="gate.full">The Full Purr</b>
-                <small data-i18n="gate.fullWho">(Combined)</small>
-                <em data-i18n="gate.fullVibe">A balanced mix of calm strategy and quick action.</em>
+              <button class="gateBtn" data-gate="full" type="button" style="--gbg:#EFE2C4;--gfg:#3B2A12;--gsub:#6B4E22;--gk:#EFE2C4">
+                <span class="g" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M9 20L7.5 7L19 14M39 20L40.5 7L29 14" fill="#F6EBD9" stroke="#3B2A12" stroke-width="2" stroke-linejoin="round"/><circle cx="24" cy="27" r="16" fill="#F6EBD9" stroke="#3B2A12" stroke-width="2"/><circle cx="18" cy="25" r="2.2" fill="#3B2A12"/><circle cx="30" cy="25" r="2.2" fill="#3B2A12"/><path d="M21.5 31h5l-2.5 3z" fill="#D9707F" stroke="#3B2A12" stroke-width="1.4" stroke-linejoin="round"/><path d="M24 34v2.5M19 37q5 3.5 10 0" fill="none" stroke="#3B2A12" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+                <span class="gtxt">
+                  <b data-i18n="gate.full"></b>
+                  <small data-i18n="gate.fullWho"></small>
+                  <em data-i18n="gate.fullVibe"></em>
+                  <u class="gcount" data-count="full"></u>
+                </span>
+                <svg class="ggo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+              </button>
+              <button class="customCard" id="customBtn" data-tab="Mix" type="button">
+                <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M4 12h16M4 17h7"/><path d="M18 5v4M16 7h4"/></svg></span>
+                <span class="gtxt"><b data-i18n="gate.custom">Custom</b><small data-i18n="gate.customSub">Build your own playlist</small></span>
+                <svg class="ggo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
               </button>
             </div>
           </div>
-
-          <div class="guidedTitle" data-i18n="play.guidedTitle">What do you want to do?</div>
-          <div class="guidedSub" data-i18n="play.guidedSub">Three questions, not sixty-six modes at once.</div>
-
-          <div class="guidedlist">
-            <button class="guidedBtn primary" id="justPlayBtn" type="button">
-              <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg></span>
-              <b data-i18n="play.justPlay">Just play</b>
-              <small id="justPlaySub"></small>
-            </button>
-            <button class="guidedBtn" id="endlessBtn" type="button">
-              <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.585 0-4.585 8 0 8 5.606 0 7.644-8 12.739-8z"/></svg></span>
-              <b data-i18n="endless.title">Endless</b>
-              <small id="endlessSub"></small>
-            </button>
-            <button class="guidedBtn" id="pickModeBtn" type="button">
-              <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span>
-              <b data-i18n="play.pickMode">Pick a mode</b>
-              <small id="pickModeSub"></small>
-            </button>
-            <button class="guidedBtn" id="myStuffBtn" type="button">
-              <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></span>
-              <b data-i18n="play.myStuff">My stuff</b>
-              <small data-i18n="play.myStuffSub">Favorites, Mixtape, Marathon</small>
-            </button>
-          </div>
-
-          <p class="verline" id="verLine"></p>
         </div>
 
-        <!-- A mood's games: the ones picked for it, the same family of feeling beside them, and every game one tap away. -->
+        <!-- One kind of game: a way to play a mix of them, and every game that belongs to it. -->
         <div id="playGate" hidden>
           <button class="backrow" id="gateBack" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
@@ -3461,10 +3466,12 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
             <small id="gateWho"></small>
             <em id="gateVibe"></em>
           </div>
+          <button class="justPlay" id="moodPlay" type="button">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>
+            <span data-i18n="gate.playMix">Play a mix</span>
+          </button>
+          <div class="seclbl"><span id="gateCount"></span></div>
           <div class="modegrid gategrid" id="gateModes"></div>
-          <div class="seclbl" id="gateMoreLbl" hidden><span data-i18n="gate.more">More in this mood</span></div>
-          <div class="modegrid gategrid" id="gateMore" hidden></div>
-          <button class="catcard wide" id="gateAll" type="button"><b></b><small></small></button>
         </div>
 
         <!-- My stuff: everything that isn't one of the three big questions —
@@ -3485,6 +3492,11 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
             </button>
           </div>
           <div class="stufflist quick">
+            <button class="qcard" id="endlessBtn" type="button" style="--acc:#FF5B39">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8a4 4 0 1 0 0 8c4 0 6-8 10-8a4 4 0 1 1 0 8c-4 0-6-8-10-8z"/></svg>
+              <b data-i18n="endless.title">Endless</b>
+              <small id="endlessSub"></small>
+            </button>
             <button class="qcard" id="mixBtn" type="button" style="--acc:#FF5B39">
               <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M4 12h16M4 17h7"/><circle cx="18" cy="7" r="2.4" fill="currentColor" stroke="none"/><circle cx="15" cy="17" r="2.4" fill="currentColor" stroke="none"/></svg>
               <b data-i18n="mix.title">Mixtape</b>
@@ -3527,7 +3539,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
             </button>
             <button class="qcard" id="statsBtn" type="button" style="--acc:#4BC0FF">
               <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
-              <b data-i18n="tab.Stats">Stats</b>
+              <b data-i18n="you.progress">Progress</b>
               <small data-i18n="nav.stats">Your statistics</small>
             </button>
           </div>
@@ -3596,6 +3608,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
     <!-- ── STATS ───────────────────────────────────────────────────── -->
     <section class="screen" id="tabStats" hidden>
       <div class="scroll" tabindex="0" role="region" data-i18n-aria="nav.stats">
+        <div class="ysub" role="group" data-i18n-aria="you.switch">
+          <button type="button" data-tab="Stats" aria-pressed="true"><span data-i18n="you.progress">Progress</span></button>
+          <button type="button" data-tab="Settings" aria-pressed="false"><span data-i18n="tab.Settings">Settings</span></button>
+        </div>
         <!-- A tab called Stats opened on a shop: 279px of perks, a third of the
              first screen, before a single number about you. Perks is a place you
              go to (the Play tab links straight at it), not the headline here. -->
@@ -3689,6 +3705,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
     <!-- ── SETTINGS ────────────────────────────────────────────────── -->
     <section class="screen" id="tabSettings" hidden>
       <div class="scroll">
+        <div class="ysub" role="group" data-i18n-aria="you.switch">
+          <button type="button" data-tab="Stats" aria-pressed="true"><span data-i18n="you.progress">Progress</span></button>
+          <button type="button" data-tab="Settings" aria-pressed="false"><span data-i18n="tab.Settings">Settings</span></button>
+        </div>
         <div class="setcard">
         <div class="seclbl"><span data-i18n="set.feedback">Feedback</span></div>
         <div class="setrow">
@@ -3888,30 +3908,22 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 
   <nav class="tabbar" id="tabbar" data-i18n-aria="nav.sections">
     <button class="tab" data-tab="Play" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M7 4l12 8-12 8z"/></svg>
-      <span>Play</span>
+      <span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4l12 8-12 8z"/></svg></span>
+      <span class="lbl"></span>
     </button>
     <button class="tab" data-tab="Modes" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>
-      <span>Modes</span>
-    </button>
-    <button class="tab" data-tab="Mix" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h4l4 10h6"/><path d="M3 17h4l2-5"/><path d="M17 4l4 3-4 3"/><path d="M17 14l4 3-4 3"/></svg>
-      <span>Mix</span>
+      <span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></span>
+      <span class="lbl"></span>
     </button>
     <button class="tab" data-tab="Room" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V9l2.500-4 3 3h3l3-3L19 9v11z"/><path d="M9.500 13v.5M14.500 13v.5M11 16.500q1 .8 2 0"/></svg>
-      <span>Room</span>
+      <span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/></svg></span>
+      <span class="lbl"></span>
       <i class="tabdot" id="roomDot" hidden aria-hidden="true"></i>
     </button>
     <button class="tab" data-tab="Stats" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg>
-      <span>Stats</span>
+      <span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.8-4 3.7-6 7.5-6s6.7 2 7.5 6"/></svg></span>
+      <span class="lbl"></span>
       <i class="tabdot" id="statsDot" hidden aria-hidden="true"></i>
-    </button>
-    <button class="tab" data-tab="Settings" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M19 7h1M4 12h1M10 12h10M4 17h12M21 17h-1"/><circle cx="16" cy="7" r="2.2"/><circle cx="7.5" cy="12" r="2.2"/><circle cx="18" cy="17" r="2.2"/></svg>
-      <span>Settings</span>
     </button>
   </nav>
 </div>
@@ -4080,7 +4092,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.101.0';
+const VERSION_TAG = 'v0.102.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4683,14 +4695,14 @@ const LANGS = [
 
 const STRINGS = {
   en: {
-    'nav.sections':'Sections', 'nav.stats':'Your statistics', 'cat.all':'All', 'cat.focus':'Focus', 'cat.reflex':'Reflex', 'cat.logic':'Logic', 'cat.numbers':'Numbers', 'cat.words':'Words', 'cat.calm':'Calm', 'cat.physics':'Physics', 'cat.make':'Make', 'modes.filter':'Filter modes by kind', 'tab.Play':'Play', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Settings',
+    'nav.sections':'Sections', 'nav.stats':'Your statistics', 'cat.all':'All', 'cat.focus':'Focus', 'cat.reflex':'Reflex', 'cat.logic':'Logic', 'cat.numbers':'Numbers', 'cat.words':'Words', 'cat.calm':'Calm', 'cat.physics':'Physics', 'cat.make':'Make', 'modes.filter':'Filter modes by kind', 'tab.Play':'Play', 'tab.Modes':'Games', 'tab.Mix':'Mix', 'tab.Stats':'You', 'tab.Settings':'Settings',
     'hero.eyebrow':'Every mode, on shuffle', 'hero.title':'Shuffle',
-    'hero.sub':'Ten minutes on the clock — stay in the zone and it stops.', 'run.lid':'+{n}s ceiling',
+    'run.lid':'+{n}s ceiling',
     'play.other':'Other ways to play', 'play.favorites':'Favorites',
-    'play.guidedTitle':'What do you want to do?', 'play.guidedSub':'A few choices, not forty-two modes at once.',
+    
     'endless.title':'Endless', 'endless.sub':'No clock, no lives. A miss only breaks your streak.', 'stage.eyebrow':'Stage {n}', 'stage.title':'Stage cleared', 'stage.desc':'+{n} points', 'stage.descTimed':'+{n} points and {s} more seconds',
-    'play.justPlay':'Just play', 'play.myStuff':'My stuff', 'play.myStuffSub':'Favorites, Mixtape, Marathon',
-    'mix.title':'Mixtape', 'mix.tapToChoose':'Tap to choose your modes',
+    
+    'mix.title':'Custom', 'mix.tapToChoose':'Tap to choose your modes',
     'reflexrush.title':'Reflex Rush', 'reflexrush.sub':'All 7 reflex modes, back to back',
     'puzzlecascade.title':'Puzzle Cascade', 'puzzlecascade.sub':'All 4 make modes, longer and deeper',
     'survival.title':'Survival Protocol', 'survival.sub':'Any mode, three lives, waves of ten',
@@ -4791,7 +4803,7 @@ const STRINGS = {
     'daily.streak':'{n}-day streak', 'daily.streak1':'Streak started today', 'daily.share':'Dopamine Drop — Daily Drop {d}: {a}/{b} solved for {n} points, day {s} of my streak.', 'btn.share':'Share', 'daily.copied':'Copied',
     'stats.filter':'Filter the mode list', 'stats.fAll':'All', 'stats.fPlayed':'Played', 'stats.fNew':'Not tried', 'stats.allPlayed':'You have played every mode at least once.', 'stats.noneYet':'Nothing here yet — play a Marathon and a score appears.',
     'p.bridge':'{n} stitches laid — reach the far edge', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Bare cloth, column {x} row {y}, tap to lay a stitch', 'bridge.plank':'A stitch, column {x} row {y}, tap to lift it', 'm.bridge':'Darning|Lay stitches edge to edge — you have only so many', 
-    'play.pickMode':'Pick a mode', 'play.pickSub':'All {n}, by family', 'daily.today':'Today’s twelve', 'daily.done':'Played today', 'daily.streakN':'{n}-day streak', 'play.carryBest':'Your best {n}',
+    'daily.today':'Today’s twelve', 'daily.done':'Played today', 'daily.streakN':'{n}-day streak', 'play.carryBest':'Your best {n}',
     'wc.lead':'{n} small puzzles. The one in front of you changes every round.', 'wc.p1':'Ten minutes a run, or as long as you like', 'wc.p2':'A different puzzle every round', 'wc.p3':'A miss costs time — a streak pays', 'wc.change':'Change', 'wc.start':'Start your first run', 'wc.look':'Look around first',
     'mix.tapes':'Your mixtapes', 'mix.name':'Name this mixtape', 'mix.share':'Share this mixtape', 'mix.delete':'Delete this mixtape', 'mix.untitled':'Mixtape {n}', 'mix.newTape':'+ New', 'mix.paste':'Paste a code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Delete “{name}”?', 'mix.keep':'Keep', 'mix.deleteIt':'Delete', 'mix.shareText':'My Dopamine Drop mixtape “{name}” — {n} modes. Paste this code into the Mix tab: {code}', 'mix.importTitle':'Add a mixtape', 'mix.importSub':'Paste a code someone sent you. It carries a name and a list of modes, nothing else.', 'mix.importAdd':'Add it', 'mix.importBad':'No mixtape code in that. Paste the whole message — the code starts with DD1.', 'mix.importOk':'Added “{name}”.', 'mix.importN':'{n} modes.', 'mix.importN1':'One mode.', 'mix.importDropped':'{n} of its modes are not in this version and were left out.', 'mix.importDropped1':'One of its modes is not in this version and was left out.',
 
@@ -5156,6 +5168,11 @@ const STRINGS = {
     /* Yarn Tangled Tangle */
     'meld.l1':'A loose thread', 'meld.l2':'A tangled ball', 'meld.l3':'A neat ball', 'meld.l4':'A skein', 'meld.l5':'A knitted square', 'meld.l6':'A crocheted flower', 'meld.l7':'A plush kitten',
     'meld.coins':'Coins of Gratitude', 'meld.more':'More yarn · {p}', 'meld.moreAria':'Buy {v} for {p} Coins of Gratitude, {n} left to buy',
+    'gate.custom':'Custom', 'gate.customSub':'Build your own playlist', 'gate.count':'{n} games', 'gate.playMix':'Play a mix',
+    /* The menu */
+    'me.open':'Your progress', 'me.level':'Level {n}',
+    'you.switch':'Progress or settings', 'you.progress':'Progress',
+    'modes.ways':'More ways to play', 'modes.waysSub':'Endless, Mixtape, Marathon and more', 'gate.fourAll':'All four games',
     /* The gateway */
     'gate.title':'How is your brain today?', 'gate.sub':'Pick the one that sounds like you — the games are chosen to match.', 'gate.more':'More in this mood',
     'gate.calm':'Calm & Collect', 'gate.calmWho':'(Predominantly Inattentive)', 'gate.calmVibe':'Soothing, repetitive, low-pressure.',
@@ -5170,14 +5187,14 @@ const STRINGS = {
   },
 
   fr: {
-    'nav.sections':'Sections', 'nav.stats':'Vos statistiques', 'cat.all':'Tout', 'cat.focus':'Attention', 'cat.reflex':'Réflexes', 'cat.logic':'Logique', 'cat.numbers':'Nombres', 'cat.words':'Mots', 'cat.calm':'Calme', 'cat.physics':'Physique', 'cat.make':'Créer', 'modes.filter':'Filtrer les modes', 'tab.Play':'Jouer', 'tab.Modes':'Modes', 'tab.Mix':'Mix', 'tab.Stats':'Stats', 'tab.Settings':'Réglages',
+    'nav.sections':'Sections', 'nav.stats':'Vos statistiques', 'cat.all':'Tout', 'cat.focus':'Attention', 'cat.reflex':'Réflexes', 'cat.logic':'Logique', 'cat.numbers':'Nombres', 'cat.words':'Mots', 'cat.calm':'Calme', 'cat.physics':'Physique', 'cat.make':'Créer', 'modes.filter':'Filtrer les modes', 'tab.Play':'Jouer', 'tab.Modes':'Jeux', 'tab.Mix':'Mix', 'tab.Stats':'Moi', 'tab.Settings':'Réglages',
     'hero.eyebrow':'Tous les modes, en aléatoire', 'hero.title':'Mélange',
-    'hero.sub':'Dix minutes au compteur — restez dans la zone et il s’arrête.', 'run.lid':'plafond +{n}s',
+    'run.lid':'plafond +{n}s',
     'play.other':'Autres façons de jouer', 'play.favorites':'Favoris',
-    'play.guidedTitle':'Que voulez-vous faire ?', 'play.guidedSub':'Quelques choix, pas quarante-deux modes d’un coup.',
+    
     'endless.title':'Sans fin', 'endless.sub':'Ni chrono ni vies. Une erreur ne casse que votre série.', 'stage.eyebrow':'Étape {n}', 'stage.title':'Étape franchie', 'stage.desc':'+{n} points', 'stage.descTimed':'+{n} points et {s} secondes de plus',
-    'play.justPlay':'Jouer', 'play.myStuff':'Mes affaires', 'play.myStuffSub':'Favoris, Mixtape, Marathon',
-    'mix.title':'Playlist', 'mix.tapToChoose':'Touchez pour choisir vos modes',
+    
+    'mix.title':'Sur mesure', 'mix.tapToChoose':'Touchez pour choisir vos modes',
     'reflexrush.title':'Ruée réflexe', 'reflexrush.sub':'Les 7 modes réflexe, à la suite',
     'puzzlecascade.title':'Cascade de puzzles', 'puzzlecascade.sub':'Les 4 modes Créer, plus longs et plus profonds',
     'survival.title':'Protocole de survie', 'survival.sub':'N’importe quel mode, trois vies, vagues de dix',
@@ -5278,7 +5295,7 @@ const STRINGS = {
     'daily.streak':'Série de {n} jours', 'daily.streak1':'Série commencée aujourd’hui', 'daily.share':'Dopamine Drop — Tirage du jour {d} : {a}/{b} réussis pour {n} points, {s}ᵉ jour de ma série.', 'btn.share':'Partager', 'daily.copied':'Copié',
     'stats.filter':'Filtrer la liste des modes', 'stats.fAll':'Tout', 'stats.fPlayed':'Joués', 'stats.fNew':'Jamais essayés', 'stats.allPlayed':'Vous avez joué à tous les modes au moins une fois.', 'stats.noneYet':'Rien ici — jouez un Marathon et un score apparaîtra.',
     'p.bridge':'{n} points posés — atteignez l’autre bord', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Tissu nu, colonne {x} ligne {y}, touchez pour poser un point', 'bridge.plank':'Un point, colonne {x} ligne {y}, touchez pour le retirer', 'm.bridge':'Reprise|Posez les points d’un bord à l’autre — ils sont comptés', 
-    'play.pickMode':'Choisir un mode', 'play.pickSub':'Les {n}, par famille', 'daily.today':'Les douze du jour', 'daily.done':'Fait aujourd’hui', 'daily.streakN':'Série de {n} jours', 'play.carryBest':'Votre record {n}',
+    'daily.today':'Les douze du jour', 'daily.done':'Fait aujourd’hui', 'daily.streakN':'Série de {n} jours', 'play.carryBest':'Votre record {n}',
     'wc.lead':'{n} petits casse-têtes. Celui qui est devant vous change à chaque manche.', 'wc.p1':'Dix minutes par partie, ou autant que vous voulez', 'wc.p2':'Un casse-tête différent à chaque manche', 'wc.p3':'Une erreur coûte du temps — une série rapporte', 'wc.change':'Changer', 'wc.start':'Lancer votre première partie', 'wc.look':'Jeter un œil d’abord',
     'mix.tapes':'Vos playlists', 'mix.name':'Nommer cette playlist', 'mix.share':'Partager cette playlist', 'mix.delete':'Supprimer cette playlist', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Nouvelle', 'mix.paste':'Coller un code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Supprimer « {name} » ?', 'mix.keep':'Garder', 'mix.deleteIt':'Supprimer', 'mix.shareText':'Ma playlist Dopamine Drop « {name} » — {n} modes. Collez ce code dans l’onglet Mix : {code}', 'mix.importTitle':'Ajouter une playlist', 'mix.importSub':'Collez un code qu’on vous a envoyé. Il contient un nom et une liste de modes, rien d’autre.', 'mix.importAdd':'Ajouter', 'mix.importBad':'Aucun code de playlist là-dedans. Collez tout le message — le code commence par DD1.', 'mix.importOk':'« {name} » ajoutée.', 'mix.importN':'{n} modes.', 'mix.importN1':'Un mode.', 'mix.importDropped':'{n} de ses modes n’existent pas dans cette version et ont été écartés.', 'mix.importDropped1':'Un de ses modes n’existe pas dans cette version et a été écarté.',
 
@@ -5643,6 +5660,11 @@ const STRINGS = {
     /* Yarn Tangled Tangle */
     'meld.l1':'Un fil libre', 'meld.l2':'Une pelote emmêlée', 'meld.l3':'Une pelote bien enroulée', 'meld.l4':'Un écheveau', 'meld.l5':'Un carré tricoté', 'meld.l6':'Une fleur au crochet', 'meld.l7':'Un chaton en peluche',
     'meld.coins':'pièces de gratitude', 'meld.more':'Plus de laine · {p}', 'meld.moreAria':'Acheter : {v}, pour {p} pièces de gratitude, encore {n} achats possibles',
+    'gate.custom':'Sur mesure', 'gate.customSub':'Compose ta propre playlist', 'gate.count':'{n} jeux', 'gate.playMix':'Lancer un mélange',
+    /* The menu */
+    'me.open':'Votre progression', 'me.level':'Niveau {n}',
+    'you.switch':'Progression ou réglages', 'you.progress':'Progression',
+    'modes.ways':'Autres façons de jouer', 'modes.waysSub':'Sans fin, Mixtape, Marathon et plus', 'gate.fourAll':'Les quatre jeux',
     /* The gateway */
     'gate.title':'Comment va ta tête aujourd’hui ?', 'gate.sub':'Choisis ce qui te ressemble — les jeux sont choisis pour aller avec.', 'gate.more':'Dans le même esprit',
     'gate.calm':'Calme & Collecte', 'gate.calmWho':'(Principalement inattentif)', 'gate.calmVibe':'Apaisant, répétitif, sans pression.',
@@ -5657,14 +5679,14 @@ const STRINGS = {
   },
 
   es: {
-    'nav.sections':'Secciones', 'nav.stats':'Tus estadísticas', 'cat.all':'Todo', 'cat.focus':'Atención', 'cat.reflex':'Reflejos', 'cat.logic':'Lógica', 'cat.numbers':'Números', 'cat.words':'Palabras', 'cat.calm':'Calma', 'cat.physics':'Física', 'cat.make':'Crear', 'modes.filter':'Filtrar modos', 'tab.Play':'Jugar', 'tab.Modes':'Modos', 'tab.Mix':'Mezcla', 'tab.Stats':'Datos', 'tab.Settings':'Ajustes',
+    'nav.sections':'Secciones', 'nav.stats':'Tus estadísticas', 'cat.all':'Todo', 'cat.focus':'Atención', 'cat.reflex':'Reflejos', 'cat.logic':'Lógica', 'cat.numbers':'Números', 'cat.words':'Palabras', 'cat.calm':'Calma', 'cat.physics':'Física', 'cat.make':'Crear', 'modes.filter':'Filtrar modos', 'tab.Play':'Jugar', 'tab.Modes':'Juegos', 'tab.Mix':'Mezcla', 'tab.Stats':'Tú', 'tab.Settings':'Ajustes',
     'hero.eyebrow':'Todos los modos, al azar', 'hero.title':'Mezcla',
-    'hero.sub':'Diez minutos en el reloj: sigue en la zona y se detiene.', 'run.lid':'techo +{n}s',
+    'run.lid':'techo +{n}s',
     'play.other':'Otras formas de jugar', 'play.favorites':'Favoritos',
-    'play.guidedTitle':'¿Qué quieres hacer?', 'play.guidedSub':'Unas pocas opciones, no cuarenta y dos modos a la vez.',
+    
     'endless.title':'Sin fin', 'endless.sub':'Sin reloj ni vidas. Un fallo solo rompe tu racha.', 'stage.eyebrow':'Etapa {n}', 'stage.title':'Etapa superada', 'stage.desc':'+{n} puntos', 'stage.descTimed':'+{n} puntos y {s} segundos más',
-    'play.justPlay':'Jugar', 'play.myStuff':'Lo mío', 'play.myStuffSub':'Favoritos, Mixtape, Maratón',
-    'mix.title':'Lista', 'mix.tapToChoose':'Toca para elegir tus modos',
+    
+    'mix.title':'A tu medida', 'mix.tapToChoose':'Toca para elegir tus modos',
     'reflexrush.title':'Ráfaga refleja', 'reflexrush.sub':'Los 7 modos de reflejos, seguidos',
     'puzzlecascade.title':'Cascada de puzles', 'puzzlecascade.sub':'Los 4 modos Crear, más largos y profundos',
     'survival.title':'Protocolo de supervivencia', 'survival.sub':'Cualquier modo, tres vidas, oleadas de diez',
@@ -5765,7 +5787,7 @@ const STRINGS = {
     'daily.streak':'Racha de {n} días', 'daily.streak1':'Racha empezada hoy', 'daily.share':'Dopamine Drop — Reto diario {d}: {a}/{b} resueltos por {n} puntos, día {s} de mi racha.', 'btn.share':'Compartir', 'daily.copied':'Copiado',
     'stats.filter':'Filtrar la lista de modos', 'stats.fAll':'Todos', 'stats.fPlayed':'Jugados', 'stats.fNew':'Sin probar', 'stats.allPlayed':'Has jugado todos los modos al menos una vez.', 'stats.noneYet':'Aquí no hay nada — juega un Maratón y aparecerá una puntuación.',
     'p.bridge':'{n} puntadas puestas — llega al otro borde', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Tela desnuda, columna {x} fila {y}, toca para dar una puntada', 'bridge.plank':'Una puntada, columna {x} fila {y}, toca para quitarla', 'm.bridge':'Zurcido|Pon puntadas de borde a borde — son contadas', 
-    'play.pickMode':'Elige un modo', 'play.pickSub':'Los {n}, por familia', 'daily.today':'Los doce de hoy', 'daily.done':'Jugado hoy', 'daily.streakN':'Racha de {n} días', 'play.carryBest':'Tu récord {n}',
+    'daily.today':'Los doce de hoy', 'daily.done':'Jugado hoy', 'daily.streakN':'Racha de {n} días', 'play.carryBest':'Tu récord {n}',
     'wc.lead':'{n} pequeños rompecabezas. El que tienes delante cambia en cada ronda.', 'wc.p1':'Diez minutos por partida, o los que quieras', 'wc.p2':'Un rompecabezas distinto cada ronda', 'wc.p3':'Un fallo cuesta tiempo — una racha paga', 'wc.change':'Cambiar', 'wc.start':'Empieza tu primera partida', 'wc.look':'Echar un vistazo primero',
     'mix.tapes':'Tus listas', 'mix.name':'Nombra esta lista', 'mix.share':'Compartir esta lista', 'mix.delete':'Borrar esta lista', 'mix.untitled':'Lista {n}', 'mix.newTape':'+ Nueva', 'mix.paste':'Pegar un código', 'mix.metaTape':'{name} · {n} modos', 'mix.delConfirm':'¿Borrar «{name}»?', 'mix.keep':'Conservar', 'mix.deleteIt':'Borrar', 'mix.shareText':'Mi lista de Dopamine Drop «{name}» — {n} modos. Pega este código en la pestaña Mix: {code}', 'mix.importTitle':'Añadir una lista', 'mix.importSub':'Pega un código que te hayan enviado. Lleva un nombre y una lista de modos, nada más.', 'mix.importAdd':'Añadirla', 'mix.importBad':'Ahí no hay ningún código de lista. Pega el mensaje entero — el código empieza por DD1.', 'mix.importOk':'Añadida «{name}».', 'mix.importN':'{n} modos.', 'mix.importN1':'Un modo.', 'mix.importDropped':'{n} de sus modos no están en esta versión y se han dejado fuera.', 'mix.importDropped1':'Uno de sus modos no está en esta versión y se ha dejado fuera.',
 
@@ -6130,6 +6152,11 @@ const STRINGS = {
     /* Yarn Tangled Tangle */
     'meld.l1':'Un hilo suelto', 'meld.l2':'Un ovillo enredado', 'meld.l3':'Un ovillo ordenado', 'meld.l4':'Una madeja', 'meld.l5':'Un cuadrado de punto', 'meld.l6':'Una flor de ganchillo', 'meld.l7':'Un gatito de peluche',
     'meld.coins':'monedas de gratitud', 'meld.more':'Más lana · {p}', 'meld.moreAria':'Comprar: {v}, por {p} monedas de gratitud, quedan {n} compras',
+    'gate.custom':'A tu medida', 'gate.customSub':'Crea tu propia lista', 'gate.count':'{n} juegos', 'gate.playMix':'Jugar una mezcla',
+    /* The menu */
+    'me.open':'Tu progreso', 'me.level':'Nivel {n}',
+    'you.switch':'Progreso o ajustes', 'you.progress':'Progreso',
+    'modes.ways':'Más formas de jugar', 'modes.waysSub':'Sin fin, Mixtape, Maratón y más', 'gate.fourAll':'Los cuatro juegos',
     /* The gateway */
     'gate.title':'¿Cómo está tu cabeza hoy?', 'gate.sub':'Elige el que más se parezca a ti: los juegos se eligen a juego.', 'gate.more':'Más con este ánimo',
     'gate.calm':'Calma y Colección', 'gate.calmWho':'(Predominantemente inatento)', 'gate.calmVibe':'Relajante, repetitivo, sin presión.',
@@ -6144,14 +6171,14 @@ const STRINGS = {
   },
 
   de: {
-    'nav.sections':'Bereiche', 'nav.stats':'Deine Werte', 'cat.all':'Alle', 'cat.focus':'Fokus', 'cat.reflex':'Reflexe', 'cat.logic':'Logik', 'cat.numbers':'Zahlen', 'cat.words':'Wörter', 'cat.calm':'Ruhe', 'cat.physics':'Physik', 'cat.make':'Bauen', 'modes.filter':'Modi filtern', 'tab.Play':'Spielen', 'tab.Modes':'Modi', 'tab.Mix':'Mix', 'tab.Stats':'Werte', 'tab.Settings':'Optionen',
+    'nav.sections':'Bereiche', 'nav.stats':'Deine Werte', 'cat.all':'Alle', 'cat.focus':'Fokus', 'cat.reflex':'Reflexe', 'cat.logic':'Logik', 'cat.numbers':'Zahlen', 'cat.words':'Wörter', 'cat.calm':'Ruhe', 'cat.physics':'Physik', 'cat.make':'Bauen', 'modes.filter':'Modi filtern', 'tab.Play':'Spielen', 'tab.Modes':'Spiele', 'tab.Mix':'Mix', 'tab.Stats':'Du', 'tab.Settings':'Optionen',
     'hero.eyebrow':'Alle Modi, gemischt', 'hero.title':'Mix',
-    'hero.sub':'Zehn Minuten auf der Uhr — bleib in der Zone, dann steht sie still.', 'run.lid':'+{n}s Limit',
+    'run.lid':'+{n}s Limit',
     'play.other':'Andere Spielarten', 'play.favorites':'Favoriten',
-    'play.guidedTitle':'Was möchtest du tun?', 'play.guidedSub':'Ein paar Optionen, nicht zweiundvierzig Modi auf einmal.',
+    
     'endless.title':'Endlos', 'endless.sub':'Keine Uhr, keine Leben. Ein Fehler unterbricht nur deine Serie.', 'stage.eyebrow':'Etappe {n}', 'stage.title':'Etappe geschafft', 'stage.desc':'+{n} Punkte', 'stage.descTimed':'+{n} Punkte und {s} Sekunden mehr',
-    'play.justPlay':'Loslegen', 'play.myStuff':'Meine Sachen', 'play.myStuffSub':'Favoriten, Mixtape, Marathon',
-    'mix.title':'Playlist', 'mix.tapToChoose':'Tippen, um Modi zu wählen',
+    
+    'mix.title':'Eigene Mischung', 'mix.tapToChoose':'Tippen, um Modi zu wählen',
     'reflexrush.title':'Reflex-Rausch', 'reflexrush.sub':'Alle 7 Reflex-Modi im Wechsel',
     'puzzlecascade.title':'Rätsel-Kaskade', 'puzzlecascade.sub':'Alle 4 Bauen-Modi, länger und tiefer',
     'survival.title':'Überlebensprotokoll', 'survival.sub':'Jeder Modus, drei Leben, Wellen zu zehnt',
@@ -6252,7 +6279,7 @@ const STRINGS = {
     'daily.streak':'{n} Tage in Folge', 'daily.streak1':'Serie heute begonnen', 'daily.share':'Dopamine Drop — Tagesrunde {d}: {a}/{b} gelöst für {n} Punkte, Tag {s} meiner Serie.', 'btn.share':'Teilen', 'daily.copied':'Kopiert',
     'stats.filter':'Modusliste filtern', 'stats.fAll':'Alle', 'stats.fPlayed':'Gespielt', 'stats.fNew':'Ungespielt', 'stats.allPlayed':'Du hast jeden Modus mindestens einmal gespielt.', 'stats.noneYet':'Hier ist noch nichts — spiel einen Marathon und ein Wert erscheint.',
     'p.bridge':'{n} Stiche gelegt — erreiche den anderen Rand', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Blanker Stoff, Spalte {x} Zeile {y}, tippen zum Stich setzen', 'bridge.plank':'Ein Stich, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Stopfen|Setze Stiche von Rand zu Rand — du hast nur so viele', 
-    'play.pickMode':'Modus wählen', 'play.pickSub':'Alle {n}, nach Familie', 'daily.today':'Die zwölf von heute', 'daily.done':'Heute gespielt', 'daily.streakN':'{n} Tage in Folge', 'play.carryBest':'Dein Bestwert {n}',
+    'daily.today':'Die zwölf von heute', 'daily.done':'Heute gespielt', 'daily.streakN':'{n} Tage in Folge', 'play.carryBest':'Dein Bestwert {n}',
     'wc.lead':'{n} kleine Rätsel. Das vor dir wechselt jede Runde.', 'wc.p1':'Zehn Minuten pro Lauf, oder so lange du willst', 'wc.p2':'Jede Runde ein anderes Rätsel', 'wc.p3':'Ein Fehler kostet Zeit — eine Serie zahlt sich aus', 'wc.change':'Ändern', 'wc.start':'Starte deine erste Runde', 'wc.look':'Erst mal umsehen',
     'mix.tapes':'Deine Playlists', 'mix.name':'Diese Playlist benennen', 'mix.share':'Diese Playlist teilen', 'mix.delete':'Diese Playlist löschen', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Neu', 'mix.paste':'Code einfügen', 'mix.metaTape':'{name} · {n} Modi', 'mix.delConfirm':'„{name}“ löschen?', 'mix.keep':'Behalten', 'mix.deleteIt':'Löschen', 'mix.shareText':'Meine Dopamine-Drop-Playlist „{name}“ — {n} Modi. Füge diesen Code im Mix-Tab ein: {code}', 'mix.importTitle':'Playlist hinzufügen', 'mix.importSub':'Füge einen Code ein, den dir jemand geschickt hat. Er enthält einen Namen und eine Modusliste, sonst nichts.', 'mix.importAdd':'Hinzufügen', 'mix.importBad':'Darin steckt kein Playlist-Code. Füge die ganze Nachricht ein — der Code beginnt mit DD1.', 'mix.importOk':'„{name}“ hinzugefügt.', 'mix.importN':'{n} Modi.', 'mix.importN1':'Ein Modus.', 'mix.importDropped':'{n} ihrer Modi gibt es in dieser Version nicht und wurden weggelassen.', 'mix.importDropped1':'Einen ihrer Modi gibt es in dieser Version nicht, er wurde weggelassen.',
 
@@ -6617,6 +6644,11 @@ const STRINGS = {
     /* Yarn Tangled Tangle */
     'meld.l1':'Ein loser Faden', 'meld.l2':'Ein verheddertes Knäuel', 'meld.l3':'Ein ordentliches Knäuel', 'meld.l4':'Ein Strang', 'meld.l5':'Ein gestricktes Quadrat', 'meld.l6':'Eine gehäkelte Blume', 'meld.l7':'Ein Plüschkätzchen',
     'meld.coins':'Dankbarkeitsmünzen', 'meld.more':'Mehr Wolle · {p}', 'meld.moreAria':'Kaufen: {v} für {p} Dankbarkeitsmünzen, noch {n} Käufe',
+    'gate.custom':'Eigene Mischung', 'gate.customSub':'Stell deine eigene Playlist zusammen', 'gate.count':'{n} Spiele', 'gate.playMix':'Mix spielen',
+    /* The menu */
+    'me.open':'Dein Fortschritt', 'me.level':'Stufe {n}',
+    'you.switch':'Fortschritt oder Optionen', 'you.progress':'Fortschritt',
+    'modes.ways':'Weitere Spielarten', 'modes.waysSub':'Endlos, Mixtape, Marathon und mehr', 'gate.fourAll':'Alle vier Spiele',
     /* The gateway */
     'gate.title':'Wie tickt dein Kopf heute?', 'gate.sub':'Wähl, was zu dir passt — die Spiele werden passend gewählt.', 'gate.more':'Mehr in dieser Stimmung',
     'gate.calm':'Ruhig & Sammeln', 'gate.calmWho':'(Überwiegend unaufmerksam)', 'gate.calmVibe':'Beruhigend, wiederholend, ohne Druck.',
@@ -6732,6 +6764,13 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.102.0', date:'2026-10-01', items:[
+    'The menu is simple now. Play shows Daily Drop, three kinds of game and Custom, and nothing else. The long list of buttons is gone, and the bar at the bottom is four tabs: Play, Games, Room and You.',
+    'Every one of the 44 games belongs to one of the three kinds. Calm & Collect holds the soothing, low-pressure ones (15), Quick Paws the fast, satisfying ones (14), and The Full Purr the ones that mix thinking with speed (19, with the four newest first). Open a kind to see all of its games, or press Play a mix to be dealt games from it. The Full Purr mixes in everything.',
+    'Mixtape is Custom: the place to build your own playlist, one tap from the menu.',
+    'Stats and Settings are one tab called You, with a switch between Progress and Settings. Language lives in Settings. Endless, Marathon and the other ways to play are under Games.',
+    'The top of the screen shows the game’s name and your level, and your progress ring. Just play is now Play a mix inside The Full Purr.',
+  ] },
   { v:'0.101.0', date:'2026-10-01', items:[
     'The menu asks how your head is today. Three big buttons now sit at the top of Play: Calm & Collect (soothing, repetitive, low-pressure), Quick Paws (fast, satisfying, action-oriented) and The Full Purr (a balanced mix). Each opens the games chosen for that mood, with more of the same feeling beside them, and every game is still one tap away.',
     'New: Yarn Ball Blaster. A paw-shaped cannon at the bottom and a wall of yarn balls creeping down from the top. Fire the colour you are holding into the lane it belongs in and it pops, along with every ball of that colour touching it; a wrong colour pops nothing and hurries the wall. Press and slide to aim and let go to fire, let go below the wall to put the shot back, or tap the paw to swap with the next ball.',
@@ -7564,7 +7603,7 @@ function applyStatic(){
   document.querySelectorAll('[data-i18n-aria]').forEach(n =>
     n.setAttribute('aria-label', t(n.getAttribute('data-i18n-aria'))));
   Array.from(el.tabbar.children).forEach(b => {
-    const lbl = b.querySelector('span');
+    const lbl = b.querySelector('.lbl');
     if (lbl) lbl.textContent = t('tab.' + b.dataset.tab);
   });
   const find = $('modeFind');
@@ -8580,12 +8619,8 @@ const MODES = {
       });
       const placed = new Set();
       const budget = moveBudget(ctx, wanted.size);
-      /* Past a point, one cell on the input side gets a faint highlight that
-         has nothing to do with the real reflection — a nudge toward
-         including it that the mirror itself never asked for. */
-      const inputIdx = [];
-      for (let y=0;y<N;y++) for (let x=0;x<N;x++) if (!isGiven(x, y)) inputIdx.push(y*N+x);
-      const tempt = ctx.level >= 14 ? pick(inputIdx.filter(i => !wanted.has(i)), ctx.rnd) : -1;
+      /* Every empty square on the far side looks the same. There used to be a decoy from level 14, one square picked out in orange that
+         had nothing to do with the reflection; it read as a glitch in the pattern, not as a puzzle, and it is gone. */
 
       const g = gridEl(N);
       g.style.aspectRatio = '1';
@@ -8609,7 +8644,7 @@ const MODES = {
           g.appendChild(d);
           continue;
         }
-        const b = mk('button','cell mcell' + (idx === tempt ? ' tempt' : '')); b.type='button';
+        const b = mk('button','cell mcell'); b.type='button';
         b.setAttribute('aria-label', t('a.colRow', { x: x+1, y: y+1 }));
         b.dataset.idx = idx;
         onTap(b, () => { brush = !placed.has(idx); setCell(idx, brush, b); });
@@ -16409,8 +16444,10 @@ function show(name){
   const inGame = name === 'play' || name === 'over';
   el.tabbar.hidden = inGame;
   el.chrome.hidden = inGame;
+  document.querySelectorAll('.ysub button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === name)));
   Array.from(el.tabbar.children).forEach(b => {
-    const on = b.dataset.tab === name;
+    /* Progress and Settings are two halves of one tab, and Custom is a part of Play. */
+    const on = b.dataset.tab === name || (b.dataset.tab === 'Stats' && name === 'Settings') || (b.dataset.tab === 'Play' && name === 'Mix');
     /* aria-current, not aria-selected: selected belongs to a real tablist, and
        this is a navigation bar. */
     if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
@@ -17302,7 +17339,7 @@ function showRateStep(){
 }
 
 /* ═══ Runs ════════════════════════════════════════════════════════════════ */
-function startRun(kind, modeId, twistId){
+function startRun(kind, modeId, twistId, poolIds){
   const k = KINDS[kind];
   const lvl = playerLevel();
   /* Nothing left to try. pickMode()'s bag would shuffle an empty pool and
@@ -17328,7 +17365,8 @@ function startRun(kind, modeId, twistId){
     xpAtStart: save.xp,
     playerLevel: lvl,
     pressure: Prog.pressure(lvl),
-    pool: kind === 'mix' ? mixModes()
+    pool: poolIds && poolIds.length ? poolIds.slice()
+      : kind === 'mix' ? mixModes()
       : kind === 'reflexrush' ? idsInCat('reflex')
       : kind === 'puzzlecascade' ? idsInCat('make')
       : kind === 'discover' ? MODE_IDS.filter(id => !(save.verdict || {})[id])
@@ -17857,15 +17895,12 @@ function paintChrome(){
   paintRoomDot();
   const lvl = playerLevel();
   const into = Prog.xpIntoLevel(save.xp), span = Prog.xpSpanOfLevel(save.xp);
-  $('lvlNum').textContent = String(lvl);
-  $('lvlXp').textContent = into + '/' + span;
+  $('lvlTitle').textContent = t('me.level', { n: lvl });
   $('lvlRing').style.setProperty('--p', Math.round(clamp(into/span,0,1)*100) + '%');
   const lang = LANGS.find(l => l.id === save.lang) || LANGS[0];
-  $('langCode').textContent = lang.flag;
   const nameEl = $('langName'); if (nameEl) nameEl.textContent = lang.label;
   const wcName = $('wcLangName'); if (wcName) wcName.textContent = lang.label;
   const logV = $('logBtnV'); if (logV) logV.textContent = 'v' + CHANGELOG[0].v;
-  $('verLine').textContent = version();
   const vs = $('setVerSub'); if (vs) vs.textContent = version();
 }
 
@@ -17891,37 +17926,42 @@ function setPlayView(v){
   }
 }
 
-/* The three moods. The games picked for each are the ones the brief names; beside them sit the games that feel the same, so a mood is
-   more than two cards, and every game is still one tap away. */
+/* Every game belongs to one of three kinds, and the kind says how it feels to play. The headline games come first; the rest follow in the
+   order they were made. */
 const GATES = {
-  calm:  { ids: ['meld', 'sift'],                  more: () => idsInCat('calm').slice(0, 4), ink: '#B9A6F2' },
-  quick: { ids: ['blast', 'forage'],               more: () => idsInCat('reflex').slice(0, 4), ink: '#F2A65A' },
-  full:  { ids: ['meld', 'sift', 'blast', 'forage'], more: () => [], ink: '#E8D5B7' }
+  calm:  { ids: ['meld','sift','tide','glimmer','trace','forge','bridge','latch','splice','rewire','slack','mirror','cairn','lever','halve'], pool: () => GATES.calm.ids },
+  quick: { ids: ['blast','forage','beat','arc','skim','bruise','slice','descent','gather','tumble','odd','stroop','count','order'],            pool: () => GATES.quick.ids },
+  full:  { ids: ['meld','sift','blast','forage','loaf','volley','chalk','tidy','siphon','plink','ripple','peril','haunt','sort','sum','wheel','slide','heft','drift'], pool: () => MODE_IDS.slice() }
 };
 let gateOn = 'calm';
 function paintGate(){
   const gt = GATES[gateOn] || GATES.calm, head = $('gateHead');
-  head.style.setProperty('--gk', gt.ink);
   const btn = document.querySelector('.gateBtn[data-gate="' + gateOn + '"]');
+  head.style.setProperty('--gk', btn ? btn.style.getPropertyValue('--gbg') : '#E8D5B7');
+  head.style.setProperty('--gbg', btn ? btn.style.getPropertyValue('--gbg') : '#E8D5B7');
+  head.style.setProperty('--gfg', btn ? btn.style.getPropertyValue('--gfg') : '#3B2A12');
+  head.style.setProperty('--gsub', btn ? btn.style.getPropertyValue('--gsub') : '#6B4E22');
   $('gateGlyph').innerHTML = btn ? btn.querySelector('.g').innerHTML : '';
   $('gateName').textContent = t('gate.' + gateOn);
   $('gateWho').textContent = t('gate.' + gateOn + 'Who');
   $('gateVibe').textContent = t('gate.' + gateOn + 'Vibe');
-  const fill = (host, ids) => {
-    fillGrid(host, ids, { mode:'all', onTap:null });
-    Array.from(host.children).forEach((card, i) => {
-      const c = catOf(ids[i]);
-      card.dataset.cat = c; card.style.setProperty('--cink', CAT_INK[c]);
-      card.onclick = () => startRun('marathon', ids[i]);
-    });
-  };
-  fill($('gateModes'), gt.ids);
-  const more = gt.more().filter(id => gt.ids.indexOf(id) < 0);
-  $('gateMoreLbl').hidden = $('gateMore').hidden = !more.length;
-  if (more.length) fill($('gateMore'), more);
-  const all = $('gateAll');
-  all.querySelector('b').textContent = t('modes.allCard', { n: MODE_IDS.length });
-  all.querySelector('small').textContent = t('modes.allSub');
+  $('gateCount').textContent = t('gate.count', { n: gt.ids.length });
+  const host = $('gateModes');
+  fillGrid(host, gt.ids, { mode:'all', onTap:null });
+  Array.from(host.children).forEach((card, i) => {
+    const c = catOf(gt.ids[i]);
+    card.dataset.cat = c; card.style.setProperty('--cink', CAT_INK[c]);
+    card.onclick = () => startRun('marathon', gt.ids[i]);
+  });
+}
+
+/* How many games each kind holds, and what a screen reader says about the card. */
+function paintMoods(){
+  document.querySelectorAll('.gcount').forEach(u => { u.textContent = t('gate.count', { n: GATES[u.dataset.count].ids.length }); });
+  document.querySelectorAll('.gateBtn').forEach(b => {
+    const g = b.dataset.gate;
+    b.setAttribute('aria-label', [t('gate.' + g), t('gate.' + g + 'Who'), t('gate.' + g + 'Vibe'), t('gate.count', { n: GATES[g].ids.length })].join('. '));
+  });
 }
 
 function paintPlay(){
@@ -17953,11 +17993,10 @@ function paintPlay(){
 
   const dv = save.daily[todayKey()], dSt = dailyStreak();
   const dLine = dSt ? t('daily.streakN', { n: dSt }) : dv ? t('daily.done') : t('daily.today');
-  $('dailyStatusLine').textContent = t('daily.title') + ' · ' + dLine;
+  $('dailyStatusLine').textContent = dLine;
   $('dailyStatus').classList.toggle('streaking', dSt > 1);
-
-  $('justPlaySub').textContent = t('hero.sub');
-  $('pickModeSub').textContent = t('play.pickSub', { n: MODE_IDS.length });
+  $('dailyStatus').setAttribute('aria-label', t('daily.title') + ', ' + dLine);
+  paintMoods();
   $('endlessSub').textContent = save.pbEndless
     ? t('play.carryBest', { n: fmt(save.pbEndless) }) : t('endless.sub');
 
@@ -18051,9 +18090,17 @@ function paintModes(){
         const sc = $('tabModes').querySelector('.scroll'); if (sc) sc.scrollTop = 0; });
       pick.appendChild(b2);
     });
+    /* Ways to play that are not one mode: Endless, Mixtape, Marathon, Fidget Loop and the rest, which used to sit on the menu. */
+    const ways = mk('button','catcard wide');
+    ways.type = 'button'; ways.id = 'waysBtn';
+    ways.innerHTML = '<b></b><small></small>';
+    ways.querySelector('b').textContent = t('modes.ways');
+    ways.querySelector('small').textContent = t('modes.waysSub');
+    onTap(ways, () => { goTab('Play'); setPlayView('myStuff'); });
+    pick.appendChild(ways);
     /* And the flat list is still one tap away for anyone who wants it. */
     const all = mk('button','catcard wide');
-    all.type = 'button';
+    all.type = 'button'; all.id = 'allBtn';
     all.innerHTML = '<b></b><small></small>';
     all.querySelector('b').textContent = t('modes.allCard', { n: MODE_IDS.length });
     all.querySelector('small').textContent = t('modes.allSub');
@@ -18656,7 +18703,7 @@ function paintLangs(){
   $('langList').replaceChildren(frag);
 }
 function openLangs(){ paintLangs(); $('langSheet').hidden = false; }
-$('langBtn').addEventListener('click', openLangs);
+$('meChip').addEventListener('click', () => { sfx.tap(); goTab('Stats'); });
 $('langBtn2').addEventListener('click', openLangs);
 $('langClose').addEventListener('click', () => { $('langSheet').hidden = true; });
 $('langSheet').addEventListener('click', ev => { if (ev.target === $('langSheet')) $('langSheet').hidden = true; });
@@ -18841,17 +18888,16 @@ Array.from(el.tabbar.children).forEach(b =>
    one, and tapping any card in the roster starts a Marathon, so for anyone who
    had ever chosen a mode "Just play" quietly meant one mode on three lives and
    the ten-minute run below it was unreachable. */
-$('justPlayBtn').addEventListener('click', () => startRun('shuffle'));
 $('endlessBtn').addEventListener('click', () => startRun('endless'));
-$('pickModeBtn').addEventListener('click', () => goTab('Modes'));
-$('myStuffBtn').addEventListener('click', () => { setPlayView('myStuff'); sfx.tap(); });
+document.querySelectorAll('.ysub button').forEach(b => b.addEventListener('click', () => { sfx.tap(); goTab(b.dataset.tab); }));
 $('myStuffBack').addEventListener('click', () => { setPlayView('home'); sfx.tap(); });
 document.querySelectorAll('.gateBtn').forEach(b => b.addEventListener('click', () => {
   gateOn = b.dataset.gate; paintGate(); setPlayView('gate'); sfx.tap();
   const sc = $('tabPlay').querySelector('.scroll'); if (sc) sc.scrollTop = 0;
 }));
 $('gateBack').addEventListener('click', () => { setPlayView('home'); sfx.tap(); });
-$('gateAll').addEventListener('click', () => { catFilter = 'all'; modeQuery = ''; goTab('Modes'); sfx.tap(); });
+$('moodPlay').addEventListener('click', () => startRun('shuffle', null, null, (GATES[gateOn] || GATES.full).pool()));
+$('customBtn').addEventListener('click', () => { sfx.tap(); goTab('Mix'); });
 $('statsBtn').addEventListener('click', () => goTab('Stats'));
 $('reflexRushBtn').addEventListener('click', () => startRun('reflexrush'));
 $('puzzleCascadeBtn').addEventListener('click', () => startRun('puzzlecascade'));

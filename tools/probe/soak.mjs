@@ -19,7 +19,7 @@
  *   SEED=7 node tools/probe/soak.mjs            a different shuffle (and different taps)
  */
 import { chromium } from 'playwright';
-import { openApp, touchTargets } from './harness.mjs';
+import { openApp, touchTargets, startShuffle } from './harness.mjs';
 
 const SECONDS = +(process.env.SECONDS || 240);
 let seed = +(process.env.SEED || 20260930);
@@ -41,7 +41,7 @@ await page.addInitScript(sd => {
 
 await openApp(page, { reduceMotion: false, sound: false, haptics: false, onboarded: true,
   xp: 30000, solved: 900, runs: 60, lastMode: 'forge', seen: {} });
-await page.click('#justPlayBtn');
+await startShuffle(page);
 
 const alive = () => Promise.race([page.evaluate(() => 1).then(() => true, () => false), new Promise(r => setTimeout(() => r(false), 4000))]);
 const visited = new Map();
@@ -64,7 +64,7 @@ while (Date.now() - t0 < SECONDS * 1000){
     await page.evaluate(() => { const a = document.getElementById('againBtn'); if (a) a.click(); });
     await page.waitForTimeout(700); continue;
   }
-  if (!st.play){ await page.evaluate(() => { const b = document.getElementById('justPlayBtn'); if (b) b.click(); }); await page.waitForTimeout(700); continue; }
+  if (!st.play){ await startShuffle(page); await page.waitForTimeout(700); continue; }
   if (st.kind){ current = st.kind; visited.set(st.kind, (visited.get(st.kind) || 0) + 1); }
 
   /* A live round with nothing on it for two seconds: between rounds is a plate

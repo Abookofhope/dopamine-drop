@@ -74,7 +74,7 @@ export async function goTab(page, name){
  * ever changes again, it changes here. */
 export async function openModeList(page){
   await goTab(page, 'Modes');
-  await page.evaluate(() => { const w = document.querySelector('.catcard.wide'); if (w) w.click(); });
+  await page.evaluate(() => { const w = document.getElementById('allBtn') || document.querySelector('.catcard.wide'); if (w) w.click(); });
   await page.waitForTimeout(320);
   const n = await page.evaluate(() => document.querySelectorAll('#modeSections .mcard').length);
   if (n < 2) throw new Error(
@@ -179,3 +179,22 @@ export const touchTargets = page => page.evaluate(() => {
   }
   return out;
 });
+
+/* The menu is three kinds of game and Custom. "Just play" is opening The Full Purr and pressing Play a mix, which draws from every game. */
+export async function startShuffle(page){
+  await page.evaluate(() => { const t = document.querySelector('.tab[data-tab="Play"]'); if (t) t.click(); });
+  await page.waitForTimeout(150);
+  await page.evaluate(() => { if (!document.getElementById('playGate').hidden) document.getElementById('gateBack').click(); });
+  await page.waitForTimeout(150);
+  await page.evaluate(() => document.querySelector('.gateBtn[data-gate="full"]').click());
+  await page.waitForTimeout(250);
+  await page.evaluate(() => document.getElementById('moodPlay').click());
+}
+
+/* The ways to play that are not one game (Endless, Custom, Marathon and the rest) are one tap inside Games. */
+export async function openMyStuff(page){
+  await page.evaluate(() => document.querySelector('.tab[data-tab="Modes"]').click());
+  await page.waitForTimeout(250);
+  await page.evaluate(() => document.getElementById('waysBtn').click());
+  await page.waitForTimeout(250);
+}

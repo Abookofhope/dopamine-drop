@@ -7,7 +7,7 @@
  *   node tools/probe/home.mjs
  */
 import { chromium } from 'playwright';
-import { openApp, axeOn, modeIdsFromBuild, floorOrDie } from './harness.mjs';
+import { openApp, axeOn, modeIdsFromBuild, floorOrDie, openMyStuff } from './harness.mjs';
 
 const SITE = process.env.SITE || '/tmp/pw/_site';
 const ids = modeIdsFromBuild(SITE);
@@ -66,10 +66,8 @@ for (const [label, extra] of PROFILES){
          continuing (or falls back to the Shuffle blurb with nothing to carry). */
       const home = await page.evaluate(measure);
       const homeInfo = await page.evaluate(() => ({
-        labels: [...document.querySelectorAll('.guidedBtn b')].map(b => b.textContent.trim()),
-        subs: [...document.querySelectorAll('.guidedBtn small')].map(s => s.textContent.trim()),
-        justPlaySub: document.getElementById('justPlaySub').textContent.trim(),
-        pickModeSub: document.getElementById('pickModeSub').textContent.trim(),
+        labels: [...document.querySelectorAll('.gateBtn b, .customCard b')].map(b => b.textContent.trim()),
+        subs: [...document.querySelectorAll('.gateBtn small, .customCard small')].map(s => s.textContent.trim()),
         dailyLine: document.getElementById('dailyStatusLine').textContent.trim(),
       }));
       /* A {placeholder} that made it to screen unfilled — the exact shape of bug
@@ -80,7 +78,7 @@ for (const [label, extra] of PROFILES){
       const homeDistinct = new Set(homeInfo.labels).size === homeInfo.labels.length;
       const homeOk = !home.hscroll && !home.clipped.length && home.minTap >= 30
         && homeInfo.labels.length === 4 && homeInfo.subs.length === 4 && homeDistinct
-        && !!homeInfo.justPlaySub && !!homeInfo.pickModeSub && !!homeInfo.dailyLine
+        && !!homeInfo.dailyLine
         && !rawBrace && !errs.length;
       if (!homeOk) bad++;
       console.log(`${homeOk ? 'ok  ' : 'FAIL'} ${label.padEnd(8)} ${vw}x${vh} ${lang}  home`
@@ -93,7 +91,7 @@ for (const [label, extra] of PROFILES){
 
       /* ── My Stuff: everything that isn't one of the three guided choices —
          Favorites (once earned), the perk chip, and the four rows below it. */
-      await page.click('#myStuffBtn');
+      await openMyStuff(page);
       await page.waitForTimeout(280);
       const stuff = await page.evaluate(measure);
       const stuffInfo = await page.evaluate(() => ({
@@ -103,13 +101,13 @@ for (const [label, extra] of PROFILES){
       }));
       const rowsDistinct = new Set(stuffInfo.rows).size === stuffInfo.rows.length;
       const stuffOk = !stuff.hscroll && !stuff.clipped.length && stuff.minTap >= 30
-        && stuffInfo.rows.length === 9 && rowsDistinct && !errs.length;
+        && stuffInfo.rows.length === 10 && rowsDistinct && !errs.length;
       if (!stuffOk) bad++;
       console.log(`${stuffOk ? 'ok  ' : 'FAIL'} ${label.padEnd(8)} ${vw}x${vh} ${lang}  my-stuff`
         + `  rows "${stuffInfo.rows.join('/')}"  favs ${stuffInfo.favCount}`
         + `  ${stuff.clipped.length ? 'clipped ' + stuff.clipped.join(',') : ''}${stuff.hscroll ? ' H-SCROLL' : ''}`
         + `  smallest tap ${stuff.minTap}px (${stuff.minWho})`);
-      floorOrDie(`${label} my-stuff rows`, stuffInfo.rows.length, 9);
+      floorOrDie(`${label} my-stuff rows`, stuffInfo.rows.length, 10);
 
       if (vw === 400 && lang === 'en'){
         const vHome = await axeOn(page, '#playHome');
@@ -119,7 +117,7 @@ for (const [label, extra] of PROFILES){
         if (v.length) bad++;
         console.log('     ' + (v.length
           ? 'FAIL a11y (home): ' + v.map(x => `${x.id} x${x.n}`).join(' | ') : 'a11y clean (home)'));
-        await page.click('#myStuffBtn');
+        await openMyStuff(page);
         await page.waitForTimeout(280);
         const vStuff = await axeOn(page, '#playMyStuff');
         if (vStuff.length) bad++;

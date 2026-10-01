@@ -105,7 +105,7 @@ for (const id of ids){
       const state = await page.evaluate(() => ({
         play: !document.getElementById('play').hidden,
         over: !document.getElementById('over').hidden,
-        home: !!document.getElementById('justPlayBtn') && document.getElementById('justPlayBtn').offsetParent !== null,
+        home: !!document.querySelector('.gateBtn') && document.querySelector('.gateBtn').offsetParent !== null,
       }));
       if (!state.play && !state.over && !state.home) note = 'ended in no known screen ' + JSON.stringify(state);
     }

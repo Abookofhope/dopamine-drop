@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const probes = ['firstvisit.mjs', 'threads.mjs', 'layoutshift.mjs', 'geometry.mjs', 'tidyspawn.mjs', 'alive.mjs', 'settings.mjs', 'board.mjs', 'mix.mjs', 'home.mjs', 'timing.mjs', 'momentum.mjs', 'fx_unit.mjs', 'meta.mjs', 'forge.mjs', 'loaf.mjs', 'blast.mjs', 'sand.mjs', 'yarn.mjs', 'gate.mjs', 'depth.mjs', 'chalk.mjs', 'zone_unit.mjs', 'drag.mjs', 'stable.mjs', 'sweep.mjs'];
+const probes = ['firstvisit.mjs', 'threads.mjs', 'layoutshift.mjs', 'geometry.mjs', 'tidyspawn.mjs', 'alive.mjs', 'settings.mjs', 'board.mjs', 'mix.mjs', 'home.mjs', 'timing.mjs', 'momentum.mjs', 'fx_unit.mjs', 'meta.mjs', 'forge.mjs', 'loaf.mjs', 'blast.mjs', 'sand.mjs', 'yarn.mjs', 'gate.mjs', 'mirror.mjs', 'depth.mjs', 'chalk.mjs', 'zone_unit.mjs', 'drag.mjs', 'stable.mjs', 'sweep.mjs'];
 
 for (const p of probes){
   console.log(`\n=== ${p} ${'='.repeat(Math.max(0, 60 - p.length))}`);

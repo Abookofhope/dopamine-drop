@@ -20,7 +20,7 @@
  *   node tools/probe/timing.mjs
  */
 import { chromium } from 'playwright';
-import { openApp } from './harness.mjs';
+import { openApp, startShuffle } from './harness.mjs';
 
 let bad = 0;
 const check = (ok, msg) => { if (!ok) bad++; console.log((ok ? 'ok   ' : 'FAIL ') + msg); };
@@ -44,7 +44,7 @@ const meter = page => page.evaluate(() => {
 /* ── 1. Rally: the meter drains from the first second ─────────────────────── */
 {
   const page = await fresh({ perks: ['rally'], perkLv: { rally: 3 } });   // +14s
-  await page.click('#justPlayBtn');
+  await startShuffle(page);
   await page.waitForTimeout(2600);
   const ui = await page.evaluate(() => ({
     meter: !document.getElementById('hudMeter').hidden,
@@ -102,7 +102,7 @@ const trySeed = async seed => {
     };
   }, seed);
   await openApp(page, { reduceMotion: false, xp: 9000, lastMode: 'forge' });
-  await page.click('#justPlayBtn');
+  await startShuffle(page);
   await page.waitForTimeout(1900);
   const kind = await page.evaluate(() => document.getElementById('hudKind').textContent.trim());
   return { page, kind, seed };

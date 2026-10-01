@@ -18,7 +18,7 @@
  *   node tools/probe/momentum.mjs
  */
 import { chromium } from 'playwright';
-import { openApp } from './harness.mjs';
+import { openApp, openMyStuff } from './harness.mjs';
 
 let bad = 0;
 const check = (ok, msg) => { if (!ok) bad++; console.log((ok ? 'ok   ' : 'FAIL ') + msg); };
@@ -77,7 +77,7 @@ const score = () => page.evaluate(() =>
   parseInt(document.getElementById('hudScore').textContent.replace(/\D/g, ''), 10) || 0);
 const rim = () => page.evaluate(() => getComputedStyle(document.getElementById('surface')).boxShadow);
 
-await page.click('#myStuffBtn');
+await openMyStuff(page);
 await page.waitForTimeout(300);
 await page.click('#mixBtn');
 await page.waitForTimeout(1900);

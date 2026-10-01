@@ -11,7 +11,7 @@
  *   node tools/probe/meta.mjs
  */
 import { chromium } from 'playwright';
-import { openApp, goTab } from './harness.mjs';
+import { openApp, goTab, openMyStuff } from './harness.mjs';
 
 let bad = 0;
 const check = (ok, msg) => { if (!ok) bad++; console.log((ok ? 'ok   ' : 'FAIL ') + msg); };
@@ -105,7 +105,7 @@ const firstBoard = page => page.waitForFunction(() => document.querySelector('#s
   await openApp(page, { schema: 11, reduceMotion: true, xp: 9000, lastMode: null, yarn: 0,
     pals: { biscuit: { bond: 0, pet: null, bow: '' } }, palsOn: ['biscuit'],
     tapes: [{ id: 'tbot', name: 'Bot', modes: ['odd', 'stroop'] }], tapeId: 'tbot', mix: ['odd', 'stroop'] });
-  await page.click('#myStuffBtn'); await page.waitForTimeout(250);
+  await openMyStuff(page); await page.waitForTimeout(250);
   await page.click('#mixBtn');
   await firstBoard(page);
   for (let i = 0; i < 3; i++){ const r = await winRound(page); if (r !== 'won') check(false, 'round ' + (i + 1) + ': ' + r); await nextBoard(page); }
