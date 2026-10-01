@@ -2963,10 +2963,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .quilt .fcell.hint{background:#FFC53D55;border:1.5px solid #FFC53D;animation:quilthint .7s ease-in-out 3}
 @keyframes quilthint{50%{background:#FFC53D99}}
 .quilt .fgrid.made .fcell.set{filter:brightness(1.12)}
-.quilt .fpiece{padding:8px;border-radius:10px;border:2px solid var(--edge-soft);background:var(--ink-2);touch-action:none}
+.quilt .fpiece{box-sizing:border-box;place-items:center;place-content:center;padding:8px;border-radius:10px;border:2px solid var(--edge-soft);background:var(--ink-2);touch-action:none}
 .quilt .fpiece.hinted{border-color:#FFC53D;box-shadow:0 0 0 3px #FFC53D55}
 .fbits{display:grid;gap:2px}
-.quilt .fbit{width:16px;height:16px;border-radius:3px;background:transparent}
+.quilt .fbit{width:var(--bit,16px);height:var(--bit,16px);border-radius:3px;background:transparent}
 .quilt .fbit.on{background-color:var(--pc);background-image:var(--knit);background-size:8px 6px;box-shadow:inset 0 -2px 0 #0000002a}
 .fghost{position:absolute;left:0;top:0;display:grid;grid-auto-rows:1fr;gap:3px;pointer-events:none;z-index:6;
   filter:drop-shadow(0 12px 14px #000000a0);opacity:.96}
@@ -3374,6 +3374,11 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .tab .ti{display:grid;place-items:center;width:52px;height:30px;border-radius:15px;transition:background var(--t-fast)}
 .tab .ti svg{width:22px;height:22px}
 .tab[aria-current="page"] .ti{background:color-mix(in srgb, var(--flare) 18%, transparent)}
+/* ── Patchwork: knots, the line or block nearest done, and the finished one ─────────────────────────────────── */
+.quilt .fcell.knot{background:repeating-linear-gradient(45deg,#00000066 0 5px,#0000004d 5px 10px);border:1.5px solid #ffffff1a;box-shadow:inset 0 0 8px #0000008c}
+.quilt .fcell.aim{background:#FFC53D1f;border:1.5px solid #FFC53D99}
+.quilt .fcell.win{animation:quiltwin .5s ease-in-out 2}
+@keyframes quiltwin{50%{filter:brightness(1.6);transform:scale(1.05)}}
 </style>
 
 <div class="cab">
@@ -4092,7 +4097,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.102.0';
+const VERSION_TAG = 'v0.103.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4836,7 +4841,7 @@ const STRINGS = {
     
 
     'p.heft':'Which side weighs more?', 'heft.pile':'A basket of {n} pieces', 'm.heft':'Heft|Which basket weighs more? Counting will not tell you',
-    'p.forge':'{n} squares of the pattern still bare', 'forge.hole':'Pattern, column {x} row {y}', 'forge.solid':'Backing, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Patchwork|Drag each patch onto the quilt, turn it to fit — nothing left over',
+    'p.forge':'{n} squares of the pattern still bare', 'forge.hole':'Pattern, column {x} row {y}', 'forge.solid':'Backing, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Patchwork|Fill the hole, make a straight line or build a solid block — turn each patch to fit',
     'p.gather':'{n} more to catch — let the dark ones fall', 'gather.pail':'Your basket', 'gather.keep':'A ripe one, worth catching', 'gather.dud':'A dud, let it fall', 'm.gather':'Catch the Balls|Catch the good ones, let the tangles fall',
     'p.chalk':'Chalk ramps for the yarn — then press Drop', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball of yarn', 'chalk.basket':'The cat’s basket', 'm.chalk':'Chalk Line|Chalk the ramps, peek, then drop the yarn in the basket',
     'p.drift':'Two are on a collision course — tap both, or draw a thread between them', 'drift.dot':'Drifting dot {n}', 'm.drift':'Tangle Watch|Two of these will meet — find them before they tangle',
@@ -5036,6 +5041,8 @@ const STRINGS = {
     'syn.autumn':'Autumn Walk', 'syn.autumn.d':'Focus and reflex solves pay half a yarn more.',
     /* patchwork */
     'forge.undo':'Undo', 'forge.hint':'Hint', 'forge.turn':'Tap to turn it',
+    'forge.anyLine':'Any row or column counts', 'forge.anyBlock':'A solid block anywhere counts', 'forge.spares':'Spare patches — you won’t need them all', 'forge.open':'Quilt, column {x} row {y}',
+    'p.forgeLine':'{n} more squares for a straight line, edge to edge', 'p.forgeBlock':'{n} more squares for a solid {w}×{h} block',
     'forge.dead':'That leaves no way to finish — undo a patch', 'p.forgeRule':'{n} squares left — the same colour can’t touch',
     /* patchwork pictures */
     'p.forgePic':'{n} squares left — it is {what}', 'forge.pic.cat':'a cat', 'forge.pic.heart':'a heart',
@@ -5328,7 +5335,7 @@ const STRINGS = {
     
 
     'p.heft':'Quel côté pèse le plus ?', 'heft.pile':'Un panier de {n} pièces', 'm.heft':'Soupeser|Quel panier pèse le plus ? Compter n’y suffit pas',
-    'p.forge':'Encore {n} cases du motif', 'forge.hole':'Motif, colonne {x} ligne {y}', 'forge.solid':'Fond, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Patchwork|Glissez chaque pièce sur la courtepointe et tournez-la pour l’ajuster — rien en trop',
+    'p.forge':'Encore {n} cases du motif', 'forge.hole':'Motif, colonne {x} ligne {y}', 'forge.solid':'Fond, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Patchwork|Comble le trou, trace une ligne droite ou fais un bloc plein — tourne chaque pièce pour qu’elle rentre',
     'p.gather':'Encore {n} à attraper — laissez tomber les sombres', 'gather.pail':'Votre panier', 'gather.keep':'Un mûr, à attraper', 'gather.dud':'Un gâté, laissez-le tomber', 'm.gather':'Attrapez les Pelotes|Attrapez les bonnes, laissez tomber les nœuds',
     'p.chalk':'Tracez des rampes pour la pelote — puis Lâcher', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La pelote de laine', 'chalk.basket':'Le panier du chat', 'm.chalk':'Trait de Craie|Tracez les rampes, jetez un œil, puis lâchez la pelote dans le panier',
     'p.drift':'Deux vont se percuter — touchez-les, ou tracez un fil entre eux', 'drift.dot':'Point dérivant {n}', 'm.drift':'Guet des Nœuds|Deux vont se croiser — trouvez-les avant le nœud',
@@ -5528,6 +5535,8 @@ const STRINGS = {
     'syn.autumn':'Promenade d’automne', 'syn.autumn.d':'Les réussites d’attention et de réflexes rapportent une demi-laine de plus.',
     /* patchwork */
     'forge.undo':'Annuler', 'forge.hint':'Indice', 'forge.turn':'Touchez pour la tourner',
+    'forge.anyLine':'Toute ligne ou colonne compte', 'forge.anyBlock':'Un bloc plein, n’importe où, compte', 'forge.spares':'Pièces en plus — inutile de toutes les poser', 'forge.open':'Courtepointe, colonne {x} ligne {y}',
+    'p.forgeLine':'Encore {n} cases pour une ligne droite, d’un bord à l’autre', 'p.forgeBlock':'Encore {n} cases pour un bloc plein de {w}×{h}',
     'forge.dead':'Plus de solution possible — annulez une pièce', 'p.forgeRule':'Encore {n} cases — deux pièces de même couleur ne se touchent pas',
     /* patchwork pictures */
     'p.forgePic':'Encore {n} cases — c’est {what}', 'forge.pic.cat':'un chat', 'forge.pic.heart':'un cœur',
@@ -5820,7 +5829,7 @@ const STRINGS = {
     
 
     'p.heft':'¿Qué lado pesa más?', 'heft.pile':'Una cesta de {n} piezas', 'm.heft':'Sopesar|¿Qué cesta pesa más? Contar no te lo dirá',
-    'p.forge':'Quedan {n} casillas del patrón', 'forge.hole':'Patrón, columna {x} fila {y}', 'forge.solid':'Fondo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Retales|Arrastra cada retal a la colcha y gíralo para encajarlo — sin sobras',
+    'p.forge':'Quedan {n} casillas del patrón', 'forge.hole':'Patrón, columna {x} fila {y}', 'forge.solid':'Fondo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Retales|Rellena el hueco, haz una línea recta o un bloque macizo — gira cada pieza para que encaje',
     'p.gather':'{n} más que atrapar — deja caer los oscuros', 'gather.pail':'Tu cesta', 'gather.keep':'Uno maduro, para atrapar', 'gather.dud':'Uno malo, déjalo caer', 'm.gather':'Atrapa Ovillos|Atrapa los buenos, deja caer los enredos',
     'p.chalk':'Dibuja rampas para el ovillo — luego Soltar', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'El ovillo', 'chalk.basket':'La cesta del gato', 'm.chalk':'Línea de Tiza|Dibuja las rampas, ojea y suelta el ovillo en la cesta',
     'p.drift':'Dos van a chocar — toca los dos, o traza un hilo entre ellos', 'drift.dot':'Punto a la deriva {n}', 'm.drift':'Vigila el Enredo|Dos se van a cruzar — encuéntralos antes del nudo',
@@ -6020,6 +6029,8 @@ const STRINGS = {
     'syn.autumn':'Paseo de otoño', 'syn.autumn.d':'Los aciertos de atención y reflejos dan media lana más.',
     /* patchwork */
     'forge.undo':'Deshacer', 'forge.hint':'Pista', 'forge.turn':'Toca para girarla',
+    'forge.anyLine':'Vale cualquier fila o columna', 'forge.anyBlock':'Vale un bloque macizo en cualquier sitio', 'forge.spares':'Piezas de sobra: no hace falta usarlas todas', 'forge.open':'Colcha, columna {x} fila {y}',
+    'p.forgeLine':'Faltan {n} casillas para una línea recta, de borde a borde', 'p.forgeBlock':'Faltan {n} casillas para un bloque macizo de {w}×{h}',
     'forge.dead':'Así ya no se puede terminar: deshaz una pieza', 'p.forgeRule':'Quedan {n} casillas — el mismo color no puede tocarse',
     /* patchwork pictures */
     'p.forgePic':'Quedan {n} casillas — es {what}', 'forge.pic.cat':'un gato', 'forge.pic.heart':'un corazón',
@@ -6312,7 +6323,7 @@ const STRINGS = {
     
 
     'p.heft':'Welche Seite wiegt mehr?', 'heft.pile':'Ein Korb mit {n} Stücken', 'm.heft':'Wiegen|Welcher Korb wiegt mehr? Zählen hilft nicht',
-    'p.forge':'Noch {n} Felder des Musters frei', 'forge.hole':'Muster, Spalte {x} Zeile {y}', 'forge.solid':'Grund, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Flickwerk|Zieh jeden Flicken auf die Decke und dreh ihn passend — nichts bleibt übrig',
+    'p.forge':'Noch {n} Felder des Musters frei', 'forge.hole':'Muster, Spalte {x} Zeile {y}', 'forge.solid':'Grund, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Flickwerk|Füll das Loch, leg eine gerade Linie oder einen vollen Block — dreh jedes Teil, bis es passt',
     'p.gather':'Noch {n} zu fangen — die dunklen fallen lassen', 'gather.pail':'Dein Korb', 'gather.keep':'Ein reifer, den fängst du', 'gather.dud':'Ein fauler, lass ihn fallen', 'm.gather':'Knäuel Fangen|Fang die guten, lass die Knoten fallen',
     'p.chalk':'Zeichne Rampen für das Knäuel — dann Fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Das Wollknäuel', 'chalk.basket':'Der Korb der Katze', 'm.chalk':'Kreidestrich|Zeichne die Rampen, wirf einen Blick darauf und lass das Knäuel in den Korb fallen',
     'p.drift':'Zwei laufen aufeinander zu — tippe beide an oder zieh einen Faden dazwischen', 'drift.dot':'Treibender Punkt {n}', 'm.drift':'Knotenwache|Zwei treffen sich — finde sie vor dem Knoten',
@@ -6512,6 +6523,8 @@ const STRINGS = {
     'syn.autumn':'Herbstspaziergang', 'syn.autumn.d':'Konzentrations- und Reaktionstreffer bringen eine halbe Wolle mehr.',
     /* patchwork */
     'forge.undo':'Zurück', 'forge.hint':'Tipp', 'forge.turn':'Tippen zum Drehen',
+    'forge.anyLine':'Jede Reihe oder Spalte zählt', 'forge.anyBlock':'Ein voller Block irgendwo zählt', 'forge.spares':'Ersatzteile — du brauchst nicht alle', 'forge.open':'Quilt, Spalte {x} Zeile {y}',
+    'p.forgeLine':'Noch {n} Felder für eine gerade Linie von Rand zu Rand', 'p.forgeBlock':'Noch {n} Felder für einen vollen {w}×{h}-Block',
     'forge.dead':'So lässt es sich nicht beenden — nimm ein Teil zurück', 'p.forgeRule':'Noch {n} Felder — gleiche Farben dürfen sich nicht berühren',
     /* patchwork pictures */
     'p.forgePic':'Noch {n} Felder — es wird {what}', 'forge.pic.cat':'eine Katze', 'forge.pic.heart':'ein Herz',
@@ -6764,6 +6777,13 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.103.0', date:'2026-10-02', items:[
+    'Patchwork has three ways to finish, and it is a lot easier. Fill the hole is the old puzzle. Straight line asks for any one row or any one column covered from edge to edge, anywhere on an open quilt. Solid block asks for a rectangle (2×3, 3×3 or 3×4 as you level up) anywhere at all. Every round says which one it is, and the early rounds lean on the open ones.',
+    'There are always patches to spare. A tray holds a few more than the quilt needs, so you do not have to come out exactly, and there is more than one way to do any round. Pictures and the colour rule come in later, and the tray holds fewer spares as you get better.',
+    'You can see it coming together. The words under the board count down the squares left for the line or block nearest done, that line or block is outlined as it grows, and it glows when it is finished. Knots (squares already stitched, which nothing can go on) appear on the open quilts from level 5 so a line is something to find, not something to fill in.',
+    'More room to be wrong. A round now allows about twice the moves a clean run takes, Undo gives its move back, and you get three hints instead of two.',
+    'Chalk Line is steadier. A very small number of boards had an answer that only worked if you drew it perfectly: nudge each point by half a pixel and the ball missed. The board builder now throws out an answer that does not survive that, so the line you draw to match the answer wins.',
+  ] },
   { v:'0.102.0', date:'2026-10-01', items:[
     'The menu is simple now. Play shows Daily Drop, three kinds of game and Custom, and nothing else. The long list of buttons is gone, and the bar at the bottom is four tabs: Play, Games, Room and You.',
     'Every one of the 44 games belongs to one of the three kinds. Calm & Collect holds the soothing, low-pressure ones (15), Quick Paws the fast, satisfying ones (14), and The Full Purr the ones that mix thinking with speed (19, with the four newest first). Open a kind to see all of its games, or press Play a mix to be dealt games from it. The Full Purr mixes in everything.',
@@ -11251,8 +11271,15 @@ const MODES = {
         const free = (ax, ay, cx, cy) => !rects.some(r => slabHit(ax, ay, cx, cy, r)) && !circs.some(c => { const h = segd(c.x, c.y, ax, ay, cx, cy); return Math.hypot(h.x - c.x, h.y - c.y) < c.r - 1e-6; });
         const toLine = (ax, ay, cx, cy) => [{ x: ax, y: ay/A0 }, { x: cx, y: cy/A0 }];
         const run = lines => { evals++; return runAll(w0, lines, 0); };
-        const robust = lines => { evals += 5;
-          return runAll(w0, lines, 0).status === 'caught' && wds.every(wd => runAll(wd, lines, 0).status === 'caught') && [[-0.6, 0], [0.6, 0], [0, 0.6]].every(d => runAll(w0, nudged(lines, d[0], d[1]), 0).status === 'caught'); };
+        /* Every point moved a little, each its own way, the way a mouse rounds to a pixel or a finger wobbles. Shifting the whole line
+           is not the same test: a ramp with a bump in it sends the ball somewhere else, and a board whose only answer is that
+           fragile cannot be done by drawing the answer, which is what a person (or a probe) does when it is the only plan. */
+        const wobble = (lines, k) => lines.map((ln, li) => ln.map((q, i) => {
+          const a = Math.sin((li*131 + i*17 + k*7919)*12.9898)*43758.5453, b = Math.sin((li*71 + i*29 + k*104729)*78.233)*12345.6789;
+          return { x: q.x + ((a - Math.floor(a))*2 - 1)*0.14, y: q.y + ((b - Math.floor(b))*2 - 1)*0.14 }; }));
+        const robust = lines => { evals += 8;
+          return runAll(w0, lines, 0).status === 'caught' && wds.every(wd => runAll(wd, lines, 0).status === 'caught') && [[-0.6, 0], [0.6, 0], [0, 0.6]].every(d => runAll(w0, nudged(lines, d[0], d[1]), 0).status === 'caught')
+            && [1, 2, 3].every(k => runAll(w0, wobble(lines, k), 0).status === 'caught'); };
         let beam = [{ lines: [], sc: 1e9 }];
         for (let depth = 0; depth < 5 && evals < sims; depth++){
           const next = [];
@@ -11632,9 +11659,23 @@ const MODES = {
       const maxG = Math.max(4, Math.floor((room + GAP) / 46));
       const g = clamp(ctx.level < 4 ? 5 : ctx.level < 12 ? 6 : 7, 4, maxG);
       const cap = Math.floor(g*g*0.7/3.3);
-      const wantAt = clamp(3 + Math.floor(ctx.level/3), 3, 10);      /* how many patches the level asks for */
+      const wantAt = clamp(3 + Math.floor(ctx.level/4), 3, 8);       /* how many patches the level asks for */
       const want = Math.min(wantAt, cap);
-      const ruleOn = ctx.level >= 8;
+
+      /* Three ways to finish a quilt, and the round says which. Fill the hole is the old puzzle (the pattern is the hole and the
+         patches make it). A straight line wants any one row or any one column covered from edge to edge; a block wants a solid
+         rectangle somewhere. Both of those are open boards: nothing says where, and there is room to be wrong. The easy end of the
+         ladder leans on the open ones, and every kind comes with spare patches, so there is more than one way to do any of them. */
+      const forced = (() => { try { return localStorage.getItem('dd.forge'); } catch(e){ return null; } })();
+      const roll = ctx.rnd();
+      let goal = forced === 'fill' || forced === 'line' || forced === 'block' ? forced
+        : ctx.level < 4 ? (roll < 0.5 ? 'line' : roll < 0.8 ? 'block' : 'fill')
+        : ctx.level < 12 ? (roll < 0.3 ? 'line' : roll < 0.55 ? 'block' : 'fill')
+        : (roll < 0.25 ? 'line' : roll < 0.45 ? 'block' : 'fill');
+      const ruleOn = goal === 'fill' && ctx.level >= 12;
+      /* A short screen has no room for a long tray, so it gets fewer spares rather than a smaller quilt. */
+      const tight = (ctx.surface.clientHeight || 560) < 520;
+      const spareN = Math.min(tight ? 1 : 3, goal === 'fill' ? clamp(3 - Math.floor(ctx.level/8), 1, 3) : clamp(3 - Math.floor(ctx.level/10), 1, 3));
 
       const norm = cs => { const mx = Math.min(...cs.map(c=>c[0])), my = Math.min(...cs.map(c=>c[1]));
         return cs.map(c=>[c[0]-mx, c[1]-my]).sort((a,b)=> a[1]-b[1] || a[0]-b[0]); };
@@ -11672,7 +11713,7 @@ const MODES = {
         { id:'bell',  rows:['...#...','..###..','.#####.','.#####.','#######','#######','...#...'] }
       ].filter(pic => pic.rows[0].length <= g && pic.rows.length <= g);
       let parts = null, picture = null;
-      if (ctx.level >= 10 && PICTURES.length && ctx.rnd() < 0.6){
+      if (goal === 'fill' && ctx.level >= 10 && PICTURES.length && ctx.rnd() < 0.6){
         for (let tries = 0; tries < 6 && !parts; tries++){
           const pic = PICTURES[Math.floor(ctx.rnd()*PICTURES.length)];
           const ox = Math.floor((g - pic.rows[0].length) / 2), oy = Math.floor((g - pic.rows.length) / 2);
@@ -11683,8 +11724,8 @@ const MODES = {
           const go = () => {
             if (nodes++ > 30000) return false;
             const first = order.find(c => !cov.has(c));
-            if (first === undefined) return list.length >= 3 && list.length <= 10;
-            if (list.length >= 10) return false;
+            if (first === undefined) return list.length >= 3 && list.length <= 8;
+            if (list.length >= 8) return false;
             for (const sh of shuffle(SHAPES.slice(), ctx.rnd)){
               const a0 = sh[0], ax = (first % g) - a0[0], ay = Math.floor(first / g) - a0[1];
               const at = sh.map(c => (ay + c[1])*g + ax + c[0]);
@@ -11698,6 +11739,60 @@ const MODES = {
           };
           if (go()) { parts = { list: list.slice(), cells: new Set(cellsP) }; picture = pic.id; }
         }
+      }
+      /* An open board for a line or a block. The plan is a set of patches that covers one particular row, column or block (they may
+         poke out of it), made the way a person would, one patch at a time; it proves the round can be done and is what the tray is
+         made of. Knots (squares that are already stitched, which nothing can go on) are then scattered where the plan is not. */
+      let blockW = 0, blockH = 0, cands = [], knots = new Set();
+      const SMALLER = FAMILY.filter(f => f[0].length <= (ctx.level < 12 ? 4 : 5)).flat();
+      if (goal !== 'fill'){
+        const at = (x, y) => y*g + x;
+        const rowOf = k => Array.from({ length: g }, (_, i) => at(i, k)), colOf = k => Array.from({ length: g }, (_, i) => at(k, i));
+        if (goal === 'block'){
+          const dims = ctx.level < 5 ? [2, 3] : ctx.level < 12 ? [3, 3] : [3, 4];
+          blockW = Math.min(dims[0], g - 1); blockH = Math.min(dims[1], g - 1);
+          const rects = (w, h) => { const out = []; for (let y = 0; y + h <= g; y++) for (let x = 0; x + w <= g; x++){ const c = []; for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) c.push(at(x + i, y + j)); out.push(c); } return out; };
+          cands = rects(blockW, blockH); if (blockW !== blockH) cands = cands.concat(rects(blockH, blockW));
+        } else {
+          cands = Array.from({ length: g }, (_, k) => rowOf(k)).concat(Array.from({ length: g }, (_, k) => colOf(k)));
+        }
+        let plan = null;
+        for (let attempt = 0; attempt < 12 && !plan; attempt++){
+          const R = cands[Math.floor(ctx.rnd()*cands.length)];
+          const order = R.slice().sort((a, b) => a - b), cov = new Set(), list = [];
+          let nodes = 0;
+          const go = () => {
+            if (nodes++ > 20000) return false;
+            const first = order.find(c => !cov.has(c));
+            if (first === undefined) return true;
+            if (list.length >= 5) return false;
+            for (const sh of shuffle(SMALLER.slice(), ctx.rnd)){
+              const a0 = sh[0], ax = (first % g) - a0[0], ay = Math.floor(first / g) - a0[1];
+              if (sh.some(c => ax + c[0] < 0 || ax + c[0] >= g || ay + c[1] < 0 || ay + c[1] >= g)) continue;
+              const cells2 = sh.map(c => (ay + c[1])*g + ax + c[0]);
+              if (cells2.some(i => cov.has(i))) continue;
+              cells2.forEach(i => cov.add(i)); list.push({ sh, at: cells2 });
+              if (go()) return true;
+              list.pop(); cells2.forEach(i => cov.delete(i));
+            }
+            return false;
+          };
+          if (go()) plan = { list, R, cov };
+        }
+        if (!plan){   /* a row of bars always works */
+          goal = 'line'; blockW = blockH = 0;
+          cands = Array.from({ length: g }, (_, k) => rowOf(k)).concat(Array.from({ length: g }, (_, k) => colOf(k)));
+          const bar = n => Array.from({ length: n }, (_, i) => [i, 0]);
+          const list = []; let left = g, x0 = 0;
+          while (left > 0){ const n = left === 4 || left === 2 ? 2 : 3; list.push({ sh: bar(n), at: bar(n).map(c => at(x0 + c[0], 0)) }); x0 += n; left -= n; }
+          plan = { list, R: rowOf(0), cov: new Set(list.flatMap(q => q.at)) };
+        }
+        const nKnot = ctx.level < 5 ? 0 : clamp(Math.floor((ctx.level - 3)/4), 1, 5);
+        const free = [];
+        for (let i = 0; i < g*g; i++) if (!plan.cov.has(i) && !plan.R.includes(i)) free.push(i);
+        shuffle(free, ctx.rnd).slice(0, nKnot).forEach(i => knots.add(i));
+        const playable = new Set(); for (let i = 0; i < g*g; i++) if (!knots.has(i)) playable.add(i);
+        parts = { list: plan.list, cells: playable };
       }
       /* Lay patches down, each touching what is already there, so the hole is in one piece. */
       for (let attempt = 0; attempt < 260 && !parts; attempt++){
@@ -11746,11 +11841,21 @@ const MODES = {
         });
       }));
       const colour = new Array(N).fill(-1);
-      Array.from({ length: N }, (_, i) => i).sort((a, b) => nbr[b].size - nbr[a].size).forEach(i => {
-        const used = new Set([...nbr[i]].map(j => colour[j]));
-        let c = 0; while (used.has(c)) c++;
-        colour[i] = c % PAL.length;
-      });
+      if (goal === 'fill'){
+        Array.from({ length: N }, (_, i) => i).sort((a, b) => nbr[b].size - nbr[a].size).forEach(i => {
+          const used = new Set([...nbr[i]].map(j => colour[j]));
+          let c = 0; while (used.has(c)) c++;
+          colour[i] = c % PAL.length;
+        });
+      } else {
+        for (let i = 0; i < N; i++) colour[i] = i % PAL.length;
+      }
+      /* A few patches more than it takes, so the quilt does not have to come out exactly: the tray is a choice, not a sum. */
+      const poolForSpares = goal === 'fill' ? usable.map(turnsOf).filter(f => f[0].length <= 4).flat() : SMALLER;
+      for (let k = 0; k < spareN && poolForSpares.length; k++){
+        parts.list.push({ sh: poolForSpares[Math.floor(ctx.rnd()*poolForSpares.length)], at: [], spare: true });
+        colour.push(Math.floor(ctx.rnd()*PAL.length));
+      }
       /* A rule-free quilt can be any colours; shuffle which colour is which so the same
          shape is not always the same colour. */
       const pal = shuffle(PAL.slice(), ctx.rnd);
@@ -11763,14 +11868,20 @@ const MODES = {
       /* The colour rule is on the quilt itself whenever it applies, so a quilt that is a picture (whose line says what it is) is
          never a quilt with a rule nobody told you about. */
       if (ruleOn){ const note = mk('span','fnote'); note.textContent = t('forge.rule'); wrap.appendChild(note); }
+      else if (goal !== 'fill'){ const note = mk('span','fnote'); note.textContent = t(goal === 'line' ? 'forge.anyLine' : 'forge.anyBlock'); wrap.appendChild(note); }
+      else if (spareN){ const note = mk('span','fnote'); note.textContent = t('forge.spares'); wrap.appendChild(note); }
+      if (tight) wrap.style.setProperty('--bit', '12px');
+      wrap.dataset.goal = goal; if (goal === 'block') wrap.dataset.block = blockW + 'x' + blockH;
+      wrap.dataset.spare = String(parts.list.filter(q => q.spare).length);
       const grid = mk('div','fgrid');
       grid.style.gridTemplateColumns = 'repeat(' + g + ',1fr)';
       const cellEls = [];
       for (let i = 0; i < g*g; i++){
         const c = mk('i','fcell');
         if (target.has(i)) c.classList.add('mould');
+        if (knots.has(i)) c.classList.add('knot');
         c.setAttribute('role','button');
-        c.setAttribute('aria-label', t(target.has(i) ? 'forge.hole' : 'forge.solid', { x: (i % g) + 1, y: Math.floor(i / g) + 1 }));
+        c.setAttribute('aria-label', t(target.has(i) ? (goal === 'fill' ? 'forge.hole' : 'forge.open') : 'forge.solid', { x: (i % g) + 1, y: Math.floor(i / g) + 1 }));
         grid.appendChild(c); cellEls.push(c);
       }
       wrap.appendChild(grid);
@@ -11784,13 +11895,17 @@ const MODES = {
       tools.appendChild(undoBtn); tools.appendChild(hintBtn);
       ctx.surface.appendChild(wrap);
 
-      const budget = moveBudget(ctx, N);
+      /* Every patch you lay costs a move, and taking one back with Undo gives it back; the allowance is twice what a clean run takes. */
+      const budget = moveBudget(ctx, N*2 + 4);
       const filled = new Map();           /* cell index -> placement */
       const placed = [];                  /* placements, oldest first */
-      let held = null, done = false, hints = 2;
+      let held = null, done = false, hints = 3;
 
       const inTray = i => !placed.some(p => p.part === i) && !(held && held.part === i);
-      const say = (key, args) => ctx.prompt(key ? t(key, args) : picture ? t('p.forgePic', { n: target.size - filled.size, what: pictureName }) : t(ruleOn ? 'p.forgeRule' : 'p.forge', { n: target.size - filled.size }));
+      const say = (key, args) => ctx.prompt(key ? t(key, args)
+        : goal === 'line' ? t('p.forgeLine', { n: nearGoal().gap })
+        : goal === 'block' ? t('p.forgeBlock', { n: nearGoal().gap, w: blockW, h: blockH })
+        : picture ? t('p.forgePic', { n: target.size - filled.size, what: pictureName }) : t(ruleOn ? 'p.forgeRule' : 'p.forge', { n: target.size - filled.size }));
 
       /* ── What goes where ── */
       const nbrs = c => { const x = c % g, y = Math.floor(c / g), out = [];
@@ -11817,12 +11932,12 @@ const MODES = {
       /* Every way the remaining patches can finish the quilt from here. One is enough, and
          the search gives up on a very large tree rather than freeze: "no answer found" then
          means "not sure", never "impossible". */
-      const solve = () => {
-        const fl = new Map(filled), left = parts.list.map((_, i) => i).filter(i => !filled.size || !placed.some(p => p.part === i));
+      const solveFor = (need, limit) => {
+        const fl = new Map(filled), left = parts.list.map((_, i) => i).filter(i => !placed.some(p => p.part === i));
         let nodes = 0, sol = null;
-        const order = [...target].sort((a,b) => a - b);
+        const order = need.slice().sort((a,b) => a - b);
         const go = (remaining, acc) => {
-          if (sol || nodes++ > 60000) return;
+          if (sol || nodes++ > limit) return;
           const first = order.find(c => !fl.has(c));
           if (first === undefined){ sol = acc.slice(); return; }
           const fx = first % g, fy = Math.floor(first / g);
@@ -11844,14 +11959,34 @@ const MODES = {
           }
         };
         go(left, []);
-        return { sol, gaveUp: nodes > 60000 };
+        return { sol, gaveUp: nodes > limit };
       };
+      /* Fill: the whole hole. A line or a block: whichever candidate can still be finished, the nearest first; only the closest few
+         are tried, so "none found" after that is "not sure", never "impossible". */
+      const solve = () => {
+        if (goal === 'fill') return solveFor([...target], 60000);
+        const ranked = cands.map(R => ({ R, n: gapOf(R) })).sort((x, y) => x.n - y.n);
+        let gave = ranked.length > 10;
+        for (const { R } of ranked.slice(0, 10)){
+          const r = solveFor(R, 6000);
+          if (r.sol) return r;
+          if (r.gaveUp) gave = true;
+        }
+        return { sol: null, gaveUp: gave };
+      };
+      const won = () => goal === 'fill' ? filled.size === target.size : cands.some(R => R.every(i => filled.has(i)));
 
       /* ── Drawing ── */
+      /* The line or block that is closest to done is outlined on the quilt, once any of it is laid, so a straight line shows as one. */
+      const gapOf = R => { let n = 0; for (const i of R) if (!filled.has(i)) n++; return n; };
+      const nearGoal = () => { let best = null, gap = 1e9; for (const R of cands){ const n = gapOf(R); if (n < gap){ gap = n; best = R; } } return { R: best, gap }; };
+      let aimAt = new Set();
       const paint = () => {
+        aimAt = new Set();
+        if (goal !== 'fill' && placed.length){ const n = nearGoal(); if (n.R && n.gap < n.R.length) n.R.forEach(i => aimAt.add(i)); }
         cellEls.forEach((c, i) => {
           const p = filled.get(i);
-          c.className = 'fcell' + (target.has(i) ? ' mould' : '') + (p ? ' set' : '');
+          c.className = 'fcell' + (target.has(i) ? ' mould' : '') + (knots.has(i) ? ' knot' : '') + (p ? ' set' : '') + (aimAt.has(i) && !p ? ' aim' : '');
           c.style.removeProperty('--pc');
           if (p){
             c.style.setProperty('--pc', pal[colour[p.part]]);
@@ -11882,6 +12017,11 @@ const MODES = {
         parts.list.forEach((p, i) => {
           if (!inTray(i)) return;
           const e = mk('button','fpiece'); e.type = 'button'; e.dataset.idx = i;
+          /* A patch sits in a square slot as big as its longest side, so turning it never changes the slot: a tray whose rows change
+             height under a finger slides the whole quilt with them. */
+          const sh0 = parts.list[i].sh, side = Math.max(...sh0.map(c => c[0]), ...sh0.map(c => c[1])) + 1;
+          const bit = tight ? 12 : 16, pad = tight ? 4 : 8;
+          e.style.width = e.style.height = (side*bit + (side - 1)*2 + pad*2 + 4) + 'px'; e.style.padding = pad + 'px';
           e.appendChild(bitsOf(orient(i), pal[colour[i]]));
           e.setAttribute('aria-label', t('forge.part', { n: p.sh.length }) + '. ' + t('forge.turn'));
           e.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); rot[i] = (rot[i]+1)%4; drawTray(); } });
@@ -11960,8 +12100,9 @@ const MODES = {
           pl.cells.forEach(i => { cellEls[i].classList.add('laid'); });
           ctx.after(260, () => pl.cells.forEach(i => cellEls[i] && cellEls[i].classList.remove('laid')));
           sfx.tap();
-          if (filled.size === target.size){
+          if (won()){
             done = true; grid.classList.add('made');
+            if (goal !== 'fill'){ const R = cands.find(q => q.every(i => filled.has(i))); if (R) R.forEach(i => cellEls[i].classList.add('win')); }
             const lead = Pals.on()[0] || PAL_BY_ID.biscuit;
             const cat = mk('div','fcat'); cat.innerHTML = catSvg(lead.coat, { pose: 'sleep' }); grid.appendChild(cat);
             ctx.win(grid); return;
@@ -11986,6 +12127,7 @@ const MODES = {
       const undo = () => {
         if (done || held || !placed.length) return;
         const p = placed.pop(); p.cells.forEach(i => filled.delete(i));
+        budget.refund();
         redraw(); say(); sfx.tap();
       };
       onTap(undoBtn, undo);
