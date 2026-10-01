@@ -11,10 +11,10 @@ import { chromium } from 'playwright';
 import { openApp, openMode, axeOn } from './harness.mjs';
 
 /* id -> the selector that means "the board has rendered". */
-const BOARDS = { sift: '.belt', meld: '.meldgrid', volley: '.vbox', forage: '.cell.bug' };
-const want = (process.env.MODES || 'sift,meld,volley,forage').split(',');
+const BOARDS = { sift: '.belt', meld: '.meldgrid', volley: '.vbox', forage: '.cell.bug', blast: '.blastbox' };
+const want = (process.env.MODES || 'sift,meld,volley,forage,blast').split(',');
 const SIZES = [[320, 568], [360, 640], [400, 820]];
-const seen = { sift: 1, meld: 1, volley: 1, forage: 1 };
+const seen = { sift: 1, meld: 1, volley: 1, forage: 1, blast: 1 };
 
 const browser = await chromium.launch();
 let bad = 0;

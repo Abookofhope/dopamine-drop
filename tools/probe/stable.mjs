@@ -24,7 +24,7 @@ const modes = await modeList(page);
 const only = process.env.ONLY ? process.env.ONLY.split(',') : null;
 
 /* Things that are supposed to move or change shape. Matched against the class list of the element or any ancestor inside the board. */
-const MOVES = /(^|\s)(duel|duelbtn|lvrload|lvrwedge|lvrbeam|gbowl|gpail|sortrule|ddot|skimzone|skimtrack|side|dbar|tell|tideband|cmove|countfield|plinklane|cball|cthread|cpaw|cribbon|fghost|ball|bub|drop|gdrop|plinkball|pup|dstar|falling|thread|peg|slacknode|node|arcdot|cdot|trcdot|leaf|lamp|glimbug|glimlamp|tidyitem|hbit|wake|ring|spark|swarm|beatdot|hand|needle|cur|jel|vial|cat|catart|sifttok|belt|spool|gate|rgate|tidebub|fill|meter|bar|fx|float|pop|tide|fall|wave|lever|beam|fulcrum|blk|hlvtray|hlvchip|antslot|blob|dot|tick|cd|cdnum|timer|hp|ink|cink)(\s|$)/;
+const MOVES = /(^|\s)(duel|duelbtn|lvrload|lvrwedge|lvrbeam|gbowl|gpail|sortrule|ddot|skimzone|skimtrack|side|dbar|tell|tideband|cmove|countfield|plinklane|cball|cthread|cpaw|cribbon|fghost|ball|bub|drop|gdrop|plinkball|pup|dstar|falling|blastwall|blastgun|blastshot|blastmeter|thread|peg|slacknode|node|arcdot|cdot|trcdot|leaf|lamp|glimbug|glimlamp|tidyitem|hbit|wake|ring|spark|swarm|beatdot|hand|needle|cur|jel|vial|cat|catart|sifttok|belt|spool|gate|rgate|tidebub|fill|meter|bar|fx|float|pop|tide|fall|wave|lever|beam|fulcrum|blk|hlvtray|hlvchip|antslot|blob|dot|tick|cd|cdnum|timer|hp|ink|cink)(\s|$)/;
 
 const watch = async ms => page.evaluate(ms => new Promise(done => {
   const s = document.getElementById('surface'); let sb = s.getBoundingClientRect();

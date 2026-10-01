@@ -3273,6 +3273,83 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 @keyframes lbxin{0%{opacity:0}100%{opacity:1}}
 .lbx .fghost{will-change:transform;filter:none;box-shadow:none}
 .lbx .fghost .fbit.on{box-shadow:var(--br),var(--bb),var(--bd),var(--sh),0 8px 10px #0000007a}
+/* ── Yarn Ball Blaster ─────────────────────────────────────────────────────────────────────────────────────── */
+.blastbox{position:relative;width:100%;height:100%;touch-action:none;overflow:hidden;border-radius:var(--r-md);-webkit-user-select:none;user-select:none;
+  background:linear-gradient(#ffffff0a,#ffffff03)}
+.blastrail{position:absolute;left:3%;right:3%;top:0;height:6px;border-radius:3px;background:linear-gradient(#C9A27A,#8F6B4A);box-shadow:0 2px 3px #0006;pointer-events:none}
+.blastbox .bcol{position:absolute;top:0;left:calc(var(--c) * var(--D));width:var(--D);height:calc(var(--lanes) * var(--D));padding:0;border:0;border-radius:0;
+  background:linear-gradient(#ffffff0e,#ffffff04);-webkit-tap-highlight-color:transparent}
+.blastbox .bcol:nth-of-type(even){background:linear-gradient(#ffffff08,#ffffff02)}
+.blastbox .bcol.aim{background:linear-gradient(#ffffff26,#ffffff0b)}
+.blastbox .bcol:focus-visible{outline:2px solid var(--cool);outline-offset:-2px}
+.blastwall{position:absolute;left:0;top:0;width:100%;height:calc(var(--D) * var(--rows));pointer-events:none;
+  transform:translateY(calc(var(--steps) * var(--D)));transition:transform .34s cubic-bezier(.3,.8,.3,1)}
+.bball{position:absolute;left:calc(var(--c) * var(--D));top:calc(var(--r) * var(--D));width:var(--D);height:var(--D);padding:calc(var(--D) * .05);box-sizing:border-box;
+  transition:opacity .2s;pointer-events:none}
+.bball.gone{opacity:0}
+.bball .art{filter:drop-shadow(0 2px 2px #0008)}
+.bball::after{content:"";position:absolute;inset:3%;border-radius:50%;border:3px solid #fff;opacity:0;transition:opacity .08s}
+.bball.aim::after{opacity:.85}
+.bball.wrong::after{border-color:var(--bad);opacity:0;animation:blastwrong .42s ease-out}
+@keyframes blastwrong{from{opacity:1}to{opacity:0}}
+.blastline{position:absolute;left:0;right:0;top:calc(var(--lanes) * var(--D));border-top:2px dashed #FF5B3966;pointer-events:none}
+.blastbox.danger .blastline{border-top-color:#FF5B39;animation:blastwarn .6s ease-in-out infinite alternate}
+@keyframes blastwarn{from{opacity:.45}to{opacity:1}}
+.blastmeter{position:absolute;left:0;right:0;top:calc(var(--lanes) * var(--D) + 7px);height:5px;border-radius:3px;overflow:hidden;background:#ffffff1a;pointer-events:none}
+.blastmeter i{display:block;height:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--cool),#FFC53D)}
+.blastbox.rush .blastmeter i{background:#FF5B39}
+.blastbox.calm .blastmeter{display:none}
+.blastbox.calm .blastwall{transition:none}
+.blastgun{position:absolute;left:0;bottom:0;width:var(--D);height:calc(var(--D) * 1.7);padding:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  transform:translateX(calc(var(--gc, 3) * var(--D)));transition:transform .09s linear}
+.blastload{position:relative;z-index:1;width:calc(var(--D) * .84);height:calc(var(--D) * .84);margin-bottom:-5%}
+.blastload .art,.blastnext .art,.blastshot .art{filter:drop-shadow(0 2px 2px #0008)}
+.blastpaw{width:88%;height:calc(var(--D) * .6)}
+.blastnext{position:absolute;right:0;bottom:6%;z-index:2;width:calc(var(--D) * .4);height:calc(var(--D) * .4)}
+.blastgun.swap .blastload{animation:blastswap .2s ease-out}
+@keyframes blastswap{from{opacity:.35}to{opacity:1}}
+.blastshot{position:absolute;left:0;top:0;pointer-events:none;z-index:3;will-change:transform}
+.blastbox.won .blastline,.blastbox.won .blastmeter{opacity:0}
+/* ── Sandbox of Softness: the chute over the first slot, and the hidden picture beside it ───────────────────── */
+.beltbox{--slotw:calc((100% - 14px - (var(--cap, 5) - 1) * 5px) / var(--cap, 5))}
+.sandtop{display:flex;align-items:center;gap:14px;width:100%;padding-left:7px;box-sizing:border-box}
+.sandtop .chute{flex:0 0 var(--slotw);width:auto}
+.sandpic{display:grid;gap:3px;flex:none;margin:0 auto;padding:6px;border-radius:var(--r-md);
+  background:#ffffff08;border:1px solid var(--edge-soft);box-sizing:border-box}
+.sandpic .px{display:block;border-radius:3px;background:#ffffff10;box-shadow:inset 0 0 0 1px #ffffff14;transition:background-color .3s,opacity .5s}
+.sandpic .px.on{box-shadow:inset 0 0 0 1.5px #0D0918,inset 0 2px 0 #ffffff55}
+.sandpic.done .px.bg{opacity:.18}
+/* ── Yarn Tangled Tangle: crafts, not numbers ──────────────────────────────────────────────────────────────── */
+.jel:not(.empty){background:none}
+.jel:not(.empty):not(.sel):not(.mate):not(.prime){box-shadow:none;border-color:transparent}
+.jel .art{filter:drop-shadow(0 2px 2px #0008)}
+.jelfly{background:none}
+.till small{font-size:clamp(10px,2.1vh,12px);color:var(--haze);letter-spacing:.04em;margin-left:2px}
+/* ── The Gateway: three moods at the top of Play ───────────────────────────────────────────────────────────── */
+.gate{margin-bottom:26px}
+.gateTitle{font-family:var(--f-disp);font-weight:800;font-size:22px;line-height:1.05;text-transform:uppercase;color:var(--cream);margin-bottom:4px}
+.gateSub{font-size:13px;color:var(--haze);margin-bottom:16px}
+.gatelist{display:flex;flex-direction:column;gap:12px}
+.gateBtn{display:grid;grid-template-columns:44px 1fr;column-gap:14px;align-items:center;width:100%;min-height:96px;padding:14px 18px;text-align:left;
+  border-radius:var(--r-xl);border:1.5px solid color-mix(in srgb, var(--gk) 55%, transparent);color:var(--cream);box-shadow:var(--lift);
+  background:linear-gradient(155deg, color-mix(in srgb, var(--gk) 24%, #1B1330), color-mix(in srgb, var(--gk) 8%, #140D26));
+  transition:transform var(--t-fast),border-color var(--t-fast),box-shadow var(--t-fast)}
+.gateBtn:active{transform:scale(.98);box-shadow:var(--lift-press)}
+.gateBtn .g{grid-row:1 / span 3;width:44px;height:44px;display:grid;place-items:center;color:var(--gk);border-radius:50%;
+  background:color-mix(in srgb, var(--gk) 16%, transparent)}
+.gateBtn .g svg{width:28px;height:28px;display:block}
+.gateBtn b{font-family:var(--f-disp);font-weight:800;font-size:19px;text-transform:uppercase;letter-spacing:-.01em;line-height:1.1}
+.gateBtn small{font-size:11.5px;color:var(--gk);letter-spacing:.02em;margin-top:2px}
+.gateBtn em{font-style:normal;font-size:13px;color:var(--cream);opacity:.86;margin-top:4px;line-height:1.3}
+.gateHead{display:grid;grid-template-columns:44px 1fr;column-gap:14px;align-items:center;padding:14px 18px;margin-bottom:14px;border-radius:var(--r-xl);
+  border:1.5px solid color-mix(in srgb, var(--gk, #E8D5B7) 55%, transparent);
+  background:linear-gradient(155deg, color-mix(in srgb, var(--gk, #E8D5B7) 24%, #1B1330), color-mix(in srgb, var(--gk, #E8D5B7) 8%, #140D26))}
+.gateHead .g{grid-row:1 / span 3;width:44px;height:44px;display:grid;place-items:center;color:var(--gk, #E8D5B7);border-radius:50%;background:color-mix(in srgb, var(--gk, #E8D5B7) 16%, transparent)}
+.gateHead .g svg{width:28px;height:28px;display:block}
+.gateHead b{font-family:var(--f-disp);font-weight:800;font-size:19px;text-transform:uppercase;line-height:1.1}
+.gateHead small{font-size:11.5px;color:var(--gk, #E8D5B7);margin-top:2px}
+.gateHead em{font-style:normal;font-size:13px;opacity:.86;margin-top:4px;line-height:1.3}
+#gateAll{margin-top:16px}
 </style>
 
 <div class="cab">
@@ -3317,6 +3394,32 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
             <b aria-hidden="true">&rarr;</b>
           </button>
 
+          <!-- The gateway: not a list of games but three moods. Each opens the games that suit it, and every game is still one tap away. -->
+          <div class="gate" id="gate">
+            <div class="gateTitle" data-i18n="gate.title">How is your brain today?</div>
+            <div class="gateSub" data-i18n="gate.sub">Pick the one that sounds like you — the games are chosen to match.</div>
+            <div class="gatelist">
+              <button class="gateBtn" data-gate="calm" type="button" style="--gk:#B9A6F2">
+                <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><path d="M5 10q7 5 14 0M5.5 14.5q6.5 4.5 13 0M8 6.2q5 4 9.5 1.6"/><path d="M18 17q3 1 2.5 3.5"/></svg></span>
+                <b data-i18n="gate.calm">Calm &amp; Collect</b>
+                <small data-i18n="gate.calmWho">(Predominantly Inattentive)</small>
+                <em data-i18n="gate.calmVibe">Soothing, repetitive, low-pressure.</em>
+              </button>
+              <button class="gateBtn" data-gate="quick" type="button" style="--gk:#F2A65A">
+                <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="15.5" rx="4.2" ry="3.4"/><circle cx="6.3" cy="10.5" r="1.8"/><circle cx="10" cy="7.2" r="1.8"/><circle cx="14" cy="7.2" r="1.8"/><circle cx="17.7" cy="10.5" r="1.8"/></svg></span>
+                <b data-i18n="gate.quick">Quick Paws</b>
+                <small data-i18n="gate.quickWho">(Predominantly Hyperactive-Impulsive)</small>
+                <em data-i18n="gate.quickVibe">Fast, satisfying, action-oriented.</em>
+              </button>
+              <button class="gateBtn" data-gate="full" type="button" style="--gk:#E8D5B7">
+                <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9L4 3.5l5 2.8M19 9l1-5.5-5 2.8"/><path d="M5 9c-1.5 2-1.5 5 0 7 1.8 2.6 4.4 3.5 7 3.5s5.2-.9 7-3.5c1.5-2 1.5-5 0-7"/><circle cx="9.3" cy="12.5" r=".9" fill="currentColor"/><circle cx="14.7" cy="12.5" r=".9" fill="currentColor"/><path d="M10.7 15.2h2.6l-1.3 1.3z"/></svg></span>
+                <b data-i18n="gate.full">The Full Purr</b>
+                <small data-i18n="gate.fullWho">(Combined)</small>
+                <em data-i18n="gate.fullVibe">A balanced mix of calm strategy and quick action.</em>
+              </button>
+            </div>
+          </div>
+
           <div class="guidedTitle" data-i18n="play.guidedTitle">What do you want to do?</div>
           <div class="guidedSub" data-i18n="play.guidedSub">Three questions, not sixty-six modes at once.</div>
 
@@ -3344,6 +3447,24 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
           </div>
 
           <p class="verline" id="verLine"></p>
+        </div>
+
+        <!-- A mood's games: the ones picked for it, the same family of feeling beside them, and every game one tap away. -->
+        <div id="playGate" hidden>
+          <button class="backrow" id="gateBack" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            <span data-i18n="btn.backToMenu">Back to menu</span>
+          </button>
+          <div class="gateHead" id="gateHead">
+            <span class="g" id="gateGlyph" aria-hidden="true"></span>
+            <b id="gateName"></b>
+            <small id="gateWho"></small>
+            <em id="gateVibe"></em>
+          </div>
+          <div class="modegrid gategrid" id="gateModes"></div>
+          <div class="seclbl" id="gateMoreLbl" hidden><span data-i18n="gate.more">More in this mood</span></div>
+          <div class="modegrid gategrid" id="gateMore" hidden></div>
+          <button class="catcard wide" id="gateAll" type="button"><b></b><small></small></button>
         </div>
 
         <!-- My stuff: everything that isn't one of the three big questions —
@@ -3959,7 +4080,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.100.0';
+const VERSION_TAG = 'v0.101.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4689,10 +4810,10 @@ const STRINGS = {
     'how.drag':'drag a finger across the board', 'how.tapdrag':'tap first, then drag to aim',
 
     
-    'p.forage':'{n} balls of yarn left', 'forage.cell':'{k}, row {r} column {c}', 'forage.gone':'Cleared, row {r} column {c}', 'forage.slot':'Kitten waiting on {k}, {n} left', 'forage.free':'Empty basket slot', 'forage.full':'Basket full — call a kitten home, or open the way for one', 'm.forage':'Kittens Out|Send the kittens at a colour — only so many out at once',
-    'p.meld':'{n} more to take', 'meld.cell':'Ball {v}, worth {p}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'meld.band':'Level {v} pays {p} today', 'meld.selling':'Tap again to sell the {v} for {p}', 'm.meld':'Yarn Shop|Merge the balls up, sell them on, reach the day’s takings', 'how.meld':'drag a ball onto its twin to squash them into one; tap a ball, then tap it again to sell it. One level pays triple today, and merging past it loses money',
+    'p.forage':'{n} treats left', 'forage.cell':'{k} treat, row {r} column {c}', 'forage.gone':'Cleared, row {r} column {c}', 'forage.slot':'Kitten waiting on {k}, {n} left', 'forage.free':'Empty basket slot', 'forage.full':'Basket full — call a kitten home, or open the way for one', 'm.forage':'Kitten’s Snack Attack|Send the kittens at a treat colour — only so many out at once',
+    'p.meld':'{n} more Coins of Gratitude', 'meld.cell':'{v}, worth {p}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'meld.band':'{v} pays {p} today', 'meld.selling':'Tap again to gift {v} for {p}', 'm.meld':'Yarn Tangled Tangle|Merge tangled yarn into neater crafts, gift them, and fill the jar of thanks', 'how.meld':'drag a ball onto its twin to squash them into one; tap a ball, then tap it again to sell it. One level pays triple today, and merging past it loses money',
     'p.volley':'{n} squares still bare', 'volley.cell':'{k}, row {r} column {c}', 'volley.blank':'Wants {k}, row {r} column {c}', 'volley.gunL':'{k} spool, fires right along row {n}', 'volley.gunR':'{k} spool, fires left along row {n}', 'volley.gunT':'{k} spool, fires down column {n}', 'volley.gunB':'{k} spool, fires up column {n}', 'volley.stuck':'Every spool is spent or wrong — wind a shot back', 'm.volley':'Spool Shots|Fire the spools in an order that paints the picture', 'how.volley':'tap a spool to fire it; the ball paints the bare squares it crosses and stops at the first one already painted. Tap a square the last shot painted to wind it back',
-    'p.sift':'{n} more to catch', 'sift.slot':'Belt slot {n}, {k} spool', 'sift.bare':'Belt slot {n}, empty', 'sift.put':'Put a {k} spool on the belt', 'sift.jam':'Belt is full — knock the front spool off to make room', 'm.sift':'Spool Belt|Put spools on the belt before their thread runs out',
+    'p.sift':'{n} more to fill', 'sift.slot':'Belt slot {n}, {k} scoop', 'sift.bare':'Belt slot {n}, empty', 'sift.put':'Put a {k} scoop on the belt', 'sift.jam':'Belt is full — knock the front scoop off to make room', 'sift.pic':'Hidden picture, {n} of {m} filled', 'sift.again':'A grain rolled past — it will come round again, {n} more to fill', 'm.sift':'Sandbox of Softness|Catch each grain of sand in its own colour and a hidden picture fills in',
     'how.forage':'tap a kitten to send the kittens at its colour; they come in through the bare gaps and take only what they can reach, then wait in the basket until you send them again. Tap a waiting kitten to call it home', 'how.first':'First time — taking it gently.', 'how.sift':'tap a colour to drop that spool on the BACK of the belt; the belt shifts one slot per strand, so you are placing for a strand further down the chute, not the one falling. Tap the front spool to knock it off',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
@@ -5009,13 +5130,13 @@ const STRINGS = {
     'q.splice.m2':'That end does not fit', 'q.trace.w1':'Followed to the end', 'q.trace.w2':'A steady paw',
     'q.trace.w3':'Not a stitch astray', 'q.trace.m1':'Wandered off', 'q.trace.m2':'Lost the thread',
     'q.lever.w1':'Balanced', 'q.lever.w2':'Level as a cat’s back', 'q.lever.w3':'A perfect pivot',
-    'q.lever.m1':'Tipped over', 'q.lever.m2':'Not quite', 'q.forage.w1':'Patch cleared',
-    'q.forage.w2':'Kittens fed', 'q.forage.w3':'All eaten', 'q.forage.m1':'The basket is full',
-    'q.forage.m2':'Out of moves', 'q.meld.w1':'A fine day’s takings', 'q.meld.w2':'The shop is doing well',
-    'q.meld.w3':'Sold out', 'q.meld.m1':'Takings short', 'q.meld.m2':'The shop is empty',
+    'q.lever.m1':'Tipped over', 'q.lever.m2':'Not quite', 'q.forage.w1':'Plate licked clean',
+    'q.forage.w2':'Kittens fed', 'q.forage.w3':'Every last treat', 'q.forage.m1':'The basket is full',
+    'q.forage.m2':'Out of moves', 'q.meld.w1':'A jar full of thanks', 'q.meld.w2':'The crafts are going down well',
+    'q.meld.w3':'Every craft gifted', 'q.meld.m1':'Not enough thanks yet', 'q.meld.m2':'Nothing left to gift',
     'q.volley.w1':'Picture painted', 'q.volley.w2':'Right on target', 'q.volley.w3':'Well shot',
-    'q.volley.m1':'Out of shots', 'q.volley.m2':'The picture is spoilt', 'q.sift.w1':'Belt cleared',
-    'q.sift.w2':'Every spool on time', 'q.sift.w3':'A smooth belt', 'q.sift.m1':'Spilled spools',
+    'q.volley.m1':'Out of shots', 'q.volley.m2':'The picture is spoilt', 'q.sift.w1':'Picture complete',
+    'q.sift.w2':'Every grain on time', 'q.sift.w3':'A smooth belt', 'q.sift.m1':'Spilled sand',
     'q.sift.m2':'The belt jammed', 'q.halve.w1':'The baskets balance', 'q.halve.w2':'Even',
     'q.halve.w3':'Fair shares', 'q.halve.m1':'Still uneven', 'q.halve.m2':'Out of moves',
     /* Patchwork */
@@ -5032,6 +5153,20 @@ const STRINGS = {
     'ripple.wind':'Breeze', 'slice.combo':'Clean sweep — {n} in one snip, {m} more to cut', 'p.skimClean':'A clean stitch — {n} skips to go',
     /* Loaf Box, endless */
     'loaf.carry':'The box carries on — clear {n} more', 'loaf.fresh':'A fresh box',
+    /* Yarn Tangled Tangle */
+    'meld.l1':'A loose thread', 'meld.l2':'A tangled ball', 'meld.l3':'A neat ball', 'meld.l4':'A skein', 'meld.l5':'A knitted square', 'meld.l6':'A crocheted flower', 'meld.l7':'A plush kitten',
+    'meld.coins':'Coins of Gratitude', 'meld.more':'More yarn · {p}', 'meld.moreAria':'Buy {v} for {p} Coins of Gratitude, {n} left to buy',
+    /* The gateway */
+    'gate.title':'How is your brain today?', 'gate.sub':'Pick the one that sounds like you — the games are chosen to match.', 'gate.more':'More in this mood',
+    'gate.calm':'Calm & Collect', 'gate.calmWho':'(Predominantly Inattentive)', 'gate.calmVibe':'Soothing, repetitive, low-pressure.',
+    'gate.quick':'Quick Paws', 'gate.quickWho':'(Predominantly Hyperactive-Impulsive)', 'gate.quickVibe':'Fast, satisfying, action-oriented.',
+    'gate.full':'The Full Purr', 'gate.fullWho':'(Combined)', 'gate.fullVibe':'A balanced mix of calm strategy and quick action.',
+    /* Yarn Ball Blaster */
+    'm.blast':'Yarn Ball Blaster|Fire matching yarn to pop the wall before it creeps down', 'p.blast':'{n} yarn balls left — fire the colour you are holding',
+    'blast.board':'Wall of yarn', 'blast.col':'Lane {n}, front ball {k}', 'blast.empty':'Lane {n}, empty', 'blast.paw':'Paw cannon, {k} loaded, {j} next. Activate to swap.',
+    'blast.rush':'Wrong colour — the wall comes down sooner!', 'blast.chain':'{n} in one shot!',
+    'q.blast.w1':'Pop, pop, pop', 'q.blast.w2':'Wall cleared', 'q.blast.w3':'Paws of fury',
+    'q.blast.m1':'The wall got through', 'q.blast.m2':'Too many wrong colours',
   },
 
   fr: {
@@ -5162,10 +5297,10 @@ const STRINGS = {
     'how.drag':'glissez un doigt sur le plateau', 'how.tapdrag':'touchez d’abord, puis glissez pour viser',
 
     
-    'p.forage':'{n} pelotes restantes', 'forage.cell':'{k}, ligne {r} colonne {c}', 'forage.gone':'Dégagée, ligne {r} colonne {c}', 'forage.slot':'Chaton en attente de {k}, {n} restantes', 'forage.free':'Emplacement libre', 'forage.full':'Panier plein — rappelez un chaton, ou dégagez-lui le passage', 'm.forage':'Lâchez les Chatons|Envoyez les chatons sur une couleur — pas trop à la fois',
-    'p.meld':'Encore {n} à encaisser', 'meld.cell':'Pelote {v}, valant {p}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'meld.band':'Le niveau {v} rapporte {p} aujourd’hui', 'meld.selling':'Touchez encore pour vendre la {v} à {p}', 'm.meld':'Boutique de Laine|Fusionnez les pelotes, vendez-les, faites la recette du jour', 'how.meld':'glissez une pelote sur sa jumelle pour n’en faire qu’une ; touchez une pelote, puis touchez-la encore pour la vendre. Un niveau rapporte triple aujourd’hui, et fusionner au-delà fait perdre de l’argent',
+    'p.forage':'{n} friandises restantes', 'forage.cell':'Friandise {k}, ligne {r} colonne {c}', 'forage.gone':'Dégagée, ligne {r} colonne {c}', 'forage.slot':'Chaton en attente de {k}, {n} restantes', 'forage.free':'Emplacement libre', 'forage.full':'Panier plein — rappelez un chaton, ou dégagez-lui le passage', 'm.forage':'L’Attaque des Chatons Gourmands|Envoie les chatons sur une couleur de friandise — pas trop à la fois',
+    'p.meld':'Encore {n} pièces de gratitude', 'meld.cell':'{v}, valant {p}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'meld.band':'{v} rapporte {p} aujourd’hui', 'meld.selling':'Touche encore pour offrir : {v}, {p}', 'm.meld':'Pelotes Emmêlées|Fusionne les pelotes emmêlées en jolies créations, offre-les et remplis le pot de merci', 'how.meld':'glissez une pelote sur sa jumelle pour n’en faire qu’une ; touchez une pelote, puis touchez-la encore pour la vendre. Un niveau rapporte triple aujourd’hui, et fusionner au-delà fait perdre de l’argent',
     'p.volley':'{n} cases encore vides', 'volley.cell':'{k}, ligne {r} colonne {c}', 'volley.blank':'Attend {k}, ligne {r} colonne {c}', 'volley.gunL':'Bobine {k}, tire vers la droite sur la ligne {n}', 'volley.gunR':'Bobine {k}, tire vers la gauche sur la ligne {n}', 'volley.gunT':'Bobine {k}, tire vers le bas sur la colonne {n}', 'volley.gunB':'Bobine {k}, tire vers le haut sur la colonne {n}', 'volley.stuck':'Toutes les bobines sont épuisées ou fausses — annulez un tir', 'm.volley':'Tirs de Bobines|Tirez les bobines dans l’ordre qui peint l’image', 'how.volley':'touchez une bobine pour tirer ; la bille peint les cases vides qu’elle traverse et s’arrête à la première déjà peinte. Touchez une case du dernier tir pour l’annuler',
-    'p.sift':'Encore {n} à attraper', 'sift.slot':'Emplacement {n}, bobine {k}', 'sift.bare':'Emplacement {n}, vide', 'sift.put':'Poser une bobine {k} sur le tapis', 'sift.jam':'Tapis plein — faites tomber la bobine de tête pour faire de la place', 'm.sift':'Tapis à Bobines|Posez les bobines avant que leur fil ne file',
+    'p.sift':'Encore {n} cases à remplir', 'sift.slot':'Emplacement {n}, pelle {k}', 'sift.bare':'Emplacement {n}, vide', 'sift.put':'Poser une pelle {k} sur le tapis', 'sift.jam':'Tapis plein — faites tomber la pelle de tête pour faire de la place', 'sift.pic':'Image cachée, {n} cases sur {m}', 'sift.again':'Un grain est passé — il reviendra, encore {n} cases à remplir', 'm.sift':'Bac à Sable Tout Doux|Attrape chaque grain de sable de sa couleur : une image cachée apparaît',
     'how.forage':'touchez un chaton pour lancer les chatons sur sa couleur ; ils entrent par les trous, ne prennent que ce qu’ils atteignent, puis attendent dans le panier que vous les relanciez. Touchez un chaton en attente pour le rappeler', 'how.first':'Première fois — on y va doucement.', 'how.sift':'touchez une couleur pour poser cette bobine à l’ARRIÈRE du tapis ; le tapis avance d’un cran par brin, donc vous posez pour un brin plus loin dans la trémie, pas pour celui qui tombe. Touchez la bobine de tête pour la faire tomber',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
@@ -5482,13 +5617,13 @@ const STRINGS = {
     'q.splice.m2':'Ce bout ne va pas', 'q.trace.w1':'Suivi jusqu’au bout', 'q.trace.w2':'Une patte sûre',
     'q.trace.w3':'Pas une maille de travers', 'q.trace.m1':'Égaré', 'q.trace.m2':'Fil perdu',
     'q.lever.w1':'En équilibre', 'q.lever.w2':'Droit comme le dos d’un chat', 'q.lever.w3':'Un pivot parfait',
-    'q.lever.m1':'Basculé', 'q.lever.m2':'Pas tout à fait', 'q.forage.w1':'Parcelle nettoyée',
-    'q.forage.w2':'Chatons nourris', 'q.forage.w3':'Tout mangé', 'q.forage.m1':'Le panier est plein',
-    'q.forage.m2':'Plus de coups', 'q.meld.w1':'Une belle recette', 'q.meld.w2':'La boutique prospère',
-    'q.meld.w3':'Tout est vendu', 'q.meld.m1':'Recette trop faible', 'q.meld.m2':'La boutique est vide',
+    'q.lever.m1':'Basculé', 'q.lever.m2':'Pas tout à fait', 'q.forage.w1':'Assiette nettoyée',
+    'q.forage.w2':'Chatons nourris', 'q.forage.w3':'Pas une miette', 'q.forage.m1':'Le panier est plein',
+    'q.forage.m2':'Plus de coups', 'q.meld.w1':'Un pot plein de merci', 'q.meld.w2':'Les créations font plaisir',
+    'q.meld.w3':'Tout est offert', 'q.meld.m1':'Pas assez de merci', 'q.meld.m2':'Plus rien à offrir',
     'q.volley.w1':'Tableau peint', 'q.volley.w2':'En plein dans le mille', 'q.volley.w3':'Beau tir',
-    'q.volley.m1':'Plus de tirs', 'q.volley.m2':'Le tableau est gâché', 'q.sift.w1':'Tapis dégagé',
-    'q.sift.w2':'Chaque bobine à l’heure', 'q.sift.w3':'Un tapis fluide', 'q.sift.m1':'Bobines renversées',
+    'q.volley.m1':'Plus de tirs', 'q.volley.m2':'Le tableau est gâché', 'q.sift.w1':'Image terminée',
+    'q.sift.w2':'Chaque grain à l’heure', 'q.sift.w3':'Un tapis fluide', 'q.sift.m1':'Sable renversé',
     'q.sift.m2':'Le tapis s’est bloqué', 'q.halve.w1':'Les paniers s’équilibrent', 'q.halve.w2':'À égalité',
     'q.halve.w3':'Partage équitable', 'q.halve.m1':'Toujours inégal', 'q.halve.m2':'Plus de coups',
     /* Patchwork */
@@ -5505,6 +5640,20 @@ const STRINGS = {
     'ripple.wind':'Brise', 'slice.combo':'Coup net — {n} d’un trait, encore {m}', 'p.skimClean':'Un point net — encore {n} ricochets',
     /* Loaf Box, endless */
     'loaf.carry':'La boîte continue — encore {n} à vider', 'loaf.fresh':'Une boîte toute neuve',
+    /* Yarn Tangled Tangle */
+    'meld.l1':'Un fil libre', 'meld.l2':'Une pelote emmêlée', 'meld.l3':'Une pelote bien enroulée', 'meld.l4':'Un écheveau', 'meld.l5':'Un carré tricoté', 'meld.l6':'Une fleur au crochet', 'meld.l7':'Un chaton en peluche',
+    'meld.coins':'pièces de gratitude', 'meld.more':'Plus de laine · {p}', 'meld.moreAria':'Acheter : {v}, pour {p} pièces de gratitude, encore {n} achats possibles',
+    /* The gateway */
+    'gate.title':'Comment va ta tête aujourd’hui ?', 'gate.sub':'Choisis ce qui te ressemble — les jeux sont choisis pour aller avec.', 'gate.more':'Dans le même esprit',
+    'gate.calm':'Calme & Collecte', 'gate.calmWho':'(Principalement inattentif)', 'gate.calmVibe':'Apaisant, répétitif, sans pression.',
+    'gate.quick':'Pattes Rapides', 'gate.quickWho':'(Principalement hyperactif-impulsif)', 'gate.quickVibe':'Rapide, satisfaisant, plein d’action.',
+    'gate.full':'Le Grand Ronron', 'gate.fullWho':'(Mixte)', 'gate.fullVibe':'Un équilibre entre stratégie tranquille et action rapide.',
+    /* Yarn Ball Blaster */
+    'm.blast':'Lance-pelotes|Tire la bonne couleur pour faire éclater le mur avant qu’il ne descende', 'p.blast':'Encore {n} pelotes — tire la couleur que tu tiens',
+    'blast.board':'Mur de laine', 'blast.col':'Colonne {n}, première pelote {k}', 'blast.empty':'Colonne {n}, vide', 'blast.paw':'Canon-patte, {k} chargée, {j} ensuite. Activer pour échanger.',
+    'blast.rush':'Mauvaise couleur — le mur descend plus vite !', 'blast.chain':'{n} d’un seul tir !',
+    'q.blast.w1':'Pop, pop, pop', 'q.blast.w2':'Mur dégagé', 'q.blast.w3':'Pattes de velours, tir de fer',
+    'q.blast.m1':'Le mur est passé', 'q.blast.m2':'Trop de mauvaises couleurs',
   },
 
   es: {
@@ -5635,10 +5784,10 @@ const STRINGS = {
     'how.drag':'desliza un dedo por el tablero', 'how.tapdrag':'toca primero y luego desliza para apuntar',
 
     
-    'p.forage':'Quedan {n} ovillos', 'forage.cell':'{k}, fila {r} columna {c}', 'forage.gone':'Despejada, fila {r} columna {c}', 'forage.slot':'Gatito esperando {k}, quedan {n}', 'forage.free':'Hueco libre en la cesta', 'forage.full':'Cesta llena — llama a un gatito, o ábrele el paso', 'm.forage':'Suelta los Gatitos|Manda gatitos a un color — solo unos pocos a la vez',
-    'p.meld':'Faltan {n} para la caja', 'meld.cell':'Ovillo {v}, vale {p}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'meld.band':'El nivel {v} paga {p} hoy', 'meld.selling':'Toca otra vez para vender la {v} por {p}', 'm.meld':'Tienda de Lanas|Fusiona los ovillos, véndelos, alcanza la caja del día', 'how.meld':'arrastra un ovillo sobre su gemelo para hacerlos uno; toca un ovillo y tócalo otra vez para venderlo. Un nivel paga el triple hoy, y fusionar más allá pierde dinero',
+    'p.forage':'Quedan {n} golosinas', 'forage.cell':'Golosina {k}, fila {r} columna {c}', 'forage.gone':'Despejada, fila {r} columna {c}', 'forage.slot':'Gatito esperando {k}, quedan {n}', 'forage.free':'Hueco libre en la cesta', 'forage.full':'Cesta llena — llama a un gatito, o ábrele el paso', 'm.forage':'Ataque de Gatitos Golosos|Manda gatitos a un color de golosina — solo unos pocos a la vez',
+    'p.meld':'Faltan {n} monedas de gratitud', 'meld.cell':'{v}, vale {p}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'meld.band':'{v} paga {p} hoy', 'meld.selling':'Toca otra vez para regalar: {v}, {p}', 'm.meld':'Ovillos Enredados|Fusiona ovillos enredados en labores más bonitas, regálalas y llena el tarro de gracias', 'how.meld':'arrastra un ovillo sobre su gemelo para hacerlos uno; toca un ovillo y tócalo otra vez para venderlo. Un nivel paga el triple hoy, y fusionar más allá pierde dinero',
     'p.volley':'{n} casillas aún vacías', 'volley.cell':'{k}, fila {r} columna {c}', 'volley.blank':'Quiere {k}, fila {r} columna {c}', 'volley.gunL':'Carrete {k}, dispara a la derecha por la fila {n}', 'volley.gunR':'Carrete {k}, dispara a la izquierda por la fila {n}', 'volley.gunT':'Carrete {k}, dispara hacia abajo por la columna {n}', 'volley.gunB':'Carrete {k}, dispara hacia arriba por la columna {n}', 'volley.stuck':'Todos los carretes están gastados o son erróneos — deshaz un disparo', 'm.volley':'Disparo de Carretes|Dispara los carretes en el orden que pinta el dibujo', 'how.volley':'toca un carrete para disparar; la bola pinta las casillas vacías que cruza y se para en la primera ya pintada. Toca una casilla del último disparo para deshacerlo',
-    'p.sift':'Faltan {n} por atrapar', 'sift.slot':'Hueco {n}, carrete {k}', 'sift.bare':'Hueco {n}, vacío', 'sift.put':'Poner un carrete {k} en la cinta', 'sift.jam':'Cinta llena — tira el carrete delantero para hacer sitio', 'm.sift':'Cinta de Carretes|Pon carretes antes de que se acabe su hilo',
+    'p.sift':'Faltan {n} por rellenar', 'sift.slot':'Hueco {n}, pala {k}', 'sift.bare':'Hueco {n}, vacío', 'sift.put':'Poner una pala {k} en la cinta', 'sift.jam':'Cinta llena — tira la pala delantera para hacer sitio', 'sift.pic':'Imagen escondida, {n} de {m}', 'sift.again':'Un grano se coló — volverá a pasar, faltan {n} por rellenar', 'm.sift':'Arenero Suave|Atrapa cada grano de arena de su color y aparecerá una imagen escondida',
     'how.forage':'toca un gatito para lanzar los gatitos a su color; entran por los huecos, toman solo lo que alcanzan y luego esperan en la cesta a que los vuelvas a lanzar. Toca un gatito en espera para llamarlo', 'how.first':'Primera vez: vamos con calma.', 'how.sift':'toca un color para poner ese carrete al FINAL de la cinta; la cinta avanza un hueco por hebra, así que colocas para una hebra más adelante en la tolva, no para la que cae. Toca el carrete delantero para tirarlo',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
@@ -5955,13 +6104,13 @@ const STRINGS = {
     'q.splice.m2':'Ese extremo no encaja', 'q.trace.w1':'Seguido hasta el final', 'q.trace.w2':'Pulso firme',
     'q.trace.w3':'Ni un punto fuera de sitio', 'q.trace.m1':'Te saliste', 'q.trace.m2':'Perdiste el hilo',
     'q.lever.w1':'En equilibrio', 'q.lever.w2':'Recto como el lomo de un gato', 'q.lever.w3':'Un pivote perfecto',
-    'q.lever.m1':'Se volcó', 'q.lever.m2':'Casi', 'q.forage.w1':'Parcela despejada',
-    'q.forage.w2':'Gatitos alimentados', 'q.forage.w3':'Todo comido', 'q.forage.m1':'La cesta está llena',
-    'q.forage.m2':'Sin movimientos', 'q.meld.w1':'Buena caja del día', 'q.meld.w2':'La tienda va bien',
-    'q.meld.w3':'Todo vendido', 'q.meld.m1':'Caja corta', 'q.meld.m2':'La tienda está vacía',
+    'q.lever.m1':'Se volcó', 'q.lever.m2':'Casi', 'q.forage.w1':'Plato limpio',
+    'q.forage.w2':'Gatitos alimentados', 'q.forage.w3':'Ni una miga', 'q.forage.m1':'La cesta está llena',
+    'q.forage.m2':'Sin movimientos', 'q.meld.w1':'Un tarro lleno de gracias', 'q.meld.w2':'Las labores gustan',
+    'q.meld.w3':'Todo regalado', 'q.meld.m1':'Aún faltan gracias', 'q.meld.m2':'Nada más que regalar',
     'q.volley.w1':'Cuadro pintado', 'q.volley.w2':'Justo en la diana', 'q.volley.w3':'Buen tiro',
-    'q.volley.m1':'Sin tiros', 'q.volley.m2':'El cuadro se estropeó', 'q.sift.w1':'Cinta despejada',
-    'q.sift.w2':'Cada bobina a tiempo', 'q.sift.w3':'Una cinta fluida', 'q.sift.m1':'Bobinas derramadas',
+    'q.volley.m1':'Sin tiros', 'q.volley.m2':'El cuadro se estropeó', 'q.sift.w1':'Imagen completa',
+    'q.sift.w2':'Cada grano a tiempo', 'q.sift.w3':'Una cinta fluida', 'q.sift.m1':'Arena derramada',
     'q.sift.m2':'La cinta se atascó', 'q.halve.w1':'Las cestas se equilibran', 'q.halve.w2':'Igualado',
     'q.halve.w3':'Reparto justo', 'q.halve.m1':'Sigue desigual', 'q.halve.m2':'Sin movimientos',
     /* Patchwork */
@@ -5978,6 +6127,20 @@ const STRINGS = {
     'ripple.wind':'Brisa', 'slice.combo':'Corte limpio: {n} de una vez, quedan {m}', 'p.skimClean':'Un punto limpio: quedan {n} saltos',
     /* Loaf Box, endless */
     'loaf.carry':'La caja sigue: quedan {n} por despejar', 'loaf.fresh':'Una caja nueva',
+    /* Yarn Tangled Tangle */
+    'meld.l1':'Un hilo suelto', 'meld.l2':'Un ovillo enredado', 'meld.l3':'Un ovillo ordenado', 'meld.l4':'Una madeja', 'meld.l5':'Un cuadrado de punto', 'meld.l6':'Una flor de ganchillo', 'meld.l7':'Un gatito de peluche',
+    'meld.coins':'monedas de gratitud', 'meld.more':'Más lana · {p}', 'meld.moreAria':'Comprar: {v}, por {p} monedas de gratitud, quedan {n} compras',
+    /* The gateway */
+    'gate.title':'¿Cómo está tu cabeza hoy?', 'gate.sub':'Elige el que más se parezca a ti: los juegos se eligen a juego.', 'gate.more':'Más con este ánimo',
+    'gate.calm':'Calma y Colección', 'gate.calmWho':'(Predominantemente inatento)', 'gate.calmVibe':'Relajante, repetitivo, sin presión.',
+    'gate.quick':'Patitas Rápidas', 'gate.quickWho':'(Predominantemente hiperactivo-impulsivo)', 'gate.quickVibe':'Rápido, satisfactorio, lleno de acción.',
+    'gate.full':'El Ronroneo Completo', 'gate.fullWho':'(Combinado)', 'gate.fullVibe':'Un equilibrio entre estrategia tranquila y acción rápida.',
+    /* Yarn Ball Blaster */
+    'm.blast':'Lanzaovillos|Dispara el color que toca para reventar la pared antes de que baje', 'p.blast':'Quedan {n} ovillos: dispara el color que llevas',
+    'blast.board':'Pared de lana', 'blast.col':'Carril {n}, primer ovillo {k}', 'blast.empty':'Carril {n}, vacío', 'blast.paw':'Cañón-pata, {k} cargado, {j} después. Activa para cambiar.',
+    'blast.rush':'Color equivocado: ¡la pared baja antes!', 'blast.chain':'¡{n} de un solo disparo!',
+    'q.blast.w1':'Pop, pop, pop', 'q.blast.w2':'Pared despejada', 'q.blast.w3':'Zarpas a toda marcha',
+    'q.blast.m1':'La pared llegó hasta abajo', 'q.blast.m2':'Demasiados colores equivocados',
   },
 
   de: {
@@ -6108,10 +6271,10 @@ const STRINGS = {
     'how.drag':'zieh einen Finger über das Feld', 'how.tapdrag':'erst tippen, dann zum Zielen ziehen',
 
     
-    'p.forage':'Noch {n} Knäuel', 'forage.cell':'{k}, Zeile {r} Spalte {c}', 'forage.gone':'Geräumt, Zeile {r} Spalte {c}', 'forage.slot':'Kätzchen wartet auf {k}, noch {n}', 'forage.free':'Freier Korbplatz', 'forage.full':'Korb voll — ruf ein Kätzchen zurück, oder mach ihm den Weg frei', 'm.forage':'Kätzchen Los|Schick die Kätzchen auf eine Farbe — nur so viele auf einmal',
-    'p.meld':'Noch {n} bis zur Tageskasse', 'meld.cell':'Knäuel {v}, {p} wert, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'meld.band':'Stufe {v} zahlt heute {p}', 'meld.selling':'Nochmal tippen, um die {v} für {p} zu verkaufen', 'm.meld':'Wollladen|Führe die Knäuel zusammen, verkaufe sie, schaff die Tageskasse', 'how.meld':'zieh ein Knäuel auf sein Gegenstück, damit eins daraus wird; tippe ein Knäuel an und dann nochmal, um es zu verkaufen. Eine Stufe zahlt heute das Dreifache, und darüber hinaus zu verschmelzen kostet Geld',
+    'p.forage':'Noch {n} Leckerlis', 'forage.cell':'{k}-Leckerli, Zeile {r} Spalte {c}', 'forage.gone':'Geräumt, Zeile {r} Spalte {c}', 'forage.slot':'Kätzchen wartet auf {k}, noch {n}', 'forage.free':'Freier Korbplatz', 'forage.full':'Korb voll — ruf ein Kätzchen zurück, oder mach ihm den Weg frei', 'm.forage':'Kätzchen-Snack-Attacke|Schick die Kätzchen auf eine Leckerli-Farbe — nur so viele auf einmal',
+    'p.meld':'Noch {n} Dankbarkeitsmünzen', 'meld.cell':'{v}, {p} wert, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'meld.band':'{v} zahlt heute {p}', 'meld.selling':'Nochmal tippen, um {v} zu verschenken ({p})', 'm.meld':'Wollknäuel-Wirrwarr|Führe verhedderte Knäuel zu schöneren Werken zusammen, verschenke sie und füll das Dankesglas', 'how.meld':'zieh ein Knäuel auf sein Gegenstück, damit eins daraus wird; tippe ein Knäuel an und dann nochmal, um es zu verkaufen. Eine Stufe zahlt heute das Dreifache, und darüber hinaus zu verschmelzen kostet Geld',
     'p.volley':'Noch {n} leere Felder', 'volley.cell':'{k}, Zeile {r} Spalte {c}', 'volley.blank':'Will {k}, Zeile {r} Spalte {c}', 'volley.gunL':'{k}-Spule, schießt nach rechts durch Zeile {n}', 'volley.gunR':'{k}-Spule, schießt nach links durch Zeile {n}', 'volley.gunT':'{k}-Spule, schießt nach unten durch Spalte {n}', 'volley.gunB':'{k}-Spule, schießt nach oben durch Spalte {n}', 'volley.stuck':'Jede Spule ist verbraucht oder falsch — nimm einen Schuss zurück', 'm.volley':'Spulenschüsse|Schieß die Spulen in der Reihenfolge, die das Bild malt', 'how.volley':'tippe eine Spule an, um zu schießen; die Kugel malt die leeren Felder, die sie überquert, und hält am ersten bereits bemalten. Tippe ein Feld des letzten Schusses an, um ihn zurückzunehmen',
-    'p.sift':'Noch {n} zu fangen', 'sift.slot':'Bandplatz {n}, {k}-Spule', 'sift.bare':'Bandplatz {n}, leer', 'sift.put':'Eine {k}-Spule aufs Band stellen', 'sift.jam':'Band ist voll — stoß die vorderste Spule herunter', 'm.sift':'Spulenband|Setz Spulen aufs Band, bevor ihr Faden ausgeht',
+    'p.sift':'Noch {n} zu füllen', 'sift.slot':'Bandplatz {n}, {k}-Schaufel', 'sift.bare':'Bandplatz {n}, leer', 'sift.put':'Eine {k}-Schaufel aufs Band stellen', 'sift.jam':'Band ist voll — stoß die vorderste Schaufel herunter', 'sift.pic':'Verstecktes Bild, {n} von {m} gefüllt', 'sift.again':'Ein Korn ist durchgerutscht — es kommt wieder, noch {n} zu füllen', 'm.sift':'Sandkasten der Sanftheit|Fang jedes Sandkorn in seiner Farbe — ein verstecktes Bild füllt sich',
     'how.forage':'tippe ein Kätzchen an, um die Kätzchen auf seine Farbe zu schicken; sie kommen durch die Lücken herein, nehmen nur, was sie erreichen, und warten dann im Korb, bis du sie erneut schickst. Tippe ein wartendes Kätzchen an, um es zurückzurufen', 'how.first':'Zum ersten Mal — wir fangen sanft an.', 'how.sift':'tippe eine Farbe an, um die Spule HINTEN aufs Band zu stellen; das Band rückt je Faden einen Platz vor, du stellst also für einen Faden weiter oben im Schacht, nicht für den fallenden. Tippe die vorderste Spule an, um sie herunterzustoßen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
@@ -6428,13 +6591,13 @@ const STRINGS = {
     'q.splice.m2':'Das Ende passt nicht', 'q.trace.w1':'Bis zum Ende gefolgt', 'q.trace.w2':'Eine ruhige Pfote',
     'q.trace.w3':'Keine Masche daneben', 'q.trace.m1':'Abgekommen', 'q.trace.m2':'Den Faden verloren',
     'q.lever.w1':'Im Gleichgewicht', 'q.lever.w2':'Gerade wie ein Katzenrücken', 'q.lever.w3':'Ein perfekter Drehpunkt',
-    'q.lever.m1':'Gekippt', 'q.lever.m2':'Nicht ganz', 'q.forage.w1':'Beet abgeräumt',
-    'q.forage.w2':'Kätzchen satt', 'q.forage.w3':'Alles gefressen', 'q.forage.m1':'Der Korb ist voll',
-    'q.forage.m2':'Keine Züge mehr', 'q.meld.w1':'Eine gute Tageseinnahme', 'q.meld.w2':'Der Laden läuft',
-    'q.meld.w3':'Ausverkauft', 'q.meld.m1':'Einnahmen zu knapp', 'q.meld.m2':'Der Laden ist leer',
+    'q.lever.m1':'Gekippt', 'q.lever.m2':'Nicht ganz', 'q.forage.w1':'Teller blank geleckt',
+    'q.forage.w2':'Kätzchen satt', 'q.forage.w3':'Kein Krümel übrig', 'q.forage.m1':'Der Korb ist voll',
+    'q.forage.m2':'Keine Züge mehr', 'q.meld.w1':'Ein Glas voller Dank', 'q.meld.w2':'Die Werke kommen gut an',
+    'q.meld.w3':'Alles verschenkt', 'q.meld.m1':'Noch nicht genug Dank', 'q.meld.m2':'Nichts mehr zu verschenken',
     'q.volley.w1':'Bild gemalt', 'q.volley.w2':'Mitten ins Ziel', 'q.volley.w3':'Gut geschossen',
-    'q.volley.m1':'Keine Schüsse mehr', 'q.volley.m2':'Das Bild ist verdorben', 'q.sift.w1':'Band geräumt',
-    'q.sift.w2':'Jede Spule rechtzeitig', 'q.sift.w3':'Ein glattes Band', 'q.sift.m1':'Spulen verschüttet',
+    'q.volley.m1':'Keine Schüsse mehr', 'q.volley.m2':'Das Bild ist verdorben', 'q.sift.w1':'Bild fertig',
+    'q.sift.w2':'Jedes Korn rechtzeitig', 'q.sift.w3':'Ein glattes Band', 'q.sift.m1':'Sand verschüttet',
     'q.sift.m2':'Das Band hat geklemmt', 'q.halve.w1':'Die Körbe sind ausgeglichen', 'q.halve.w2':'Gleichstand',
     'q.halve.w3':'Gerechte Teile', 'q.halve.m1':'Noch ungleich', 'q.halve.m2':'Keine Züge mehr',
     /* Patchwork */
@@ -6451,6 +6614,20 @@ const STRINGS = {
     'ripple.wind':'Brise', 'slice.combo':'Glatter Schnitt — {n} auf einmal, noch {m}', 'p.skimClean':'Ein sauberer Stich — noch {n} Sprünge',
     /* Loaf Box, endless */
     'loaf.carry':'Die Kiste geht weiter — noch {n} räumen', 'loaf.fresh':'Eine frische Kiste',
+    /* Yarn Tangled Tangle */
+    'meld.l1':'Ein loser Faden', 'meld.l2':'Ein verheddertes Knäuel', 'meld.l3':'Ein ordentliches Knäuel', 'meld.l4':'Ein Strang', 'meld.l5':'Ein gestricktes Quadrat', 'meld.l6':'Eine gehäkelte Blume', 'meld.l7':'Ein Plüschkätzchen',
+    'meld.coins':'Dankbarkeitsmünzen', 'meld.more':'Mehr Wolle · {p}', 'meld.moreAria':'Kaufen: {v} für {p} Dankbarkeitsmünzen, noch {n} Käufe',
+    /* The gateway */
+    'gate.title':'Wie tickt dein Kopf heute?', 'gate.sub':'Wähl, was zu dir passt — die Spiele werden passend gewählt.', 'gate.more':'Mehr in dieser Stimmung',
+    'gate.calm':'Ruhig & Sammeln', 'gate.calmWho':'(Überwiegend unaufmerksam)', 'gate.calmVibe':'Beruhigend, wiederholend, ohne Druck.',
+    'gate.quick':'Flinke Pfoten', 'gate.quickWho':'(Überwiegend hyperaktiv-impulsiv)', 'gate.quickVibe':'Schnell, befriedigend, actionreich.',
+    'gate.full':'Das volle Schnurren', 'gate.fullWho':'(Kombiniert)', 'gate.fullVibe':'Eine Mischung aus ruhiger Strategie und schneller Action.',
+    /* Yarn Ball Blaster */
+    'm.blast':'Wollknäuel-Blaster|Schieß die passende Farbe und lass die Wand platzen, bevor sie runterkommt', 'p.blast':'Noch {n} Knäuel — schieß die Farbe, die du hältst',
+    'blast.board':'Wollwand', 'blast.col':'Bahn {n}, vorderstes Knäuel {k}', 'blast.empty':'Bahn {n}, leer', 'blast.paw':'Pfotenkanone, {k} geladen, danach {j}. Aktivieren zum Tauschen.',
+    'blast.rush':'Falsche Farbe — die Wand kommt schneller!', 'blast.chain':'{n} mit einem Schuss!',
+    'q.blast.w1':'Peng, peng, peng', 'q.blast.w2':'Wand geräumt', 'q.blast.w3':'Pfoten wie Blitze',
+    'q.blast.m1':'Die Wand ist durch', 'q.blast.m2':'Zu viele falsche Farben',
   }
 };
 
@@ -6555,6 +6732,13 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.101.0', date:'2026-10-01', items:[
+    'The menu asks how your head is today. Three big buttons now sit at the top of Play: Calm & Collect (soothing, repetitive, low-pressure), Quick Paws (fast, satisfying, action-oriented) and The Full Purr (a balanced mix). Each opens the games chosen for that mood, with more of the same feeling beside them, and every game is still one tap away.',
+    'New: Yarn Ball Blaster. A paw-shaped cannon at the bottom and a wall of yarn balls creeping down from the top. Fire the colour you are holding into the lane it belongs in and it pops, along with every ball of that colour touching it; a wrong colour pops nothing and hurries the wall. Press and slide to aim and let go to fire, let go below the wall to put the shot back, or tap the paw to swap with the next ball.',
+    'Yarn Shop is now Yarn Tangled Tangle. What you merge is a loose thread, a tangled ball, a neat ball, a skein, a knitted square, a crocheted flower and, at the top, a plush kitten, each drawn and named. You gift them for Coins of Gratitude, and More yarn buys a fresh thread with those coins, twice a round.',
+    'Spool Belt is now Sandbox of Softness. Every grain you catch fills a square of a hidden picture (a heart, a fish, a ball of yarn, a cat), laid down layer by layer from the bottom. A grain that finds no scoop rolls round again, so a miss costs a move and some time, never the picture.',
+    'Kittens Out is now Kitten’s Snack Attack: the patch is a picture made of cat treats (shrimp, fish, paw biscuits, cheese, tuna, a drumstick), one for each colour.',
+  ] },
   { v:'0.100.0', date:'2026-10-01', items:[
     'Loaf Box never ends on its own. Three loaves wait at the bottom, and the moment you place one, a new one slides into its place, so the tray is always full and the box carries on from round to round: the squares you left filled are still there, and you only need to clear a few more lines to win the next round. The round only ends when nothing in the tray fits anywhere (undo and hint are there to prevent it).',
     'Loaf Box is smooth. The tray no longer shuffles when you lift a loaf, the box no longer resizes under your finger, and the loaf in your hand follows your finger straight away with only the squares that changed being redrawn. At 4x slower CPU the same drag now costs about a quarter of what it did and never forces a layout.',
@@ -7485,6 +7669,75 @@ const PIECE = (() => {
     basket: ink => svg('<path d="M10 22L12 11L21 22M43 22L52 11L54 22" fill="' + ink.hex + '" ' + o + '/>'
       + '<path d="M10 28H54L48 56H16Z" fill="#B88A5A" ' + o + '/><path d="M12 37H52M14 46H50M20 28L22 56M30 28L30 56M40 28L40 56M48 28L46 56" stroke="#000" stroke-opacity=".26" stroke-width="1.6"/>'
       + '<rect x="8" y="22" width="48" height="9" rx="3" fill="' + ink.hex + '" ' + o + '/>', ink),
+    /* A cat treat, a different one for each colour so it can be told by its shape as well as its colour: a shrimp, a fish, a paw
+       biscuit, a wedge of cheese, a can of tuna, a chicken drumstick. */
+    treat: ink => {
+      const h = ink.hex, i = Math.max(0, INKS.findIndex(x => x.hex === h)), kind = [5, 0, 4, 2, 3, 1][i % 6];
+      const bone = '#F4E9D2';
+      const art = [
+        /* fish */
+        '<path d="M46 34L61 22V46Z" fill="' + h + '" ' + o + '/><path d="M25 22Q33 11 41 22Z" fill="' + h + '" ' + o + '/><ellipse cx="28" cy="34" rx="21" ry="14" fill="' + h + '" ' + o + '/>'
+          + '<path d="M36 22Q42 34 36 46" fill="none" stroke="' + K + '" stroke-opacity=".35" stroke-width="2.2" stroke-linecap="round"/><circle cx="15" cy="31" r="2.8" fill="' + K + '"/>'
+          + '<path d="M11 38Q15 41 19 38" fill="none" stroke="' + K + '" stroke-opacity=".5" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="22" cy="27" rx="7" ry="3.4" fill="#fff" fill-opacity=".3" transform="rotate(-14 22 27)"/>',
+        /* drumstick */
+        '<path d="M36 36L53 53" stroke="' + K + '" stroke-width="10" stroke-linecap="round"/><path d="M36 36L53 53" stroke="' + bone + '" stroke-width="6" stroke-linecap="round"/>'
+          + '<circle cx="51" cy="58.5" r="4.4" fill="' + bone + '" ' + o + '/><circle cx="58.5" cy="51" r="4.4" fill="' + bone + '" ' + o + '/>'
+          + '<ellipse cx="25" cy="25" rx="19" ry="15" transform="rotate(45 25 25)" fill="' + h + '" ' + o + '/><path d="M15 18Q21 11 30 13" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2.6" stroke-linecap="round"/>',
+        /* cheese */
+        '<path d="M6 42L58 22V50Q58 55 53 55H11Q6 55 6 50Z" fill="' + h + '" ' + o + '/><path d="M6 42L58 22V31L6 49Z" fill="#fff" fill-opacity=".3"/>'
+          + '<circle cx="19" cy="51" r="3" fill="' + K + '" fill-opacity=".3"/><circle cx="34" cy="46" r="3.6" fill="' + K + '" fill-opacity=".3"/><circle cx="48" cy="46" r="2.8" fill="' + K + '" fill-opacity=".3"/>',
+        /* tuna can */
+        '<path d="M10 24V46C10 52 20 56 32 56S54 52 54 46V24Z" fill="' + h + '" ' + o + '/><ellipse cx="32" cy="24" rx="22" ry="8" fill="#E8E2D4" ' + o + '/>'
+          + '<ellipse cx="32" cy="24" rx="15" ry="4.8" fill="' + h + '" fill-opacity=".85" stroke="' + K + '" stroke-opacity=".5" stroke-width="1.6"/><circle cx="43" cy="22" r="3.2" fill="none" stroke="' + K + '" stroke-width="2"/>'
+          + '<path d="M16 38Q32 45 48 38" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="2.4" stroke-linecap="round"/>',
+        /* paw biscuit */
+        '<circle cx="32" cy="34" r="23" fill="' + h + '" ' + o + '/><circle cx="32" cy="34" r="17.5" fill="none" stroke="' + K + '" stroke-opacity=".22" stroke-width="1.8" stroke-dasharray="2 4"/>' + paw(32, 37, .5)
+          + '<path d="M16 22Q22 14 31 13" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="2.4" stroke-linecap="round"/>',
+        /* shrimp */
+        '<path d="M14 42Q8 20 31 17Q54 15 52 36Q51 48 40 48" fill="none" stroke="' + K + '" stroke-width="16.5" stroke-linecap="round"/><path d="M14 42Q8 20 31 17Q54 15 52 36Q51 48 40 48" fill="none" stroke="' + h + '" stroke-width="12" stroke-linecap="round"/>'
+          + '<path d="M24 12L26 24M34 11L35 24M43 14L42 25" stroke="' + K + '" stroke-opacity=".35" stroke-width="1.9" stroke-linecap="round"/><path d="M40 48L52 58M40 48L45 61M40 48L35 60" stroke="' + K + '" stroke-width="2.4" stroke-linecap="round"/>'
+          + '<circle cx="13" cy="37" r="2.4" fill="' + K + '"/>'
+      ][kind];
+      return svg(art, ink);
+    },
+    /* What a ball of yarn becomes as it is merged up: a loose thread, a tangled ball, a neat ball, a skein, a knitted square, a
+       crocheted flower and, at the top, a plush kitten. Each has its own colour, so the board reads before it is read. */
+    craft: v => {
+      const C = ['', '#F1DDB4', '#F4A860', '#EE8FA6', '#AFA1E8', '#8FD0A0', '#F4766C', '#F5CB5D'][v] || '#F1DDB4';
+      const strand = (d, w) => '<path d="' + d + '" fill="none" stroke="' + K + '" stroke-width="' + (w + 3.6) + '" stroke-linecap="round" stroke-linejoin="round"/>'
+        + '<path d="' + d + '" fill="none" stroke="' + C + '" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round"/>';
+      let art = '';
+      if (v === 1) art = strand('M9 42Q16 16 27 34T45 30Q57 26 54 45', 5.6) + '<circle cx="30" cy="34" r="5.2" fill="none" stroke="' + K + '" stroke-opacity=".5" stroke-width="1.8"/>';
+      else if (v === 2) art = '<circle cx="31" cy="34" r="17" fill="' + C + '" ' + o + '/><path d="M17 29Q31 19 46 29M16 38Q31 52 47 36M22 23Q38 43 44 25M20 44Q30 30 42 42" fill="none" stroke="#000" stroke-opacity=".3" stroke-width="2" stroke-linecap="round"/>'
+        + strand('M45 45Q58 45 56 55Q52 61 45 57', 3);
+      else if (v === 3) art = '<circle cx="32" cy="33" r="22" fill="' + C + '" ' + o + '/><path d="M14 30Q32 46 50 30M13.5 38Q32 54 50.5 38M18 22Q34 34 49 24" fill="none" stroke="#000" stroke-opacity=".24" stroke-width="2.2" stroke-linecap="round"/>'
+        + '<ellipse cx="23" cy="24" rx="6" ry="4" fill="#fff" fill-opacity=".36" transform="rotate(-30 23 24)"/>' + strand('M48 48Q60 50 57 58Q54 62 47 59', 3);
+      else if (v === 4) art = '<path d="M11 20Q32 7 53 20V46Q32 58 11 46Z" fill="' + C + '" ' + o + '/><path d="M15 25Q32 14 49 25M15 32Q32 21 49 32M15 39Q32 28 49 39" fill="none" stroke="#000" stroke-opacity=".22" stroke-width="2"/>'
+        + '<rect x="24" y="21" width="16" height="26" rx="2" fill="#F4E9D2" ' + o + '/>' + paw(32, 37, .5);
+      else if (v === 5){
+        let st = '';
+        for (let r = 0; r < 4; r++) for (let c = 0; c < 5; c++){ const x = 14 + c*8.4, y = 20 + r*8.6; st += 'M' + x.toFixed(1) + ' ' + y.toFixed(1) + 'l3.6 5.2l3.6-5.2'; }
+        art = '<rect x="9" y="12" width="46" height="42" rx="5" fill="' + C + '" ' + o + '/><path d="' + st + '" fill="none" stroke="#000" stroke-opacity=".3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+          + '<path d="M47 8L60 21" stroke="' + K + '" stroke-width="5" stroke-linecap="round"/><path d="M47 8L60 21" stroke="#E9D8BE" stroke-width="2.4" stroke-linecap="round"/>';
+      } else if (v === 6){
+        let petals = '';
+        for (let i = 0; i < 5; i++){ const a = (i * 72 - 90) * Math.PI / 180; petals += '<circle cx="' + (32 + Math.cos(a)*15).toFixed(1) + '" cy="' + (33 + Math.sin(a)*15).toFixed(1) + '" r="10" fill="' + C + '" ' + o + '/>'; }
+        art = petals + '<circle cx="32" cy="33" r="9" fill="#F5CB5D" ' + o + '/><circle cx="32" cy="33" r="4.4" fill="none" stroke="' + K + '" stroke-opacity=".4" stroke-width="1.6"/>';
+      } else art = '<path d="M13 27L11 8L28 17M51 27L53 8L36 17" fill="' + C + '" ' + o + '/><path d="M16 22L15 14L22 18M48 22L49 14L42 18" fill="#EE8FA6" fill-opacity=".7"/>'
+        + '<ellipse cx="32" cy="37" rx="22" ry="19" fill="' + C + '" ' + o + '/><circle cx="23" cy="35" r="2.8" fill="' + K + '"/><circle cx="41" cy="35" r="2.8" fill="' + K + '"/>'
+        + '<path d="M29 42L32 45.5L35 42Z" fill="#E58FA3" ' + o + '/><path d="M32 45.5V48M26.5 49Q32 53 37.5 49" fill="none" stroke="' + K + '" stroke-width="1.8" stroke-linecap="round"/>'
+        + '<path d="M6 40L16 41M6 46L16 44M58 40L48 41M58 46L48 44" stroke="' + K + '" stroke-opacity=".6" stroke-width="1.6" stroke-linecap="round"/>'
+        + '<path d="M18 50Q32 58 46 50" fill="none" stroke="#000" stroke-opacity=".2" stroke-width="2" stroke-dasharray="2.5 3.5"/>';
+      return svg(art);
+    },
+    /* A sand scoop: a small bucket with a handle and cat ears on its rim. */
+    scoop: ink => svg('<path d="M14 25Q32 -5 50 25" fill="none" stroke="' + K + '" stroke-width="5" stroke-linecap="round"/><path d="M14 25Q32 -3 50 25" fill="none" stroke="#E9D8BE" stroke-width="2" stroke-linecap="round"/>'
+      + '<path d="M15 24L11 9L26 17M49 24L53 9L38 17" fill="' + ink.hex + '" ' + o + '/>'
+      + '<path d="M11 29H53L47 57H17Z" fill="' + ink.hex + '" ' + o + '/><path d="M13 39H51M15 48H49" stroke="#000" stroke-opacity=".22" stroke-width="1.6"/>'
+      + '<rect x="8" y="23" width="48" height="9" rx="3" fill="' + ink.hex + '" ' + o + '/><rect x="10" y="25" width="44" height="3" rx="1.5" fill="#fff" fill-opacity=".3"/>' + paw(32, 48, .3), ink),
+    /* A grain of sand, drawn as a little heap so it can be told by its colour. */
+    sand: ink => svg('<path d="M4 54Q18 22 32 34Q46 12 60 54Z" fill="' + ink.hex + '" ' + o + '/>'
+      + '<path d="M13 47Q22 31 31 38M39 31Q46 25 50 40" fill="none" stroke="#fff" stroke-opacity=".42" stroke-width="2.6" stroke-linecap="round"/>', ink),
     /* A drop of dye. */
     drop: ink => svg('<path d="M32 5C32 5 14 27 14 40A18 18 0 0 0 50 40C50 27 32 5 32 5Z" fill="' + ink.hex + '" ' + o + '/>'
       + '<ellipse cx="25" cy="38" rx="4" ry="7.5" fill="#fff" fill-opacity=".42" transform="rotate(20 25 38)"/>' + paw(34, 46, .35), ink)
@@ -12507,7 +12760,7 @@ const MODES = {
 
   /* ── Forage ───────────────────────────────────────────────────────────── */
   forage: {
-    name:'Kittens Out', blurb:'Send the kittens at a colour — only so many out at once', input:'forage', cat:'logic', par:16000, bonus:4200,
+    name:'Kitten’s Snack Attack', blurb:'Send the kittens at a treat colour — only so many out at once', input:'forage', cat:'logic', par:16000, bonus:4200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#33E6C8" stroke-width="2" stroke-linejoin="round"><path d="M7 8.6l-.7-3.5 2.8 1.7"/><path d="M13.6 8.6l.7-3.5-2.8 1.7"/><circle cx="10.3" cy="11.8" r="4.4"/></g><path d="M15.6 15 Q20 17.2 21 21" fill="none" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/></svg>',
     build(ctx){
       /* A patch of berries in colour blocks, and a swarm you send at a colour.
@@ -12727,7 +12980,7 @@ const MODES = {
             + (v !== GONE && nbrs(i).some(j => g[j] === GONE) ? ' near' : '')
             + (v !== GONE && out.indexOf(v) >= 0 ? ' waited' : '');
           if (v !== GONE) b.dataset.hex = inks[v].hex; else delete b.dataset.hex;
-          b.innerHTML = v !== GONE ? PIECE.yarn(inks[v]) : '';
+          b.innerHTML = v !== GONE ? PIECE.treat(inks[v]) : '';
           b.setAttribute('aria-label', v === GONE
             ? t('forage.gone', { r: Math.floor(i/N) + 1, c: (i % N) + 1 })
             : t('forage.cell', { k: inkName(inks[v]), r: Math.floor(i/N) + 1, c: (i % N) + 1 }));
@@ -12823,7 +13076,7 @@ const MODES = {
 
   /* ── Meld ─────────────────────────────────────────────────────────────── */
   meld: {
-    name:'Yarn Shop', blurb:'Merge the balls up, sell them on, reach the day’s takings', input:'meld', cat:'make', par:17000, bonus:4400,
+    name:'Yarn Tangled Tangle', blurb:'Merge tangled yarn into neater crafts, gift them, and fill the jar of thanks', input:'meld', cat:'make', par:17000, bonus:4400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="13.4" r="5.6" fill="none" stroke="#C08BFF" stroke-width="2"/><circle cx="16.6" cy="8.8" r="4" fill="none" stroke="#6C6191" stroke-width="2"/><path d="M5 10.8 Q9 15.6 13 11.4" fill="none" stroke="#C08BFF" stroke-width="1.6" stroke-linecap="round"/></svg>',
     build(ctx){
       /* A merge game is only a merge game for about a minute. What keeps one
@@ -12949,6 +13202,7 @@ const MODES = {
       const till = mk('div','till');
       const tillNow = mk('b'), tillGoal = mk('i');
       till.appendChild(tillNow); till.appendChild(tillGoal);
+      const tillLbl = mk('small'); tillLbl.textContent = t('meld.coins'); till.appendChild(tillLbl);
       const tag = mk('div','bestprice');
       wrap.appendChild(till); wrap.appendChild(tag);
 
@@ -12959,14 +13213,25 @@ const MODES = {
       const cells = board.map(() => { const b = mk('button','jel');
         b.type = 'button'; grid.appendChild(b); return b; });
       wrap.appendChild(grid);
+      /* More yarn: coins buy a fresh loose thread, twice a round at most. It costs what it would fetch, so it is only worth it
+         if it gives something a twin to merge with on the way to the day's best price. */
+      const buyRow = mk('div','sumtools'), buy = mk('button','sumtool moreyarn'); buy.type = 'button';
+      buyRow.appendChild(buy); wrap.appendChild(buyRow);
       ctx.surface.appendChild(wrap);
 
-      let g = board.slice(), coins = 0, sel = -1, done = false;
+      let g = board.slice(), coins = 0, sel = -1, done = false, spawns = 2;
+      const costOf = () => VAL[lo];
+      const canBuy = () => spawns > 0 && coins >= costOf() && g.some(v => !v);
+      const paintBuy = () => {
+        buy.textContent = t('meld.more', { p: fmt(costOf()) });
+        buy.disabled = !canBuy();
+        buy.setAttribute('aria-label', t('meld.moreAria', { v: t('meld.l' + lo), p: fmt(costOf()), n: spawns }));
+      };
 
       const paint = () => {
         cells.forEach((b, i) => {
           const v = g[i];
-          b.textContent = v ? String(v) : '';
+          if (b.dataset.v !== String(v)){ b.innerHTML = v ? PIECE.craft(v) : ''; b.dataset.v = String(v); }
           b.style.setProperty('--v', v);
           b.classList.toggle('empty', !v);
           b.classList.toggle('sel', i === sel);
@@ -12974,14 +13239,15 @@ const MODES = {
           b.classList.toggle('mate', sel >= 0 && i !== sel && !!g[i]
             && g[i] === g[sel] && nbrs(sel).indexOf(i) >= 0);
           b.setAttribute('aria-label', v
-            ? t('meld.cell', { v, p: price(v), r: Math.floor(i/COLS) + 1, c: (i % COLS) + 1 })
+            ? t('meld.cell', { v: t('meld.l' + v), p: price(v), r: Math.floor(i/COLS) + 1, c: (i % COLS) + 1 })
             : t('meld.empty', { r: Math.floor(i/COLS) + 1, c: (i % COLS) + 1 }));
         });
         tillNow.textContent = fmt(coins);
         tillGoal.textContent = '/ ' + fmt(take);
         till.classList.toggle('made', coins >= take);
-        tag.textContent = t('meld.band', { v: band, p: price(band) });
-        ctx.prompt(sel >= 0 ? t('meld.selling', { v: g[sel], p: price(g[sel]) })
+        tag.textContent = t('meld.band', { v: t('meld.l' + band), p: price(band) });
+        paintBuy();
+        ctx.prompt(sel >= 0 ? t('meld.selling', { v: t('meld.l' + g[sel]), p: price(g[sel]) })
                             : t('p.meld', { n: fmt(take - coins) }));
       };
 
@@ -12993,7 +13259,7 @@ const MODES = {
         }
         /* Sold the shop and still short. Saying so is kinder than letting the
            move counter run down on a board with nothing left on it. */
-        if (g.every(v => !v)){
+        if (g.every(v => !v) && !canBuy()){
           done = true;
           till.classList.add('short');
           return ctx.miss(till);
@@ -13009,7 +13275,7 @@ const MODES = {
         const gr = grid.getBoundingClientRect();
         const gh = mk('i','jelfly');
         gh.style.setProperty('--v', val);
-        gh.textContent = String(val);
+        gh.innerHTML = PIECE.craft(val);
         gh.style.left   = (ra.left - gr.left) + 'px';
         gh.style.top    = (ra.top  - gr.top)  + 'px';
         gh.style.width  = ra.width  + 'px';
@@ -13128,6 +13394,16 @@ const MODES = {
           drop();
           if (canMeld(from, i)) merge(from, i);
         }
+      });
+
+      onTap(buy, () => {
+        if (done || !canBuy()) return;
+        const empties = g.map((v, i) => v ? -1 : i).filter(i => i >= 0);
+        const near = empties.filter(i => nbrs(i).some(j => g[j] === lo));
+        const at = (near.length ? near : empties)[0];
+        coins -= costOf(); spawns--; g[at] = lo; sel = -1;
+        cells[at].classList.add('pop'); ctx.after(220, () => cells[at].classList.remove('pop'));
+        paint(); sfx.tap(); buzz('tap');
       });
 
       paint();
@@ -13398,7 +13674,7 @@ const MODES = {
 
   /* ── Sift ─────────────────────────────────────────────────────────────── */
   sift: {
-    name:'Spool Belt', blurb:'Put spools on the belt before their thread runs out', input:'sift', cat:'physics', par:20000, bonus:4800,
+    name:'Sandbox of Softness', blurb:'Catch each grain of sand in its own colour and a hidden picture fills in', input:'sift', cat:'physics', par:20000, bonus:4800,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 18h20" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><rect x="4.5" y="7.5" width="6" height="8" rx="1.3" fill="none" stroke="#FF9A3D" stroke-width="2"/><path d="M3.8 10h7.4M3.8 13h7.4" stroke="#FF9A3D" stroke-width="1.5"/><path d="M14.5 11.5h5.5M17.8 9.2l2.4 2.3-2.4 2.3" fill="none" stroke="#6C6191" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     build(ctx){
       /* Sand falls one grain at a time, always in the same place, and the belt
@@ -13409,16 +13685,42 @@ const MODES = {
          too fast and the belt is full when you need the slot; too slow and the
          sand lands on bare rubber. */
       const cap  = clamp(4 + Math.floor(ctx.level/10), 4, 7);   /* belt slots */
-      const k    = clamp(3 + Math.floor(ctx.level/8), 3, 6);    /* colours */
-      const need = clamp(6 + Math.floor(ctx.level/5), 6, 16);   /* grains to catch */
+      const bands = clamp(2 + Math.floor(ctx.level/9), 2, 4);   /* colours of sand in the picture's layers */
       const beat = clamp(1500 - ctx.level*22, 750, 1500);       /* ms per grain */
       const FALL = Math.min(430, beat*0.45);
       const LEAD = cap - 1;                       /* beats from the back to the chute */
 
+      /* The hidden picture. It is built up the way sand settles, layer by layer from the bottom: each row is one colour, and the
+         eyes, nose or tail are one more. Nothing says what it is until it is nearly there. A grain is a grain of one colour, so
+         whichever way the sand arrives, a grain of a colour fills the next empty square of that colour, and one that is missed
+         simply comes round again: the picture can always be finished, it only takes longer. */
+      const PICS = {
+        heart: ['.#.#.', '#####', '.###.', '..#..'],
+        fish:  ['.###..', '#e####', '#####.', '.###..'],
+        yarn:  ['.###.', '#####', '#####', '.##tt'],
+        cat:   ['#....#', '##..##', '######', '#e##e#', '.#nn#.']
+      };
+      const tier = ctx.level < 5 ? ['heart', 'fish'] : ctx.level < 14 ? ['fish', 'yarn', 'heart'] : ['cat', 'yarn', 'fish'];
+      let rows = PICS[tier[Math.floor(ctx.rnd()*tier.length)]].map(r => r.split(''));
+      if (ctx.rnd() < 0.5) rows = rows.map(r => r.slice().reverse());
+      const PH = rows.length, PW = rows[0].length;
+      const accent = rows.some(r => r.some(ch => ch !== '#' && ch !== '.'));
+      const k = bands + (accent ? 1 : 0);                       /* colours */
       const inks  = shuffle(INKS.slice(), ctx.rnd).slice(0, k);
-      const queue = Array.from({ length: need + cap + 3 }, () => Math.floor(ctx.rnd()*k));
+      const picCells = [];
+      for (let r = PH - 1; r >= 0; r--) for (let c = 0; c < PW; c++){
+        const ch = rows[r][c];
+        if (ch !== '.') picCells.push({ r, c, v: ch === '#' ? (PH - 1 - r) % bands : bands, done: false });
+      }
+      const need = picCells.length;                             /* grains to catch */
+      /* Sand does not land in perfect layers: the further you get, the more the colours of neighbouring layers are shuffled. */
+      const mix = clamp(2 + Math.floor(ctx.level/4), 2, 12);
+      const queue = picCells.map(p => p.v);
+      for (let i = 0; i < queue.length; i += mix) shuffle(queue.slice(i, i + mix), ctx.rnd).forEach((v, j) => { queue[i + j] = v; });
 
       const box  = mk('div','beltbox');
+      box.style.setProperty('--cap', cap);
+      const top  = mk('div','sandtop'); box.appendChild(top);
       /* What is coming, nearest at the bottom. The one the back of the belt
          would meet is ringed, because that — not the grain about to land — is
          the one every placement is actually for. */
@@ -13427,7 +13729,16 @@ const MODES = {
         chute.appendChild(d); return d; });
       const drop  = mk('i','falling');
       chute.appendChild(drop);
-      box.appendChild(chute);
+      top.appendChild(chute);
+      /* The picture, face down: every square looks the same until it is filled. */
+      const pic = mk('div','sandpic');
+      pic.style.gridTemplateColumns = 'repeat(' + PW + ',1fr)';
+      pic.style.gridTemplateRows = 'repeat(' + PH + ',1fr)';
+      pic.setAttribute('role','img');
+      const pxs = rows.map((row, r) => row.map((ch, c) => { const e = mk('i','px' + (ch === '.' ? ' bg' : '')); pic.appendChild(e); return e; }));
+      top.appendChild(pic);
+      const paintPic = n => pic.setAttribute('aria-label', t('sift.pic', { n, m: need }));
+      paintPic(0);
 
       const belt = mk('div','belt');
       belt.style.gridTemplateColumns = 'repeat(' + cap + ',1fr)';
@@ -13439,11 +13750,18 @@ const MODES = {
       const btns = inks.map((c, ci) => { const b = mk('button','bkt');
         b.type = 'button';
         b.dataset.hex = c.hex;
-        b.innerHTML = PIECE.spool(c);
+        b.innerHTML = PIECE.scoop(c);
         b.setAttribute('aria-label', t('sift.put', { k: inkName(c) }));
         tray.appendChild(b); return b; });
       box.appendChild(tray);
       ctx.surface.appendChild(box);
+      /* The picture is as big as the room beside the chute allows, in whole pixels, measured now that the board is in the page. */
+      const fitPic = () => {
+        const room = top.clientWidth - 7 - chute.offsetWidth - 14, tall = chute.offsetHeight;
+        const cell = Math.max(10, Math.floor(Math.min((room - 12 - (PW - 1)*3) / PW, (tall - 12 - (PH - 1)*3) / PH)));
+        pic.style.width = (cell*PW + (PW - 1)*3 + 12) + 'px'; pic.style.height = (cell*PH + (PH - 1)*3 + 12) + 'px';
+      };
+      fitPic();
 
       /* Perfect play spills nothing, so this is the room for the beats you
          misread rather than a target to hit. */
@@ -13454,10 +13772,10 @@ const MODES = {
       const lane = Array.from({ length: cap }, (_, x) => queue[x]);
       let at = 0, caught = 0, done = false, timer = null;
 
-      const dress = (el, v) => {
+      const dress = (el, v, art) => {
         const on = v !== null && v !== undefined;
         if (on) el.dataset.hex = inks[v].hex; else delete el.dataset.hex;
-        el.innerHTML = on ? PIECE.spool(inks[v]) : '';
+        el.innerHTML = on ? (art || PIECE.scoop)(inks[v]) : '';
       };
 
       const paint = () => {
@@ -13473,7 +13791,7 @@ const MODES = {
         queueEls.forEach((d, i) => {
           const v = queue[at + i];
           d.className = 'grain' + (i === 0 ? ' next' : '') + (i === LEAD ? ' aim' : '');
-          dress(d, v === undefined ? null : v);
+          dress(d, v === undefined ? null : v, PIECE.sand);
           d.setAttribute('aria-hidden','true');
         });
         btns.forEach(b => b.classList.toggle('shut', lane[cap-1] !== null));
@@ -13511,16 +13829,20 @@ const MODES = {
         if (done) return;
         const grain = queue[at];
         drop.classList.remove('go');
+        let spilled = false;
         if (lane[0] === grain){
           caught++;
           lane[0] = null;
+          const cell = picCells.find(q => !q.done && q.v === grain);
+          if (cell){ cell.done = true; const e = pxs[cell.r][cell.c]; e.style.background = inks[grain].hex; e.classList.add('on'); }
+          paintPic(caught);
           slots[0].classList.add('catch');
           ctx.after(320, () => slots[0] && slots[0].classList.remove('catch'));
           sfx.good(Math.min(6, 2 + caught)); buzz('good');
           if (caught >= need){
             done = true;
             if (timer) timer = null;
-            box.classList.add('won');
+            box.classList.add('won'); pic.classList.add('done');
             paint();
             return ctx.win(belt);
           }
@@ -13528,6 +13850,8 @@ const MODES = {
           /* Bare rubber, or the wrong bucket: the grain goes on the floor and
              whatever was in the way is knocked off with it. */
           lane[0] = null;
+          spilled = true;
+          queue.splice(at + cap + 2, 0, grain);               /* it comes round again */
           belt.classList.add('spill');
           ctx.after(380, () => belt.classList.remove('spill'));
           sfx.bad(); buzz('bad');
@@ -13536,12 +13860,13 @@ const MODES = {
         at++;
         lane.shift(); lane.push(null);
         paint();
+        if (spilled) ctx.prompt(t('sift.again', { n: need - caught }));
       };
 
       const tick = () => {
         if (done) return;
         if (at >= queue.length - 1){ done = true; return ctx.miss(belt); }
-        dress(drop, queue[at]);
+        dress(drop, queue[at], PIECE.sand);
         drop.classList.remove('go');
         void drop.offsetWidth;
         drop.style.setProperty('--fall', FALL + 'ms');
@@ -13800,19 +14125,22 @@ const MODES = {
 
       /* ── The stream of loaves: always one that fits, and often one that helps ── */
       const help = clamp(0.55 - ctx.level*0.012, 0.15, 0.55);
+      /* Dealt from a generator of its own, so what a player does cannot change how many numbers the shared one has given out, and the
+         Daily's later boards are the same for everyone. */
+      const drnd = mulberry32(Math.floor(ctx.rnd() * 4294967296));
       const newPiece = () => {
         const fits = usable.filter(sh => fitsAnywhere(sh));
         if (!fits.length) return null;
         let sh;
-        if (ctx.rnd() < help){
+        if (drnd() < help){
           /* of four at random, the one with the best place to go */
           let top = null;
-          for (let k = 0; k < 4; k++){ const c = pick(fits, ctx.rnd), b = bestFor(c); if (b && (!top || b.sc > top.sc)) top = { sc: b.sc, sh: c }; }
-          sh = top ? top.sh : pick(fits, ctx.rnd);
-        } else sh = pick(fits, ctx.rnd);
+          for (let k = 0; k < 4; k++){ const c = pick(fits, drnd), b = bestFor(c); if (b && (!top || b.sc > top.sc)) top = { sc: b.sc, sh: c }; }
+          sh = top ? top.sh : pick(fits, drnd);
+        } else sh = pick(fits, drnd);
         const id = nextId++;
         coatOf[id] = COATS[id % COATS.length];
-        return { id, sh: norm(sh), rot: Math.floor(ctx.rnd() * 4) };
+        return { id, sh: norm(sh), rot: Math.floor(drnd() * 4) };
       };
       const orient = p => { let c = p.sh; for (let r = 0; r < p.rot; r++) c = turn(c); return c; };
       const tray = Array.from({ length: SLOTS }, () => null);
@@ -14118,6 +14446,266 @@ const MODES = {
       document.addEventListener('keydown', onKey);
       /* If the box is already jammed (carried over and unlucky), say so, and let it be undone or ended. */
       jamCheck();
+    }
+  },
+
+  /* ── Yarn Ball Blaster — a wall of yarn creeps down, and you fire the colour it is made of ─────────────────────────────
+     A paw-shaped cannon at the bottom and a wall of yarn balls hanging above it. The ball in the paw is a colour that is on the
+     front of the wall right now, so there is always a shot that works; the game is finding the lane it belongs in, fast. Hit the
+     front ball of a lane with its own colour and it pops, and so does every ball of that colour touching it, so a good read is a
+     chain. A wrong colour pops nothing and makes the wall come down sooner. Nothing is ever added to the wall: it only gets
+     closer, so the whole round is one race between how fast you can read and how far the wall has to go.
+
+     Press and slide to aim, let go over the wall to fire (let go below it to put the shot back, or tap the paw to swap with the
+     next ball); a plain tap on a lane fires into it. A lane is a real button, so the keyboard and a screen reader get the same game.
+
+     Squares hold still: a ball never moves or shrinks in its place. The wall comes down as one piece in whole-ball steps, a
+     popped ball fades out and leaves its hole, and the only things that fly are the shot and the paw. */
+  blast: {
+    name:'Yarn Ball Blaster', blurb:'Fire matching yarn to pop the wall before it creeps down', input:'drag', cat:'reflex', par:15000, bonus:4000,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5.4" r="2.5" fill="none" stroke="#FF5B39" stroke-width="2"/><circle cx="12" cy="5.4" r="2.5" fill="none" stroke="#33E6C8" stroke-width="2"/><circle cx="18" cy="5.4" r="2.5" fill="none" stroke="#FFC53D" stroke-width="2"/><path d="M12 10.6v3.2" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><path d="M6.5 21c0-3 2.5-5.2 5.5-5.2s5.5 2.2 5.5 5.2z" fill="none" stroke="#6C6191" stroke-width="2" stroke-linejoin="round"/></svg>',
+    build(ctx){
+      const W = 6;
+      const k = clamp(3 + Math.floor(ctx.level/9), 3, 5);
+      const rowsWant = clamp(3 + Math.floor(ctx.level/7), 3, 6);
+      const period = clamp(5200 - ctx.level*55, 2600, 5200);
+      const inks = shuffle(INKS.slice(), ctx.rnd).slice(0, k);
+      /* A wrong colour hurries the wall by this much of a step. */
+      const RUSH = Math.round(period*0.38);
+      const TICK = 100, SHOT = 90, GUN = 1.7;
+
+      const box = mk('div','blastbox' + (ctx.relaxed ? ' calm' : ''));
+      box.setAttribute('role','group');
+      box.setAttribute('aria-label', t('blast.board'));
+      /* In the page first: the wall is laid out for the board it actually has, not the one it was built for. */
+      ctx.surface.appendChild(box);
+      let bw = box.clientWidth || 360, bh = box.clientHeight || 520;
+      let D = bw / W;
+      /* How many balls tall the playing field is, above the cannon. The wall may come down until it touches this line. */
+      let lanes = Math.max(4, Math.floor((bh - GUN*D) / D));
+      const R = Math.max(2, Math.min(rowsWant, lanes - 2));
+      const layout = () => {
+        bw = box.clientWidth || bw; bh = box.clientHeight || bh; D = bw / W;
+        lanes = Math.max(4, Math.floor((bh - GUN*D) / D));
+        box.style.setProperty('--D', D + 'px');
+        box.style.setProperty('--lanes', lanes);
+      };
+      layout();
+      box.style.setProperty('--rows', R);
+      box.style.setProperty('--steps', 0);
+
+      /* The wall. Neighbours like to share a colour, so there are chains to find; the bottom edge is ragged, so the lanes differ. */
+      const grid = Array.from({ length: R }, () => new Array(W).fill(-1));
+      for (let r = 0; r < R; r++) for (let c = 0; c < W; c++){
+        let v = Math.floor(ctx.rnd()*k);
+        const roll = ctx.rnd();
+        if (roll < 0.42 && c > 0) v = grid[r][c-1];
+        else if (roll < 0.64 && r > 0) v = grid[r-1][c];
+        grid[r][c] = v;
+      }
+      for (let c = 0; c < W; c++){
+        const cut = ctx.rnd() < 0.22 ? 2 : ctx.rnd() < 0.5 ? 1 : 0;
+        for (let i = 0; i < cut && R - 1 - i >= 1; i++) grid[R - 1 - i][c] = -1;
+      }
+      let left = 0;
+      grid.forEach(row => row.forEach(v => { if (v >= 0) left++; }));
+
+      const front = c => { for (let r = R - 1; r >= 0; r--) if (grid[r][c] >= 0) return r; return -1; };
+      const lowest = () => { let m = -1; for (let c = 0; c < W; c++) m = Math.max(m, front(c)); return m; };
+      const frontColours = () => { const s = new Set(); for (let c = 0; c < W; c++){ const r = front(c); if (r >= 0) s.add(grid[r][c]); } return Array.from(s); };
+
+      const rail = mk('div','blastrail'); box.appendChild(rail);
+      const laneEls = Array.from({ length: W }, (_, c) => {
+        const b = mk('button','bcol'); b.type = 'button';
+        b.style.setProperty('--c', c);
+        box.appendChild(b); return b;
+      });
+      const wall = mk('div','blastwall'); box.appendChild(wall);
+      const balls = grid.map((row, r) => row.map((v, c) => {
+        if (v < 0) return null;
+        const e = mk('div','bball');
+        e.style.setProperty('--c', c); e.style.setProperty('--r', r);
+        e.dataset.hex = inks[v].hex;
+        e.innerHTML = PIECE.yarn(inks[v]);
+        wall.appendChild(e); return e;
+      }));
+      const line = mk('div','blastline'); box.appendChild(line);
+      const meter = mk('div','blastmeter'); const meterFill = mk('i'); meter.appendChild(meterFill); box.appendChild(meter);
+
+      /* The paw: the loaded ball sits on it, and the next one waits at its side. */
+      const gun = mk('button','blastgun'); gun.type = 'button';
+      const loadEl = mk('div','blastload'), nextEl = mk('div','blastnext');
+      const paw = mk('div','blastpaw');
+      paw.innerHTML = '<svg viewBox="0 0 64 44" aria-hidden="true" class="art"><path d="M10 40C8 30 16 22 32 22S56 30 54 40C53 43 50 44 47 44H17C14 44 11 43 10 40Z" fill="#E9D8BE" stroke="#0D0918" stroke-width="2.4" stroke-linejoin="round"/><ellipse cx="32" cy="34" rx="8.5" ry="6.4" fill="#D98FA0" stroke="#0D0918" stroke-width="1.8"/><ellipse cx="17" cy="19" rx="4.4" ry="5.4" fill="#E9D8BE" stroke="#0D0918" stroke-width="2" transform="rotate(-18 17 19)"/><ellipse cx="47" cy="19" rx="4.4" ry="5.4" fill="#E9D8BE" stroke="#0D0918" stroke-width="2" transform="rotate(18 47 19)"/><ellipse cx="25.5" cy="12" rx="4.4" ry="5.6" fill="#E9D8BE" stroke="#0D0918" stroke-width="2" transform="rotate(-6 25.5 12)"/><ellipse cx="38.5" cy="12" rx="4.4" ry="5.6" fill="#E9D8BE" stroke="#0D0918" stroke-width="2" transform="rotate(6 38.5 12)"/></svg>';
+      gun.append(loadEl, paw, nextEl);
+      box.appendChild(gun);
+
+      /* ── the clock: the wall comes down one ball every `period`, and a wrong colour hurries the next step ── */
+      let steps = 0, clock = 0, last = 0, due = Math.round(period*1.25), done = false;
+      let loaded = 0, next = 0, aim = Math.floor(W/2);
+      let shown = { l:-1, n:-1 };
+      const say = () => ctx.prompt(t('p.blast', { n: left }));
+
+      const paintHand = () => {
+        if (shown.l !== loaded){ loadEl.innerHTML = PIECE.yarn(inks[loaded]); loadEl.dataset.hex = inks[loaded].hex; shown.l = loaded; }
+        if (shown.n !== next){ nextEl.innerHTML = PIECE.yarn(inks[next]); nextEl.dataset.hex = inks[next].hex; shown.n = next; }
+        gun.setAttribute('aria-label', t('blast.paw', { k: inkName(inks[loaded]), j: inkName(inks[next]) }));
+      };
+      const paintLanes = () => {
+        laneEls.forEach((b, c) => {
+          const r = front(c);
+          b.setAttribute('aria-label', r < 0 ? t('blast.empty', { n: c + 1 }) : t('blast.col', { n: c + 1, k: inkName(inks[grid[r][c]]) }));
+          b.classList.toggle('bare', r < 0);
+        });
+      };
+      /* The next ball is always a colour that is on the front of the wall now, so there is always a shot that works. */
+      const drnd = mulberry32(Math.floor(ctx.rnd() * 4294967296));   /* its own generator: see Loaf Box */
+      const deal = () => { const fc = frontColours(); return fc.length ? fc[Math.floor(drnd()*fc.length)] : 0; };
+      const revalidate = () => {
+        const fc = frontColours();
+        if (fc.indexOf(loaded) < 0) loaded = deal();
+        if (fc.indexOf(next) < 0) next = deal();
+        paintHand();
+      };
+      const advance = () => { loaded = next; next = deal(); revalidate(); };
+      loaded = deal(); next = deal(); paintHand(); paintLanes();
+
+      let aimBall = null;
+      const setAim = c => {
+        c = clamp(c, 0, W - 1);
+        if (aimBall){ aimBall.classList.remove('aim'); aimBall = null; }
+        const r = front(c);
+        if (r >= 0){ aimBall = balls[r][c]; aimBall.classList.add('aim'); }
+        laneEls.forEach((b, i) => b.classList.toggle('aim', i === c));
+        if (c !== aim || !box.style.getPropertyValue('--gc')){ aim = c; box.style.setProperty('--gc', c); }
+      };
+      setAim(aim);
+
+      const paintDanger = () => {
+        const low = lowest();
+        box.classList.toggle('danger', low >= 0 && low + steps >= lanes - 1);
+      };
+      const stepDown = () => {
+        steps++;
+        box.style.setProperty('--steps', steps);
+        sfx.tap();
+        paintDanger();
+        if (lowest() + steps >= lanes){ done = true; box.classList.add('over'); return ctx.miss(wall); }
+      };
+      const tick = () => {
+        if (done) return;
+        clock += TICK;
+        if (!ctx.relaxed){
+          if (clock >= due){ stepDown(); if (done) return; last = clock; due = clock + period; }
+          const f = clamp((clock - last) / Math.max(1, due - last), 0, 1);
+          meterFill.style.transform = 'scaleX(' + f.toFixed(2) + ')';
+        }
+        ctx.after(TICK, tick);
+      };
+
+      const flood = (r0, c0) => {
+        const v = grid[r0][c0], seen = new Set([r0*W + c0]), out = [], todo = [[r0, c0]];
+        while (todo.length){
+          const [r, c] = todo.pop(); out.push([r, c]);
+          [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr, dc]) => {
+            const rr = r + dr, cc = c + dc;
+            if (rr < 0 || cc < 0 || rr >= R || cc >= W || grid[rr][cc] !== v || seen.has(rr*W + cc)) return;
+            seen.add(rr*W + cc); todo.push([rr, cc]);
+          });
+        }
+        return out;
+      };
+
+      /* A shot arrives: it pops its own colour, and anything else it just bounces off and costs time. */
+      const land = (c, col) => {
+        if (done) return;
+        const r = front(c);
+        if (r < 0) return;
+        if (grid[r][c] === col){
+          const cluster = flood(r, c);
+          cluster.forEach(([rr, cc]) => { grid[rr][cc] = -1; balls[rr][cc].classList.add('gone'); balls[rr][cc].classList.remove('aim'); });
+          left -= cluster.length;
+          sfx.good(Math.min(7, 1 + cluster.length)); buzz('good');
+          if (left <= 0){ done = true; box.classList.add('won'); return ctx.win(box); }
+          if (cluster.length >= 3) ctx.prompt(t('blast.chain', { n: cluster.length })); else say();
+          paintLanes(); revalidate(); setAim(aim); paintDanger();
+        } else {
+          const b = balls[r][c];
+          b.classList.add('wrong');
+          ctx.after(420, () => b.classList.remove('wrong'));
+          sfx.bad(); buzz('bad');
+          if (!ctx.relaxed){
+            due -= RUSH;
+            box.classList.add('rush');
+            ctx.after(700, () => box.classList.remove('rush'));
+            ctx.prompt(t('blast.rush'));
+          }
+        }
+      };
+
+      const fire = c => {
+        if (done) return;
+        const r = front(c);
+        if (r < 0){ sfx.tap(); return; }                 /* nothing in that lane to hit */
+        const col = loaded;
+        advance();
+        const shot = mk('div','blastshot');
+        shot.innerHTML = PIECE.yarn(inks[col]);
+        const x = c * D, y0 = bh - GUN*D, y1 = (r + steps + 1) * D;
+        shot.style.width = shot.style.height = D + 'px';
+        box.appendChild(shot);
+        if (shot.animate && !motionOff()){
+          shot.animate([{ transform:'translate(' + x + 'px,' + y0 + 'px)' }, { transform:'translate(' + x + 'px,' + y1 + 'px)' }],
+            { duration: SHOT, easing:'linear', fill:'forwards' });
+        } else shot.style.transform = 'translate(' + x + 'px,' + y1 + 'px)';
+        ctx.after(SHOT, () => { shot.remove(); land(c, col); });
+        sfx.tap(); buzz('tap');
+      };
+      const swap = () => {
+        if (done) return;
+        const a = loaded; loaded = next; next = a;
+        paintHand(); sfx.tap(); buzz('tap');
+        gun.classList.remove('swap'); void gun.offsetWidth; gun.classList.add('swap');
+      };
+
+      /* Press anywhere to aim, slide to move the paw, let go over the wall to fire. */
+      let down = null;
+      const colAt = q => Math.floor(clamp(q.x, 0, 99.999) / 100 * W);
+      onDrag(box, {
+        start: q => {
+          if (done) return;
+          const tg = q.ev.target;
+          down = { onPaw: !!(tg && tg.closest && tg.closest('.blastgun')), moved: false, x0: q.ev.clientX, y0: q.ev.clientY };
+          setAim(colAt(q));
+        },
+        move: q => {
+          if (!down || done) return;
+          if (Math.hypot(q.ev.clientX - down.x0, q.ev.clientY - down.y0) > 10) down.moved = true;
+          setAim(colAt(q));
+        },
+        end: q => {
+          const d = down; down = null;
+          if (!d || done || !q) return;
+          const y = q.ev.clientY - box.getBoundingClientRect().top;
+          if (y >= 0 && y <= (lanes + 0.35) * D){ fire(colAt(q)); return; }
+          if (d.onPaw && !d.moved) swap();
+        }
+      });
+      /* A keyboard or a screen reader activates a lane or the paw with a click that has no pointer behind it. */
+      laneEls.forEach((b, c) => b.addEventListener('click', ev => { if (ev.detail === 0){ setAim(c); fire(c); } }));
+      gun.addEventListener('click', ev => { if (ev.detail === 0) swap(); });
+      const onKey = ev => {
+        if (!box.isConnected){ document.removeEventListener('keydown', onKey); return; }
+        if (ev.key === 'ArrowLeft'){ ev.preventDefault(); setAim(aim - 1); }
+        else if (ev.key === 'ArrowRight'){ ev.preventDefault(); setAim(aim + 1); }
+        else if ((ev.key === ' ' || ev.key === 'Enter') && document.activeElement === document.body){ ev.preventDefault(); fire(aim); }
+      };
+      document.addEventListener('keydown', onKey);
+      const onSize = () => { if (!box.isConnected){ window.removeEventListener('resize', onSize); return; } layout(); paintDanger(); };
+      window.addEventListener('resize', onSize);
+
+      say(); paintDanger();
+      ctx.after(TICK, tick);
     }
   },
 };
@@ -17291,6 +17879,7 @@ function setPlayView(v){
     playView = v;
     $('playHome').hidden = v !== 'home';
     $('playMyStuff').hidden = v !== 'myStuff';
+    $('playGate').hidden = v !== 'gate';
   });
   if (v === 'myStuff' && !motionOff()){
     $('playMyStuff').querySelectorAll('.stufflist, .modegrid').forEach(grid => {
@@ -17302,9 +17891,44 @@ function setPlayView(v){
   }
 }
 
+/* The three moods. The games picked for each are the ones the brief names; beside them sit the games that feel the same, so a mood is
+   more than two cards, and every game is still one tap away. */
+const GATES = {
+  calm:  { ids: ['meld', 'sift'],                  more: () => idsInCat('calm').slice(0, 4), ink: '#B9A6F2' },
+  quick: { ids: ['blast', 'forage'],               more: () => idsInCat('reflex').slice(0, 4), ink: '#F2A65A' },
+  full:  { ids: ['meld', 'sift', 'blast', 'forage'], more: () => [], ink: '#E8D5B7' }
+};
+let gateOn = 'calm';
+function paintGate(){
+  const gt = GATES[gateOn] || GATES.calm, head = $('gateHead');
+  head.style.setProperty('--gk', gt.ink);
+  const btn = document.querySelector('.gateBtn[data-gate="' + gateOn + '"]');
+  $('gateGlyph').innerHTML = btn ? btn.querySelector('.g').innerHTML : '';
+  $('gateName').textContent = t('gate.' + gateOn);
+  $('gateWho').textContent = t('gate.' + gateOn + 'Who');
+  $('gateVibe').textContent = t('gate.' + gateOn + 'Vibe');
+  const fill = (host, ids) => {
+    fillGrid(host, ids, { mode:'all', onTap:null });
+    Array.from(host.children).forEach((card, i) => {
+      const c = catOf(ids[i]);
+      card.dataset.cat = c; card.style.setProperty('--cink', CAT_INK[c]);
+      card.onclick = () => startRun('marathon', ids[i]);
+    });
+  };
+  fill($('gateModes'), gt.ids);
+  const more = gt.more().filter(id => gt.ids.indexOf(id) < 0);
+  $('gateMoreLbl').hidden = $('gateMore').hidden = !more.length;
+  if (more.length) fill($('gateMore'), more);
+  const all = $('gateAll');
+  all.querySelector('b').textContent = t('modes.allCard', { n: MODE_IDS.length });
+  all.querySelector('small').textContent = t('modes.allSub');
+}
+
 function paintPlay(){
   $('playHome').hidden = playView !== 'home';
   $('playMyStuff').hidden = playView !== 'myStuff';
+  $('playGate').hidden = playView !== 'gate';
+  if (playView === 'gate') paintGate();
 
   const chosen = tapeModes(), tape = activeTape();
   $('mixMeta').textContent = chosen.length >= 2
@@ -18222,6 +18846,12 @@ $('endlessBtn').addEventListener('click', () => startRun('endless'));
 $('pickModeBtn').addEventListener('click', () => goTab('Modes'));
 $('myStuffBtn').addEventListener('click', () => { setPlayView('myStuff'); sfx.tap(); });
 $('myStuffBack').addEventListener('click', () => { setPlayView('home'); sfx.tap(); });
+document.querySelectorAll('.gateBtn').forEach(b => b.addEventListener('click', () => {
+  gateOn = b.dataset.gate; paintGate(); setPlayView('gate'); sfx.tap();
+  const sc = $('tabPlay').querySelector('.scroll'); if (sc) sc.scrollTop = 0;
+}));
+$('gateBack').addEventListener('click', () => { setPlayView('home'); sfx.tap(); });
+$('gateAll').addEventListener('click', () => { catFilter = 'all'; modeQuery = ''; goTab('Modes'); sfx.tap(); });
 $('statsBtn').addEventListener('click', () => goTab('Stats'));
 $('reflexRushBtn').addEventListener('click', () => startRun('reflexrush'));
 $('puzzleCascadeBtn').addEventListener('click', () => startRun('puzzlecascade'));
@@ -18559,7 +19189,7 @@ function closeTopLayer(){
   if (screen === 'over') return $('homeBtn').click();
   if (screen === 'Modes' && catFilter !== 'pick')
     return withTransition(() => { catFilter = 'pick'; paintModes(); });
-  if (screen === 'Play' && playView === 'myStuff') return setPlayView('home');
+  if (screen === 'Play' && (playView === 'myStuff' || playView === 'gate')) return setPlayView('home');
   if (screen !== 'Play') return goTab('Play');
   /* True floor. Nothing to close. */
 }

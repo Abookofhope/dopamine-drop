@@ -5,8 +5,8 @@
  * reduced, can miss it, so this one looks at every frame for the first second and a half, at phone, tablet and landscape sizes, at
  * several levels, with and without reduced motion.
  *
- *   node tools/probe/tidyspawn.mjs          # the full matrix, minutes
- *   QUICK=1 node tools/probe/tidyspawn.mjs  # what the suite runs
+ *   node tools/probe/tidyspawn.mjs            # a phone, a tall phone and a landscape tablet, two levels: what the suite runs
+ *   FULL=1 node tools/probe/tidyspawn.mjs     # seven sizes, four levels, three boards each: minutes
  */
 import { chromium } from 'playwright';
 import { openApp, openModeList, clickMode } from './harness.mjs';
@@ -16,8 +16,8 @@ const check = (ok, msg) => { if (!ok) bad++; console.log((ok ? 'ok   ' : 'FAIL '
 const browser = await chromium.launch();
 const errs = [];
 
-/* QUICK=1 is the one the suite runs: a phone, a tall phone and a landscape tablet, two levels. The full matrix takes minutes. */
-const QUICK = !!process.env.QUICK;
+/* The suite runs the short one: a phone, a tall phone and a landscape tablet, two levels. FULL=1 is the whole matrix, which takes minutes. */
+const QUICK = !process.env.FULL;
 const SIZES = QUICK ? [[320, 568], [390, 844], [1024, 768]] : [[320, 568], [360, 640], [390, 844], [412, 915], [768, 1024], [1024, 768], [1280, 800]];
 const XPS = QUICK ? [0, 12000] : [0, 2000, 12000, 60000];
 const REPEATS = Number(process.env.REPEATS || (QUICK ? 1 : 3));
