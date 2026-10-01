@@ -45,7 +45,7 @@ await page.click('#justPlayBtn');
 
 const alive = () => Promise.race([page.evaluate(() => 1).then(() => true, () => false), new Promise(r => setTimeout(() => r(false), 4000))]);
 const visited = new Map();
-let taps = 0, blankSince = null, lastBoard = null, restarts = 0;
+let taps = 0, blankSince = null, lastBoard = null, restarts = 0, stuckSince = null, abandoned = 0;
 const t0 = Date.now();
 
 while (Date.now() - t0 < SECONDS * 1000){
@@ -76,6 +76,19 @@ while (Date.now() - t0 < SECONDS * 1000){
   /* The play area must not change shape while the same board is up. */
   if (st.boardId && lastBoard && lastBoard.id === st.boardId && (lastBoard.top !== st.top || lastBoard.h !== st.h))
     problems.push(`play area moved under a live board in ${current}: top ${lastBoard.top}->${st.top}, height ${lastBoard.h}->${st.h}`);
+  /* A random player cannot finish every mode (drag a bar, carry a bucket, find a balance) and Just Play has no way past a
+     board you cannot solve, so one board can hold the whole soak. After fifteen seconds on the same one it is given up:
+     quit from the middle of the round (which is a teardown worth testing in its own right) and start a fresh run. */
+  if (st.boardId && lastBoard && lastBoard.id === st.boardId){
+    stuckSince = stuckSince || Date.now();
+    if (Date.now() - stuckSince > 15000){
+      abandoned++; stuckSince = null;
+      await page.evaluate(() => { const q = document.getElementById('quitBtn'); if (q) q.click(); });
+      await page.waitForTimeout(700);
+      await page.evaluate(() => { const h = document.getElementById('homeBtn'); if (h) h.click(); });
+      await page.waitForTimeout(700); continue;
+    }
+  } else stuckSince = null;
   lastBoard = st.boardId ? { id: st.boardId, top: st.top, h: st.h } : null;
 
   const box = await (await page.$('#surface')).boundingBox().catch(() => null);
@@ -96,7 +109,7 @@ while (Date.now() - t0 < SECONDS * 1000){
 await browser.close();
 
 const uniq = [...new Set(problems)];
-console.log(`soaked ${Math.round((Date.now() - t0) / 1000)}s: ${taps} touches, ${restarts} run restarts, ${visited.size} different modes on screen`);
+console.log(`soaked ${Math.round((Date.now() - t0) / 1000)}s: ${taps} touches, ${restarts} run restarts, ${abandoned} boards given up on, ${visited.size} different modes on screen`);
 console.log('modes seen: ' + [...visited.keys()].join(', '));
 uniq.slice(0, 12).forEach(p => console.log('  ! ' + p));
 if (visited.size < 8) { console.log('too few modes visited for a soak to mean anything'); process.exit(1); }

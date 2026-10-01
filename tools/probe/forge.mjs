@@ -84,7 +84,7 @@ for (const xp of XPS){
     const st = await read();
     if (st.made || !st.tray.length) break;
     const g = st.g, free = new Set(st.hole), own = new Map(Object.entries(st.col).map(([k, v]) => [+k, v]));
-    const ruleOn = /colour|couleur|color|Farben/i.test(st.prompt);
+    const ruleOn = /colour|couleur|color|Farben/i.test(st.prompt) || await page.evaluate(() => !!document.querySelector('.fnote'));
     const pieces = st.tray.map(p => ({ idx: p.idx, col: p.col, base: norm(p.on) }));
     let sol = null, nodes = 0; const order = [...free].sort((a, b) => a - b), fl = new Set();
     const go = (rem, acc) => {

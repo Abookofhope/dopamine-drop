@@ -37,9 +37,9 @@ const play = (wrong = false) => page.evaluate(w => {
   const surf = document.getElementById('surface');
   const swatches = [...surf.querySelectorAll('.swatch:not([disabled])')];
   if (swatches.length){
-    const word = surf.querySelector('.stroopword');
+    const word = surf.querySelector('.stroopword.ul') || surf.querySelector('.stroopword');
     if (!word) return 'dye: no word';
-    const reversed = !!surf.querySelector('.stroopwrap.reversed');
+    const reversed = !!surf.querySelector('.stroopwrap.reversed') || /name of the underlined/i.test((document.querySelector('.prompt') || {}).textContent || '');
     const ink = getComputedStyle(word).color;
     const name = word.textContent.trim().toLowerCase();
     const right = swatches.find(b => reversed
@@ -53,7 +53,11 @@ const play = (wrong = false) => page.evaluate(w => {
   if (tiles.length){
     const col = b => getComputedStyle(b).backgroundColor;
     const seen = new Map(); tiles.forEach(b => seen.set(col(b), (seen.get(col(b)) || 0) + 1));
-    const odd = tiles.find(b => seen.get(col(b)) === 1);
+    const lum = c => { const m = c.match(/\d+/g).map(Number); return 0.2126 * m[0] + 0.7152 * m[1] + 0.0722 * m[2]; };
+    const asked = (document.querySelector('.prompt') || {}).textContent || '';
+    const extreme = cmp => tiles.reduce((a, b) => cmp(lum(col(b)), lum(col(a))) ? b : a);
+    const odd = /lightest|plus claire|más claro|hellste/i.test(asked) ? extreme((x, y) => x > y)
+      : /darkest|plus foncée|más oscuro|dunkelste/i.test(asked) ? extreme((x, y) => x < y) : tiles.find(b => seen.get(col(b)) === 1);
     if (!odd) return 'odd: no unique tile';
     const pick = w ? tiles.find(b => b !== odd) : odd;
     window.__last = tiles[0]; pick.click(); return 'odd';

@@ -141,7 +141,11 @@ if (!results.some(r => r.won) && ids.includes('odd')){
         const tiles = [...document.querySelectorAll('#surface .grid button:not([disabled])')];
         const col = b => getComputedStyle(b).backgroundColor, seen = new Map();
         tiles.forEach(b => seen.set(col(b), (seen.get(col(b)) || 0) + 1));
-        const odd = tiles.find(b => seen.get(col(b)) === 1); if (!odd) return false;
+        const lum = c => { const m = c.match(/\d+/g).map(Number); return 0.2126 * m[0] + 0.7152 * m[1] + 0.0722 * m[2]; };
+    const asked = (document.querySelector('.prompt') || {}).textContent || '';
+    const extreme = cmp => tiles.reduce((a, b) => cmp(lum(col(b)), lum(col(a))) ? b : a);
+    const odd = /lightest|plus claire|más claro|hellste/i.test(asked) ? extreme((x, y) => x > y)
+      : /darkest|plus foncée|más oscuro|dunkelste/i.test(asked) ? extreme((x, y) => x < y) : tiles.find(b => seen.get(col(b)) === 1); if (!odd) return false;
         window.__lastTile = tiles[0]; odd.click(); return true;
       });
       if (!did) break;
