@@ -54,7 +54,11 @@ for (const [xp, lvl] of PROFILES){
   check(s.basket && s.ball && s.cat, 'a ball of yarn, a basket, and a cat in the basket');
   check(!!s.sol, 'the round was built from an answer');
   check(s.drop.off && s.undo.off && s.peekBtn.off, 'Drop, Undo and Peek are not offered before anything is drawn');
-  check(s.long < 500, `building the field does not stall the page (${Math.round(s.long)}ms)`);
+  /* The point is that the page is not frozen for seconds while the round is made (it once was). How long a build takes depends on the machine as
+     much as on the board: the slowest of sixty high-level builds was 362 ms on one machine and 874 to 1490 ms on a slower one, so a limit of half a
+     second failed on a quiet slow machine about half the time. Trimming the search to fit would have cost boards (six in sixty became a bare
+     field with a straight ramp) without shortening the slow ones, so the limit is the one that still means a freeze. */
+  check(s.long < 2500, `building the field does not freeze the page (${Math.round(s.long)}ms)`);
   check(s.h > 250, `the field is tall enough to play on (${Math.round(s.h)}px)`);
   if (!s.sol){ await page.close(); continue; }
   for (const st of s.sol) await stroke(page, s, st);
