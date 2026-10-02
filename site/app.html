@@ -4109,7 +4109,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.106.0';
+const VERSION_TAG = 'v0.107.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6793,6 +6793,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.107.0', date:'2026-10-02', items:[
+    'Purr runs at the same speed on every screen. It moved one step per frame, so on a 120 Hz phone (most recent flagships) the cat swelled and the band swung twice as fast as on a 60 Hz one. It now moves by the time that has passed, and the Game speed setting (Relaxed and Slow) slows it too, which it never did.',
+    'A purr you can feel: while the cat is in the band the phone gives a soft pulse a few times a second, quicker in the golden middle, and is quiet when you are out of it.',
+    'Under the hood, a shared clock for modes that move once a frame, so the other needle-and-ripple style modes can get the same fix.',
+  ] },
   { v:'0.106.0', date:'2026-10-02', items:[
     'Cat’s Eyes can finally be seen. The lantern’s pool of light had been drawn as a tiny oval stuck in a corner, so on a dark board you carried a dot. It is now a soft round glow around your finger that grows as eyes open.',
     'A quick swipe can no longer jump over a pair of eyes: the whole stroke from where your finger was counts, not just the places it was sampled.',
@@ -9508,7 +9513,8 @@ const MODES = {
       const sway = clamp((ctx.level - 7) * 0.012, 0, 0.07);   /* from level 8 the band wanders on a second, quicker beat as well */
       const tol0 = clamp(0.09 - ctx.level*0.0008, 0.06, 0.09); /* and it gets a little narrower */
       let size = 0.35, target = 0.6, phase = ctx.rnd()*Math.PI*2, held = false;
-      let inBand = 0, done = 0, raf2 = 0;
+      let inBand = 0, done = 0, raf2 = 0, buzzAt = 0, arrow = '';
+      const pace = ctx.clock();
 
       const box = mk('div','tidebox');
       /* One paw for every purr you owe, filling as you hold the band: you can see how far through you are, not only how many
@@ -9518,30 +9524,37 @@ const MODES = {
       box.appendChild(pips);
       const band = mk('div','tideband'); box.appendChild(band);
       const bub = mk('div','tidebub'); box.appendChild(bub);
+      bub.style.aspectRatio = '1'; bub.style.height = 'auto'; band.style.aspectRatio = '1'; band.style.height = 'auto';
       /* A cat asleep: the bubble is the cat, and it swells and settles as it purrs. */
       bub.innerHTML = '<svg viewBox="0 0 40 24" aria-hidden="true"><path d="M8 10q4 4 8 0M24 10q4 4 8 0"/><path d="M18 15.200h4l-2 2z" class="nose"/><path d="M20 17.200q-3 3.400-6 1M20 17.200q3 3.400 6 1"/></svg>';
       const hint = mk('div','tidehint'); box.appendChild(hint);
       ctx.surface.appendChild(box);
 
       const frame = () => {
-        phase += speed * 0.06;
+        /* Everything moves by the time that has passed, not by one step a frame: a 120 Hz phone ran this twice as fast. */
+        const k = pace();
+        phase += speed * 0.06 * k;
         target = 0.52 + Math.sin(phase)*0.26 + Math.sin(phase*2.3 + 1)*sway;
-        size = clamp(size + (held ? 0.007 : -0.006), 0.18, 0.95);
+        size = clamp(size + (held ? 0.007 : -0.006) * k, 0.18, 0.95);
         const tol = tol0;
         const ok = Math.abs(size - target) < tol;
         /* From level 6, the middle of the band is golden: sit right in it and the purr builds twice as fast. */
         const gold = ctx.level >= 6 && Math.abs(size - target) < tol*0.42;
-        bub.style.width = (size*100)+'%'; bub.style.aspectRatio = '1'; bub.style.height = 'auto';
-        band.style.width = (target*100)+'%'; band.style.aspectRatio = '1'; band.style.height = 'auto';
+        bub.style.width = (size*100)+'%';
+        band.style.width = (target*100)+'%';
         box.classList.toggle('ok', ok);
         box.classList.toggle('gold', gold);
-        hint.textContent = held ? '↑' : '↓';
+        const ar = held ? '↑' : '↓';
+        if (ar !== arrow){ arrow = ar; hint.textContent = ar; }
         if (ok){
-          inBand += gold ? 32 : 16;
+          inBand += (gold ? 32 : 16) * k;
+          /* A purr you can feel: a soft pulse a few times a second while you are in the band. */
+          const now = performance.now();
+          if (now - buzzAt > (gold ? 220 : 340)){ buzzAt = now; buzz('tap'); }
           if (inBand > 1500){ inBand = 0; done++; sfx.good(done); buzz('good');
             if (done >= need){ pipEls.forEach(e => { e.classList.add('on'); e.style.setProperty('--f', 1); }); cancelAnimationFrame(raf2); return ctx.win(bub); }
             ctx.prompt(t('p.tide', { n: need - done })); }
-        } else if (inBand > 0) inBand = Math.max(0, inBand - 26);
+        } else if (inBand > 0) inBand = Math.max(0, inBand - 26 * k);
         pipEls.forEach((e, i) => { const f = i < done ? 1 : i === done ? inBand / 1500 : 0; e.classList.toggle('on', i < done); e.style.setProperty('--f', f.toFixed(3)); });
         raf2 = requestAnimationFrame(frame);
       };
@@ -17325,6 +17338,10 @@ function beginRound(mode, firstMeet){
     level: run.lvl,
     rnd: run.rnd,
     after: later,
+    /* For a mode that moves things once per animation frame. Call clock() once, then call what it returns at the top of every frame: it
+       is how many 60 fps frames of time have passed (1 on most phones, 0.5 on a 120 Hz one), already scaled by the Game speed setting
+       (Relaxed and Slow). Per-frame motion multiplies by it, so the game runs at the same speed on every screen. */
+    clock: () => { let last = performance.now(); return () => { const now = performance.now(), dt = Math.min(50, now - last); last = now; return dt / (1000 / 60) * spd(); }; },
     /* Content that should not repeat goes through here rather than pick(). */
     relaxed: run.kind === 'zen',
     deal: (items, id) => run.kind === 'daily'
