@@ -1197,11 +1197,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .plinkbox{position:relative;width:100%;height:100%;touch-action:none}
 .plinklane{position:absolute;left:0;right:0;top:0;height:16%;border-radius:var(--r-sm);
   background:#ffffff08;border:1px dashed var(--edge)}
-.peg{position:absolute;width:7%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
-  background:var(--ink-3);border:1px solid var(--edge);transition:opacity var(--t-fast),transform var(--t-fast)}
+.peg{position:absolute;width:calc(7% + 10px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  background:none;border:0;transition:opacity var(--t-fast),transform var(--t-fast)}
 .peg.pulled{opacity:.15;transform:translate(-50%,-50%) scale(.6);pointer-events:none}
-/* The pegs are small and close; the part that answers a thumb reaches a little past what is drawn. */
-.peg::before{content:"";position:absolute;inset:-4px;border-radius:50%}
+/* The element is the part that answers a thumb, five pixels bigger all round than the pin that is drawn inside it (a real box, so a probe and
+   assistive tech see the real size, not a pseudo-element's). */
+.peg::before{content:"";position:absolute;inset:5px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 34% 28%,#FFEDB8,#D9A53A 55%,#8C6418);box-shadow:0 2px 3px #000000a0, inset 0 -1px 2px #0000005a}
 .bins2{position:absolute;left:6%;right:6%;bottom:2%;height:14%;display:flex;gap:3px}
 .bin2{flex:1;border-radius:var(--r-sm) var(--r-sm) 6px 6px;background:var(--ink-3);border:1px solid var(--edge)}
 .bin2.goal{background:#33e6c833;border-color:var(--cool)}
@@ -2926,9 +2928,8 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .skimmark::after{content:"";position:absolute;top:100%;left:50%;height:34px;border-left:2px dashed #FF8AD8;transform:translateX(-50%)}
 .skimpips i.on{background:#FF8AD8}
 
-/* Basket Drop: brass pins, woven baskets, a ball of yarn. */
-.peg{background:radial-gradient(circle at 34% 28%,#FFEDB8,#D9A53A 55%,#8C6418);border:0;
-  box-shadow:0 2px 3px #000000a0, inset 0 -1px 2px #0000005a}
+/* Basket Drop: brass pins, woven baskets, a ball of yarn. (The pin itself is the ::before of the peg: see the .peg rule above.) */
+.peg::after{inset:5px}
 .bin2{background:repeating-linear-gradient(90deg,#0000 0 6px,#0000003a 6px 7.5px),linear-gradient(180deg,#5B4148,#382830);
   border:1px solid #7A5A55;box-shadow:inset 0 3px 0 #9A766C}
 .bin2.goal{background:repeating-linear-gradient(90deg,#0000 0 6px,#0000002e 6px 7.5px),linear-gradient(180deg,#2E7D74,#1C4C4C);
@@ -4151,7 +4152,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.128.0';
+const VERSION_TAG = 'v0.129.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6835,6 +6836,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.129.0', date:'2026-10-02', items:[
+    'Basket Drop’s pegs are easier to hit: each peg answers a thumb over a slightly bigger area than the brass pin you see.',
+  ] },
   { v:'0.128.0', date:'2026-10-02', items:[
     'Bigger things to tap. A scan of every game on a small phone found the controls that were too small to hit comfortably. The spools around Spool Shots were 15 pixels thick and are now 26; the pegs in Basket Drop answer a thumb a little past what is drawn; Mirror Stitch no longer goes ten across on a narrow phone (eight, with squares you can hit); and boards with six or more squares across now sit closer together (6 pixels apart, 4 from eight across, instead of 10), which makes every square in Stitch Count, Let the Cat Out, Tumble Dryer, Darning, Kitten’s Snack Attack and more a few pixels bigger.',
   ] },

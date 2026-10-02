@@ -70,11 +70,18 @@ for (const [xp, label, hz] of [[0, 'a new player', 0], [12000, 'a higher level',
   await page.close();
 }
 {
-  /* and it is quiet when you are not in the band: never touching the screen, the cat sinks to the floor of the box and out of it */
+  /* and it is quiet when you are not in the band: never touching the screen, the cat sinks to the floor of the box, and on its way it may
+     pass through the band once. Every pulse must come while the cat is in the band (or in the sample just before or after). */
   const page = await open(0, { haptics: true });
-  await page.waitForTimeout(2500);
-  const s = await size(page);
-  check(!s.ok && s.buzz <= 1, `out of the band the phone is quiet (${s.buzz} pulses)`);
+  const samples = [];
+  for (let k = 0; k < 90; k++){ const s = await size(page); samples.push({ ok: s.ok, buzz: s.buzz }); await page.waitForTimeout(40); }
+  let stray = 0;
+  for (let i = 1; i < samples.length; i++){
+    const grew = samples[i].buzz - samples[i - 1].buzz;
+    const near = [samples[i - 2], samples[i - 1], samples[i], samples[i + 1]].some(x => x && x.ok);
+    if (grew > 0 && !near) stray += grew;
+  }
+  check(stray === 0, `the phone pulses only while the cat is in the band (${samples[samples.length - 1].buzz} pulses in 3.6 s, ${stray} outside it)`);
   await page.close();
 }
 
