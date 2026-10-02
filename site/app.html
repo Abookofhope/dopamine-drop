@@ -724,6 +724,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .vpix.hintwind{outline:3px dashed #ffc53d;outline-offset:-3px}
 .sumcol > .vbox{flex:1 1 0;min-height:0}
 .duelbtn.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88}
+.cell.sock.hint{outline:3px solid #ffc53d;outline-offset:-3px;box-shadow:0 0 14px #ffc53d88}
 .brcell.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88;background:#ffc53d22}
 .sumcol > .brwrap{flex:1 1 0;min-height:0}
 .brcell.plank{border-color:#C08BFF;box-shadow:0 0 12px #c08bff55;cursor:pointer;background:
@@ -4146,7 +4147,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.122.0';
+const VERSION_TAG = 'v0.123.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -5118,7 +5119,7 @@ const STRINGS = {
     /* Mirror Stitch */
     'p.mirrorDown':'Mirror it downwards',
     /* Tumble Dryer */
-    'tumble.hold':'Hold',
+    'tumble.pair':'Pair', 'tumble.hold':'Hold',
     /* Off Beat */
     'p.beatTwo':'Two paws are out of time — find both',
     /* Cat Fight */
@@ -5613,7 +5614,7 @@ const STRINGS = {
     /* Mirror Stitch */
     'p.mirrorDown':'Reflétez vers le bas',
     /* Tumble Dryer */
-    'tumble.hold':'Pause',
+    'tumble.pair':'Paire', 'tumble.hold':'Pause',
     /* Off Beat */
     'p.beatTwo':'Deux pattes sont à contretemps — trouvez-les',
     /* Cat Fight */
@@ -6108,7 +6109,7 @@ const STRINGS = {
     /* Mirror Stitch */
     'p.mirrorDown':'Refléjalo hacia abajo',
     /* Tumble Dryer */
-    'tumble.hold':'Pausa',
+    'tumble.pair':'Par', 'tumble.hold':'Pausa',
     /* Off Beat */
     'p.beatTwo':'Dos patas van a destiempo: encuéntralas',
     /* Cat Fight */
@@ -6603,7 +6604,7 @@ const STRINGS = {
     /* Mirror Stitch */
     'p.mirrorDown':'Spiegle es nach unten',
     /* Tumble Dryer */
-    'tumble.hold':'Halt',
+    'tumble.pair':'Paar', 'tumble.hold':'Halt',
     /* Off Beat */
     'p.beatTwo':'Zwei Pfoten sind aus dem Takt — finde beide',
     /* Cat Fight */
@@ -6830,6 +6831,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.123.0', date:'2026-10-02', items:[
+    'Tumble Dryer has a Pair button (two a round, next to Hold): it lights two socks that go together for a moment, so a crowded drum is never a search through every colour at once.',
+  ] },
   { v:'0.122.0', date:'2026-10-02', items:[
     'Cat Fight teaches you the tells. While you are new (below level 8), the counter that beats the cat’s tell starts to glow once half the beat has gone without an answer, so the pairing (swing: parry, guard: wait, charge: strike) is something you see before it is something you know. From level 8 nothing glows.',
   ] },
@@ -10041,7 +10045,7 @@ const MODES = {
       const paint = i => {
         const v = slots[i], e = els[i];
         e.classList.toggle('full', !!v);
-        e.classList.remove('sel','tangled');
+        e.classList.remove('sel','tangled','hint');
         if (v){
           e.dataset.hex = v.ink.hex;
           e.innerHTML = PIECE.sock(v.ink);
@@ -10112,15 +10116,30 @@ const MODES = {
       els.forEach((e,i) => { e._go = () => go(i); onTap(e, e._go); });
       /* Pick a sock up and let go of it over its partner: the same as tapping the two. */
       carry(grid, { grab: '.cell.sock.full', land: (from, to) => { if (to._go) to._go(); } });
-      const tools = mk('div','sumtools'), hold = mk('button','sumtool'); hold.type = 'button';
-      const paintHold = () => { hold.textContent = t('tumble.hold') + ' ' + holds; hold.disabled = holds <= 0 || done; };
+      const tools = mk('div','sumtools'), hold = mk('button','sumtool'), hintB = mk('button','sumtool'); hold.type = 'button'; hintB.type = 'button';
+      hintB.style.marginLeft = '10px';
+      let hints = 2;
+      const paintHold = () => { hold.textContent = t('tumble.hold') + ' ' + holds; hold.disabled = holds <= 0 || done;
+        hintB.textContent = t('tumble.pair') + ' ' + hints; hintB.disabled = hints <= 0 || done; };
       paintHold();
+      /* A hint lights two socks that go together. */
+      onTap(hintB, () => {
+        if (hints <= 0 || done) return;
+        const by = new Map();
+        slots.forEach((v, i) => { if (v && !els[i].classList.contains('tangled')){ if (!by.has(v.ink)) by.set(v.ink, []); by.get(v.ink).push(i); } });
+        const pair = Array.from(by.values()).find(a => a.length >= 2);
+        if (!pair) return;
+        hints--; paintHold(); sfx.tap();
+        const two = pair.slice(0, 2);
+        two.forEach(i => els[i].classList.add('hint'));
+        ctx.after(1700, () => two.forEach(i => els[i].classList.remove('hint')));
+      });
       onTap(hold, () => {
         if (holds <= 0 || done) return;
         holds--; heldUntil = performance.now() + 5000; paintHold(); sfx.good(1);
         grid.classList.add('held'); ctx.after(5000, () => grid.classList.remove('held'));
       });
-      tools.appendChild(hold); col.appendChild(tools);
+      tools.appendChild(hold); tools.appendChild(hintB); col.appendChild(tools);
       say();
     }
   },
