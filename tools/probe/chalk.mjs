@@ -102,18 +102,33 @@ for (const [xp, lvl] of PROFILES){
 /* the chalk runs out */
 {
   const page = await boot(12000); const s = await read(page);
-  /* the chalk runs out: a long scribble stops at the budget and says so */
-  /* twenty-six passes across in long steps: how much chalk a board gives depends on the answer it was built from, and ten passes was not always
-     enough. Few, long moves, because the round has a clock and a scribble of a thousand tiny ones can outlast it. */
-  const scribble = Array.from({ length: 390 }, (_, i) => { const row = Math.floor(i / 15), c = i % 15; return [row % 2 ? 92 - c * 6 : 8 + c * 6, 6 + row * 3.3]; });
-  /* and again while there is still chalk: a board with a long answer gives more than one pass can spend */
-  for (let pass = 0; pass < 4; pass++){ await stroke(page, s, scribble); await page.waitForTimeout(300); if ((await read(page)).inkFrac < 0.012) break; }
+  /* the chalk runs out: a long scribble stops at the budget and says so.
+     Twenty-six rows across in long steps (12 units each: how much chalk a board gives depends on the answer it was built from, and the round has a
+     clock, so a few long moves, never a thousand tiny ones). Chalk is spent a whole step at a time, so that leaves up to one step over; a finishing
+     stroke in fine steps (just over the 1.1 that counts as movement) spends the rest. Repeating the same long pass was the old way, and a pass that
+     could not spend the last few units just came round again until the round's clock ran out and a new board was dealt. */
+  const OUT = /out|plus|acab|alle/i;
+  const scribble = [];
+  for (let row = 0; row < 26; row++) for (let c = 0; c <= 7; c++) scribble.push([row % 2 ? 92 - c * 12 : 8 + c * 12, 6 + row * 3.3]);
+  const fine = Array.from({ length: 71 }, (_, i) => [8 + i * 1.2, 50]);
+  /* and again while there is a lot left: a board with a long answer gives more than one pass can spend */
+  for (let pass = 0; pass < 3 && (await read(page)).inkFrac > 0.3; pass++){ await stroke(page, s, scribble); await page.waitForTimeout(250); }
+  /* the prompt is read with the pen still down: lifting it with a couple of units left puts the usual prompt back, which is right, and says
+     nothing about whether the chalk said so as it ran out */
+  const held = async pts => {
+    const a = px(s, pts[0]); await page.mouse.move(a[0], a[1]); await page.mouse.down();
+    for (const p of pts.slice(1)){ const q = px(s, p); await page.mouse.move(q[0], q[1]); }
+    await page.waitForTimeout(60); const said = (await read(page)).prompt; await page.mouse.up(); await page.waitForTimeout(250); return said;
+  };
+  let said = '';
+  for (let pass = 0; pass < 3; pass++){ said = await held(fine); if (OUT.test(said)) break; }
   /* the bar eases down as the chalk is spent: read it once it has stopped, not mid-way */
   await page.waitForTimeout(500);
   const dry = await read(page);
-  check(dry.inkFrac < 0.02 && dry.lowInk, `the chalk runs out (${(dry.inkFrac * 100).toFixed(1)}% left, ${dry.lines} lines, low ${dry.lowInk})`);
-  check(/out|plus|acab|alle/i.test(dry.prompt), `and says so (${dry.prompt.trim()})`);
-  await page.locator('.ctool').nth(0).click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(120);
+  check(dry.inkFrac < 0.05 && dry.lowInk, `the chalk runs out (${(dry.inkFrac * 100).toFixed(1)}% left, ${dry.lines} lines, low ${dry.lowInk})`);
+  check(OUT.test(said), `and says so while you are still drawing (${said.trim()})`);
+  /* Undo takes the lines back one at a time (it is disabled with none left, and a click on a disabled button would wait for ever) */
+  for (let k = 0; k < 6 && (await read(page)).lines > 0; k++){ await page.locator('.ctool').nth(0).click({ position: { x: 20, y: 18 }, timeout: 4000 }); await page.waitForTimeout(120); }
   const back = await read(page);
   check(back.lines === 0 && back.inkFrac > 0.95, 'Undo gives the chalk back');
   /* a tap is not a line */
