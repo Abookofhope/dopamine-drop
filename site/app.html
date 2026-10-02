@@ -2235,6 +2235,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .budget.paws i svg{display:block;width:100%;height:100%}
 .budget.paws i.used{opacity:.2}
 .budget.paws.low{color:var(--bad)}
+.swatch.ruled,.abtn.ruled,.bub.ruled{opacity:.22;pointer-events:none}
+.bub.wrongtap{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
 .wordcol{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:24px;width:100%;border-radius:var(--r-lg);
   background:radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--fam,transparent) 8%, transparent), transparent 75%)}
 .slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
@@ -4132,7 +4134,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.113.0';
+const VERSION_TAG = 'v0.114.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4896,7 +4898,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Mending|Finish the frayed ones before they unravel',
-    'paws.left':'{n} chances left', 'skim.again':'Not there — the needle keeps going', 'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
+    'paws.again':'Not that one — try again', 'paws.left':'{n} chances left', 'skim.again':'Not there — the needle keeps going', 'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
     'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble Dryer|Pair the socks faster than the drum refills',
     'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Cat Fight|Read the tell, pick the counter, win the scrap',
     'p.arc':'{n} left to reach', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Cat’s Cradle|Loop every peg before the thread goes slack',  'm.slack':'No Crossing|Drag the pegs until no thread crosses',  'm.tide':'Purr|Hold to swell, let go to settle — stay in the band',  'm.plink':'Basket Drop|Pull one peg, then drop into the lit basket',  'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 
@@ -5391,7 +5393,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Raccommodage|Finissez les effilochés avant qu’ils ne filent',
-    'paws.left':'{n} chances restantes', 'skim.again':'Pas là — l’aiguille continue', 'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
+    'paws.again':'Pas celle-là — encore une chance', 'paws.left':'{n} chances restantes', 'skim.again':'Pas là — l’aiguille continue', 'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
     'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Sèche-Linge|Appariez les chaussettes plus vite que le tambour',
     'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Bagarre|Lisez l’indice, choisissez la parade, gagnez la bagarre',
     'p.arc':'{n} à relier', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Jeu de Ficelle|Bouclez chaque piquet avant que le fil ne mollisse',  'm.slack':'Sans Croisement|Déplacez les piquets jusqu’à ce qu’aucun fil ne se croise',  'm.tide':'Ronron|Maintenez pour enfler, lâchez pour calmer — restez dans la bande',  'm.plink':'Chute au Panier|Retirez un piquet, puis tombez dans le panier allumé',  'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 
@@ -5886,7 +5888,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Remiendo|Termina los deshilachados antes de que se suelten',
-    'paws.left':'Quedan {n} oportunidades', 'skim.again':'Ahí no — la aguja sigue', 'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
+    'paws.again':'Esa no — prueba otra vez', 'paws.left':'Quedan {n} oportunidades', 'skim.again':'Ahí no — la aguja sigue', 'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
     'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Secadora|Empareja los calcetines más rápido que el tambor',
     'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Riña de Gatos|Lee la señal, elige la réplica, gana la riña',
     'p.arc':'Faltan {n}', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Cuna de Gato|Enlaza cada clavija antes de que afloje el hilo',  'm.slack':'Sin Cruces|Mueve las clavijas hasta que ningún hilo se cruce',  'm.tide':'Ronroneo|Mantén para crecer, suelta para calmar — quédate en la banda',  'm.plink':'Caída al Cesto|Quita una clavija y cae en la cesta encendida',  'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 
@@ -6381,7 +6383,7 @@ const STRINGS = {
     
 
     'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Ausbessern|Flicke die Ausgefransten, bevor sie sich auflösen',
-    'paws.left':'Noch {n} Chancen', 'skim.again':'Nicht dort — die Nadel läuft weiter', 'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
+    'paws.again':'Die nicht — versuch es nochmal', 'paws.left':'Noch {n} Chancen', 'skim.again':'Nicht dort — die Nadel läuft weiter', 'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
     'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Wäschetrockner|Paare die Socken schneller, als die Trommel füllt',
     'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Katzenstreit|Lies das Zeichen, wähl die Antwort, gewinn den Streit',
     'p.arc':'Noch {n}', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Fadenspiel|Schling jeden Stift, bevor der Faden erschlafft',  'm.slack':'Ohne Kreuzung|Zieh die Stifte, bis kein Faden kreuzt',  'm.tide':'Schnurren|Halten zum Anschwellen, loslassen zum Abklingen — bleib im Band',  'm.plink':'Korbwurf|Zieh einen Stift, dann fall in den erleuchteten Korb',  'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 
@@ -6816,6 +6818,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.114.0', date:'2026-10-02', items:[
+    'Dye Trap, Quick Count and Count the Stitches have paws. A wrong choice used to end the round; now it takes a paw, a wrong swatch or number is ruled out (a wrong stitch just shakes, since it is still needed), and the round goes on. Three paws at first, two in the middle, one at the top (which plays as before), shown as a row above the board. The paws belong to the round, so a round of several boards keeps the same ones. Fidget Loop never ends.',
+  ] },
   { v:'0.113.0', date:'2026-10-02', items:[
     'Balance has a Hint (two a round): it shades a stretch of the beam for a moment, and the balance point is somewhere inside it. The shade is wider than the target and not centred on it, so it narrows the search without doing the looking for you.',
     'Mirror Stitch gives squares back. The allowance counts squares you have lit, so putting one out returns its move (it used to charge a second move for taking one back). A Hint (two a round) points at one square the reflection still needs, or, once nothing is missing, at one that should not be lit.',
@@ -8057,6 +8062,7 @@ function pawsFor(ctx){ return ctx.level < 8 ? 3 : ctx.level < 20 ? 2 : 1; }
 const PAW_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><ellipse cx="12" cy="16" rx="5.2" ry="4.2"/><ellipse cx="5.4" cy="11" rx="2.2" ry="2.9"/><ellipse cx="9.6" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="14.4" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="18.6" cy="11" rx="2.2" ry="2.9"/></svg>';
 function pawChances(ctx, count){
   if (ctx.relaxed) return { use(){ return true; }, left: () => 99 };
+  if (ctx.shared && ctx.shared.paws) return ctx.shared.paws;
   const total = Math.max(1, count || pawsFor(ctx));
   let left = total, chip = null, pips = [];
   if (total > 1){
@@ -8072,10 +8078,21 @@ function pawChances(ctx, count){
     chip.classList.toggle('low', left === 1);
   };
   paint();
-  return {
+  const paws = {
     use(at){ left--; paint(); if (left <= 0){ ctx.miss(at); return false; } return true; },
     left: () => left
   };
+  if (ctx.shared) ctx.shared.paws = paws;
+  return paws;
+}
+/* A wrong choice that takes a paw: it is ruled out (unless it may still be needed), the board shakes, and the round goes on. */
+function wrongTap(ctx, paws, node, rule){
+  if (!paws.use(node)) return false;
+  if (rule !== false){ node.disabled = true; node.classList.add('ruled'); }
+  else { node.classList.remove('wrongtap'); void node.offsetWidth; node.classList.add('wrongtap'); }
+  sfx.tap(); buzz('bad');
+  ctx.prompt(t('paws.again'));
+  return true;
 }
 
 /* Dragging. No mode needed it until now, and a dozen of the ones coming do —
@@ -8340,17 +8357,19 @@ const MODES = {
       const stitched = [];
 
       let next = 0;
+      const paws = pawChances(ctx);
       /* Past a point, one bubble that isn't next gets a glow suggesting it's
          the one — the label is always the real answer, in plain characters, so
          following the glow instead of reading it costs exactly what any
          other wrong tap costs. */
       const bait = ctx.level >= 14 ? pick(
         Array.from({length:n-1},(_,i)=>i+1), ctx.rnd) : -1;
+      const basePrompt = () => t(kind === 'abc' ? 'p.orderAbc' : kind === 'mix' ? 'p.orderMix' : 'p.order', { n });
       const count = (b, p, i) => {
         b.classList.add('done');
         next++;
         stitched.push(p.x.toFixed(1) + ',' + p.y.toFixed(1)); line.setAttribute('points', stitched.join(' '));
-        if (next >= n) ctx.win(b); else { sfx.tap(); buzz('tap'); }
+        if (next >= n) ctx.win(b); else { sfx.tap(); buzz('tap'); ctx.prompt(basePrompt()); }
       };
       pts.forEach((p, i) => {
         const b = mk('button','bub' + (i === bait ? ' bait' : ''));
@@ -8364,7 +8383,7 @@ const MODES = {
         b._idx = i;
         onTap(b, () => {
           if (b.classList.contains('done')) return;
-          if (i !== next) return ctx.miss(b);
+          if (i !== next){ wrongTap(ctx, paws, b, false); return; }
           count(b, p, i);
         });
         /* Or draw through them: keep a finger down and run it over the next one. Crossing the wrong ones costs nothing. */
@@ -8377,7 +8396,7 @@ const MODES = {
         if (bb && bb._sweep) bb._sweep();
       });
       ctx.surface.appendChild(box);
-      ctx.prompt(t(kind === 'abc' ? 'p.orderAbc' : kind === 'mix' ? 'p.orderMix' : 'p.order', { n }));
+      ctx.prompt(basePrompt());
     }
   },
 
@@ -8390,6 +8409,7 @@ const MODES = {
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v4l3 12H6L9 7z" fill="none" stroke="#6C6191" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="15" r="3.2" fill="#FF5B39"/></svg>',
     build(ctx){
       const k = clamp(3 + Math.floor(ctx.level/6), 3, 6);
+      const paws = pawChances(ctx);
       const pool = shuffle(INKS.slice(), ctx.rnd).slice(0, k);
       const ink = pool[Math.floor(ctx.rnd()*pool.length)];
       const others = pool.filter(c => c !== ink);
@@ -8433,7 +8453,7 @@ const MODES = {
         b.dataset.hex = c.hex;
         b.innerHTML = PIECE.drop(c);
         b.setAttribute('aria-label', inkName(c));
-        onTap(b, () => c === correct ? ctx.win(b) : ctx.miss(b));
+        onTap(b, () => { if (c === correct) ctx.win(b); else wrongTap(ctx, paws, b); });
         row.appendChild(b);
       });
       wrap.appendChild(row);
@@ -8679,6 +8699,7 @@ const MODES = {
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#FFC53D" stroke-width="2.2" stroke-linecap="round"><path d="M3 17l2-2.6 2 2.6"/><path d="M8 17l2-2.6 2 2.6"/></g><circle cx="17.2" cy="9" r="5" fill="none" stroke="#6C6191" stroke-width="2"/><path d="M17.2 6.2V9l2 1.4" fill="none" stroke="#6C6191" stroke-width="1.8" stroke-linecap="round"/></svg>',
     build(ctx){
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0,3);
+      const paws = pawChances(ctx);
       const target = pal[0];
       const total = Math.round(clamp(12 + ctx.level*1.6, 12, 48));
       /* From level 10, sometimes the question is turned round: count everything that is NOT the colour named. */
@@ -8751,9 +8772,10 @@ const MODES = {
       const row = mk('div','answers');
       shuffle(Array.from(near), ctx.rnd).forEach(v => {
         const b = mk('button','abtn' + (v === bait ? ' bait' : '')); b.type='button'; b.textContent = String(v);
-        onTap(b, () => v === answer ? ctx.win(b) : ctx.miss(b));
+        onTap(b, () => { if (v === answer) ctx.win(b); else wrongTap(ctx, paws, b); });
         row.appendChild(b);
       });
+      try { if (localStorage.getItem('dd.probe')) row.dataset.answer = String(answer); } catch(e){}
 
       /* Tap a dot to mark it as counted; tap it again to take the mark off. It changes nothing about the answer. */
       box.addEventListener('pointerdown', ev => { const d = ev.target.closest && ev.target.closest('.cdot'); if (!d) return; d.classList.toggle('tally'); sfx.tap(); });
@@ -17579,6 +17601,9 @@ function beginRound(mode, firstMeet){
     level: run.lvl,
     rnd: run.rnd,
     after: later,
+    /* Things a round's boards share: a round of several boards is built several times, and what belongs to the round, like the paws, must
+       not start again with each board. */
+    shared: {},
     /* For a mode that moves things once per animation frame. Call clock() once, then call what it returns at the top of every frame: it
        is how many 60 fps frames of time have passed (1 on most phones, 0.5 on a 120 Hz one), already scaled by the Game speed setting
        (Relaxed and Slow). Per-frame motion multiplies by it, so the game runs at the same speed on every screen. */
