@@ -4145,7 +4145,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.120.0';
+const VERSION_TAG = 'v0.121.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6829,6 +6829,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.121.0', date:'2026-10-02', items:[
+    'Stitch Sampler and Kitten’s Snack Attack give two hints at first instead of one (one again from the middle of the ramp). A hint in Stitch Sampler fills in a letter the phrase really has; in Kitten’s Snack Attack it makes the colour worth sending next glow.',
+  ] },
   { v:'0.120.0', date:'2026-10-02', items:[
     'Spool Shots stops wasting your moves. A spool that cannot fire (spent, or the wrong colour for where it would land) kicks back and costs nothing: it used to charge a move for a shot that never left the barrel, and the spools that fit are lit anyway. Winding the last shot back by tapping a square it painted now gives its move back.',
     'A Hint (two a round) lights the spool to fire next: the first shot of a shortest way from the board as it is to the finished picture. If you have painted yourself into a corner, it lights the squares to wind back instead.',
@@ -9220,8 +9223,8 @@ const MODES = {
       const board = mk('div','wboard'); wrap.appendChild(board);
       const meter = mk('div','wlives'); wrap.appendChild(meter);
       const keys = mk('div','keys'); wrap.appendChild(keys);
-      /* One hint a round: a letter that is in the phrase is filled in for you. It costs nothing, and there is only the one. */
-      let hints = 1;
+      /* Hints: a letter that is in the phrase is filled in for you. It costs nothing. Two at first, one from the middle of the ramp. */
+      let hints = ctx.level < 12 ? 2 : 1;
       const hintRow = mk('div','sumtools'), hintBtn = mk('button','sumtool'); hintBtn.type = 'button';
       hintRow.appendChild(hintBtn); wrap.appendChild(hintRow);
       const paintHint = () => { hintBtn.textContent = t('slack.hint') + ' ' + hints; hintBtn.disabled = hints <= 0; };
@@ -13664,8 +13667,8 @@ const MODES = {
       const slots = Array.from({ length: cap }, () => { const d = mk('button','antslot');
         d.type = 'button'; rail.appendChild(d); return d; });
       wrap.appendChild(rail);
-      /* One hint a round: the colour worth sending next glows. Whatever finishes outright first, then whatever clears most. */
-      let hints = 1;
+      /* Hints: the colour worth sending next glows. Whatever finishes outright first, then whatever clears most. Two at first, one later. */
+      let hints = ctx.level < 12 ? 2 : 1;
       const hintRow = mk('div','sumtools'), hintBtn = mk('button','sumtool'); hintBtn.type = 'button';
       hintRow.appendChild(hintBtn); wrap.appendChild(hintRow);
       const paintHint = () => { hintBtn.textContent = t('slack.hint') + ' ' + hints; hintBtn.disabled = hints <= 0; };
