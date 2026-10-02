@@ -792,14 +792,16 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   border-radius:var(--r-lg);background:#07050f;border:1px solid var(--edge-soft)}
 .glimbug{position:absolute;width:6%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
   background:var(--zap);box-shadow:0 0 10px 3px #ffc53daa;z-index:2;pointer-events:none}
-.glimbug::after{content:"";position:absolute;left:50%;top:50%;width:var(--reach,52%);height:var(--reach,52%);
-  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle, #ffc53d26 0%, #ffc53d0d 45%, transparent 72%);
-  transition:width var(--t-med),height var(--t-med)}
+.glimlight{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:1;
+  background:radial-gradient(circle, #ffc53d3d 0%, #ffc53d1f 38%, #ffc53d0a 62%, transparent 72%);
+  transition:width var(--t-med)}
 .glimlamp{position:absolute;width:14%;aspect-ratio:2;transform:translate(-50%,-50%);border-radius:0;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 24'%3E%3Cpath d='M2 12 Q11.5 1.5 21 12 Q11.5 22.5 2 12Z' fill='%234FBF63'/%3E%3Cpath d='M27 12 Q36.5 1.5 46 12 Q36.5 22.5 27 12Z' fill='%234FBF63'/%3E%3Cellipse cx='11.5' cy='12' rx='2' ry='8.6' fill='%2307140a'/%3E%3Cellipse cx='36.5' cy='12' rx='2' ry='8.6' fill='%2307140a'/%3E%3C/svg%3E") center/contain no-repeat;opacity:0;
   transition:opacity 160ms linear,filter var(--t-med)}
 .glimlamp::after{display:none}
+.glimlamp.peek{opacity:.8}
+.glimlamp.lit.look{background:none}
+.glimlamp svg{display:block;width:100%;height:100%}
 .glimlamp.lit{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 24'%3E%3Cpath d='M2 12 Q11.5 1.5 21 12 Q11.5 22.5 2 12Z' fill='%23C8FFD2'/%3E%3Cpath d='M27 12 Q36.5 1.5 46 12 Q36.5 22.5 27 12Z' fill='%23C8FFD2'/%3E%3Cellipse cx='11.5' cy='12' rx='2' ry='8.6' fill='%2307140a'/%3E%3Cellipse cx='36.5' cy='12' rx='2' ry='8.6' fill='%2307140a'/%3E%3C/svg%3E");filter:drop-shadow(0 0 7px #7be38acc) drop-shadow(0 0 16px #7be38a66)}
 
 /* ── Tidy ─────────────────────────────────────────────────────────────── */
@@ -4107,7 +4109,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.105.0';
+const VERSION_TAG = 'v0.106.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6791,6 +6793,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.106.0', date:'2026-10-02', items:[
+    'Cat’s Eyes can finally be seen. The lantern’s pool of light had been drawn as a tiny oval stuck in a corner, so on a dark board you carried a dot. It is now a soft round glow around your finger that grows as eyes open.',
+    'A quick swipe can no longer jump over a pair of eyes: the whole stroke from where your finger was counts, not just the places it was sampled.',
+    'Open eyes look at the light: their pupils follow your finger across the board.',
+    'Stuck? After a few seconds without finding a pair, the nearest closed pair stirs for a moment, as often as you need. Glow is still there for the whole board, and you get three to start with, then two.',
+  ] },
   { v:'0.105.0', date:'2026-10-02', items:[
     'Follow the Thread is gentler and prettier. The thread is a smooth curve now instead of a zigzag of straight pieces, and the part you have already followed turns bright behind your finger.',
     'A wobble is forgiven. Drifting off the thread fills the slip meter and the words tell you to ease back, but once you are back on it the meter empties again, so only staying away loses. Fidget Loop never loses.',
@@ -10306,14 +10314,15 @@ const MODES = {
       const lamps = clamp(4 + Math.floor(ctx.level/3), 4, 12);
       let reach = 26;
       const box = mk('div','glimbox');
+      const light = mk('div','glimlight');
       const bug = mk('div','glimbug');
       bug.setAttribute('role','button');
       bug.setAttribute('aria-label', t('a.firefly'));
       const col = mk('div','sumcol');
       col.appendChild(box);
       ctx.surface.appendChild(col);
-      /* Two glows a round: every unlit lamp shows faintly for a moment, then the dark comes back. */
-      let glows = 2, glowUntil = 0;
+      /* Glows a round (three at first, two later): every unlit lamp shows faintly for a moment, then the dark comes back. */
+      let glows = ctx.level < 8 ? 3 : 2, glowUntil = 0;
       const tools = mk('div','sumtools'), glow = mk('button','sumtool'); glow.type = 'button';
       const paintGlow = () => { glow.textContent = t('glimmer.glow') + ' ' + glows; glow.disabled = glows <= 0 || done; };
       tools.appendChild(glow); col.appendChild(tools);
@@ -10337,24 +10346,52 @@ const MODES = {
         box.appendChild(e);
         return e;
       });
+      box.appendChild(light);
       box.appendChild(bug);
 
       let bx = 50, by = 50, lit = 0, done = false;
+      /* Everything is measured in widths: the board is taller than it is wide, so a distance taken straight from the two percentages is a
+         longer way down than across, and the "reach" you see would be an oval. */
+      let A = 0, shownReach = 0;
+      const aspect = () => A || (box.clientWidth > 0 && box.clientHeight > 0 ? (A = box.clientHeight / box.clientWidth) : 1.5);
+      const segDist = (p, x0, y0, x1, y1) => {
+        const a = aspect(), vx = x1 - x0, vy = (y1 - y0) * a, wx = p.x - x0, wy = (p.y - y0) * a, len = vx*vx + vy*vy;
+        const u = len ? clamp((wx*vx + wy*vy) / len, 0, 1) : 0;
+        return Math.hypot(wx - vx*u, wy - vy*u);
+      };
+      let px = bx, py = by;
+      /* Once an eye is open its pupils follow the light. */
+      const EYES = '<svg viewBox="0 0 48 24" aria-hidden="true"><path d="M2 12 Q11.5 1.5 21 12 Q11.5 22.5 2 12Z" fill="#C8FFD2"/><path d="M27 12 Q36.5 1.5 46 12 Q36.5 22.5 27 12Z" fill="#C8FFD2"/><ellipse class="pl" cx="11.5" cy="12" rx="2" ry="8.6" fill="#07140a"/><ellipse class="pl" cx="36.5" cy="12" rx="2" ry="8.6" fill="#07140a"/></svg>';
+      const look = () => {
+        const a = aspect();
+        pts.forEach((p, i) => {
+          if (!p.lit) return;
+          const dx = bx - p.x, dy = (by - p.y) * a, d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 18);
+          const tx = (dx / d * 4.2 * k).toFixed(1), ty = (dy / d * 1.6 * k).toFixed(1), key = tx + ',' + ty;
+          if (p.gaze === key) return;
+          p.gaze = key;
+          els[i].querySelectorAll('.pl').forEach(e => e.setAttribute('transform', 'translate(' + tx + ' ' + ty + ')'));
+        });
+      };
       paintGlow();
       const say = () => ctx.prompt(t('p.glimmer', { n: lamps - lit }));
 
       const paint = () => {
         bug.style.left = bx+'%'; bug.style.top = by+'%';
-        bug.style.setProperty('--reach', reach*2 + '%');
+        light.style.left = bx+'%'; light.style.top = by+'%';
+        if (reach !== shownReach){ shownReach = reach; light.style.width = reach*2.2 + '%'; }
+        const a = aspect(), now = performance.now();
         pts.forEach((p,i) => {
           if (p.lit) return;
-          const d = Math.hypot(p.x-bx, p.y-by);
+          const d = Math.hypot(p.x-bx, (p.y-by) * a);
           /* Fade in with proximity rather than popping into existence — the
              hint that something is near is most of the pleasure. */
-          els[i].style.opacity = Math.max(clamp(1 - (d - reach*0.35) / (reach*0.9), 0, 1), performance.now() < glowUntil ? 0.7 : 0).toFixed(2);
-          if (d < 9){
-            p.lit = true; lit++;
-            els[i].classList.add('lit');
+          els[i].style.opacity = Math.max(clamp(1 - (d - reach*0.35) / (reach*0.9), 0, 1), now < glowUntil || now < (p.peekUntil || 0) ? 0.7 : 0).toFixed(2);
+          /* The whole stroke from where the finger was counts, so a quick swipe cannot jump over an eye. */
+          if (segDist(p, px, py, bx, by) < 9){
+            p.lit = true; lit++; progressAt = now;
+            els[i].classList.add('lit', 'look');
+            els[i].innerHTML = EYES;
             els[i].style.opacity = 1;
             els[i].setAttribute('aria-label', t('a.lampOn', { n: i+1 }));
             reach = Math.min(46, reach + 3.5);
@@ -10363,7 +10400,24 @@ const MODES = {
             say();
           }
         });
+        px = bx; py = by;
+        look();
       };
+      /* A little help when you are stuck: after a few seconds without finding an eye, the nearest closed pair stirs for a moment. Asking
+         for it costs nothing and is not limited, and the Glow button is still there for the whole board. */
+      let progressAt = performance.now();
+      const stir = () => {
+        if (done) return;
+        const now = performance.now();
+        if (now - progressAt > 7000){
+          progressAt = now - 3500;
+          const a = aspect(); let best = null, bd = 1e9;
+          pts.forEach(p => { if (p.lit) return; const d = Math.hypot(p.x - bx, (p.y - by) * a); if (d < bd){ bd = d; best = p; } });
+          if (best){ best.peekUntil = now + 1300; paint(); ctx.after(1400, () => { if (!done) paint(); }); }
+        }
+        ctx.after(1000, stir);
+      };
+      ctx.after(1000, stir);
       paint(); say();
       onTap(glow, () => {
         if (glows <= 0 || done) return;
@@ -10372,7 +10426,7 @@ const MODES = {
       });
 
       onDrag(box, {
-        start: q => { if (!done){ bx = clamp(q.x,4,96); by = clamp(q.y,4,96); paint(); } },
+        start: q => { if (!done){ bx = clamp(q.x,4,96); by = clamp(q.y,4,96); px = bx; py = by; paint(); } },
         move:  q => { if (!done){ bx = clamp(q.x,4,96); by = clamp(q.y,4,96); paint(); } }
       });
     }
