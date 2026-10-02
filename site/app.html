@@ -713,6 +713,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   cursor:pointer;transition:background var(--t-fast),border-color var(--t-fast),transform var(--t-fast);
 }
 .brcell:active{transform:scale(.94)}
+.brcell.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88;background:#ffc53d22}
+.sumcol > .brwrap{flex:1 1 0;min-height:0}
 .brcell.plank{border-color:#C08BFF;box-shadow:0 0 12px #c08bff55;cursor:pointer;background:
   repeating-linear-gradient(90deg, #00000026 0 2px, transparent 2px 6px),
   #C08BFF}
@@ -4119,7 +4121,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.111.0';
+const VERSION_TAG = 'v0.112.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4829,7 +4831,7 @@ const STRINGS = {
     'modes.families':'Families', 'modes.played':'{n} of {m} played', 'modes.allCard':'All {n} modes', 'modes.allSub':'One long list, every family', 'modes.hold':'Hold a card to read what a mode is before you start it.', 'mpv.best':'Your best', 'mpv.mastery':'Mastery', 'mpv.play':'Play', 'mpv.mastered':'Mastered — all three stars', 'mpv.toNext':'{n} more points for the next star',
     'daily.streak':'{n}-day streak', 'daily.streak1':'Streak started today', 'daily.share':'Dopamine Drop — Daily Drop {d}: {a}/{b} solved for {n} points, day {s} of my streak.', 'btn.share':'Share', 'daily.copied':'Copied',
     'stats.filter':'Filter the mode list', 'stats.fAll':'All', 'stats.fPlayed':'Played', 'stats.fNew':'Not tried', 'stats.allPlayed':'You have played every mode at least once.', 'stats.noneYet':'Nothing here yet — play a Marathon and a score appears.',
-    'p.bridge':'{n} stitches laid — reach the far edge', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Bare cloth, column {x} row {y}, tap to lay a stitch', 'bridge.plank':'A stitch, column {x} row {y}, tap to lift it', 'm.bridge':'Darning|Lay stitches edge to edge — you have only so many', 
+    'bridge.hint':'Hint', 'p.bridge':'{n} stitches laid — reach the far edge', 'bridge.bank':'A bank, column {x} row {y}', 'bridge.rock':'Deep water, column {x} row {y}', 'bridge.open':'Bare cloth, column {x} row {y}, tap to lay a stitch', 'bridge.plank':'A stitch, column {x} row {y}, tap to lift it', 'm.bridge':'Darning|Lay stitches edge to edge — you have only so many', 
     'daily.today':'Today’s twelve', 'daily.done':'Played today', 'daily.streakN':'{n}-day streak', 'play.carryBest':'Your best {n}',
     'wc.lead':'{n} small puzzles. The one in front of you changes every round.', 'wc.p1':'Ten minutes a run, or as long as you like', 'wc.p2':'A different puzzle every round', 'wc.p3':'A miss costs time — a streak pays', 'wc.change':'Change', 'wc.start':'Start your first run', 'wc.look':'Look around first',
     'mix.tapes':'Your mixtapes', 'mix.name':'Name this mixtape', 'mix.share':'Share this mixtape', 'mix.delete':'Delete this mixtape', 'mix.untitled':'Mixtape {n}', 'mix.newTape':'+ New', 'mix.paste':'Paste a code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Delete “{name}”?', 'mix.keep':'Keep', 'mix.deleteIt':'Delete', 'mix.shareText':'My Dopamine Drop mixtape “{name}” — {n} modes. Paste this code into the Mix tab: {code}', 'mix.importTitle':'Add a mixtape', 'mix.importSub':'Paste a code someone sent you. It carries a name and a list of modes, nothing else.', 'mix.importAdd':'Add it', 'mix.importBad':'No mixtape code in that. Paste the whole message — the code starts with DD1.', 'mix.importOk':'Added “{name}”.', 'mix.importN':'{n} modes.', 'mix.importN1':'One mode.', 'mix.importDropped':'{n} of its modes are not in this version and were left out.', 'mix.importDropped1':'One of its modes is not in this version and was left out.',
@@ -5324,7 +5326,7 @@ const STRINGS = {
     'modes.families':'Familles', 'modes.played':'{n} sur {m} joués', 'modes.allCard':'Les {n} modes', 'modes.allSub':'Une seule longue liste, toutes familles', 'modes.hold':'Maintenez une carte pour lire ce qu’est un mode avant de le lancer.', 'mpv.best':'Votre record', 'mpv.mastery':'Maîtrise', 'mpv.play':'Jouer', 'mpv.mastered':'Maîtrisé — les trois étoiles', 'mpv.toNext':'Encore {n} points pour la prochaine étoile',
     'daily.streak':'Série de {n} jours', 'daily.streak1':'Série commencée aujourd’hui', 'daily.share':'Dopamine Drop — Tirage du jour {d} : {a}/{b} réussis pour {n} points, {s}ᵉ jour de ma série.', 'btn.share':'Partager', 'daily.copied':'Copié',
     'stats.filter':'Filtrer la liste des modes', 'stats.fAll':'Tout', 'stats.fPlayed':'Joués', 'stats.fNew':'Jamais essayés', 'stats.allPlayed':'Vous avez joué à tous les modes au moins une fois.', 'stats.noneYet':'Rien ici — jouez un Marathon et un score apparaîtra.',
-    'p.bridge':'{n} points posés — atteignez l’autre bord', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Tissu nu, colonne {x} ligne {y}, touchez pour poser un point', 'bridge.plank':'Un point, colonne {x} ligne {y}, touchez pour le retirer', 'm.bridge':'Reprise|Posez les points d’un bord à l’autre — ils sont comptés', 
+    'bridge.hint':'Indice', 'p.bridge':'{n} points posés — atteignez l’autre bord', 'bridge.bank':'Une rive, colonne {x} ligne {y}', 'bridge.rock':'Eau profonde, colonne {x} ligne {y}', 'bridge.open':'Tissu nu, colonne {x} ligne {y}, touchez pour poser un point', 'bridge.plank':'Un point, colonne {x} ligne {y}, touchez pour le retirer', 'm.bridge':'Reprise|Posez les points d’un bord à l’autre — ils sont comptés', 
     'daily.today':'Les douze du jour', 'daily.done':'Fait aujourd’hui', 'daily.streakN':'Série de {n} jours', 'play.carryBest':'Votre record {n}',
     'wc.lead':'{n} petits casse-têtes. Celui qui est devant vous change à chaque manche.', 'wc.p1':'Dix minutes par partie, ou autant que vous voulez', 'wc.p2':'Un casse-tête différent à chaque manche', 'wc.p3':'Une erreur coûte du temps — une série rapporte', 'wc.change':'Changer', 'wc.start':'Lancer votre première partie', 'wc.look':'Jeter un œil d’abord',
     'mix.tapes':'Vos playlists', 'mix.name':'Nommer cette playlist', 'mix.share':'Partager cette playlist', 'mix.delete':'Supprimer cette playlist', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Nouvelle', 'mix.paste':'Coller un code', 'mix.metaTape':'{name} · {n} modes', 'mix.delConfirm':'Supprimer « {name} » ?', 'mix.keep':'Garder', 'mix.deleteIt':'Supprimer', 'mix.shareText':'Ma playlist Dopamine Drop « {name} » — {n} modes. Collez ce code dans l’onglet Mix : {code}', 'mix.importTitle':'Ajouter une playlist', 'mix.importSub':'Collez un code qu’on vous a envoyé. Il contient un nom et une liste de modes, rien d’autre.', 'mix.importAdd':'Ajouter', 'mix.importBad':'Aucun code de playlist là-dedans. Collez tout le message — le code commence par DD1.', 'mix.importOk':'« {name} » ajoutée.', 'mix.importN':'{n} modes.', 'mix.importN1':'Un mode.', 'mix.importDropped':'{n} de ses modes n’existent pas dans cette version et ont été écartés.', 'mix.importDropped1':'Un de ses modes n’existe pas dans cette version et a été écarté.',
@@ -5819,7 +5821,7 @@ const STRINGS = {
     'modes.families':'Familias', 'modes.played':'{n} de {m} jugados', 'modes.allCard':'Los {n} modos', 'modes.allSub':'Una sola lista, todas las familias', 'modes.hold':'Mantén pulsada una tarjeta para leer qué es un modo antes de empezar.', 'mpv.best':'Tu récord', 'mpv.mastery':'Dominio', 'mpv.play':'Jugar', 'mpv.mastered':'Dominado — las tres estrellas', 'mpv.toNext':'{n} puntos más para la siguiente estrella',
     'daily.streak':'Racha de {n} días', 'daily.streak1':'Racha empezada hoy', 'daily.share':'Dopamine Drop — Reto diario {d}: {a}/{b} resueltos por {n} puntos, día {s} de mi racha.', 'btn.share':'Compartir', 'daily.copied':'Copiado',
     'stats.filter':'Filtrar la lista de modos', 'stats.fAll':'Todos', 'stats.fPlayed':'Jugados', 'stats.fNew':'Sin probar', 'stats.allPlayed':'Has jugado todos los modos al menos una vez.', 'stats.noneYet':'Aquí no hay nada — juega un Maratón y aparecerá una puntuación.',
-    'p.bridge':'{n} puntadas puestas — llega al otro borde', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Tela desnuda, columna {x} fila {y}, toca para dar una puntada', 'bridge.plank':'Una puntada, columna {x} fila {y}, toca para quitarla', 'm.bridge':'Zurcido|Pon puntadas de borde a borde — son contadas', 
+    'bridge.hint':'Pista', 'p.bridge':'{n} puntadas puestas — llega al otro borde', 'bridge.bank':'Una orilla, columna {x} fila {y}', 'bridge.rock':'Agua profunda, columna {x} fila {y}', 'bridge.open':'Tela desnuda, columna {x} fila {y}, toca para dar una puntada', 'bridge.plank':'Una puntada, columna {x} fila {y}, toca para quitarla', 'm.bridge':'Zurcido|Pon puntadas de borde a borde — son contadas', 
     'daily.today':'Los doce de hoy', 'daily.done':'Jugado hoy', 'daily.streakN':'Racha de {n} días', 'play.carryBest':'Tu récord {n}',
     'wc.lead':'{n} pequeños rompecabezas. El que tienes delante cambia en cada ronda.', 'wc.p1':'Diez minutos por partida, o los que quieras', 'wc.p2':'Un rompecabezas distinto cada ronda', 'wc.p3':'Un fallo cuesta tiempo — una racha paga', 'wc.change':'Cambiar', 'wc.start':'Empieza tu primera partida', 'wc.look':'Echar un vistazo primero',
     'mix.tapes':'Tus listas', 'mix.name':'Nombra esta lista', 'mix.share':'Compartir esta lista', 'mix.delete':'Borrar esta lista', 'mix.untitled':'Lista {n}', 'mix.newTape':'+ Nueva', 'mix.paste':'Pegar un código', 'mix.metaTape':'{name} · {n} modos', 'mix.delConfirm':'¿Borrar «{name}»?', 'mix.keep':'Conservar', 'mix.deleteIt':'Borrar', 'mix.shareText':'Mi lista de Dopamine Drop «{name}» — {n} modos. Pega este código en la pestaña Mix: {code}', 'mix.importTitle':'Añadir una lista', 'mix.importSub':'Pega un código que te hayan enviado. Lleva un nombre y una lista de modos, nada más.', 'mix.importAdd':'Añadirla', 'mix.importBad':'Ahí no hay ningún código de lista. Pega el mensaje entero — el código empieza por DD1.', 'mix.importOk':'Añadida «{name}».', 'mix.importN':'{n} modos.', 'mix.importN1':'Un modo.', 'mix.importDropped':'{n} de sus modos no están en esta versión y se han dejado fuera.', 'mix.importDropped1':'Uno de sus modos no está en esta versión y se ha dejado fuera.',
@@ -6314,7 +6316,7 @@ const STRINGS = {
     'modes.families':'Familien', 'modes.played':'{n} von {m} gespielt', 'modes.allCard':'Alle {n} Modi', 'modes.allSub':'Eine lange Liste, alle Familien', 'modes.hold':'Halte eine Karte gedrückt, um vor dem Start zu lesen, was ein Modus ist.', 'mpv.best':'Dein Bestwert', 'mpv.mastery':'Meisterschaft', 'mpv.play':'Spielen', 'mpv.mastered':'Gemeistert — alle drei Sterne', 'mpv.toNext':'Noch {n} Punkte bis zum nächsten Stern',
     'daily.streak':'{n} Tage in Folge', 'daily.streak1':'Serie heute begonnen', 'daily.share':'Dopamine Drop — Tagesrunde {d}: {a}/{b} gelöst für {n} Punkte, Tag {s} meiner Serie.', 'btn.share':'Teilen', 'daily.copied':'Kopiert',
     'stats.filter':'Modusliste filtern', 'stats.fAll':'Alle', 'stats.fPlayed':'Gespielt', 'stats.fNew':'Ungespielt', 'stats.allPlayed':'Du hast jeden Modus mindestens einmal gespielt.', 'stats.noneYet':'Hier ist noch nichts — spiel einen Marathon und ein Wert erscheint.',
-    'p.bridge':'{n} Stiche gelegt — erreiche den anderen Rand', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Blanker Stoff, Spalte {x} Zeile {y}, tippen zum Stich setzen', 'bridge.plank':'Ein Stich, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Stopfen|Setze Stiche von Rand zu Rand — du hast nur so viele', 
+    'bridge.hint':'Tipp', 'p.bridge':'{n} Stiche gelegt — erreiche den anderen Rand', 'bridge.bank':'Ein Ufer, Spalte {x} Zeile {y}', 'bridge.rock':'Tiefes Wasser, Spalte {x} Zeile {y}', 'bridge.open':'Blanker Stoff, Spalte {x} Zeile {y}, tippen zum Stich setzen', 'bridge.plank':'Ein Stich, Spalte {x} Zeile {y}, tippen zum Aufnehmen', 'm.bridge':'Stopfen|Setze Stiche von Rand zu Rand — du hast nur so viele', 
     'daily.today':'Die zwölf von heute', 'daily.done':'Heute gespielt', 'daily.streakN':'{n} Tage in Folge', 'play.carryBest':'Dein Bestwert {n}',
     'wc.lead':'{n} kleine Rätsel. Das vor dir wechselt jede Runde.', 'wc.p1':'Zehn Minuten pro Lauf, oder so lange du willst', 'wc.p2':'Jede Runde ein anderes Rätsel', 'wc.p3':'Ein Fehler kostet Zeit — eine Serie zahlt sich aus', 'wc.change':'Ändern', 'wc.start':'Starte deine erste Runde', 'wc.look':'Erst mal umsehen',
     'mix.tapes':'Deine Playlists', 'mix.name':'Diese Playlist benennen', 'mix.share':'Diese Playlist teilen', 'mix.delete':'Diese Playlist löschen', 'mix.untitled':'Playlist {n}', 'mix.newTape':'+ Neu', 'mix.paste':'Code einfügen', 'mix.metaTape':'{name} · {n} Modi', 'mix.delConfirm':'„{name}“ löschen?', 'mix.keep':'Behalten', 'mix.deleteIt':'Löschen', 'mix.shareText':'Meine Dopamine-Drop-Playlist „{name}“ — {n} Modi. Füge diesen Code im Mix-Tab ein: {code}', 'mix.importTitle':'Playlist hinzufügen', 'mix.importSub':'Füge einen Code ein, den dir jemand geschickt hat. Er enthält einen Namen und eine Modusliste, sonst nichts.', 'mix.importAdd':'Hinzufügen', 'mix.importBad':'Darin steckt kein Playlist-Code. Füge die ganze Nachricht ein — der Code beginnt mit DD1.', 'mix.importOk':'„{name}“ hinzugefügt.', 'mix.importN':'{n} Modi.', 'mix.importN1':'Ein Modus.', 'mix.importDropped':'{n} ihrer Modi gibt es in dieser Version nicht und wurden weggelassen.', 'mix.importDropped1':'Einen ihrer Modi gibt es in dieser Version nicht, er wurde weggelassen.',
@@ -6803,6 +6805,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.112.0', date:'2026-10-02', items:[
+    'Darning gives stitches back. The allowance counts stitches you have laid, so lifting one now returns it (it used to charge you a second move for taking one back).',
+    'A Hint (two a round) lights the next stitch on the cheapest way across from where your thread stands: stitches you have laid cost nothing to cross, empty squares cost one, rocks cannot be crossed.',
+  ] },
   { v:'0.111.0', date:'2026-10-02', items:[
     'Even Skeins sorts each basket biggest skein first, so a basket reads at a glance instead of in a jumble.',
     'A Hint (two a round) lights the next skein to move: the first step of the shortest way from where the baskets are now to a split that balances.',
@@ -12567,11 +12573,13 @@ const MODES = {
         grid.appendChild(c); cells.push(c);
       }
       wrap.appendChild(grid);
-      ctx.surface.appendChild(wrap);
+      const col = mk('div','sumcol');
+      col.appendChild(wrap);
+      ctx.surface.appendChild(col);
 
       const budget = moveBudget(ctx, need);
       const planks = new Set();
-      let done = false;
+      let done = false, hints = 2;
 
       const solid = i => i === start || i === end || planks.has(i);
       const crossed = () => {
@@ -12605,13 +12613,45 @@ const MODES = {
         /* The win is read before the plank is charged for, so a crossing
            finished on the very last plank is a crossing, not a bankruptcy. */
         if (crossed()){
-          done = true;
+          done = true; paintHint();
           grid.classList.add('good');
           return ctx.win(c);
         }
-        budget.spend(c);
+        /* The allowance is a count of stitches you may have laid, so lifting one gives it back. */
+        if (on) budget.spend(c); else budget.refund();
+        c.classList.remove('hint');
         say();
       };
+      /* A hint lights the next stitch on the cheapest way across from here: a laid stitch costs nothing to cross, an empty square costs
+         one, a rock cannot be crossed. */
+      const tools = mk('div','sumtools'), hint = mk('button','sumtool'); hint.type = 'button';
+      tools.appendChild(hint); col.appendChild(tools);
+      const paintHint = () => { hint.textContent = t('bridge.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
+      paintHint();
+      onTap(hint, () => {
+        if (done || hints <= 0) return;
+        const dist = new Array(g*g).fill(1e9), from = new Array(g*g).fill(-1), open = new Set([start]);
+        dist[start] = 0;
+        while (open.size){
+          let u = -1; open.forEach(k => { if (u < 0 || dist[k] < dist[u]) u = k; });
+          open.delete(u);
+          const x = u % g, yy = Math.floor(u / g);
+          [[1,0],[-1,0],[0,1],[0,-1]].forEach(d => {
+            const nx = x + d[0], ny = yy + d[1];
+            if (nx < 0 || ny < 0 || nx >= g || ny >= g) return;
+            const n = kk(nx, ny);
+            if (rocks.has(n)) return;
+            const w = solid(n) ? 0 : 1;
+            if (dist[u] + w < dist[n]){ dist[n] = dist[u] + w; from[n] = u; open.add(n); }
+          });
+        }
+        const route = []; for (let q = end; q !== -1; q = from[q]) route.push(q);
+        const next = route.reverse().find(q => !solid(q));
+        if (next === undefined) return;
+        hints--; paintHint(); sfx.tap();
+        cells[next].classList.add('hint');
+        ctx.after(2400, () => cells[next].classList.remove('hint'));
+      });
       let brush = null;
       cells.forEach((c, i) => {
         if (i === start || i === end || rocks.has(i)) return;
