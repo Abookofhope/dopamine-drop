@@ -800,7 +800,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .bit.rot{background:radial-gradient(circle at 35% 30%, #8f7b5e, #4a3b2a)}
 .bit.rot::after{content:"";position:absolute;inset:30%;border-radius:50%;background:#2018128c}
 .bit.cut{opacity:0;transform:translate(-50%,-50%) scale(1.5) rotate(25deg)}
-.bit.hitrot{box-shadow:0 0 0 3px var(--bad)}
+.bit.hitrot{box-shadow:0 0 0 3px var(--bad);opacity:.4}
 
 /* ── Glimmer ──────────────────────────────────────────────────────────── */
 .glimbox{position:relative;width:100%;height:100%;touch-action:none;overflow:hidden;
@@ -4137,7 +4137,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.115.0';
+const VERSION_TAG = 'v0.116.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6821,6 +6821,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.116.0', date:'2026-10-02', items:[
+    'Snip and Dropped Stitch have paws. Cutting a matted ball used to end the round, and so did striking a bar; now each takes a paw. A matted ball you cut is spent (one swipe through it is one paw, however long it lingers), and a bump reddens the bar behind you while the fall carries on. Three paws at first, two in the middle, one at the top, which plays as before. Fidget Loop never ends.',
+  ] },
   { v:'0.115.0', date:'2026-10-02', items:[
     'Stitch Count, Haunt and Tangle Watch have paws too. A wrong pair of numbers, a wrong tile or a wrong pair of dots used to end the round; now it takes a paw and the round goes on (the dots keep drifting, the wrong tile stays marked, and a wrong number flashes instead of shaking so the grid holds still). Three paws at first, two in the middle, one at the top, which plays as before. Fidget Loop never ends.',
   ] },
@@ -10600,6 +10603,7 @@ const MODES = {
       const need  = clamp(5 + Math.floor(ctx.level/2), 5, 18);
       const total = clamp(7 + Math.floor(ctx.level/1.4), 7, 22);
       const rotten = clamp(Math.floor(ctx.level/5), 0, 6);
+      const paws = pawChances(ctx);
       const bob = clamp((ctx.level - 8) * 0.14, 0, 2.2);      /* from level 9 the threads sway on the spot, and more as you climb */
       const R = 8.5;
 
@@ -10683,9 +10687,11 @@ const MODES = {
         if (bonus || got) ctx.prompt(strokeCut >= 3 ? t('slice.combo', { n: strokeCut, m: Math.max(0, need - cut) }) : t('p.slice', { n: Math.max(0, need - cut) }));
         if (got){ sfx.good(cut); buzz(HAPTIC.grow(got)); }
         if (hitBad){
-          hitBad.e.classList.add('hitrot');
-          done = true;
-          return ctx.miss(hitBad.e);
+          /* A matted ball takes a paw and is spent (one swipe through it costs one paw, not one for every step of it). */
+          hitBad.e.classList.add('hitrot'); hitBad.gone = true;
+          sfx.tap(); buzz('bad');
+          if (!paws.use(hitBad.e)){ done = true; return; }
+          ctx.prompt(t('paws.again'));
         }
         if (cut >= need){ done = true; return ctx.win(box); }
       };
@@ -10908,6 +10914,7 @@ const MODES = {
 
       let sx = 50, sy = 10, vx = 0, want = 50, through = 0, done = false, raf2 = 0;
       const pace = ctx.clock();
+      const paws = pawChances(ctx);
       const say = () => ctx.prompt(t('p.descent', { n: gates - through }));
       say();
 
@@ -10933,9 +10940,13 @@ const MODES = {
           if (b.pin){ b.pin.style.left = (b.gx + b.off - 1.6) + '%'; }
           if (!b.passed && Math.abs(top - 10) < 1.6){
             if (Math.abs(sx - b.gx) > gapW/2 - 2 || (b.pin && Math.abs(sx - (b.gx + b.off)) < 3.4)){
-              done = true; cancelAnimationFrame(raf2);
-              b.e.classList.add('struck');
-              return ctx.miss(star);
+              /* A bump takes a paw; the bar is behind you now and the fall goes on. The round ends when the last paw does. */
+              b.passed = true; b.e.classList.add('struck');
+              sfx.tap(); buzz('bad');
+              if (!paws.use(star)){ done = true; cancelAnimationFrame(raf2); return; }
+              through++; say();
+              if (through >= gates){ done = true; cancelAnimationFrame(raf2); return ctx.win(star); }
+              return;
             }
             b.passed = true; b.e.classList.add('cleared');
             through++; sfx.good(through); buzz('good');
