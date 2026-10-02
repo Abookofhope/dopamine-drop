@@ -1110,8 +1110,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   border:1px solid #00000038;box-shadow:inset 0 -2px 0 #00000026;
   transition:transform var(--t-fast),opacity var(--t-fast),box-shadow var(--t-fast)}
 .vgun .shp{width:62%;aspect-ratio:1;display:block;margin:auto}
-.vL,.vR{width:15px;height:64%}
-.vT,.vB{height:15px;width:64%}
+.vL,.vR{width:26px;height:82%}
+.vT,.vB{height:26px;width:82%}
 /* Clip-pathed into a barrel pointing the way it fires, so which way a cannon
    shoots is a thing you can see rather than a thing you work out. */
 .vL{clip-path:polygon(0 18%,60% 0,100% 50%,60% 100%,0 82%)}
@@ -1200,6 +1200,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .peg{position:absolute;width:7%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
   background:var(--ink-3);border:1px solid var(--edge);transition:opacity var(--t-fast),transform var(--t-fast)}
 .peg.pulled{opacity:.15;transform:translate(-50%,-50%) scale(.6);pointer-events:none}
+/* The pegs are small and close; the part that answers a thumb reaches a little past what is drawn. */
+.peg::before{content:"";position:absolute;inset:-4px;border-radius:50%}
 .bins2{position:absolute;left:6%;right:6%;bottom:2%;height:14%;display:flex;gap:3px}
 .bin2{flex:1;border-radius:var(--r-sm) var(--r-sm) 6px 6px;background:var(--ink-3);border:1px solid var(--edge)}
 .bin2.goal{background:#33e6c833;border-color:var(--cool)}
@@ -4149,7 +4151,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.127.0';
+const VERSION_TAG = 'v0.128.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6833,6 +6835,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.128.0', date:'2026-10-02', items:[
+    'Bigger things to tap. A scan of every game on a small phone found the controls that were too small to hit comfortably. The spools around Spool Shots were 15 pixels thick and are now 26; the pegs in Basket Drop answer a thumb a little past what is drawn; Mirror Stitch no longer goes ten across on a narrow phone (eight, with squares you can hit); and boards with six or more squares across now sit closer together (6 pixels apart, 4 from eight across, instead of 10), which makes every square in Stitch Count, Let the Cat Out, Tumble Dryer, Darning, Kitten’s Snack Attack and more a few pixels bigger.',
+  ] },
   { v:'0.127.0', date:'2026-10-02', items:[
     'Chalk Line has paws. A drop that goes wrong used to end the round; now it takes a paw, the ball goes back to the top and your lines stay on the paper, to be mended and dropped again. Three drops at first, two in the middle, one at the top, which plays as before. Fidget Loop never ends.',
   ] },
@@ -8285,6 +8290,9 @@ function gridEl(n){
   /* The column count, so the stylesheet can work out how tall this grid is
      allowed to get before its cells stop looking like tiles. */
   g.style.setProperty('--n', n);
+  /* The more squares there are, the closer they sit: six or seven across at ten pixels apart left a square on a small phone barely thirty
+     pixels wide, and the gap is not what anybody is aiming at. */
+  if (n >= 8) g.style.gap = '4px'; else if (n >= 6) g.style.gap = '6px';
   return g;
 }
 
@@ -8850,7 +8858,9 @@ const MODES = {
     name:'Mirror Stitch', blurb:'Reflect the pattern across the fold', cat:'logic', par:7500, bonus:2400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5v19" stroke="#6C6191" stroke-width="1.8" stroke-dasharray="3 3"/><path d="M4 9.5l3-3 3 3" fill="none" stroke="#33E6C8" stroke-width="2.3" stroke-linecap="round"/><path d="M20 14.5l-3 3-3-3" fill="none" stroke="#33E6C8" stroke-width="2.3" stroke-linecap="round"/></svg>',
     build(ctx){
-      const half = ctx.level < 6 ? 3 : ctx.level < 14 ? 4 : 5;
+      /* Ten across would leave squares under thirty pixels wide on a narrow phone, so the board is as big as the room allows. */
+      const roomW = ctx.surface.clientWidth || 350;
+      const half = Math.min(ctx.level < 6 ? 3 : ctx.level < 14 ? 4 : 5, Math.max(3, Math.floor((Math.floor((roomW + 5) / 33)) / 2)));
       const N = half*2;
       /* From level 8, about two rounds in five fold over the top instead of down the side: the pattern is the upper half and
          the reflection goes below it. The same gesture, but the eye has to be pointed somewhere else. */
@@ -12895,6 +12905,7 @@ const MODES = {
       const grid = mk('div','brgrid');
       grid.style.gridTemplateColumns = 'repeat(' + g + ',1fr)';
       grid.style.setProperty('--n', g);
+      if (g >= 8) grid.style.gap = '5px';
       const cells = [];
       for (let i = 0; i < g*g; i++){
         const c = mk('i','brcell');
