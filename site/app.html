@@ -718,6 +718,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 .brcell:active{transform:scale(.94)}
 .cell.mcell.hint{outline:3px solid #ffc53d;outline-offset:-3px;box-shadow:0 0 14px #ffc53d88}
+.cell.bar.hint{outline:3px solid #ffc53d;outline-offset:-3px}
+.cell.bar.hintend{box-shadow:0 0 16px #ffc53d,inset 0 0 0 3px #ffc53d}
 .brcell.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88;background:#ffc53d22}
 .sumcol > .brwrap{flex:1 1 0;min-height:0}
 .brcell.plank{border-color:#C08BFF;box-shadow:0 0 12px #c08bff55;cursor:pointer;background:
@@ -2235,7 +2237,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .budget.paws i svg{display:block;width:100%;height:100%}
 .budget.paws i.used{opacity:.2}
 .budget.paws.low{color:var(--bad)}
-.swatch.ruled,.abtn.ruled,.bub.ruled{opacity:.22;pointer-events:none}
+.swatch.ruled,.abtn.ruled,.bub.ruled{opacity:.3}
+.arcdot.wrongtap{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
+.bin.wrongtap{animation:wrongflash .45s ease-out}
 .beatdot.ruled{animation:none!important;opacity:.22;transform:scale(.8)}
 .bub.wrongtap,.ddot.wrongtap{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
 /* A tile that must hold still flashes instead of shaking. */
@@ -4138,7 +4142,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.118.0';
+const VERSION_TAG = 'v0.119.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4905,7 +4909,7 @@ const STRINGS = {
     'paws.again':'Not that one — try again', 'paws.left':'{n} chances left', 'skim.again':'Not there — the needle keeps going', 'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
     'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble Dryer|Pair the socks faster than the drum refills',
     'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Cat Fight|Read the tell, pick the counter, win the scrap',
-    'p.arc':'{n} left to reach', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Cat’s Cradle|Loop every peg before the thread goes slack',  'm.slack':'No Crossing|Drag the pegs until no thread crosses',  'm.tide':'Purr|Hold to swell, let go to settle — stay in the band',  'm.plink':'Basket Drop|Pull one peg, then drop into the lit basket',  'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 
+    'p.arc':'{n} left to reach', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Cat’s Cradle|Loop every peg before the thread goes slack',  'm.slack':'No Crossing|Drag the pegs until no thread crosses',  'm.tide':'Purr|Hold to swell, let go to settle — stay in the band',  'm.plink':'Basket Drop|Pull one peg, then drop into the lit basket',  'p.missed':'Missed', 'slide.hint':'Hint', 'p.slide':'Tap the end of a bar to slide it that way', 
     'p.wheel':'Guess the phrase', 
     'p.beat':'Tap the dot that is out of time', 'p.sort':'Sorted {a} of {b}',
     'p.target':'Target', 'p.diffLabel':'Difference',
@@ -5400,7 +5404,7 @@ const STRINGS = {
     'paws.again':'Pas celle-là — encore une chance', 'paws.left':'{n} chances restantes', 'skim.again':'Pas là — l’aiguille continue', 'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
     'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Sèche-Linge|Appariez les chaussettes plus vite que le tambour',
     'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Bagarre|Lisez l’indice, choisissez la parade, gagnez la bagarre',
-    'p.arc':'{n} à relier', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Jeu de Ficelle|Bouclez chaque piquet avant que le fil ne mollisse',  'm.slack':'Sans Croisement|Déplacez les piquets jusqu’à ce qu’aucun fil ne se croise',  'm.tide':'Ronron|Maintenez pour enfler, lâchez pour calmer — restez dans la bande',  'm.plink':'Chute au Panier|Retirez un piquet, puis tombez dans le panier allumé',  'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 
+    'p.arc':'{n} à relier', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Jeu de Ficelle|Bouclez chaque piquet avant que le fil ne mollisse',  'm.slack':'Sans Croisement|Déplacez les piquets jusqu’à ce qu’aucun fil ne se croise',  'm.tide':'Ronron|Maintenez pour enfler, lâchez pour calmer — restez dans la bande',  'm.plink':'Chute au Panier|Retirez un piquet, puis tombez dans le panier allumé',  'p.missed':'Raté', 'slide.hint':'Indice', 'p.slide':'Touchez le bout d’une barre pour la pousser', 
     'p.wheel':'Devinez la phrase', 
     'p.beat':'Touchez le point à contretemps', 'p.sort':'{a} sur {b} triés',
     'p.target':'Cible', 'p.diffLabel':'Différence',
@@ -5895,7 +5899,7 @@ const STRINGS = {
     'paws.again':'Esa no — prueba otra vez', 'paws.left':'Quedan {n} oportunidades', 'skim.again':'Ahí no — la aguja sigue', 'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
     'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Secadora|Empareja los calcetines más rápido que el tambor',
     'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Riña de Gatos|Lee la señal, elige la réplica, gana la riña',
-    'p.arc':'Faltan {n}', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Cuna de Gato|Enlaza cada clavija antes de que afloje el hilo',  'm.slack':'Sin Cruces|Mueve las clavijas hasta que ningún hilo se cruce',  'm.tide':'Ronroneo|Mantén para crecer, suelta para calmar — quédate en la banda',  'm.plink':'Caída al Cesto|Quita una clavija y cae en la cesta encendida',  'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 
+    'p.arc':'Faltan {n}', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Cuna de Gato|Enlaza cada clavija antes de que afloje el hilo',  'm.slack':'Sin Cruces|Mueve las clavijas hasta que ningún hilo se cruce',  'm.tide':'Ronroneo|Mantén para crecer, suelta para calmar — quédate en la banda',  'm.plink':'Caída al Cesto|Quita una clavija y cae en la cesta encendida',  'p.missed':'Fallado', 'slide.hint':'Pista', 'p.slide':'Toca el extremo de una barra para empujarla', 
     'p.wheel':'Adivina la frase', 
     'p.beat':'Toca el punto fuera de ritmo', 'p.sort':'{a} de {b} clasificados',
     'p.target':'Objetivo', 'p.diffLabel':'Diferencia',
@@ -6390,7 +6394,7 @@ const STRINGS = {
     'paws.again':'Die nicht — versuch es nochmal', 'paws.left':'Noch {n} Chancen', 'skim.again':'Nicht dort — die Nadel läuft weiter', 'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
     'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Wäschetrockner|Paare die Socken schneller, als die Trommel füllt',
     'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Katzenstreit|Lies das Zeichen, wähl die Antwort, gewinn den Streit',
-    'p.arc':'Noch {n}', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Fadenspiel|Schling jeden Stift, bevor der Faden erschlafft',  'm.slack':'Ohne Kreuzung|Zieh die Stifte, bis kein Faden kreuzt',  'm.tide':'Schnurren|Halten zum Anschwellen, loslassen zum Abklingen — bleib im Band',  'm.plink':'Korbwurf|Zieh einen Stift, dann fall in den erleuchteten Korb',  'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 
+    'p.arc':'Noch {n}', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Fadenspiel|Schling jeden Stift, bevor der Faden erschlafft',  'm.slack':'Ohne Kreuzung|Zieh die Stifte, bis kein Faden kreuzt',  'm.tide':'Schnurren|Halten zum Anschwellen, loslassen zum Abklingen — bleib im Band',  'm.plink':'Korbwurf|Zieh einen Stift, dann fall in den erleuchteten Korb',  'p.missed':'Verpasst', 'slide.hint':'Tipp', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 
     'p.wheel':'Errate den Satz', 
     'p.beat':'Tippe den Punkt aus dem Takt', 'p.sort':'{a} von {b} sortiert',
     'p.target':'Ziel', 'p.diffLabel':'Differenz',
@@ -6822,9 +6826,13 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.119.0', date:'2026-10-02', items:[
+    'Basket Drop, Sort Drop and Cat’s Cradle have paws. Landing in the wrong basket, putting a piece in the wrong basket, or tapping a peg that is out of reach used to end the round; now each takes a paw and you try again (in Basket Drop the pegs stay as you left them and the ball can be dropped again). Three paws at first, two in the middle, one at the top. Fidget Loop never ends.',
+    'A wrong swatch or number is dimmed as a reminder but can still be tapped, so the paws can always run out: with three swatches and three paws, ruling the wrong ones out would have meant a round could never be lost.',
+    'Let the Cat Out has a Hint (two a round): it lights the bar to move and the end to tap, the first step of a shortest way out from where the board is now.',
+  ] },
   { v:'0.118.0', date:'2026-10-02', items:[
     'Dye Pots and Tidy Up have paws. Pouring a dye into the wrong pot, or dropping a piece in the wrong basket, used to end the round; now it takes a paw. The dye stays in its jar and the piece goes back where it was, so you can try again. Three paws at first, two in the middle, one at the top, which plays as before. Fidget Loop never ends.',
-    'Two checks that cause a lost round on purpose (the run-shape and Noodle probes) now answer wrongly once for every paw shown, since one wrong answer is no longer the end of a round.',
   ] },
   { v:'0.117.0', date:'2026-10-02', items:[
     'Off Beat and Catch the Balls have paws. Tapping the wrong dot used to end the round, and so did a ball going wrong; now each takes a paw. A wrong dot is ruled out (it stops pulsing and dims, which narrows the search), and in Catch the Balls a keeper that got away is replaced by another a little later, so there are always enough left to win with. Three paws at first, two in the middle, one at the top, which plays as before. Fidget Loop never ends.',
@@ -8102,10 +8110,11 @@ function pawChances(ctx, count){
   if (ctx.shared) ctx.shared.paws = paws;
   return paws;
 }
-/* A wrong choice that takes a paw: it is ruled out (unless it may still be needed), the board shakes, and the round goes on. */
+/* A wrong choice that takes a paw: it is dimmed as a reminder (but can still be tapped, and costs another paw if it is: with three swatches
+   and three paws the wrong ones would otherwise run out first), or shaken if it may still be needed, and the round goes on. */
 function wrongTap(ctx, paws, node, rule){
   if (!paws.use(node)) return false;
-  if (rule !== false){ node.disabled = true; node.classList.add('ruled'); }
+  if (rule !== false){ node.classList.add('ruled'); }
   else { node.classList.remove('wrongtap'); void node.offsetWidth; node.classList.add('wrongtap'); }
   sfx.tap(); buzz('bad');
   ctx.prompt(t('paws.again'));
@@ -8970,6 +8979,37 @@ const MODES = {
         return -1;
       }
 
+      /* The first step of a shortest way out, for the hint: the same search, remembering which move it began with. */
+      function firstStep(start){
+        if (!blocks(start)) return null;
+        const key = ps => ps.map(p => p.r+'.'+p.c).join('|');
+        const seen = new Set([key(start)]);
+        let frontier = [{ ps: start, first: null }];
+        for (let depth=1; depth<=14; depth++){
+          if (seen.size > 24000) return null;
+          const next = [];
+          for (const { ps, first } of frontier){
+            for (let i=0;i<ps.length;i++){
+              for (const d of [-1,1]){
+                const p = ps[i];
+                const moved = ps.slice();
+                moved[i] = { o:p.o, len:p.len, r: p.o === 'v' ? p.r + d : p.r, c: p.o === 'h' ? p.c + d : p.c };
+                if (!legal(moved)) continue;
+                const k = key(moved);
+                if (seen.has(k)) continue;
+                seen.add(k);
+                const f = first || { i, d };
+                if (!blocks(moved)) return f;
+                next.push({ ps: moved, first: f });
+              }
+            }
+          }
+          if (!next.length) break;
+          frontier = next;
+        }
+        return null;
+      }
+
       function layout(){
         const ps = [];
         for (let i=0;i<count;i++){
@@ -9034,6 +9074,7 @@ const MODES = {
       /* How far a bar can go each way: as many cells as are free in a row. */
       const reach = bar => { let lo = 0, hi = 0; while (canMove(bar, lo - 1)) lo--; while (canMove(bar, hi + 1)) hi++; return [lo, hi]; };
       const history = [];
+      let hints = 2, hintMark = null;
       const wrap = mk('div','sumcol slidewrap');
       ctx.surface.appendChild(wrap);
 
@@ -9077,12 +9118,23 @@ const MODES = {
           g.appendChild(c);
         }
         wrap.appendChild(g);
-        const tools = mk('div','sumtools'), undo = mk('button','sumtool'); undo.type = 'button';
+        const tools = mk('div','sumtools'), undo = mk('button','sumtool'), hint = mk('button','sumtool'); undo.type = 'button'; hint.type = 'button';
         undo.textContent = t('chalk.undo'); undo.disabled = !history.length || solved;
+        hint.textContent = t('slide.hint') + ' ' + hints; hint.disabled = hints <= 0 || solved; hint.style.marginLeft = '10px';
         onTap(undo, () => { const h = history.pop(); if (!h || solved) return;
           if (h.bar.o === 'v') h.bar.r -= h.steps; else h.bar.c -= h.steps;
           sfx.tap(); budget.refund(); render(); });
-        tools.appendChild(undo); wrap.appendChild(tools);
+        /* A hint shows which bar to move, and which end to tap, for a moment: the first step of a shortest way out from here. */
+        onTap(hint, () => {
+          if (solved || hints <= 0) return;
+          const st = firstStep(bars); if (!st) return;
+          hints--; sfx.tap();
+          hintMark = { bar: bars[st.i], d: st.d };
+          render();
+          ctx.after(2600, () => { hintMark = null; wrap.querySelectorAll('.hint, .hintend').forEach(e => e.classList.remove('hint', 'hintend')); });
+        });
+        tools.appendChild(undo); tools.appendChild(hint); wrap.appendChild(tools);
+        if (hintMark) [...g.children].forEach(e => { if (e._bar === hintMark.bar){ e.classList.add('hint'); if (e._d === hintMark.d) e.classList.add('hintend'); } });
       }
       const apply = (bar, steps, at) => {
         if (bar.o === 'v') bar.r += steps; else bar.c += steps;
@@ -9272,6 +9324,7 @@ const MODES = {
     name:'Sorting Basket', blurb:'Sort by the rule — it changes', cat:'focus', par:7000, bonus:2200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5h16l-1.7 9H5.7z" fill="none" stroke="#6C6191" stroke-width="2" stroke-linejoin="round"/><circle cx="8.5" cy="5.5" r="2.7" fill="#FF5B39"/><rect x="13.6" y="2.8" width="5.4" height="5.4" rx="1.4" fill="#6C6191"/></svg>',
     build(ctx){
+      const paws = pawChances(ctx);
       const rounds = clamp(3 + Math.floor(ctx.level/4), 3, 10);
       /* From level 10 there are three colours, and so three baskets whenever the rule is colour. */
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, ctx.level >= 10 ? 3 : 2);
@@ -9347,6 +9400,7 @@ const MODES = {
         left.style.borderColor  = rule === 'colour' ? pal[0].hex : 'var(--edge)';
         mid.style.borderColor   = three ? pal[1].hex : 'var(--edge)';
         right.style.borderColor = rule === 'colour' ? pal[pal.length - 1].hex : 'var(--edge)';
+        try { if (localStorage.getItem('dd.probe')) wrap.dataset.right = String([left, mid, right].indexOf(rightAnswer())); } catch(e){}
       }
 
       const rightAnswer = () => {
@@ -9355,7 +9409,7 @@ const MODES = {
       };
       function answer(bin){
         if (!item || bin.disabled) return;
-        if (bin !== rightAnswer()) return ctx.miss(bin);
+        if (bin !== rightAnswer()){ wrongTap(ctx, paws, bin, false); return; }
         done++; sfx.tap(); buzz('tap');
         if (done >= rounds) return ctx.win(bin);
         ctx.prompt(t('p.sort', { a: done, b: rounds }));
@@ -9379,6 +9433,7 @@ const MODES = {
     name:'Cat’s Cradle', blurb:'Loop every peg before the thread goes slack', cat:'reflex', par:6000, bonus:2000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5 L20 12 L4 19" fill="none" stroke="#FF3D6E" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 5 L4 12 L20 19" fill="none" stroke="#6C6191" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     build(ctx){
+      const paws = pawChances(ctx);
       const n = clamp(6 + Math.floor(ctx.level/3), 6, 14);
       /* Every distance below is in widths, so the dashed circle you can see and
          the pegs the game counts as in reach are the same set. Reach and the
@@ -9472,7 +9527,7 @@ const MODES = {
         const d = dots[i];
         if (i === live || order.includes(i)) return;
         const from = pts[live], to = pts[i];
-        if (dd(to, from, arNow()) > reach){ if (!sweep) ctx.miss(d); return; }
+        if (dd(to, from, arNow()) > reach){ if (!sweep) wrongTap(ctx, paws, d, false); return; }
         const ln = document.createElementNS('http://www.w3.org/2000/svg','line');
         ln.setAttribute('x1',from.x); ln.setAttribute('y1',from.y);
         ln.setAttribute('x2',to.x);   ln.setAttribute('y2',to.y);
@@ -9712,6 +9767,7 @@ const MODES = {
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="3.6" r="2.2" fill="#FF9A3D"/><g fill="#6C6191"><circle cx="7.8" cy="9" r="1.5"/><circle cx="16.2" cy="9" r="1.5"/><circle cx="12" cy="13" r="1.5"/></g><path d="M6 16.8h12l-1.3 4.2H7.3z" fill="none" stroke="#FF9A3D" stroke-width="2" stroke-linejoin="round"/></svg>',
     build(ctx){
       const rows = clamp(4 + Math.floor(ctx.level/4), 4, 8);
+      const paws = pawChances(ctx);
       /* From level 10 two pegs come out, not one; from level 6 the ball can be nudged on the way down. */
       const pulls = ctx.level >= 10 ? 2 : 1;
       let nudges = ctx.level >= 16 ? 2 : ctx.level >= 6 ? 1 : 0, pulled = 0;
@@ -9778,7 +9834,13 @@ const MODES = {
           if (y >= 80){
             const landed = clamp(Math.floor((x - 8) / (84/bins)), 0, bins-1);
             binEls[landed].classList.add('hit');
-            return landed === goal ? ctx.win(binEls[landed]) : ctx.miss(binEls[landed]);
+            if (landed === goal) return ctx.win(binEls[landed]);
+            /* The wrong basket takes a paw; the pegs stay as they were and the ball can be dropped again. */
+            sfx.tap(); buzz('bad');
+            if (!paws.use(binEls[landed])) return;
+            ctx.after(520, () => { binEls[landed].classList.remove('hit'); ball.hidden = true; phase = 'drop'; paintNudge(); });
+            ctx.prompt(t('paws.again'));
+            return;
           }
           ctx.after(16, step);
         };

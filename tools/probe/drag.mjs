@@ -111,7 +111,7 @@ if (!only || only.includes('slide')){
   check(still, 'and the empty squares around it stay exactly where they were');
   check(moved, 'letting go leaves it on the nearest cell it can reach');
   const tapBefore = await snap();
-  await page.locator('.sumtool').click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(100);
+  await page.locator('.sumtool').first().click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(100);
   check((await snap()) !== tapBefore || !moved, 'Undo takes the slide back');
   await page.close();
 }
@@ -162,7 +162,7 @@ if (!only || only.includes('tumble')){
   const n1 = await page.evaluate(() => document.querySelectorAll('.cell.sock.full').length);
   check(await page.evaluate(sl => { const all = [...document.querySelectorAll('.cell.sock')]; return sl.every(i => !all[i].classList.contains('full')); }, slots), 'letting go over its partner pairs them off');
   check(await page.evaluate(() => document.querySelectorAll('.cell.sock').length) === cells, 'and the drum has exactly as many squares as before');
-  const hold = await page.locator('.sumtool').innerText();
+  const hold = await page.locator('.sumtool').first().innerText();
   check(/2/.test(hold), `the drum can be held twice a round (${hold})`);
   await page.close();
 }

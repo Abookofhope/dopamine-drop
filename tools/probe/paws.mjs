@@ -1,7 +1,7 @@
 /* Paws: a wrong answer takes a paw, not the round.
  *
  * Needle Pass has its own probe (skim.mjs); this one covers the modes that share the helper: Dye Trap, Quick Count, Count the
- * Stitches, Stitch Count, Haunt, Off Beat, Dye Pots, Tidy Up and Tangle Watch.
+ * Stitches, Stitch Count, Haunt, Off Beat, Dye Pots, Tidy Up, Basket Drop, Sort Drop, Cat's Cradle and Tangle Watch.
  *
  *   - at a new level there are three paws above the board (they are the round's, not each board's: a round of several boards keeps
  *     the same three), a wrong choice uses one and the round goes on, and the third wrong choice ends the round
@@ -97,6 +97,37 @@ const modes = {
         await page.mouse.move(c[0], c[1]); await page.mouse.down(); await page.mouse.move(c[2], c[3], { steps: 8 }); await page.mouse.up(); await page.waitForTimeout(250); };
       return { right: () => drag(ii, want), wrong: () => drag(ii, other) };
     } },
+  plink: { name: 'Basket Drop', sel: '#surface .plinkbox .peg', ruled: null, boards: false,
+    /* pull the pegs it asks for, then drop the ball into the lit basket's column (right) or the farthest column from it (wrong) */
+    acts: async page => {
+      const st = await page.evaluate(() => ({ pegs: [...document.querySelectorAll('.peg')].map(e => e.classList.contains('pulled')), phase: document.getElementById('prompt').textContent }));
+      return { right: async () => {}, wrong: async () => {
+        const need = await page.evaluate(() => /2/.test(document.getElementById('prompt').textContent) ? 2 : 1);
+        let pulled = await page.evaluate(() => document.querySelectorAll('.peg.pulled').length);
+        for (let k = pulled; k < need && (await page.evaluate(() => /Pull/i.test(document.getElementById('prompt').textContent))); k++){ await tapNth(page, '.peg:not(.pulled)', 0); }
+        const g = await page.evaluate(() => { const L = document.querySelector('.plinklane').getBoundingClientRect(), bins = [...document.querySelectorAll('.bin2')], gi = bins.findIndex(b => b.classList.contains('goal')); const far = gi < bins.length / 2 ? bins.length - 1 : 0; const B = bins[far].getBoundingClientRect(); return [B.left + B.width / 2, L.top + 8, B.top]; });
+        await page.mouse.move(g[0], g[1]); await page.mouse.down(); await page.mouse.move(g[0] + 1, g[1] + 20, { steps: 3 }); await page.mouse.up();
+        await page.waitForTimeout(2600);
+      } };
+    } },
+  sort: { name: 'Sort Drop', sel: '#surface .sortitem', ruled: null, boards: false,
+    acts: async page => {
+      const right = Number(await page.evaluate(() => document.querySelector('.sortwrap').dataset.right));
+      const bins = await page.$$eval('.bin', els => els.map(e => ({ off: e.disabled, vis: getComputedStyle(e).visibility !== 'hidden' })));
+      const wrong = bins.findIndex((b, i) => i !== right && !b.off && b.vis);
+      return { right: () => tapNth(page, '.bin', right), wrong: () => tapNth(page, '.bin', wrong) };
+    } },
+  arc: { name: "Cat's Cradle", sel: '#surface .arcdot', ruled: null, boards: false,
+    /* a board with at least one peg outside the circle of reach (a wide reach can cover them all) */
+    usable: page => page.evaluate(() => { const h = document.querySelector('.arcreach').getBoundingClientRect(), cx = h.left + h.width / 2, cy = h.top + h.height / 2, R = h.width / 2;
+      return [...document.querySelectorAll('.arcdot')].filter(e => { const r = e.getBoundingClientRect(); return Math.hypot(r.left + r.width / 2 - cx, r.top + r.height / 2 - cy) > R * 1.15; }).length >= 3; }),
+    /* a peg outside the circle of reach is tapped (wrong); a peg inside it is taken (right) */
+    acts: async page => {
+      const f = await page.evaluate(() => { const h = document.querySelector('.arcreach').getBoundingClientRect(), cx = h.left + h.width / 2, cy = h.top + h.height / 2, R = h.width / 2;
+        return [...document.querySelectorAll('.arcdot')].map((e, i) => { const r = e.getBoundingClientRect(), d = Math.hypot(r.left + r.width / 2 - cx, r.top + r.height / 2 - cy); return { i, d, R, taken: e.classList.contains('on') || e.classList.contains('linked') || e.classList.contains('live') }; }); });
+      const outside = f.filter(x => x.d > x.R * 1.15 && !x.taken), inside = f.filter(x => x.d < x.R * 0.8 && !x.taken && x.d > 4);
+      return { right: () => tapNth(page, '.arcdot', inside[0].i), wrong: () => tapNth(page, '.arcdot', outside[0].i) };
+    } },
   drift: { name: 'Tangle Watch', sel: '#surface .ddot', ruled: null, boards: false,
     acts: async page => {
       const pair = (await page.evaluate(() => document.querySelector('.driftwrap').dataset.pair)).split(',').map(Number);
@@ -109,8 +140,9 @@ const modes = {
 for (const [id, m] of Object.entries(modes)){
   /* a new level: three paws */
   {
-    const page = await open(id, m.sel, 0);
+    let page = await open(id, m.sel, 0);
     if (m.ready) await m.ready(page);
+    for (let tries = 0; m.usable && !(await m.usable(page)) && tries < 8; tries++){ await page.close(); page = await open(id, m.sel, 0); }
     let s = await paws(page);
     check(s.shown === 3 && s.left === 3 && /3/.test(s.aria), `${m.name}: three paws are shown above the board ("${s.aria}")`);
     let a = await m.acts(page); await a.wrong(); await page.waitForTimeout(200);

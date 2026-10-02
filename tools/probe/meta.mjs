@@ -53,8 +53,8 @@ const play = (page, wrong = false) => page.evaluate(w => {
 /* Lose a round. Odd Skein and Dye Trap give paws now, so one wrong answer is not the end of a round: answer wrongly once for every paw shown
    (once if there is no row of them). */
 const lose = async page => {
-  const n = Math.max(1, await page.evaluate(() => document.querySelectorAll('.budget.paws i').length));
-  for (let k = 0; k < n; k++){ await lose(page); await page.waitForTimeout(150); }
+  const n = Math.max(1, await page.evaluate(() => document.querySelectorAll('.budget.paws i, .oddpips i').length));
+  for (let k = 0; k < n; k++){ await play(page, true); await page.waitForTimeout(150); }
 };
 const nextBoard = page => page.waitForFunction(() => {
   const n = document.querySelector('#surface .swatch:not([disabled]), #surface .grid button:not([disabled])');

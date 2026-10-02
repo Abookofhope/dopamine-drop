@@ -164,7 +164,7 @@ await page.screenshot({ path: '/tmp/pw/shots/momentum-hot.png' });
 /* One wrong answer cools everything. */
 /* Odd Skein and Dye Trap give paws now, so one wrong answer is not the end of a round: answer wrongly once for every paw shown. */
 const lose = async () => {
-  const n = Math.max(1, await page.evaluate(() => document.querySelectorAll('.budget.paws i').length));
+  const n = Math.max(1, await page.evaluate(() => document.querySelectorAll('.budget.paws i, .oddpips i').length));
   let last; for (let k = 0; k < n; k++){ last = await play(true); await page.waitForTimeout(150); }
   return last;
 };
