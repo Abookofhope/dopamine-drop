@@ -1202,7 +1202,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .peg.pulled{opacity:.15;transform:translate(-50%,-50%) scale(.6);pointer-events:none}
 /* The element is the part that answers a thumb, five pixels bigger all round than the pin that is drawn inside it (a real box, so a probe and
    assistive tech see the real size, not a pseudo-element's). */
-.peg::before{content:"";position:absolute;inset:5px;border-radius:50%;pointer-events:none;
+.peg::before{content:"";position:absolute;inset:15%;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle at 34% 28%,#FFEDB8,#D9A53A 55%,#8C6418);box-shadow:0 2px 3px #000000a0, inset 0 -1px 2px #0000005a}
 .bins2{position:absolute;left:6%;right:6%;bottom:2%;height:14%;display:flex;gap:3px}
 .bin2{flex:1;border-radius:var(--r-sm) var(--r-sm) 6px 6px;background:var(--ink-3);border:1px solid var(--edge)}
@@ -2929,7 +2929,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .skimpips i.on{background:#FF8AD8}
 
 /* Basket Drop: brass pins, woven baskets, a ball of yarn. (The pin itself is the ::before of the peg: see the .peg rule above.) */
-.peg::after{inset:5px}
+.peg::after{inset:15%}
 .bin2{background:repeating-linear-gradient(90deg,#0000 0 6px,#0000003a 6px 7.5px),linear-gradient(180deg,#5B4148,#382830);
   border:1px solid #7A5A55;box-shadow:inset 0 3px 0 #9A766C}
 .bin2.goal{background:repeating-linear-gradient(90deg,#0000 0 6px,#0000002e 6px 7.5px),linear-gradient(180deg,#2E7D74,#1C4C4C);
@@ -4161,7 +4161,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.132.0';
+const VERSION_TAG = 'v0.133.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6845,6 +6845,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.133.0', date:'2026-10-02', items:[
+    'Basket Drop’s pegs have room between them. The board has seven rows at most (it had eight), the pegs sit further apart across the baskets, and each peg’s touch area is sized from the room around it, so no two ever touch. A small phone gets fewer rows rather than crowded pegs. The ball plays as it did.',
+  ] },
   { v:'0.132.0', date:'2026-10-02', items:[
     'Patchwork has a Tetris way to play, and it is now the most common one. The quilt starts empty and patches are dealt to you without end: three in the tray, and a new one for every one you lay. Cover a whole row or column and it stitches itself away, freeing the room, pays points at once (more for two at a time) and gives some time back. Clear the number of lines it asks for to win. There is no move allowance to run out of: you only lose when nothing in the tray fits anywhere, and even then a paw tidies two rows and the game goes on. Swap deals the tray again (twice a round) and Hint shows a place that fills a line.',
     'Patchwork’s other three ways to finish are gentler too: the move allowance is three times what a clean run takes, and lifting a patch off the quilt to put it somewhere else no longer costs a move.',
@@ -9858,7 +9861,17 @@ const MODES = {
     name:'Basket Drop', blurb:'Pull one peg, then drop into the lit basket', input:'tapdrag', cat:'physics', par:8000, bonus:2400,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="3.6" r="2.2" fill="#FF9A3D"/><g fill="#6C6191"><circle cx="7.8" cy="9" r="1.5"/><circle cx="16.2" cy="9" r="1.5"/><circle cx="12" cy="13" r="1.5"/></g><path d="M6 16.8h12l-1.3 4.2H7.3z" fill="none" stroke="#FF9A3D" stroke-width="2" stroke-linejoin="round"/></svg>',
     build(ctx){
-      const rows = clamp(4 + Math.floor(ctx.level/4), 4, 8);
+      /* Seven rows at most, and the lattice is as wide as the baskets are: with eight rows the pegs were about 31px apart on a phone, closer
+         than a thumb, with the part that answers a touch overlapping its neighbours. Every peg is sized from the room it has, so no two
+         ever touch, and all the numbers that depend on the spacing (the hit width, the kick, the nudge) scale with it, so the ball plays as
+         it did. */
+      /* A short board (a small phone) has less room between the rows than a tall one, so it gets fewer rows rather than pegs that touch: about a
+         thumb's height (34px) between one row and the next. */
+      const roomH = (ctx.surface.clientHeight || 560) - (ctx.level >= 6 ? 64 : 0);
+      const rowsAsked = clamp(4 + Math.floor(ctx.level/5), 4, 7);
+      const rows = Math.min(rowsAsked, Math.max(4, Math.floor(roomH * 0.66 / 34) - 1));
+      const SP = 80 / rows;                                   /* the gap between pegs in a row, % of the board's width */
+      const rowY = r => 14 + (r + 1) * (62 / (rows + 1));      /* where a row of pegs sits, % of its height */
       const paws = pawChances(ctx);
       /* From level 10 two pegs come out, not one; from level 6 the ball can be nudged on the way down. */
       const pulls = ctx.level >= 10 ? 2 : 1;
@@ -9870,14 +9883,22 @@ const MODES = {
       for (let r=0;r<rows;r++){
         for (let c=0;c<=r;c++){
           const e = mk('button','peg'); e.type='button';
-          const x = 50 + (c - r/2) * (72/rows);
-          const y = 16 + (r+1) * (58/(rows+1));
+          const x = 50 + (c - r/2) * SP;
+          const y = rowY(r);
           e.style.left = x+'%'; e.style.top = y+'%';
           e.setAttribute('aria-label', t('a.peg'));
           pegs.push({ el:e, x, y, gone:false });
           box.appendChild(e);
         }
       }
+      /* Every peg's touch box is as big as the room around it allows, across and down, up to a thumb's size; the pin drawn inside it scales with it. */
+      const fitPegs = () => {
+        const w = box.clientWidth, h = box.clientHeight; if (!w || !h) return;
+        const px = Math.max(18, Math.min(0.07*w + 10, SP/100*w - 8, (62/(rows + 1))/100*h - 6));
+        pegs.forEach(q => { q.el.style.width = px + 'px'; });
+      };
+      if (window.ResizeObserver) new ResizeObserver(fitPegs).observe(box);
+      rawRAF(fitPegs);
       const binRow = mk('div','bins2');
       const binEls = [];
       for (let i=0;i<bins;i++){
@@ -9913,12 +9934,12 @@ const MODES = {
         let x = fromX, y = 8, vx = 0, r = 0;
         ball.hidden = false;
         const step = () => {
-          if (nudgeDir){ vx += nudgeDir * (34/rows) * 0.9; nudgeDir = 0; }
+          if (nudgeDir){ vx += nudgeDir * (SP*0.472) * 0.9; nudgeDir = 0; }
           y += 1.5; vx *= 0.82; x += vx;
-          while (r < rows && y >= 16 + (r+1)*(58/(rows+1))){
-            const row = pegs.filter(p => Math.abs(p.y - (16 + (r+1)*(58/(rows+1)))) < 0.5);
-            const hit = row.find(p => !p.gone && Math.abs(p.x - x) < 36/rows);
-            if (hit) vx += (ctx.rnd() < 0.5 ? -1 : 1) * (34/rows) * 0.55;
+          while (r < rows && y >= rowY(r)){
+            const row = pegs.filter(p => Math.abs(p.y - rowY(r)) < 0.5);
+            const hit = row.find(p => !p.gone && Math.abs(p.x - x) < SP/2);
+            if (hit) vx += (ctx.rnd() < 0.5 ? -1 : 1) * (SP*0.472) * 0.55;
             r++;
           }
           x = clamp(x, 6, 94);
