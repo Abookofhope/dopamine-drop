@@ -2236,7 +2236,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .budget.paws i.used{opacity:.2}
 .budget.paws.low{color:var(--bad)}
 .swatch.ruled,.abtn.ruled,.bub.ruled{opacity:.22;pointer-events:none}
-.bub.wrongtap{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
+.bub.wrongtap,.ddot.wrongtap{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
+/* A tile that must hold still flashes instead of shaking. */
+.cell.num.wrongtap{animation:wrongflash .45s ease-out}
+@keyframes wrongflash{0%{box-shadow:inset 0 0 0 4px var(--bad);filter:brightness(1.3)}100%{box-shadow:inset 0 0 0 0 transparent;filter:none}}
 .wordcol{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:24px;width:100%;border-radius:var(--r-lg);
   background:radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--fam,transparent) 8%, transparent), transparent 75%)}
 .slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
@@ -4134,7 +4137,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.114.0';
+const VERSION_TAG = 'v0.115.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6818,6 +6821,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.115.0', date:'2026-10-02', items:[
+    'Stitch Count, Haunt and Tangle Watch have paws too. A wrong pair of numbers, a wrong tile or a wrong pair of dots used to end the round; now it takes a paw and the round goes on (the dots keep drifting, the wrong tile stays marked, and a wrong number flashes instead of shaking so the grid holds still). Three paws at first, two in the middle, one at the top, which plays as before. Fidget Loop never ends.',
+  ] },
   { v:'0.114.0', date:'2026-10-02', items:[
     'Dye Trap, Quick Count and Count the Stitches have paws. A wrong choice used to end the round; now it takes a paw, a wrong swatch or number is ruled out (a wrong stitch just shakes, since it is still needed), and the round goes on. Three paws at first, two in the middle, one at the top (which plays as before), shown as a row above the board. The paws belong to the round, so a round of several boards keeps the same ones. Fidget Loop never ends.',
   ] },
@@ -8630,6 +8636,7 @@ const MODES = {
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#FFC53D" stroke-width="2.4" stroke-linecap="round"><path d="M3.5 16l2.4-3 2.4 3"/><path d="M15.7 16l2.4-3 2.4 3"/></g><path d="M12 8.5v5M9.5 11h5" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/></svg>',
     build(ctx){
       const n = ctx.level < 4 ? 4 : ctx.level < 14 ? 5 : 6;
+      const paws = pawChances(ctx);
       const max = Math.round(6 + Math.min(30, ctx.level*1.6));
       const vals = Array.from({length:n*n}, () => 1 + Math.floor(ctx.rnd()*max));
       const a = Math.floor(ctx.rnd()*n*n);
@@ -8664,7 +8671,7 @@ const MODES = {
           const pv = Number(pick.textContent);
           const hit = isDiff ? Math.abs(pv - v) === target : pv + v === target;
           if (hit){ btn.classList.add('sel'); ctx.win(btn); }
-          else { pick.classList.remove('sel'); pick = null; ctx.miss(btn); }
+          else { pick.classList.remove('sel'); pick = null; wrongTap(ctx, paws, btn, false); }
         };
         btn._go = go;
         onTap(btn, go);
@@ -10226,6 +10233,7 @@ const MODES = {
       const picked = new Set();
       let phase = 'show';
 
+      const paws = pawChances(ctx);
       const grid = gridEl(g);
       const els = [];
       for (let i=0;i<n;i++){
@@ -10275,6 +10283,7 @@ const MODES = {
         const step = () => {
           if (k++ >= swaps){
             phase = 'pick';
+            try { if (localStorage.getItem('dd.probe')) grid.dataset.where = JSON.stringify(where); } catch(e){}
             peek.disabled = false;
             ctx.prompt(t('p.hauntPick', { n: ghosts }));
             return;
@@ -10316,7 +10325,9 @@ const MODES = {
         picked.add(i);
         if (!where.includes(i)){
           b.classList.add('wrong');
-          return ctx.miss(b);
+          /* A wrong tile takes a paw and stays marked; the ghosts are still out there. */
+          if (paws.use(b)){ sfx.tap(); buzz('bad'); ctx.prompt(t('paws.again')); }
+          return;
         }
         b.classList.add('open','found');
         sfx.good(picked.size); buzz('good');
@@ -11253,6 +11264,7 @@ const MODES = {
       pa.pair = pb.pair = true;
       dots = shuffle(dots, ctx.rnd);
 
+      const paws = pawChances(ctx);
       const field = mk('div','driftwrap');
       const col = mk('div','sumcol');
       col.appendChild(field);
@@ -11282,6 +11294,7 @@ const MODES = {
         ctx.after(1800, () => trails.replaceChildren());
       });
       tools.appendChild(scout); col.appendChild(tools);
+      try { if (localStorage.getItem('dd.probe')) field.dataset.pair = dots.indexOf(pa) + ',' + dots.indexOf(pb); } catch(e){}
       const sel = new Set();
       /* Choosing a dot, by tap or by the end of a drawn thread: the same thing either way. */
       const choose = d => {
@@ -11290,12 +11303,17 @@ const MODES = {
         if (sel.has(d)){ sel.delete(d); e.classList.remove('dsel'); return; }
         sel.add(d); e.classList.add('dsel');
         if (sel.size < 2) return;
-        done = true; cancelAnimationFrame(raf2); wire.classList.remove('on');
         if (sel.has(pa) && sel.has(pb)){
+          done = true; cancelAnimationFrame(raf2); wire.classList.remove('on');
           pa.e.classList.add('dhit'); pb.e.classList.add('dhit');
           return ctx.win(pa.e);
         }
-        return ctx.miss(e);
+        /* A wrong pair takes a paw: both dots are let go and the dots keep drifting. */
+        const wrongPair = Array.from(sel); sel.clear();
+        wrongPair.forEach(x => { x.e.classList.remove('dsel'); x.e.classList.remove('wrongtap'); void x.e.offsetWidth; x.e.classList.add('wrongtap'); });
+        wire.classList.remove('on');
+        if (!paws.use(e)){ done = true; cancelAnimationFrame(raf2); return; }
+        sfx.tap(); buzz('bad'); ctx.prompt(t('paws.again'));
       };
       /* The thread you draw from one dot to the other: it is pinned to the dot you pressed, which keeps drifting, and its far end
          follows the finger. */
