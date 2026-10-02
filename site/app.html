@@ -3430,6 +3430,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .oddwrap .grid{flex:1 1 0;min-height:0;width:auto;max-width:100%;align-self:center}
 .oddbar{display:flex;align-items:center;justify-content:center;gap:14px;flex:none;min-height:44px}
 .oddpips{display:flex;gap:7px}
+/* Odd Skein, Smooth: no stitch pattern, and each skein's own colour fills the gap around it, so the board is one flush field and an odd shade is an edge. */
+.oddwrap.smooth .cell.tile{border-radius:0;border-color:transparent;box-shadow:0 0 0 calc(var(--ogap,10px)/2) var(--c)}
+.oddwrap.smooth .cell.tile::before,.oddwrap.smooth .cell.tile::after{display:none}
+.sumtool.on{border-color:var(--flare);background:color-mix(in srgb,var(--flare) 18%,transparent)}
 .oddpips i{display:block;width:22px;height:22px;color:var(--flare);transition:opacity var(--t-med)}
 .oddpips i svg{width:100%;height:100%;display:block}
 .oddpips i.used{opacity:.22}
@@ -4152,7 +4156,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.129.0';
+const VERSION_TAG = 'v0.130.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4889,7 +4893,7 @@ const STRINGS = {
     'how.forage':'tap a kitten to send the kittens at its colour; they come in through the bare gaps and take only what they can reach, then wait in the basket until you send them again. Tap a waiting kitten to call it home', 'how.first':'First time — taking it gently.', 'how.sift':'tap a colour to drop that spool on the BACK of the belt; the belt shifts one slot per strand, so you are placing for a strand further down the chute, not the one falling. Tap the front spool to knock it off',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
-    'odd.again':'Not that one — try again ({n} left)', 'odd.sniff':'Sniff', 'odd.sniffed':'The cat ruled out half of them',
+    'odd.again':'Not that one — try again ({n} left)', 'odd.sniff':'Sniff', 'odd.sniffed':'The cat ruled out half of them', 'odd.smooth':'Smooth', 'odd.smoothed':'Smoothed: a shade that is off shows as an edge',
     'a.tile':'Tile {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.favAdd':'Add to favorites', 'a.favRemove':'Remove from favorites', 'a.verdictChange':'Tap to change your rating','a.bin':'Basket {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.lampOff':'Eyes {n}, closed', 'a.lampOn':'Eyes {n}, open', 'a.source':'Ball of yarn, tap to turn', 'a.sink':'The cat, tap to turn', 'a.pipe':'Knot, tap to turn', 'a.targetBin':'Target basket', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.skimNow':'Skim now', 'a.firefly':'Light', 'a.leaf':'Leaf', 'a.star':'Falling bobbin', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
     'over.ribbon':'{a} of {b} rounds solved',
     'p.saved':'Streak held', 'perk.title':'Perks', 'perk.used':'{a} of {b} slots', 'perk.toSlot':'{n} points to the next slot', 'perk.toToken':'{n} points to the next token', 'perk.equipped':'equipped, level {n}', 'perk.notEquipped':'not equipped', 'perk.upgrade':'Spend a token on {p}', 'perk.tokensLeft':'{n} tokens to spend', 'perk.spare':'Spare Life', 'perk.spare.d':'Start a Marathon with {n} more lives', 'perk.spare.d1':'Start a Marathon with one more life', 'perk.shield':'Streak Shield', 'perk.shield.d':'Keep your streak through {n} misses a run', 'perk.shield.d1':'Keep your streak through one miss a run', 'perk.patience':'Long Fuse', 'perk.patience.d':'{n}% longer on the round clock', 'perk.zeal':'Zeal', 'perk.zeal.d':'The multiplier climbs sooner (rank {n})', 'perk.steady':'Steady Hands', 'perk.steady.d':'{n} more moves where moves are counted', 'perk.rally':'Rally', 'perk.rally.d':'Timed runs start {n} seconds longer',
@@ -5384,7 +5388,7 @@ const STRINGS = {
     'how.forage':'touchez un chaton pour lancer les chatons sur sa couleur ; ils entrent par les trous, ne prennent que ce qu’ils atteignent, puis attendent dans le panier que vous les relanciez. Touchez un chaton en attente pour le rappeler', 'how.first':'Première fois — on y va doucement.', 'how.sift':'touchez une couleur pour poser cette bobine à l’ARRIÈRE du tapis ; le tapis avance d’un cran par brin, donc vous posez pour un brin plus loin dans la trémie, pas pour celui qui tombe. Touchez la bobine de tête pour la faire tomber',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
-    'odd.again':'Pas celle-là — encore une chance ({n} restantes)', 'odd.sniff':'Flairer', 'odd.sniffed':'Le chat en a écarté la moitié',
+    'odd.again':'Pas celle-là — encore une chance ({n} restantes)', 'odd.sniff':'Flairer', 'odd.sniffed':'Le chat en a écarté la moitié', 'odd.smooth':'Lisser', 'odd.smoothed':'Lissé : une teinte différente se voit comme un bord',
     'a.tile':'Tuile {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.favAdd':'Ajouter aux favoris', 'a.favRemove':'Retirer des favoris', 'a.verdictChange':'Touchez pour changer votre avis','a.bin':'Panier {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.lampOff':'Yeux {n}, fermés', 'a.lampOn':'Yeux {n}, ouverts', 'a.source':'Pelote, touchez pour tourner', 'a.sink':'Le chat, touchez pour tourner', 'a.pipe':'Nœud, touchez pour tourner', 'a.targetBin':'Panier cible', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.skimNow':'Touchez maintenant', 'a.firefly':'Lueur', 'a.leaf':'Feuille', 'a.star':'Bobine qui tombe', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
     'over.ribbon':'{a} manches sur {b} réussies',
     'p.saved':'Série gardée', 'perk.title':'Atouts', 'perk.used':'{a} sur {b} emplacements', 'perk.toSlot':'{n} points avant le prochain emplacement', 'perk.toToken':'{n} points avant le prochain jeton', 'perk.equipped':'équipé, niveau {n}', 'perk.notEquipped':'non équipé', 'perk.upgrade':'Dépenser un jeton sur {p}', 'perk.tokensLeft':'{n} jetons à dépenser', 'perk.spare':'Vie en plus', 'perk.spare.d':'Commencez un Marathon avec {n} vies de plus', 'perk.spare.d1':'Commencez un Marathon avec une vie de plus', 'perk.shield':'Bouclier de série', 'perk.shield.d':'Gardez votre série malgré {n} échecs par partie', 'perk.shield.d1':'Gardez votre série malgré un échec par partie', 'perk.patience':'Mèche longue', 'perk.patience.d':'{n}% de temps en plus par manche', 'perk.zeal':'Ferveur', 'perk.zeal.d':'Le multiplicateur monte plus tôt (rang {n})', 'perk.steady':'Main sûre', 'perk.steady.d':'{n} coups de plus là où les coups comptent', 'perk.rally':'Élan', 'perk.rally.d':'Les parties chronométrées durent {n} secondes de plus',
@@ -5879,7 +5883,7 @@ const STRINGS = {
     'how.forage':'toca un gatito para lanzar los gatitos a su color; entran por los huecos, toman solo lo que alcanzan y luego esperan en la cesta a que los vuelvas a lanzar. Toca un gatito en espera para llamarlo', 'how.first':'Primera vez: vamos con calma.', 'how.sift':'toca un color para poner ese carrete al FINAL de la cinta; la cinta avanza un hueco por hebra, así que colocas para una hebra más adelante en la tolva, no para la que cae. Toca el carrete delantero para tirarlo',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
-    'odd.again':'Esa no — prueba otra vez (quedan {n})', 'odd.sniff':'Olfatear', 'odd.sniffed':'El gato descartó la mitad',
+    'odd.again':'Esa no — prueba otra vez (quedan {n})', 'odd.sniff':'Olfatear', 'odd.sniffed':'El gato descartó la mitad', 'odd.smooth':'Alisar', 'odd.smoothed':'Alisado: un tono distinto se ve como un borde',
     'a.tile':'Casilla {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.favAdd':'Añadir a favoritos', 'a.favRemove':'Quitar de favoritos', 'a.verdictChange':'Toca para cambiar tu valoración','a.bin':'Cesta {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.lampOff':'Ojos {n}, cerrados', 'a.lampOn':'Ojos {n}, abiertos', 'a.source':'Ovillo, toca para girar', 'a.sink':'El gato, toca para girar', 'a.pipe':'Nudo, toca para girar', 'a.targetBin':'Cesta objetivo', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.skimNow':'Toca ahora', 'a.firefly':'Luz', 'a.leaf':'Hoja', 'a.star':'Bobina que cae', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
     'over.ribbon':'{a} de {b} rondas resueltas',
     'p.saved':'Racha mantenida', 'perk.title':'Ventajas', 'perk.used':'{a} de {b} ranuras', 'perk.toSlot':'{n} puntos para la próxima ranura', 'perk.toToken':'{n} puntos para la próxima ficha', 'perk.equipped':'equipada, nivel {n}', 'perk.notEquipped':'no equipada', 'perk.upgrade':'Gastar una ficha en {p}', 'perk.tokensLeft':'{n} fichas por gastar', 'perk.spare':'Vida extra', 'perk.spare.d':'Empieza un Maratón con {n} vidas más', 'perk.spare.d1':'Empieza un Maratón con una vida más', 'perk.shield':'Escudo de racha', 'perk.shield.d':'Conserva tu racha pese a {n} fallos por partida', 'perk.shield.d1':'Conserva tu racha pese a un fallo por partida', 'perk.patience':'Mecha larga', 'perk.patience.d':'{n}% más de tiempo por ronda', 'perk.zeal':'Fervor', 'perk.zeal.d':'El multiplicador sube antes (rango {n})', 'perk.steady':'Pulso firme', 'perk.steady.d':'{n} movimientos más donde se cuentan', 'perk.rally':'Empuje', 'perk.rally.d':'Las partidas con reloj empiezan {n} segundos más largas',
@@ -6374,7 +6378,7 @@ const STRINGS = {
     'how.forage':'tippe ein Kätzchen an, um die Kätzchen auf seine Farbe zu schicken; sie kommen durch die Lücken herein, nehmen nur, was sie erreichen, und warten dann im Korb, bis du sie erneut schickst. Tippe ein wartendes Kätzchen an, um es zurückzurufen', 'how.first':'Zum ersten Mal — wir fangen sanft an.', 'how.sift':'tippe eine Farbe an, um die Spule HINTEN aufs Band zu stellen; das Band rückt je Faden einen Platz vor, du stellst also für einen Faden weiter oben im Schacht, nicht für den fallenden. Tippe die vorderste Spule an, um sie herunterzustoßen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
-    'odd.again':'Die nicht — versuch es nochmal (noch {n})', 'odd.sniff':'Schnuppern', 'odd.sniffed':'Die Katze hat die Hälfte ausgeschlossen',
+    'odd.again':'Die nicht — versuch es nochmal (noch {n})', 'odd.sniff':'Schnuppern', 'odd.sniffed':'Die Katze hat die Hälfte ausgeschlossen', 'odd.smooth':'Glätten', 'odd.smoothed':'Geglättet: ein abweichender Ton zeigt sich als Kante',
     'a.tile':'Feld {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.favAdd':'Zu Favoriten hinzufügen', 'a.favRemove':'Aus Favoriten entfernen', 'a.verdictChange':'Tippen, um deine Bewertung zu ändern','a.bin':'Korb {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.lampOff':'Augen {n}, geschlossen', 'a.lampOn':'Augen {n}, offen', 'a.source':'Wollknäuel, zum Drehen tippen', 'a.sink':'Die Katze, zum Drehen tippen', 'a.pipe':'Knoten, zum Drehen tippen', 'a.targetBin':'Zielkorb', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.skimNow':'Jetzt tippen', 'a.firefly':'Licht', 'a.leaf':'Blatt', 'a.star':'Fallende Spule', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
     'over.ribbon':'{a} von {b} Runden gelöst',
     'p.saved':'Serie gehalten', 'perk.title':'Boni', 'perk.used':'{a} von {b} Plätzen', 'perk.toSlot':'{n} Punkte bis zum nächsten Platz', 'perk.toToken':'{n} Punkte bis zur nächsten Marke', 'perk.equipped':'ausgerüstet, Stufe {n}', 'perk.notEquipped':'nicht ausgerüstet', 'perk.upgrade':'Eine Marke für {p} ausgeben', 'perk.tokensLeft':'{n} Marken übrig', 'perk.spare':'Extraleben', 'perk.spare.d':'Starte einen Marathon mit {n} Leben mehr', 'perk.spare.d1':'Starte einen Marathon mit einem Leben mehr', 'perk.shield':'Serienschild', 'perk.shield.d':'Behalte deine Serie trotz {n} Fehlern pro Lauf', 'perk.shield.d1':'Behalte deine Serie trotz einem Fehler pro Lauf', 'perk.patience':'Lange Lunte', 'perk.patience.d':'{n}% mehr Zeit pro Runde', 'perk.zeal':'Eifer', 'perk.zeal.d':'Der Multiplikator steigt früher (Rang {n})', 'perk.steady':'Ruhige Hand', 'perk.steady.d':'{n} Züge mehr, wo Züge zählen', 'perk.rally':'Aufholjagd', 'perk.rally.d':'Zeitläufe starten {n} Sekunden länger',
@@ -6836,6 +6840,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.130.0', date:'2026-10-02', items:[
+    'Tumble Dryer pays for every pair. Each pair you match is worth 10 points straight away, and a pair made within a couple of seconds of the last one is worth 5 more each time (up to 20). A wrong pair pays nothing, and clearing the drum still pays as before.',
+    'Odd Skein has a Smooth button next to Sniff. It takes the stitch pattern off the skeins and fills the gaps between them, so they sit flush against one another and a shade that is a little off shows as an edge. Nothing moves, and it stays on for the rest of the boards in a round.',
+    'Mending is calmer. A thread now stays up for about two seconds even at the top level (it was one) and a new one frays about every 0.7 seconds (it was every third of a second).',
+    'Dropped Stitch has more room around its pins. A gap with a pin in it is cut wider, so there is a clear stretch about one and a half bobbins wide beside the pin (it was barely one), and two gaps in a row never both have a pin.',
+  ] },
   { v:'0.129.0', date:'2026-10-02', items:[
     'Basket Drop’s pegs are easier to hit: each peg answers a thumb over a slightly bigger area than the brass pin you see.',
   ] },
@@ -8344,6 +8354,8 @@ const MODES = {
       const tries0 = ctx.relaxed ? 0 : ctx.level < 8 ? 3 : ctx.level < 20 ? 2 : 1;
       let tries = tries0, sniffs = ctx.level < 10 ? 2 : 1, done = false;
       const tiles = [];
+      const wrap = mk('div','oddwrap');
+      wrap.style.setProperty('--ogap', (n >= 8 ? 4 : n >= 6 ? 6 : 10) + 'px');
       const bar = mk('div','oddbar'), pips = mk('span','oddpips');
       const PAW = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><ellipse cx="12" cy="16" rx="5.2" ry="4.2"/><ellipse cx="5.4" cy="11" rx="2.2" ry="2.9"/><ellipse cx="9.6" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="14.4" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="18.6" cy="11" rx="2.2" ry="2.9"/></svg>';
       for (let k = 0; k < tries0; k++){ const i2 = mk('i'); i2.innerHTML = PAW; pips.appendChild(i2); }
@@ -8352,13 +8364,26 @@ const MODES = {
       const sniff = mk('button','sumtool'); sniff.type = 'button';
       const paintSniff = () => { sniff.textContent = t('odd.sniff') + ' ' + sniffs; sniff.disabled = sniffs <= 0 || done; sniff.setAttribute('aria-label', sniff.textContent); };
       paintSniff(); bar.appendChild(sniff);
+      /* Smooth: the stitch pattern goes and the gaps between the skeins fill with their own colour, so they sit flush against one another
+         and a shade that is a little off shows as an edge, which a row of separate textured tiles hides. The tiles do not change size or
+         place. It stays on for the rest of the boards in a round once it is turned on. */
+      const smooth = mk('button','sumtool'); smooth.type = 'button';
+      const baseSay = () => t(ask === 'light' ? 'p.oddLight' : ask === 'dark' ? 'p.oddDark' : 'p.odd');
+      const paintSmooth = () => { const on = wrap.classList.contains('smooth'); smooth.textContent = t('odd.smooth'); smooth.classList.toggle('on', on); smooth.setAttribute('aria-pressed', on ? 'true' : 'false'); };
+      if (ctx.shared.smooth) wrap.classList.add('smooth');
+      paintSmooth(); bar.appendChild(smooth);
+      onTap(smooth, () => {
+        if (done) return;
+        wrap.classList.toggle('smooth'); ctx.shared.smooth = wrap.classList.contains('smooth'); paintSmooth(); sfx.tap();
+        ctx.prompt(ctx.shared.smooth ? t('odd.smoothed') : baseSay());
+      });
       for (let i=0;i<n*n;i++){
         const b = mk('button','cell tile');
         b.type = 'button';
         tiles.push(b);
-        if (ask === 'odd') b.style.background = 'hsl(' + (i===odd ? oddHue : hue)
-          + ' 68% ' + (i===odd ? oddBaseLight+light : 58) + '%)';
-        else b.style.background = 'hsl(' + hue + ' 62% ' + (i === odd ? (ask === 'light' ? 46 + spread + gapL : 46 - gapL) : 46 + ctx.rnd()*spread) + '%)';
+        const colour = ask === 'odd' ? 'hsl(' + (i===odd ? oddHue : hue) + ' 68% ' + (i===odd ? oddBaseLight+light : 58) + '%)'
+          : 'hsl(' + hue + ' 62% ' + (i === odd ? (ask === 'light' ? 46 + spread + gapL : 46 - gapL) : 46 + ctx.rnd()*spread) + '%)';
+        b.style.background = colour; b.style.setProperty('--c', colour);
         b.setAttribute('aria-label', t('a.tile', { n: i+1 }));
         onTap(b, () => {
           if (done || b.disabled) return;
@@ -8378,7 +8403,7 @@ const MODES = {
         sfx.good(2); buzz('tap');
         ctx.prompt(t('odd.sniffed'));
       });
-      const wrap = mk('div','oddwrap'); wrap.appendChild(g); wrap.appendChild(bar);
+      wrap.appendChild(g); wrap.appendChild(bar);
       ctx.surface.appendChild(wrap);
       ctx.prompt(t(ask === 'light' ? 'p.oddLight' : ask === 'dark' ? 'p.oddDark' : 'p.odd'));
     }
@@ -10104,7 +10129,7 @@ const MODES = {
       };
       for (let i=0;i<startPairs;i++) addPair();
 
-      let sel = -1, done = false, tangles = 0;
+      let sel = -1, done = false, tangles = 0, lastPair = 0, chain = 0;
       const left = () => slots.filter(Boolean).length;
       const say = () => ctx.prompt(t('p.tumble', { n: left() }));
 
@@ -10135,6 +10160,11 @@ const MODES = {
           paint(was); paint(i);
           sel = -1;
           sfx.good(1); buzz('good');
+          /* Every pair pays: ten points, and a pair made within a couple of seconds of the one before adds five more each time (up to twenty),
+             so a quick hand is worth more than a slow one. Paid before the win, which closes the round. */
+          const now = performance.now();
+          chain = now - lastPair < 2500 / spd() ? Math.min(chain + 1, 4) : 0; lastPair = now;
+          ctx.points(10 + chain*5, e);
           if (left() === 0){ done = true; return ctx.win(e); }
           say();
         } else {
@@ -10298,8 +10328,10 @@ const MODES = {
       const need   = clamp(4 + Math.floor(ctx.level/3), 4, 12);
       const allowed= clamp(4 - Math.floor(ctx.level/10), 2, 4);
       const maxHp  = clamp(1 + Math.floor(ctx.level/5), 1, 3);
-      const life   = clamp(2600 - ctx.level*70, 1000, 2600);
-      const gap    = clamp(900 - ctx.level*26, 330, 900);
+      /* Threads stay long enough to finish the ones you are on, and arrive a beat apart: at the top of the range a thread is still up for about
+         two seconds and a new one comes about every 0.7 (it used to be a second, and a third of one). */
+      const life   = clamp(3000 - ctx.level*45, 1900, 3000);
+      const gap    = clamp(1150 - ctx.level*20, 700, 1150);
       const HPINK  = ['#7BE38A', '#FFC53D', '#FF3D6E'];   /* nearly gone → fresh */
 
       let popped = 0, escaped = 0, done = false;
@@ -11050,7 +11082,7 @@ const MODES = {
     build(ctx){
       const gates = clamp(4 + Math.floor(ctx.level/3), 4, 11);
       /* From level 6, some gaps have a pin in them: a short post that drifts with the gap and is as fatal as the bar. */
-      const pinP  = clamp((ctx.level - 4)*0.05, 0, 0.6);
+      const pinP  = clamp((ctx.level - 4)*0.04, 0, 0.45);
       const fall  = 0.30 + Math.min(0.42, ctx.level*0.018);
       const gapW  = clamp(30 - ctx.level*0.75, 15, 30);
       const drift = 0.10 + Math.min(0.30, ctx.level*0.013);
@@ -11071,17 +11103,21 @@ const MODES = {
          changes except having a fair look at the first gate. */
       const LEAD = 20;
       const bars = [];
+      let lastPinned = false;
       for (let i=0;i<gates;i++){
         const e = mk('div','dbar');
         const left = mk('i','side l'), right = mk('i','side r');
         e.appendChild(left); e.appendChild(right);
-        const pinned = ctx.rnd() < pinP;
+        /* A pin takes room out of its gap, so a gap with a pin is cut wider (the room left to pass is as much as a bare gap has), and two
+           gaps in a row never both have one: the pins sit far enough apart to steer between. */
+        const pinned = !lastPinned && ctx.rnd() < pinP; lastPinned = pinned;
+        const w = pinned ? gapW*1.45 : gapW;
         let pin = null;
         if (pinned){ pin = mk('i','dpin'); e.appendChild(pin); }
         e.setAttribute('role','img');
         e.setAttribute('aria-label', t('a.gap', { a: i+1, b: gates }));
         sky.appendChild(e);
-        bars.push({ e, left, right, pin, off: (ctx.rnd() < 0.5 ? -1 : 1) * gapW * 0.28,
+        bars.push({ e, left, right, pin, w, off: (ctx.rnd() < 0.5 ? -1 : 1) * w * 0.28,
                     
                     y: 34 + LEAD + i*26,
                     gx: 20 + ctx.rnd()*60,
@@ -11108,16 +11144,16 @@ const MODES = {
 
         bars.forEach(b => {
           b.gx += b.dir * drift * k;
-          if (b.gx < 6 + gapW/2){ b.gx = 6 + gapW/2; b.dir = 1; }
-          if (b.gx > 94 - gapW/2){ b.gx = 94 - gapW/2; b.dir = -1; }
+          if (b.gx < 6 + b.w/2){ b.gx = 6 + b.w/2; b.dir = 1; }
+          if (b.gx > 94 - b.w/2){ b.gx = 94 - b.w/2; b.dir = -1; }
           const top = b.y - sy + 10;
           b.e.style.top = top + '%';
-          b.left.style.width  = Math.max(0, b.gx - gapW/2) + '%';
-          b.right.style.left  = (b.gx + gapW/2) + '%';
-          b.right.style.width = Math.max(0, 100 - (b.gx + gapW/2)) + '%';
+          b.left.style.width  = Math.max(0, b.gx - b.w/2) + '%';
+          b.right.style.left  = (b.gx + b.w/2) + '%';
+          b.right.style.width = Math.max(0, 100 - (b.gx + b.w/2)) + '%';
           if (b.pin){ b.pin.style.left = (b.gx + b.off - 1.6) + '%'; }
           if (!b.passed && Math.abs(top - 10) < 1.6){
-            if (Math.abs(sx - b.gx) > gapW/2 - 2 || (b.pin && Math.abs(sx - (b.gx + b.off)) < 3.4)){
+            if (Math.abs(sx - b.gx) > b.w/2 - 2 || (b.pin && Math.abs(sx - (b.gx + b.off)) < 3.4)){
               /* A bump takes a paw; the bar is behind you now and the fall goes on. The round ends when the last paw does. */
               b.passed = true; b.e.classList.add('struck');
               sfx.tap(); buzz('bad');
@@ -17922,6 +17958,18 @@ function beginRound(mode, firstMeet){
        player what happened. */
     prompt: txt => { if (!roundLive) return;
       el.prompt.textContent = txt; el.prompt.className = 'prompt'; },
+    /* Partial credit, for a mode with many small wins in a round (a matched pair, a cleared row): n points, times the streak multiplier,
+       banked and shown at once, and floated off the thing that earned them. The solve at the end still pays its own way. Returns what was
+       paid (0 when the round is over or the run is not scored). */
+    points: (n, node) => {
+      if (!roundLive || !run || !KINDS[run.kind].scored) return 0;
+      const mult = multiplier(), pts = Math.round(n * mult);
+      if (pts < 1) return 0;
+      run.score += pts; save.lifetime = (save.lifetime || 0) + pts;
+      floatPts(node, '+' + pts, mult);
+      renderHud();
+      return pts;
+    },
     win: node => resolve(true, node),
     miss: node => resolve(false, node)
   };

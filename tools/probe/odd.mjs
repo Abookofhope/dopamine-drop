@@ -5,6 +5,8 @@
  *     the round only ends when the paws run out
  *   - Sniff rules out about half of the tiles that are left (and never the odd one), and there are only one or two of them
  *   - the right tile still wins, with or without a wrong tap first
+ *   - Smooth drops the stitch pattern and fills the gaps so a shade that is off shows as an edge: nothing moves, it stays on for the next
+ *     board of the round, and the button is translated
  *
  *   node tools/probe/odd.mjs
  */
@@ -109,16 +111,41 @@ for (const [xp, label, paws] of [[0, 'a new player', 3], [2000, 'a middle level'
 for (const [xp, label, count] of [[0, 'a new player', 2], [60000, 'a high level', 1]]){
   const page = await open(xp); const s = await read(page);
   check(new RegExp(String(count)).test(s.sniffText) && !s.sniffOff, `${label}: Sniff shows ${count} to use (${s.sniffText})`);
-  await page.locator('.oddbar .sumtool').click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(250);
+  await page.locator('.oddbar .sumtool').first().click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(250);
   const a = await read(page);
   const want = Math.floor((s.n - 1) / 2);
   check(a.faded === want, `${label}: Sniff fades about half of the tiles that are left (${a.faded} of ${s.n}, wanted ${want})`);
   const stillOdd = await page.evaluate(i => !document.querySelectorAll('#surface .oddwrap .tile')[i].classList.contains('ruled'), a.odd);
   check(stillOdd, `${label}: and never the odd one`);
   check(a.pawsLeft === a.paws, `${label}: and costs no paw`);
-  if (count === 2){ await page.locator('.oddbar .sumtool').click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(250); const b = await read(page); check(b.faded > a.faded && b.sniffOff, `${label}: a second Sniff fades more, then Sniff is used up (${b.faded} faded)`); }
+  if (count === 2){ await page.locator('.oddbar .sumtool').first().click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(250); const b = await read(page); check(b.faded > a.faded && b.sniffOff, `${label}: a second Sniff fades more, then Sniff is used up (${b.faded} faded)`); }
   await tap(page, a, a.odd); await page.waitForTimeout(400);
   check(await playOut(page), `${label}: the odd one still wins after Sniff`);
+  await page.close();
+}
+
+/* ── Smooth ─────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+{
+  const page = await open(0);
+  const geo = () => page.evaluate(() => {
+    const tiles = [...document.querySelectorAll('#surface .oddwrap .tile')], g = document.querySelector('.oddwrap .grid');
+    const cs = getComputedStyle(tiles[0]), m = cs.boxShadow.match(/(\d+(?:\.\d+)?)px\s*$/);
+    return { rects: tiles.map(e => { const q = e.getBoundingClientRect(); return [q.left, q.top, q.width, q.height].map(Math.round).join(','); }).join('|'),
+      gap: parseFloat(getComputedStyle(g).columnGap), spread: m ? parseFloat(m[1]) : 0, pattern: getComputedStyle(tiles[0], '::before').display, on: document.querySelector('.oddwrap').classList.contains('smooth') };
+  });
+  const a = await geo();
+  const btn = page.locator('.oddbar .sumtool').nth(1), box = await btn.boundingBox();
+  check(!!box && box.height >= 40, `Smooth is a button big enough to hit (${box && Math.round(box.height)}px)`);
+  await btn.click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(250);
+  const b = await geo();
+  check(b.on && (await btn.getAttribute('aria-pressed')) === 'true', 'Smooth turns on');
+  check(a.rects === b.rects, 'and no tile moves or changes size');
+  check(b.pattern === 'none' && b.spread * 2 >= b.gap - 0.5, `and the stitch pattern goes and each skein's colour fills the gap (gap ${b.gap}px, fill ${b.spread * 2}px)`);
+  const s1 = await read(page); await tap(page, s1, s1.odd); await page.waitForTimeout(900);
+  await page.waitForSelector('#surface .oddwrap .tile'); await page.waitForTimeout(500);
+  check((await geo()).on, 'and stays on for the next board of the round');
+  await page.locator('.oddbar .sumtool').nth(1).click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(200);
+  check(!(await geo()).on, 'and turns off again');
   await page.close();
 }
 
@@ -138,6 +165,8 @@ for (const lang of ['fr', 'es', 'de']){
   await tap(page, s, s.xy.findIndex((_, i) => i !== s.odd));
   const a = await read(page);
   check(!/\{|odd\./.test(s.sniffText + a.prompt) && a.prompt !== s.prompt && s.sniffText.length > 3, `${lang}: Sniff and the try-again words are in the language ("${s.sniffText}", "${a.prompt}")`);
+  const smoothText = (await page.locator('.oddbar .sumtool').nth(1).textContent()).trim();
+  check(!/\{|odd\./.test(smoothText) && smoothText.length > 3 && smoothText !== 'Smooth', `${lang}: Smooth is in the language ("${smoothText}")`);
   await page.close();
 }
 

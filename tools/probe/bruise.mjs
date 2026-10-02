@@ -3,6 +3,7 @@
  *   - Hold (two a round) is inside the board and big enough to hit, and uses one of two
  *   - while it is held nothing new frays, and a thread that was already frayed stays past the time it would normally have gone
  *   - popping the frayed threads still wins the round, and the button is translated
+ *   - the pace is calm even at a high level: an untouched thread stays up about two seconds and a new one comes about every 0.7
  *
  *   node tools/probe/bruise.mjs
  */
@@ -14,8 +15,9 @@ const check = (ok, msg) => { if (!ok) bad++; console.log((ok ? 'ok   ' : 'FAIL '
 const browser = await chromium.launch();
 const errs = [];
 
-const open = async (xp, vp = { width: 400, height: 820 }, lang = 'en') => {
+const open = async (xp, vp = { width: 400, height: 820 }, lang = 'en', init = null) => {
   const page = await browser.newPage({ viewport: vp, hasTouch: true });
+  if (init) await page.addInitScript(init);
   page.on('pageerror', e => errs.push(String(e).slice(0, 120)));
   await openApp(page, { reduceMotion: true, xp, runs: 40, solved: 600, sound: false, haptics: false, onboarded: true, seen: { bruise: 1 }, schema: 11, lang });
   await openModeList(page); await clickMode(page, 'bruise');
@@ -64,6 +66,26 @@ const mid = e => [e.x + e.w / 2, e.y + e.h / 2];
 {
   const page = await open(0, { width: 320, height: 568 }, 'fr'); const s = await read(page);
   check(!!s.tool && s.tool.h >= 40 && /\d/.test(s.tool.text) && !/\{|tumble\./.test(s.tool.text) && s.tool.text !== 'Hold 2', `fr: the Hold button is in French and fits (${s.tool && s.tool.text})`);
+  await page.close();
+}
+
+/* ── the pace: how long an untouched thread stays, and how often a new one frays, at the top of the range ────────────── */
+{
+  const page = await open(900000, { width: 400, height: 820 }, 'en', () => {
+    window.__log = []; const state = new WeakMap();
+    new MutationObserver(recs => { const now = performance.now(); new Set(recs.map(r => r.target)).forEach(t => {
+      if (!t.classList || !t.classList.contains('hole')) return;
+      const up = t.classList.contains('up'), gold = t.classList.contains('gold');
+      if (state.get(t) !== up){ state.set(t, up); window.__log.push([Math.round(now), [...t.parentNode.children].indexOf(t), up, gold]); } }); })
+      .observe(document, { attributes: true, subtree: true, attributeFilter: ["class"] });
+  });
+  await page.waitForTimeout(6500);
+  const log = await page.evaluate(() => window.__log);
+  const starts = log.filter(e => e[2]).map(e => e[0]);
+  const gaps = starts.slice(1).map((t, i) => t - starts[i]);
+  const lives = []; log.filter(e => e[2] && !e[3]).forEach(s => { const end = log.find(e => !e[2] && e[1] === s[1] && e[0] > s[0]); if (end) lives.push(end[0] - s[0]); });
+  check(gaps.length >= 2 && Math.min(...gaps) >= 600, `a new thread frays no more often than every 0.6 s (gaps ${gaps.join(', ')} ms)`);
+  check(lives.length >= 1 && Math.min(...lives) >= 1700, `an untouched thread stays up at least 1.7 s (${lives.join(', ')} ms)`);
   await page.close();
 }
 

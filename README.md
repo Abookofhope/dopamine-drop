@@ -133,6 +133,16 @@ Let the Cat Out, Spool Shots and Darning; the cheapest balance for Even Skeins)
 so that following it always brings the solution one step nearer. Their probes
 check exactly that.
 
+### Partial credit
+
+A mode with many small wins in a round can pay for each one with
+`ctx.points(n, node)`: n points times the streak multiplier, banked and shown
+at once and floated off `node`; the solve at the end still pays on top. It does
+nothing once the round is decided or when the run is not scored. Tumble Dryer
+pays 10 a pair, and 5 more for each pair made within a couple of seconds of the
+last. A probe that waits for "the score moved" to mean a win must look for the
+solve's jump (at least 100) instead.
+
 ### Every mode can be lost
 
 A mode with no failure path cannot end a Marathon, which has lives and no

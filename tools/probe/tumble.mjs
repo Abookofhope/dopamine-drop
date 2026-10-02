@@ -2,6 +2,7 @@
  *
  *   - Pair (two a round) lights exactly two socks of the same colour for a moment and uses one of two
  *   - tapping the lit pair clears them; pairing off the whole drum wins the round
+ *   - every matched pair pays points at once: 10 for the first, 15 for the next one made within a couple of seconds, and a wrong pair pays nothing
  *   - Hold still waits the drum, and both buttons are inside the board and translated
  *
  *   node tools/probe/tumble.mjs
@@ -24,7 +25,7 @@ const open = async (xp, vp = { width: 400, height: 820 }, lang = 'en') => {
 };
 const read = page => page.evaluate(() => {
   const R = e => { const q = e.getBoundingClientRect(); return { x: q.left, y: q.top, w: q.width, h: q.height }; };
-  const socks = [...document.querySelectorAll('.cell.sock')].map((e, i) => ({ i, full: e.classList.contains('full'), hex: e.dataset.hex || '', hint: e.classList.contains('hint'), ...R(e) }));
+  const socks = [...document.querySelectorAll('.cell.sock')].map((e, i) => ({ i, full: e.classList.contains('full'), hex: e.dataset.hex || '', hint: e.classList.contains('hint'), tangled: e.classList.contains('tangled'), ...R(e) }));
   const tools = [...document.querySelectorAll('.sumcol .sumtool')].map(b => ({ text: b.textContent.trim(), off: b.disabled, ...R(b) }));
   return { socks, tools, surface: R(document.getElementById('surface')) };
 });
@@ -43,18 +44,33 @@ for (const [xp, label, vp] of [[0, 'a new player', { width: 400, height: 820 }],
   await click(page, s.tools[1]); await page.waitForTimeout(120); s = await read(page);
   const lit = s.socks.filter(c => c.hint);
   check(lit.length === 2 && lit[0].hex === lit[1].hex && /1/.test(s.tools[1].text), `Pair lights two socks of one colour and uses one of two (${lit.map(c => c.hex).join(' = ')}; ${s.tools[1].text})`);
+  const s0 = await score(page);
   await click(page, lit[0]); await click(page, lit[1]); await page.waitForTimeout(150);
   s = await read(page);
   check(s.socks.filter(c => c.full).length === full0 - 2, `tapping the lit pair clears them (${full0} -> ${s.socks.filter(c => c.full).length} socks)`);
-  /* pair off the rest, as fast as a thumb would */
-  for (let guard = 0; guard < 20; guard++){
+  const s1 = await score(page);
+  check(s1 - s0 === 10, `a matched pair pays at once: 10 points (${s0} -> ${s1})`);
+  /* a wrong pair pays nothing: two socks of different colours */
+  s = await read(page); const full = s.socks.filter(c => c.full); const odd = full.find(c => c.hex !== full[0].hex);
+  await click(page, full[0]); await click(page, odd); await page.waitForTimeout(120);
+  check(await score(page) === s1, 'a wrong pair pays nothing');
+  await page.waitForTimeout(900);
+  /* the next pair, made within a couple of seconds of the last good one, pays 15 */
+  s = await read(page); const by0 = {}; s.socks.filter(c => c.full && !c.tangled).forEach(c => (by0[c.hex] = by0[c.hex] || []).push(c));
+  const quick = Object.values(by0).find(a => a.length >= 2);
+  if (quick){ const q0 = await score(page); await click(page, quick[0]); await click(page, quick[1]); await page.waitForTimeout(100);
+    check(await score(page) - q0 === 15, `a pair made soon after the last good one pays more: 15 (${q0} -> ${await score(page)})`); }
+  /* pair off the rest, as fast as a thumb would: the last pair also pays for the whole drum (a solve is worth at least 100) */
+  let won = false;
+  for (let guard = 0; guard < 40 && !won; guard++){
     s = await read(page); const by = {}; s.socks.filter(c => c.full).forEach(c => (by[c.hex] = by[c.hex] || []).push(c));
     const pair = Object.values(by).find(a => a.length >= 2); if (!pair) break;
-    await click(page, pair[0]); await click(page, pair[1]);
-    if (await score(page) > 0) break;
+    const before = await score(page);
+    await click(page, pair[0]); await click(page, pair[1]); await page.waitForTimeout(60);
+    if (await score(page) - before >= 100) won = true;
   }
-  await page.waitForTimeout(500);
-  check(await score(page) > 0, 'pairing off the whole drum wins the round');
+  await page.waitForTimeout(400);
+  check(won, 'pairing off the whole drum wins the round, and pays for it');
   await page.close();
 }
 {

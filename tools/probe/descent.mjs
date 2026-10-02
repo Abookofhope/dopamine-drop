@@ -4,6 +4,7 @@
  *     a paw is used and the fall carries on
  *   - the third bump ends the round and the next one starts with all its paws
  *   - at a high level there is one paw and no row of them
+ *   - a pin takes room out of its gap, so a pinned gap is cut wider: the clear side is at least 1.3 bobbin-widths, and no two gaps in a row have a pin
  *
  *   node tools/probe/descent.mjs
  */
@@ -48,6 +49,29 @@ const wait = (page, fn, arg) => page.waitForFunction(fn, arg, { timeout: 25000, 
   const page = await open(60000); const s = await read(page);
   check(s.shown === 0, `at a high level there is no row of paws (${s.shown} shown)`);
   await page.close();
+}
+
+/* ── pins: room left to pass, and never in back-to-back gaps ──────────────────────────────────────────────────────── */
+{
+  let pinned = 0, worst = 1e9, backToBack = 0, narrowest = 1e9;
+  for (let k = 0; k < 8; k++){
+    const page = await open(900000);
+    const bars = await page.evaluate(() => {
+      const sky = document.querySelector('.descentsky').getBoundingClientRect(), star = document.querySelector('.dstar').getBoundingClientRect();
+      return { star: star.width / sky.width * 100, list: [...document.querySelectorAll('.dbar')].map(b => {
+        const l = b.querySelector('.side.l').getBoundingClientRect(), r = b.querySelector('.side.r').getBoundingClientRect(), p = b.querySelector('.dpin');
+        const gap = (r.left - l.right) / sky.width * 100;
+        if (!p) return { pin: false, gap };
+        const q = p.getBoundingClientRect();
+        return { pin: true, gap, clear: Math.max(q.left - l.right, r.left - q.right) / sky.width * 100 };
+      }) };
+    });
+    bars.list.forEach((b, i) => { if (b.pin){ pinned++; worst = Math.min(worst, b.clear / bars.star); if (i && bars.list[i - 1].pin) backToBack++; } else narrowest = Math.min(narrowest, b.gap / bars.star); });
+    await page.close();
+  }
+  check(pinned >= 4, `pins were found to measure (${pinned} in 8 boards at a high level)`);
+  check(worst >= 1.3, `a pinned gap leaves room to pass: at least 1.3 bobbin-widths beside the pin (worst ${worst.toFixed(2)})`);
+  check(backToBack === 0, `no two gaps in a row have a pin (${backToBack} pairs)`);
 }
 
 check(errs.length === 0, 'no script errors' + (errs.length ? ': ' + errs[0] : ''));
