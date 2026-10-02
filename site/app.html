@@ -723,6 +723,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .vgun.hinted{outline:3px solid #ffc53d;outline-offset:2px;box-shadow:0 0 16px #ffc53d}
 .vpix.hintwind{outline:3px dashed #ffc53d;outline-offset:-3px}
 .sumcol > .vbox{flex:1 1 0;min-height:0}
+.duelbtn.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88}
 .brcell.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88;background:#ffc53d22}
 .sumcol > .brwrap{flex:1 1 0;min-height:0}
 .brcell.plank{border-color:#C08BFF;box-shadow:0 0 12px #c08bff55;cursor:pointer;background:
@@ -4145,7 +4146,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.121.0';
+const VERSION_TAG = 'v0.122.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6829,6 +6830,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.122.0', date:'2026-10-02', items:[
+    'Cat Fight teaches you the tells. While you are new (below level 8), the counter that beats the cat’s tell starts to glow once half the beat has gone without an answer, so the pairing (swing: parry, guard: wait, charge: strike) is something you see before it is something you know. From level 8 nothing glows.',
+  ] },
   { v:'0.121.0', date:'2026-10-02', items:[
     'Stitch Sampler and Kitten’s Snack Attack give two hints at first instead of one (one again from the middle of the ramp). A hint in Stitch Sampler fills in a letter the phrase really has; in Kitten’s Snack Attack it makes the colour worth sending next glow.',
   ] },
@@ -9945,6 +9949,19 @@ const MODES = {
            setTimeout here outlives the round, and firing a beat or two later it
            would take a life off whatever round had started in the meantime. */
         timer = ctx.after(beat * (seq.length > 1 ? 1.5 : 1), () => { if (!locked) answer(null, btns[0]); });
+        glowRight();
+      }
+      /* While you are still learning the tells (below level 8), the right counter starts to glow once half the beat has gone, so the pairing
+         is something you see before it is something you know. */
+      let glowT = 0;
+      function glowRight(){
+        clearTimeout(glowT); btns.forEach(b => b.classList.remove('hint'));
+        if (ctx.level >= 8) return;
+        glowT = ctx.after(beat * 0.5, () => {
+          if (locked) return;
+          const i = MOVES.indexOf(TELLS[seq[at]].beats);
+          if (i >= 0) btns[i].classList.add('hint');
+        });
       }
       /* What the cat is showing: one icon, or two side by side with the first one to answer lit. */
       function paintTells(){
@@ -9956,7 +9973,7 @@ const MODES = {
       function answer(mv, node){
         if (locked) return;
         locked = true;
-        clearTimeout(timer);
+        clearTimeout(timer); clearTimeout(glowT); btns.forEach(b => b.classList.remove('hint'));
         const right = mv && TELLS[seq[at]].beats === mv;
         if (right && at < seq.length - 1){
           /* The first of a pair: answered, and the next is still to come. */
@@ -9964,6 +9981,7 @@ const MODES = {
           node.classList.add('hit'); ctx.after(200, () => node.classList.remove('hit'));
           clearTimeout(timer);
           timer = ctx.after(beat, () => { if (!locked) answer(null, btns[0]); });
+          glowRight();
           return;
         }
         if (right){
