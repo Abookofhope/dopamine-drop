@@ -34,7 +34,10 @@ const px = (s, p) => [s.x + p[0] / 100 * s.w, s.y + p[1] / 100 * s.h];
 const stroke = async (page, s, pts) => { const a = px(s, pts[0]); await page.mouse.move(a[0], a[1]); await page.mouse.down(); for (const p of pts.slice(1)){ const q = px(s, p); await page.mouse.move(q[0], q[1]); } await page.mouse.up(); };
 const drop = page => page.locator('.ctool.drop').click({ position: { x: 20, y: 18 } });
 const lostNow = page => page.waitForFunction(() => !!document.querySelector('.cball.lost'), null, { timeout: 14000, polling: 40 }).then(() => true).catch(() => false);
-const HARMLESS = [[96, 97], [84, 97.2], [72, 97.4], [60, 97.6]];
+/* The least that can be drawn, in the bottom corner below the basket's mouth, where no ball can use it (chalk.mjs uses the same one). A long
+   line along the floor was once used here, and on a board with the basket low down it can funnel the ball in: one run in thirty won on
+   the first drop and the paws never ran out. */
+const HARMLESS = [[96, 97], [93, 97.2], [90, 97.4]];
 
 {
   const page = await boot(0); let s = await read(page);
@@ -56,10 +59,15 @@ const HARMLESS = [[96, 97], [84, 97.2], [72, 97.4], [60, 97.6]];
 }
 {
   const page = await boot(0); let s = await read(page);
+  let luckyWin = false;
   for (let k = 0; k < 3; k++){
-    await stroke(page, s, HARMLESS); await drop(page); await lostNow(page); await page.waitForTimeout(k < 2 ? 1500 : 200);
+    await stroke(page, s, HARMLESS); await drop(page);
+    const r = await page.waitForFunction(() => document.querySelector('.cbasket.caught') ? 'won' : (document.querySelector('.cball.lost') ? 'lost' : false), null, { timeout: 14000, polling: 40 }).then(h => h.jsonValue()).catch(() => 'none');
+    if (r === 'won'){ luckyWin = true; break; }
+    await page.waitForTimeout(k < 2 ? 1500 : 200);
     if (k < 2){ s = await read(page); }
   }
+  check(!luckyWin, 'a line that does not help never wins the round on its own');
   const ended = await page.waitForFunction(() => { const c = document.querySelector('.budget.paws'); return !c || c.querySelectorAll('i:not(.used)').length === c.querySelectorAll('i').length; }, null, { timeout: 5000, polling: 40 }).then(() => true).catch(() => false);
   check(ended, 'the third lost drop ends the round and the next one starts with all its paws');
   await page.close();
