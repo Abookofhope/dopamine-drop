@@ -96,21 +96,34 @@ if (want('slack')){
   check(worst(segs, pegs) < 2, 'No Crossing: and still after dragging a peg');
 
   /* The grab area is a circle the size of the peg's neighbourhood, whichever way
-     you miss. 55px straight up is a long way from a 45px peg; 25px sideways is
-     touching it. */
-  const grab = async (dx, dy) => {
-    const c = (await centres(page, '.slacknode'))[1];
-    await page.mouse.move(c.x + dx, c.y + dy); await page.mouse.down();
-    /* That peg, not any peg: 55px from it can be inside another one. */
-    const held = await page.evaluate(() => document.querySelectorAll('.slacknode')[1].classList.contains('held'));
-    const any = await page.evaluate(() => [...document.querySelectorAll('.slacknode')].findIndex(n => n.classList.contains('held')));
-    await page.mouse.up(); if (process.env.DEBUG) console.log(`   grab (${dx},${dy}) from peg 2 at ${Math.round(c.x)},${Math.round(c.y)}: held peg index ${any}`);
-    return held;
-  };
-  const side = await grab(25, 0), up = await grab(0, -55), down = await grab(0, 55);
-  console.log(`   grab from 25px beside: ${side}; 55px above: ${up}; 55px below: ${down}`);
-  check(side, 'No Crossing: a peg is grabbed from beside it');
-  check(!up && !down, 'No Crossing: and not from a peg-and-a-half above or below it');
+     you miss, and the NEAREST peg inside it wins. 55px straight up is a long way
+     from a 45px peg; 25px sideways is touching it. The board is dealt at random, so
+     a fixed peg and a fixed side is sometimes a spot where another peg is nearer
+     (and rightly gets the grab): pick a peg and a side where this one is the
+     nearest by 10px or more, and where the touch lands on the board. */
+  const cs = await centres(page, '.slacknode');
+  const board = await page.evaluate(() => { const r = document.getElementById('surface').getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom }; });
+  let pick = null;
+  for (let i = 0; i < cs.length && !pick; i++) for (const [dx, dy] of [[25, 0], [-25, 0], [0, 25], [0, -25]]){
+    const x = cs[i].x + dx, y = cs[i].y + dy;
+    const clear = Math.min(...cs.filter((_, j) => j !== i).map(o => Math.hypot(o.x - x, o.y - y)));
+    if (x > board.l + 4 && x < board.r - 4 && y > board.t + 4 && y < board.b - 4 && clear > 25 + 10){ pick = { i, dx, dy }; break; }
+  }
+  check(!!pick, 'No Crossing: some peg has a side to be grabbed from where it is the nearest peg');
+  if (pick){
+    const grab = async (dx, dy) => {
+      const c = (await centres(page, '.slacknode'))[pick.i];
+      await page.mouse.move(c.x + dx, c.y + dy); await page.mouse.down();
+      const held = await page.evaluate(i => document.querySelectorAll('.slacknode')[i].classList.contains('held'), pick.i);
+      const any = await page.evaluate(() => [...document.querySelectorAll('.slacknode')].findIndex(n => n.classList.contains('held')));
+      await page.mouse.up(); if (process.env.DEBUG) console.log(`   grab (${dx},${dy}) from peg ${pick.i} at ${Math.round(c.x)},${Math.round(c.y)}: held peg index ${any}`);
+      return held;
+    };
+    const side = await grab(pick.dx, pick.dy), up = await grab(0, -55), down = await grab(0, 55);
+    console.log(`   grab from 25px beside (${pick.dx},${pick.dy}): ${side}; 55px above: ${up}; 55px below: ${down}`);
+    check(side, 'No Crossing: a peg is grabbed from beside it');
+    check(!up && !down, 'No Crossing: and not from a peg-and-a-half above or below it');
+  }
   await page.close();
 }
 
