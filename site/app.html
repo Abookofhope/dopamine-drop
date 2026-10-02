@@ -725,6 +725,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .sumcol > .vbox{flex:1 1 0;min-height:0}
 .duelbtn.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88}
 .cell.sock.hint{outline:3px solid #ffc53d;outline-offset:-3px;box-shadow:0 0 14px #ffc53d88}
+.hdisc{position:absolute;border-radius:50%;pointer-events:none;background:#ffc53d33;border:2px solid #ffc53d;box-shadow:0 0 14px #ffc53d66}
 .brcell.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88;background:#ffc53d22}
 .sumcol > .brwrap{flex:1 1 0;min-height:0}
 .brcell.plank{border-color:#C08BFF;box-shadow:0 0 12px #c08bff55;cursor:pointer;background:
@@ -4147,7 +4148,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.124.0';
+const VERSION_TAG = 'v0.125.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4891,7 +4892,7 @@ const STRINGS = {
 
     
 
-    'p.heft':'Which side weighs more?', 'heft.pile':'A basket of {n} pieces', 'm.heft':'Heft|Which basket weighs more? Counting will not tell you',
+    'heft.squint':'Squint', 'p.heft':'Which side weighs more?', 'heft.pile':'A basket of {n} pieces', 'm.heft':'Heft|Which basket weighs more? Counting will not tell you',
     'p.forge':'{n} squares of the pattern still bare', 'forge.hole':'Pattern, column {x} row {y}', 'forge.solid':'Backing, column {x} row {y}', 'forge.part':'A part of {n} squares', 'm.forge':'Patchwork|Fill the hole, make a straight line or build a solid block — turn each patch to fit',
     'p.gather':'{n} more to catch — let the dark ones fall', 'gather.pail':'Your basket', 'gather.keep':'A ripe one, worth catching', 'gather.dud':'A dud, let it fall', 'm.gather':'Catch the Balls|Catch the good ones, let the tangles fall',
     'p.chalk':'Chalk ramps for the yarn — then press Drop', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball of yarn', 'chalk.basket':'The cat’s basket', 'm.chalk':'Chalk Line|Chalk the ramps, peek, then drop the yarn in the basket',
@@ -5386,7 +5387,7 @@ const STRINGS = {
 
     
 
-    'p.heft':'Quel côté pèse le plus ?', 'heft.pile':'Un panier de {n} pièces', 'm.heft':'Soupeser|Quel panier pèse le plus ? Compter n’y suffit pas',
+    'heft.squint':'Plisser les yeux', 'p.heft':'Quel côté pèse le plus ?', 'heft.pile':'Un panier de {n} pièces', 'm.heft':'Soupeser|Quel panier pèse le plus ? Compter n’y suffit pas',
     'p.forge':'Encore {n} cases du motif', 'forge.hole':'Motif, colonne {x} ligne {y}', 'forge.solid':'Fond, colonne {x} ligne {y}', 'forge.part':'Une pièce de {n} cases', 'm.forge':'Patchwork|Comble le trou, trace une ligne droite ou fais un bloc plein — tourne chaque pièce pour qu’elle rentre',
     'p.gather':'Encore {n} à attraper — laissez tomber les sombres', 'gather.pail':'Votre panier', 'gather.keep':'Un mûr, à attraper', 'gather.dud':'Un gâté, laissez-le tomber', 'm.gather':'Attrapez les Pelotes|Attrapez les bonnes, laissez tomber les nœuds',
     'p.chalk':'Tracez des rampes pour la pelote — puis Lâcher', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La pelote de laine', 'chalk.basket':'Le panier du chat', 'm.chalk':'Trait de Craie|Tracez les rampes, jetez un œil, puis lâchez la pelote dans le panier',
@@ -5881,7 +5882,7 @@ const STRINGS = {
 
     
 
-    'p.heft':'¿Qué lado pesa más?', 'heft.pile':'Una cesta de {n} piezas', 'm.heft':'Sopesar|¿Qué cesta pesa más? Contar no te lo dirá',
+    'heft.squint':'Entornar', 'p.heft':'¿Qué lado pesa más?', 'heft.pile':'Una cesta de {n} piezas', 'm.heft':'Sopesar|¿Qué cesta pesa más? Contar no te lo dirá',
     'p.forge':'Quedan {n} casillas del patrón', 'forge.hole':'Patrón, columna {x} fila {y}', 'forge.solid':'Fondo, columna {x} fila {y}', 'forge.part':'Una pieza de {n} casillas', 'm.forge':'Retales|Rellena el hueco, haz una línea recta o un bloque macizo — gira cada pieza para que encaje',
     'p.gather':'{n} más que atrapar — deja caer los oscuros', 'gather.pail':'Tu cesta', 'gather.keep':'Uno maduro, para atrapar', 'gather.dud':'Uno malo, déjalo caer', 'm.gather':'Atrapa Ovillos|Atrapa los buenos, deja caer los enredos',
     'p.chalk':'Dibuja rampas para el ovillo — luego Soltar', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'El ovillo', 'chalk.basket':'La cesta del gato', 'm.chalk':'Línea de Tiza|Dibuja las rampas, ojea y suelta el ovillo en la cesta',
@@ -6376,7 +6377,7 @@ const STRINGS = {
 
     
 
-    'p.heft':'Welche Seite wiegt mehr?', 'heft.pile':'Ein Korb mit {n} Stücken', 'm.heft':'Wiegen|Welcher Korb wiegt mehr? Zählen hilft nicht',
+    'heft.squint':'Blinzeln', 'p.heft':'Welche Seite wiegt mehr?', 'heft.pile':'Ein Korb mit {n} Stücken', 'm.heft':'Wiegen|Welcher Korb wiegt mehr? Zählen hilft nicht',
     'p.forge':'Noch {n} Felder des Musters frei', 'forge.hole':'Muster, Spalte {x} Zeile {y}', 'forge.solid':'Grund, Spalte {x} Zeile {y}', 'forge.part':'Ein Teil aus {n} Feldern', 'm.forge':'Flickwerk|Füll das Loch, leg eine gerade Linie oder einen vollen Block — dreh jedes Teil, bis es passt',
     'p.gather':'Noch {n} zu fangen — die dunklen fallen lassen', 'gather.pail':'Dein Korb', 'gather.keep':'Ein reifer, den fängst du', 'gather.dud':'Ein fauler, lass ihn fallen', 'm.gather':'Knäuel Fangen|Fang die guten, lass die Knoten fallen',
     'p.chalk':'Zeichne Rampen für das Knäuel — dann Fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Das Wollknäuel', 'chalk.basket':'Der Korb der Katze', 'm.chalk':'Kreidestrich|Zeichne die Rampen, wirf einen Blick darauf und lass das Knäuel in den Korb fallen',
@@ -6831,6 +6832,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.125.0', date:'2026-10-02', items:[
+    'Heft has a Squint (one at a time, until level 12): for a moment each pile is drawn as a single disc holding all of its area, so two piles can be compared by size instead of by adding up pieces by eye. The pile with the biggest disc is the heavier one.',
+  ] },
   { v:'0.124.0', date:'2026-10-02', items:[
     'Mending has a Hold button (two a round, the same one Tumble Dryer has): for three seconds nothing new frays and nothing already frayed unravels, a moment to catch your breath when the board fills up.',
   ] },
@@ -12769,6 +12773,8 @@ const MODES = {
         ({ x: 12 + (i % 4)*24, y: 12 + Math.floor(i/4)*24, r: Math.max(2, r*4) })));
 
       pans.forEach((p, i) => {
+        p.R = Math.sqrt(laid[i].reduce((a, q) => a + q.r*q.r, 0));          /* the radius of one disc with all of this pile's area */
+        try { if (localStorage.getItem('dd.probe')) p.pan.dataset.which = p.which; } catch(e){}
         laid[i].forEach(q => {
           const e = mk('i','hbit');
           e.style.left = (q.x - q.r) + '%'; e.style.top = (q.y - q.r) + '%';
@@ -12790,6 +12796,20 @@ const MODES = {
       const cat = mk('div','hcat'); cat.innerHTML = catSvg(lead.coat, { pose: 'sit' }); cat.setAttribute('aria-hidden', 'true');
       const perch = mk('div','hperch'); perch.appendChild(cat); col.appendChild(perch);
       carry(col, { grab: '.hcat', over: '.hpan', land: (from, to) => { if (to._ans) to._ans(); } });
+
+      /* Squint: for a moment each pile is drawn as one disc with all of its area, so the two can be compared by their size. Counting
+         pieces would not help, and now neither does having to add up the areas by eye. One look at first, none from the middle of the ramp. */
+      let squints = ctx.level < 12 ? 1 : 0;
+      const tools = mk('div','sumtools'), sq = mk('button','sumtool'); sq.type = 'button';
+      const paintSq = () => { sq.textContent = t('heft.squint') + ' ' + squints; sq.disabled = squints <= 0 || wrap.classList.contains('spent'); };
+      if (squints > 0){ tools.appendChild(sq); col.appendChild(tools); }
+      paintSq();
+      onTap(sq, () => {
+        if (squints <= 0 || wrap.classList.contains('spent')) return;
+        squints--; paintSq(); sfx.tap();
+        const discs = pans.map(p => { const d = mk('i','hdisc'); const R = Math.min(48, p.R); d.style.width = (R*2) + '%'; d.style.left = (50 - R) + '%'; d.style.top = (50 - R) + '%'; d.style.aspectRatio = '1'; d.style.height = 'auto'; p.pan.appendChild(d); return d; });
+        ctx.after(1900, () => discs.forEach(d => d.remove()));
+      });
 
       ctx.prompt(t('p.heft'));
     }
