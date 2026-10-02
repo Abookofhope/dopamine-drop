@@ -68,9 +68,9 @@ const place = async (page, s, b) => {
 };
 
 /* ── the board, at a new level and a high one ───────────────────────────────────────────────────────────────────────── */
-for (const [xp, label, paws, lines] of [[0, 'a new player', 3, 2], [60000, 'a high level', 0, 6]]){
+for (const [xp, label, paws, lines] of [[0, 'a new player', 3, 2], [60000, 'a high level', 0, 7], [900000, 'the top', 0, 8]]){
   const page = await open(xp); const s = await read(page);
-  check(s.goal === 'clear' && s.tray.length === 3 && s.set.length === 0 && s.lines === lines, `${label}: an open ${s.g}x${s.g} quilt, three patches, ${s.lines} lines to clear (${s.prompt})`);
+  check(s.goal === 'clear' && s.g === 6 && s.tray.length === 3 && s.set.length === 0 && s.lines === lines, `${label}: an open ${s.g}x${s.g} quilt, three patches, ${s.lines} lines to clear (${s.prompt})`);
   check(!s.chip, `${label}: no "moves left" chip: there is nothing to run out of`);
   check(s.pawsShown === paws, `${label}: ${paws ? paws + ' paws' : 'no row of paws (one paw)'} (${s.pawsShown} shown)`);
   check(s.tools.length === 2 && /Swap/.test(s.tools[0].text) && /Hint/.test(s.tools[1].text), `${label}: the tools are Swap and Hint (${s.tools.map(t => t.text).join(', ')})`);

@@ -4161,7 +4161,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.133.0';
+const VERSION_TAG = 'v0.134.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6845,6 +6845,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.134.0', date:'2026-10-02', items:[
+    'Patchwork’s Tetris way is tuned. The quilt is six squares across at every level, it asks for two lines at first and up to eight at the top, and the patches you are dealt are kind about fitting early on and less so as you climb. The early levels stay very forgiving; the top ones can be lost by laying patches carelessly.',
+  ] },
   { v:'0.133.0', date:'2026-10-02', items:[
     'Basket Drop’s pegs have room between them. The board has seven rows at most (it had eight), the pegs sit further apart across the baskets, and each peg’s touch area is sized from the room around it, so no two ever touch. A small phone gets fewer rows rather than crowded pegs. The ball plays as it did.',
   ] },
@@ -12250,7 +12253,12 @@ const MODES = {
         : ctx.level < 4 ? (roll < 0.45 ? 'clear' : roll < 0.7 ? 'line' : roll < 0.85 ? 'block' : 'fill')
         : ctx.level < 12 ? (roll < 0.4 ? 'clear' : roll < 0.58 ? 'line' : roll < 0.75 ? 'block' : 'fill')
         : (roll < 0.4 ? 'clear' : roll < 0.55 ? 'line' : roll < 0.68 ? 'block' : 'fill');
-      if (goal === 'clear'){ g = clamp(ctx.level < 8 ? 6 : 7, 4, maxG); ctx.grace(9000 * clamp(2 + Math.floor(ctx.level/4), 2, 6)); }
+/* Tuned by playing thousands of rounds against a model of these rules, with a player who lays patches at random, one who is half careful and one
+         who always takes the best place: a random player wins every round through the middle levels and about half of them at the top, the
+         half-careful one nine in ten, the careful one all. Six across all the way, two lines to clear at first and up to eight, and the kindness
+         of the deal fading: at first the patch dealt is one that fits (fourteen tries to find one), then ten, six and three. */
+      const linesFor = lv => clamp(2 + Math.floor(lv/4), 2, 8);
+      if (goal === 'clear'){ g = clamp(6, 4, maxG); ctx.grace(9000 * linesFor(ctx.level)); }
       const ruleOn = goal === 'fill' && ctx.level >= 12;
       /* A short screen has no room for a long tray, so it gets fewer spares rather than a smaller quilt. */
       const tight = (ctx.surface.clientHeight || 560) < 520;
@@ -12382,7 +12390,8 @@ const MODES = {
             if (ok) return true; } }
         return false; };
       const dealShape = fl => { let sh = null;
-        for (let tries = 0; tries < 14; tries++){ const fam = FAMILY[Math.floor(ctx.rnd()*FAMILY.length)]; sh = fam[0]; if (fitsShape(sh, fl)) break; }
+        const kind = ctx.level < 8 ? 14 : ctx.level < 16 ? 10 : ctx.level < 24 ? 6 : 3;
+        for (let tries = 0; tries < kind; tries++){ const fam = FAMILY[Math.floor(ctx.rnd()*FAMILY.length)]; sh = fam[0]; if (fitsShape(sh, fl)) break; }
         return sh; };
       if (goal === 'clear') parts = { list: [], cells: new Set(Array.from({ length: g*g }, (_, i) => i)) };
       /* Lay patches down, each touching what is already there, so the hole is in one piece. */
@@ -12501,7 +12510,7 @@ const MODES = {
       const inTray = i => !used.has(i) && !placed.some(p => p.part === i) && !(held && held.part === i);
       let lines = 0, swaps = 2, busy = false;
       const paws = goal === 'clear' ? pawChances(ctx) : null;
-      const wantLines = clamp(2 + Math.floor(ctx.level/4), 2, 6);
+      const wantLines = linesFor(ctx.level);
       const say = (key, args) => ctx.prompt(key ? t(key, args)
         : goal === 'clear' ? t('p.forgeClear', { n: Math.max(0, wantLines - lines) })
         : goal === 'line' ? t('p.forgeLine', { n: nearGoal().gap })
