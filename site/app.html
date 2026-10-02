@@ -720,6 +720,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .cell.mcell.hint{outline:3px solid #ffc53d;outline-offset:-3px;box-shadow:0 0 14px #ffc53d88}
 .cell.bar.hint{outline:3px solid #ffc53d;outline-offset:-3px}
 .cell.bar.hintend{box-shadow:0 0 16px #ffc53d,inset 0 0 0 3px #ffc53d}
+.vgun.hinted{outline:3px solid #ffc53d;outline-offset:2px;box-shadow:0 0 16px #ffc53d}
+.vpix.hintwind{outline:3px dashed #ffc53d;outline-offset:-3px}
+.sumcol > .vbox{flex:1 1 0;min-height:0}
 .brcell.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88;background:#ffc53d22}
 .sumcol > .brwrap{flex:1 1 0;min-height:0}
 .brcell.plank{border-color:#C08BFF;box-shadow:0 0 12px #c08bff55;cursor:pointer;background:
@@ -4142,7 +4145,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.119.0';
+const VERSION_TAG = 'v0.120.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4874,7 +4877,7 @@ const STRINGS = {
     
     'p.forage':'{n} treats left', 'forage.cell':'{k} treat, row {r} column {c}', 'forage.gone':'Cleared, row {r} column {c}', 'forage.slot':'Kitten waiting on {k}, {n} left', 'forage.free':'Empty basket slot', 'forage.full':'Basket full — call a kitten home, or open the way for one', 'm.forage':'Kitten’s Snack Attack|Send the kittens at a treat colour — only so many out at once',
     'p.meld':'{n} more Coins of Gratitude', 'meld.cell':'{v}, worth {p}, row {r} column {c}', 'meld.empty':'Empty, row {r} column {c}', 'meld.band':'{v} pays {p} today', 'meld.selling':'Tap again to gift {v} for {p}', 'm.meld':'Yarn Tangled Tangle|Merge tangled yarn into neater crafts, gift them, and fill the jar of thanks', 'how.meld':'drag a ball onto its twin to squash them into one; tap a ball, then tap it again to sell it. One level pays triple today, and merging past it loses money',
-    'p.volley':'{n} squares still bare', 'volley.cell':'{k}, row {r} column {c}', 'volley.blank':'Wants {k}, row {r} column {c}', 'volley.gunL':'{k} spool, fires right along row {n}', 'volley.gunR':'{k} spool, fires left along row {n}', 'volley.gunT':'{k} spool, fires down column {n}', 'volley.gunB':'{k} spool, fires up column {n}', 'volley.stuck':'Every spool is spent or wrong — wind a shot back', 'm.volley':'Spool Shots|Fire the spools in an order that paints the picture', 'how.volley':'tap a spool to fire it; the ball paints the bare squares it crosses and stops at the first one already painted. Tap a square the last shot painted to wind it back',
+    'volley.hint':'Hint', 'p.volley':'{n} squares still bare', 'volley.cell':'{k}, row {r} column {c}', 'volley.blank':'Wants {k}, row {r} column {c}', 'volley.gunL':'{k} spool, fires right along row {n}', 'volley.gunR':'{k} spool, fires left along row {n}', 'volley.gunT':'{k} spool, fires down column {n}', 'volley.gunB':'{k} spool, fires up column {n}', 'volley.stuck':'Every spool is spent or wrong — wind a shot back', 'm.volley':'Spool Shots|Fire the spools in an order that paints the picture', 'how.volley':'tap a spool to fire it; the ball paints the bare squares it crosses and stops at the first one already painted. Tap a square the last shot painted to wind it back',
     'p.sift':'{n} more to fill', 'sift.slot':'Belt slot {n}, {k} scoop', 'sift.bare':'Belt slot {n}, empty', 'sift.put':'Put a {k} scoop on the belt', 'sift.jam':'Belt is full — knock the front scoop off to make room', 'sift.pic':'Hidden picture, {n} of {m} filled', 'sift.again':'A grain rolled past — it will come round again, {n} more to fill', 'm.sift':'Sandbox of Softness|Catch each grain of sand in its own colour and a hidden picture fills in',
     'how.forage':'tap a kitten to send the kittens at its colour; they come in through the bare gaps and take only what they can reach, then wait in the basket until you send them again. Tap a waiting kitten to call it home', 'how.first':'First time — taking it gently.', 'how.sift':'tap a colour to drop that spool on the BACK of the belt; the belt shifts one slot per strand, so you are placing for a strand further down the chute, not the one falling. Tap the front spool to knock it off',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
@@ -5369,7 +5372,7 @@ const STRINGS = {
     
     'p.forage':'{n} friandises restantes', 'forage.cell':'Friandise {k}, ligne {r} colonne {c}', 'forage.gone':'Dégagée, ligne {r} colonne {c}', 'forage.slot':'Chaton en attente de {k}, {n} restantes', 'forage.free':'Emplacement libre', 'forage.full':'Panier plein — rappelez un chaton, ou dégagez-lui le passage', 'm.forage':'L’Attaque des Chatons Gourmands|Envoie les chatons sur une couleur de friandise — pas trop à la fois',
     'p.meld':'Encore {n} pièces de gratitude', 'meld.cell':'{v}, valant {p}, ligne {r} colonne {c}', 'meld.empty':'Vide, ligne {r} colonne {c}', 'meld.band':'{v} rapporte {p} aujourd’hui', 'meld.selling':'Touche encore pour offrir : {v}, {p}', 'm.meld':'Pelotes Emmêlées|Fusionne les pelotes emmêlées en jolies créations, offre-les et remplis le pot de merci', 'how.meld':'glissez une pelote sur sa jumelle pour n’en faire qu’une ; touchez une pelote, puis touchez-la encore pour la vendre. Un niveau rapporte triple aujourd’hui, et fusionner au-delà fait perdre de l’argent',
-    'p.volley':'{n} cases encore vides', 'volley.cell':'{k}, ligne {r} colonne {c}', 'volley.blank':'Attend {k}, ligne {r} colonne {c}', 'volley.gunL':'Bobine {k}, tire vers la droite sur la ligne {n}', 'volley.gunR':'Bobine {k}, tire vers la gauche sur la ligne {n}', 'volley.gunT':'Bobine {k}, tire vers le bas sur la colonne {n}', 'volley.gunB':'Bobine {k}, tire vers le haut sur la colonne {n}', 'volley.stuck':'Toutes les bobines sont épuisées ou fausses — annulez un tir', 'm.volley':'Tirs de Bobines|Tirez les bobines dans l’ordre qui peint l’image', 'how.volley':'touchez une bobine pour tirer ; la bille peint les cases vides qu’elle traverse et s’arrête à la première déjà peinte. Touchez une case du dernier tir pour l’annuler',
+    'volley.hint':'Indice', 'p.volley':'{n} cases encore vides', 'volley.cell':'{k}, ligne {r} colonne {c}', 'volley.blank':'Attend {k}, ligne {r} colonne {c}', 'volley.gunL':'Bobine {k}, tire vers la droite sur la ligne {n}', 'volley.gunR':'Bobine {k}, tire vers la gauche sur la ligne {n}', 'volley.gunT':'Bobine {k}, tire vers le bas sur la colonne {n}', 'volley.gunB':'Bobine {k}, tire vers le haut sur la colonne {n}', 'volley.stuck':'Toutes les bobines sont épuisées ou fausses — annulez un tir', 'm.volley':'Tirs de Bobines|Tirez les bobines dans l’ordre qui peint l’image', 'how.volley':'touchez une bobine pour tirer ; la bille peint les cases vides qu’elle traverse et s’arrête à la première déjà peinte. Touchez une case du dernier tir pour l’annuler',
     'p.sift':'Encore {n} cases à remplir', 'sift.slot':'Emplacement {n}, pelle {k}', 'sift.bare':'Emplacement {n}, vide', 'sift.put':'Poser une pelle {k} sur le tapis', 'sift.jam':'Tapis plein — faites tomber la pelle de tête pour faire de la place', 'sift.pic':'Image cachée, {n} cases sur {m}', 'sift.again':'Un grain est passé — il reviendra, encore {n} cases à remplir', 'm.sift':'Bac à Sable Tout Doux|Attrape chaque grain de sable de sa couleur : une image cachée apparaît',
     'how.forage':'touchez un chaton pour lancer les chatons sur sa couleur ; ils entrent par les trous, ne prennent que ce qu’ils atteignent, puis attendent dans le panier que vous les relanciez. Touchez un chaton en attente pour le rappeler', 'how.first':'Première fois — on y va doucement.', 'how.sift':'touchez une couleur pour poser cette bobine à l’ARRIÈRE du tapis ; le tapis avance d’un cran par brin, donc vous posez pour un brin plus loin dans la trémie, pas pour celui qui tombe. Touchez la bobine de tête pour la faire tomber',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
@@ -5864,7 +5867,7 @@ const STRINGS = {
     
     'p.forage':'Quedan {n} golosinas', 'forage.cell':'Golosina {k}, fila {r} columna {c}', 'forage.gone':'Despejada, fila {r} columna {c}', 'forage.slot':'Gatito esperando {k}, quedan {n}', 'forage.free':'Hueco libre en la cesta', 'forage.full':'Cesta llena — llama a un gatito, o ábrele el paso', 'm.forage':'Ataque de Gatitos Golosos|Manda gatitos a un color de golosina — solo unos pocos a la vez',
     'p.meld':'Faltan {n} monedas de gratitud', 'meld.cell':'{v}, vale {p}, fila {r} columna {c}', 'meld.empty':'Vacío, fila {r} columna {c}', 'meld.band':'{v} paga {p} hoy', 'meld.selling':'Toca otra vez para regalar: {v}, {p}', 'm.meld':'Ovillos Enredados|Fusiona ovillos enredados en labores más bonitas, regálalas y llena el tarro de gracias', 'how.meld':'arrastra un ovillo sobre su gemelo para hacerlos uno; toca un ovillo y tócalo otra vez para venderlo. Un nivel paga el triple hoy, y fusionar más allá pierde dinero',
-    'p.volley':'{n} casillas aún vacías', 'volley.cell':'{k}, fila {r} columna {c}', 'volley.blank':'Quiere {k}, fila {r} columna {c}', 'volley.gunL':'Carrete {k}, dispara a la derecha por la fila {n}', 'volley.gunR':'Carrete {k}, dispara a la izquierda por la fila {n}', 'volley.gunT':'Carrete {k}, dispara hacia abajo por la columna {n}', 'volley.gunB':'Carrete {k}, dispara hacia arriba por la columna {n}', 'volley.stuck':'Todos los carretes están gastados o son erróneos — deshaz un disparo', 'm.volley':'Disparo de Carretes|Dispara los carretes en el orden que pinta el dibujo', 'how.volley':'toca un carrete para disparar; la bola pinta las casillas vacías que cruza y se para en la primera ya pintada. Toca una casilla del último disparo para deshacerlo',
+    'volley.hint':'Pista', 'p.volley':'{n} casillas aún vacías', 'volley.cell':'{k}, fila {r} columna {c}', 'volley.blank':'Quiere {k}, fila {r} columna {c}', 'volley.gunL':'Carrete {k}, dispara a la derecha por la fila {n}', 'volley.gunR':'Carrete {k}, dispara a la izquierda por la fila {n}', 'volley.gunT':'Carrete {k}, dispara hacia abajo por la columna {n}', 'volley.gunB':'Carrete {k}, dispara hacia arriba por la columna {n}', 'volley.stuck':'Todos los carretes están gastados o son erróneos — deshaz un disparo', 'm.volley':'Disparo de Carretes|Dispara los carretes en el orden que pinta el dibujo', 'how.volley':'toca un carrete para disparar; la bola pinta las casillas vacías que cruza y se para en la primera ya pintada. Toca una casilla del último disparo para deshacerlo',
     'p.sift':'Faltan {n} por rellenar', 'sift.slot':'Hueco {n}, pala {k}', 'sift.bare':'Hueco {n}, vacío', 'sift.put':'Poner una pala {k} en la cinta', 'sift.jam':'Cinta llena — tira la pala delantera para hacer sitio', 'sift.pic':'Imagen escondida, {n} de {m}', 'sift.again':'Un grano se coló — volverá a pasar, faltan {n} por rellenar', 'm.sift':'Arenero Suave|Atrapa cada grano de arena de su color y aparecerá una imagen escondida',
     'how.forage':'toca un gatito para lanzar los gatitos a su color; entran por los huecos, toman solo lo que alcanzan y luego esperan en la cesta a que los vuelvas a lanzar. Toca un gatito en espera para llamarlo', 'how.first':'Primera vez: vamos con calma.', 'how.sift':'toca un color para poner ese carrete al FINAL de la cinta; la cinta avanza un hueco por hebra, así que colocas para una hebra más adelante en la tolva, no para la que cae. Toca el carrete delantero para tirarlo',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
@@ -6359,7 +6362,7 @@ const STRINGS = {
     
     'p.forage':'Noch {n} Leckerlis', 'forage.cell':'{k}-Leckerli, Zeile {r} Spalte {c}', 'forage.gone':'Geräumt, Zeile {r} Spalte {c}', 'forage.slot':'Kätzchen wartet auf {k}, noch {n}', 'forage.free':'Freier Korbplatz', 'forage.full':'Korb voll — ruf ein Kätzchen zurück, oder mach ihm den Weg frei', 'm.forage':'Kätzchen-Snack-Attacke|Schick die Kätzchen auf eine Leckerli-Farbe — nur so viele auf einmal',
     'p.meld':'Noch {n} Dankbarkeitsmünzen', 'meld.cell':'{v}, {p} wert, Zeile {r} Spalte {c}', 'meld.empty':'Leer, Zeile {r} Spalte {c}', 'meld.band':'{v} zahlt heute {p}', 'meld.selling':'Nochmal tippen, um {v} zu verschenken ({p})', 'm.meld':'Wollknäuel-Wirrwarr|Führe verhedderte Knäuel zu schöneren Werken zusammen, verschenke sie und füll das Dankesglas', 'how.meld':'zieh ein Knäuel auf sein Gegenstück, damit eins daraus wird; tippe ein Knäuel an und dann nochmal, um es zu verkaufen. Eine Stufe zahlt heute das Dreifache, und darüber hinaus zu verschmelzen kostet Geld',
-    'p.volley':'Noch {n} leere Felder', 'volley.cell':'{k}, Zeile {r} Spalte {c}', 'volley.blank':'Will {k}, Zeile {r} Spalte {c}', 'volley.gunL':'{k}-Spule, schießt nach rechts durch Zeile {n}', 'volley.gunR':'{k}-Spule, schießt nach links durch Zeile {n}', 'volley.gunT':'{k}-Spule, schießt nach unten durch Spalte {n}', 'volley.gunB':'{k}-Spule, schießt nach oben durch Spalte {n}', 'volley.stuck':'Jede Spule ist verbraucht oder falsch — nimm einen Schuss zurück', 'm.volley':'Spulenschüsse|Schieß die Spulen in der Reihenfolge, die das Bild malt', 'how.volley':'tippe eine Spule an, um zu schießen; die Kugel malt die leeren Felder, die sie überquert, und hält am ersten bereits bemalten. Tippe ein Feld des letzten Schusses an, um ihn zurückzunehmen',
+    'volley.hint':'Tipp', 'p.volley':'Noch {n} leere Felder', 'volley.cell':'{k}, Zeile {r} Spalte {c}', 'volley.blank':'Will {k}, Zeile {r} Spalte {c}', 'volley.gunL':'{k}-Spule, schießt nach rechts durch Zeile {n}', 'volley.gunR':'{k}-Spule, schießt nach links durch Zeile {n}', 'volley.gunT':'{k}-Spule, schießt nach unten durch Spalte {n}', 'volley.gunB':'{k}-Spule, schießt nach oben durch Spalte {n}', 'volley.stuck':'Jede Spule ist verbraucht oder falsch — nimm einen Schuss zurück', 'm.volley':'Spulenschüsse|Schieß die Spulen in der Reihenfolge, die das Bild malt', 'how.volley':'tippe eine Spule an, um zu schießen; die Kugel malt die leeren Felder, die sie überquert, und hält am ersten bereits bemalten. Tippe ein Feld des letzten Schusses an, um ihn zurückzunehmen',
     'p.sift':'Noch {n} zu füllen', 'sift.slot':'Bandplatz {n}, {k}-Schaufel', 'sift.bare':'Bandplatz {n}, leer', 'sift.put':'Eine {k}-Schaufel aufs Band stellen', 'sift.jam':'Band ist voll — stoß die vorderste Schaufel herunter', 'sift.pic':'Verstecktes Bild, {n} von {m} gefüllt', 'sift.again':'Ein Korn ist durchgerutscht — es kommt wieder, noch {n} zu füllen', 'm.sift':'Sandkasten der Sanftheit|Fang jedes Sandkorn in seiner Farbe — ein verstecktes Bild füllt sich',
     'how.forage':'tippe ein Kätzchen an, um die Kätzchen auf seine Farbe zu schicken; sie kommen durch die Lücken herein, nehmen nur, was sie erreichen, und warten dann im Korb, bis du sie erneut schickst. Tippe ein wartendes Kätzchen an, um es zurückzurufen', 'how.first':'Zum ersten Mal — wir fangen sanft an.', 'how.sift':'tippe eine Farbe an, um die Spule HINTEN aufs Band zu stellen; das Band rückt je Faden einen Platz vor, du stellst also für einen Faden weiter oben im Schacht, nicht für den fallenden. Tippe die vorderste Spule an, um sie herunterzustoßen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
@@ -6826,6 +6829,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.120.0', date:'2026-10-02', items:[
+    'Spool Shots stops wasting your moves. A spool that cannot fire (spent, or the wrong colour for where it would land) kicks back and costs nothing: it used to charge a move for a shot that never left the barrel, and the spools that fit are lit anyway. Winding the last shot back by tapping a square it painted now gives its move back.',
+    'A Hint (two a round) lights the spool to fire next: the first shot of a shortest way from the board as it is to the finished picture. If you have painted yourself into a corner, it lights the squares to wind back instead.',
+  ] },
   { v:'0.119.0', date:'2026-10-02', items:[
     'Basket Drop, Sort Drop and Cat’s Cradle have paws. Landing in the wrong basket, putting a piece in the wrong basket, or tapping a peg that is out of reach used to end the round; now each takes a paw and you try again (in Basket Drop the pegs stay as you left them and the ball can be dropped again). Three paws at first, two in the middle, one at the top. Fidget Loop never ends.',
     'A wrong swatch or number is dimmed as a reminder but can still be tapped, so the paws can always run out: with three swatches and three paws, ruling the wrong ones out would have meant a round could never be lost.',
@@ -14237,10 +14244,12 @@ const MODES = {
           { k: inkName(ink(tint[gi])), n: g.i + 1 }));
         gunEls.push(b);
       });
-      ctx.surface.appendChild(box);
+      const col = mk('div','sumcol');
+      col.appendChild(box);
+      ctx.surface.appendChild(col);
 
       const budget = moveBudget(ctx, answer);
-      let grid = new Array(CELLS).fill(0), done = false, busy = false;
+      let grid = new Array(CELLS).fill(0), done = false, busy = false, hints = 2;
       const hist = [];
 
       const paint = () => {
@@ -14290,11 +14299,11 @@ const MODES = {
         const hit = shot(grid, guns[gi]);
         const b = gunEls[gi];
         if (!hit.length || hit.some(i => target[i] !== tint[gi])){
-          /* Nowhere to go, or the wrong colour for somewhere it would go. */
+          /* Nowhere to go, or the wrong colour for somewhere it would go: the spool kicks back and nothing changes, so nothing is charged
+             (a shot that never left the barrel was costing a move, and the spools that fit are lit anyway). */
           b.classList.add('kick');
           ctx.after(360, () => b.classList.remove('kick'));
           sfx.bad(); buzz('bad');
-          budget.spend(b);
           return;
         }
         hist.push({ gi, hit });
@@ -14303,7 +14312,7 @@ const MODES = {
           paint();
           sfx.good(2 + hist.length); buzz('good');
           if (grid.indexOf(0) < 0){
-            done = true;
+            done = true; paintHint();
             box.classList.add('won');
             return ctx.win(box);
           }
@@ -14363,8 +14372,52 @@ const MODES = {
         hist.pop();
         last.hit.forEach(x => { grid[x] = 0; });
         paint(); sfx.tap(); buzz('tap');
-        budget.spend(b);
+        budget.refund();                       /* winding a shot back gives its move back */
       }));
+
+      /* A hint lights the spool to fire next: the first shot of a shortest way from the board as it is to the finished picture. If the
+         board has been painted into a corner there is no such shot, and the squares to wind back are lit instead. */
+      const firstShot = () => {
+        const goal = target.join(',');
+        if (grid.join(',') === goal) return -1;
+        const seen = new Set([grid.join(',')]);
+        let front = [{ g: grid, first: -1 }];
+        for (let d = 1; d <= answer + 6; d++){
+          if (seen.size > 20000) return null;
+          const next = [];
+          for (const { g, first } of front){
+            for (let gi = 0; gi < guns.length; gi++){
+              const hit = shot(g, guns[gi]);
+              if (!hit.length || hit.some(i => target[i] !== tint[gi])) continue;
+              const nx = g.slice(); hit.forEach(i => { nx[i] = tint[gi]; });
+              const key = nx.join(',');
+              if (seen.has(key)) continue;
+              seen.add(key);
+              const f = first < 0 ? gi : first;
+              if (key === goal) return f;
+              next.push({ g: nx, first: f });
+            }
+          }
+          if (!next.length) return null;
+          front = next;
+        }
+        return null;
+      };
+      const tools = mk('div','sumtools'), hint = mk('button','sumtool'); hint.type = 'button';
+      tools.appendChild(hint); col.appendChild(tools);
+      const paintHint = () => { hint.textContent = t('volley.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
+      paintHint();
+      onTap(hint, () => {
+        if (done || busy || hints <= 0) return;
+        const gi = firstShot();
+        hints--; paintHint(); sfx.tap();
+        if (gi === null || gi < 0){
+          if (hist.length){ const last = hist[hist.length - 1].hit; last.forEach(i => pix[i].classList.add('hintwind')); ctx.after(2200, () => last.forEach(i => pix[i] && pix[i].classList.remove('hintwind'))); ctx.prompt(t('volley.stuck')); }
+          return;
+        }
+        gunEls[gi].classList.add('hinted');
+        ctx.after(2400, () => gunEls[gi].classList.remove('hinted'));
+      });
 
       paint();
     }
