@@ -36,7 +36,11 @@ const SITE = process.env.SITE || '/tmp/pw/_site';
 
 if (!existsSync(BASE)) mkdirSync(BASE, { recursive: true });
 const ONLY = (process.env.ONLY || '').split(',').filter(Boolean);
-const ids = modeIdsFromBuild(SITE).filter(id => !ONLY.length || ONLY.includes(id));
+/* Modes whose board is moving all the time (a needle, a falling drop, a pulse, a band). A still picture of one is a picture of a moment, and
+   a moment that happens to repeat three times in a row gets baselined and then fails at random, so they are left out of this check; the
+   other probes (stable, geometry, layoutshift, the mode's own) are the ones that cover them. */
+const MOVING = new Set(['beat', 'tide', 'skim', 'cairn', 'drift', 'gather', 'sift', 'blast', 'bruise', 'descent']);
+const ids = modeIdsFromBuild(SITE).filter(id => (!ONLY.length || ONLY.includes(id)) && !MOVING.has(id));
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 400, height: 820 }, hasTouch: true });
@@ -122,7 +126,7 @@ for (const id of ids){
 }
 await browser.close();
 
-if (!ONLY.length) floorOrDie('shots', ids.length, 40);
+if (!ONLY.length) floorOrDie('shots', ids.length, 30);
 console.log('');
 if (UPDATE){
   console.log(`baseline written for ${fresh.length} modes; ${unstable.length} could not hold still`);

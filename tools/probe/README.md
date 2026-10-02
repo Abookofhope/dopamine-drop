@@ -18,7 +18,7 @@ Not in the suite because they take minutes (run them before a release):
 ```sh
 MAX=1 node tools/probe/alive.mjs     # every board answers a real touch at maximum difficulty
 node tools/probe/soak.mjs            # four minutes of real play across modes; nothing leaks between them
-node tools/probe/shots.mjs           # byte-exact picture of every board against tools/probe/baseline/
+node tools/probe/shots.mjs           # byte-exact picture of every board against tools/probe/baseline/ (not the ten modes that never hold still: see MOVING in the file)
 node tools/probe/monkey.mjs          # random taps and drags in every mode, motion on
 ```
 
