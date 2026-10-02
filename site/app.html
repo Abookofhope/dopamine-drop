@@ -4147,7 +4147,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.123.0';
+const VERSION_TAG = 'v0.124.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6831,6 +6831,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.124.0', date:'2026-10-02', items:[
+    'Mending has a Hold button (two a round, the same one Tumble Dryer has): for three seconds nothing new frays and nothing already frayed unravels, a moment to catch your breath when the board fills up.',
+  ] },
   { v:'0.123.0', date:'2026-10-02', items:[
     'Tumble Dryer has a Pair button (two a round, next to Hold): it lights two socks that go together for a moment, so a crowded drum is never a search through every colour at once.',
   ] },
@@ -10273,8 +10276,12 @@ const MODES = {
         b.setAttribute('aria-label', t('a.empty'));
         holes.push({ el:b, blob:null }); grid.appendChild(b);
       }
-      ctx.surface.appendChild(grid);
+      const col = mk('div','sumcol');
+      col.appendChild(grid);
+      ctx.surface.appendChild(col);
       const say = () => ctx.prompt(t('p.bruise', { n: need - popped, e: allowed - escaped }));
+      /* Two holds a round: for three seconds nothing new frays and nothing already frayed unravels. */
+      let holds = 2, heldUntil = 0;
 
       const dress = h => {
         const b = h.blob;
@@ -10293,6 +10300,8 @@ const MODES = {
       };
       const leave = h => {
         if (!h.blob || done) return;
+        /* While the drum is held, a thread that was about to go gets a moment's grace after it. */
+        if (performance.now() < heldUntil){ h.blob.timer = ctx.after(heldUntil - performance.now() + 250, () => leave(h)); return; }
         h.blob = null; dress(h);
         escaped++;
         sfx.bad(); buzz('step');
@@ -10301,6 +10310,7 @@ const MODES = {
       };
       const spawn = () => {
         if (done) return;
+        if (performance.now() < heldUntil){ ctx.after(heldUntil - performance.now() + 30, spawn); return; }
         const open = holes.filter(h => !h.blob);
         if (open.length){
           const h = open[Math.floor(ctx.rnd()*open.length)];
@@ -10326,6 +10336,15 @@ const MODES = {
         } else dress(h);
         say();
       }));
+      const tools = mk('div','sumtools'), hold = mk('button','sumtool'); hold.type = 'button';
+      const paintHold = () => { hold.textContent = t('tumble.hold') + ' ' + holds; hold.disabled = holds <= 0 || done; };
+      paintHold();
+      onTap(hold, () => {
+        if (holds <= 0 || done) return;
+        holds--; heldUntil = performance.now() + 3000; paintHold(); sfx.good(1);
+        grid.classList.add('held'); ctx.after(3000, () => grid.classList.remove('held'));
+      });
+      tools.appendChild(hold); col.appendChild(tools);
       spawn();
       say();
     }
