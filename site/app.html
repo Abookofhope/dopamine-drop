@@ -2236,6 +2236,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .budget.paws i.used{opacity:.2}
 .budget.paws.low{color:var(--bad)}
 .swatch.ruled,.abtn.ruled,.bub.ruled{opacity:.22;pointer-events:none}
+.beatdot.ruled{animation:none!important;opacity:.22;transform:scale(.8)}
 .bub.wrongtap,.ddot.wrongtap{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
 /* A tile that must hold still flashes instead of shaking. */
 .cell.num.wrongtap{animation:wrongflash .45s ease-out}
@@ -4137,7 +4138,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.116.0';
+const VERSION_TAG = 'v0.117.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6821,6 +6822,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.117.0', date:'2026-10-02', items:[
+    'Off Beat and Catch the Balls have paws. Tapping the wrong dot used to end the round, and so did a ball going wrong; now each takes a paw. A wrong dot is ruled out (it stops pulsing and dims, which narrows the search), and in Catch the Balls a keeper that got away is replaced by another a little later, so there are always enough left to win with. Three paws at first, two in the middle, one at the top, which plays as before. Fidget Loop never ends.',
+  ] },
   { v:'0.116.0', date:'2026-10-02', items:[
     'Snip and Dropped Stitch have paws. Cutting a matted ball used to end the round, and so did striking a bar; now each takes a paw. A matted ball you cut is spent (one swipe through it is one paw, however long it lingers), and a bump reddens the bar behind you while the fall carries on. Three paws at first, two in the middle, one at the top, which plays as before. Fidget Loop never ends.',
   ] },
@@ -9220,6 +9224,7 @@ const MODES = {
     name:'Off Beat', blurb:'Find the paw that is out of time', cat:'reflex', par:6000, bonus:2000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#6C6191"><circle cx="5" cy="14" r="2.4"/><circle cx="12" cy="14" r="2.4"/></g><circle cx="19" cy="8.4" r="2.9" fill="#FF3D6E"/><path d="M2.5 19.5h19" stroke="#6C6191" stroke-width="1.6" stroke-linecap="round"/></svg>',
     build(ctx){
+      const paws = pawChances(ctx);
       const n = clamp(5 + Math.floor(ctx.level/3), 5, 14);
       const period = clamp(900 - ctx.level*22, 420, 900);
       /* The odd dot's gap narrows with level but is floored well above the
@@ -9246,7 +9251,7 @@ const MODES = {
         b.setAttribute('aria-label', t('a.dot', { n: i+1 }));
         b.style.animationDuration = (i===odd ? period + offset : i===odd2 ? period - offset*0.8 : period) + 'ms';
         onTap(b, () => {
-          if (i !== odd && i !== odd2) return ctx.miss(b);
+          if (i !== odd && i !== odd2){ wrongTap(ctx, paws, b); return; }
           if (b.classList.contains('found')) return;
           b.classList.add('found'); found++;
           if (found >= (two ? 2 : 1)) ctx.win(b); else { sfx.good(1); buzz('tap'); }
@@ -11861,12 +11866,13 @@ const MODES = {
       ctx.surface.appendChild(field);
 
       let px = 50, done = false, raf2 = 0, got = 0;
+      const paws = pawChances(ctx);
       const movePail = () => { pail.style.left = (px - MOUTH/2) + '%'; };
       movePail();
       const say = () => ctx.prompt(t('p.gather', { n: need - got }));
       say();
 
-      drops.forEach(d => {
+      const spawnEl = d => {
         d.e = mk('i', d.good ? 'gdrop' : 'gdrop dud');
         d.e.style.left = d.x + '%';
         d.e.setAttribute('role','img');
@@ -11874,7 +11880,9 @@ const MODES = {
         d.e.style.top = '-10%';
         field.appendChild(d.e);
         d.live = false; d.gone = false;
-      });
+      };
+      drops.forEach(spawnEl);
+      let lastT = drops.reduce((m, d) => Math.max(m, d.t), 0);
 
       onDrag(field, {
         start: q => { if (!done){ px = clamp(q.x, MOUTH/2, 100 - MOUTH/2); movePail(); } },
@@ -11901,8 +11909,18 @@ const MODES = {
             d.gone = true;
             const caught = Math.abs(d.x - px) < CATCH/2;
             if (caught !== d.good){
-              done = true; cancelAnimationFrame(raf2);
-              d.e.classList.add('splat'); return ctx.miss(d.e);
+              /* A keeper that got away, or a tangle that was caught, takes a paw. A keeper that got away is replaced by another a little
+                 later, so there are always enough left to win with. */
+              d.e.classList.add('splat');
+              if (!paws.use(d.e)){ done = true; cancelAnimationFrame(raf2); return; }
+              sfx.tap(); buzz('bad');
+              ctx.after(320, () => d.e.remove());
+              if (d.good){
+                lastT = Math.max(lastT + gap*1.2, ms + fall*0.6);
+                const r = { good: true, t: lastT, x: 8 + ctx.rnd()*84 };
+                spawnEl(r); drops.push(r);
+              }
+              continue;
             }
             if (caught){
               got++;

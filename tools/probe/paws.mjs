@@ -1,7 +1,7 @@
 /* Paws: a wrong answer takes a paw, not the round.
  *
  * Needle Pass has its own probe (skim.mjs); this one covers the modes that share the helper: Dye Trap, Quick Count, Count the
- * Stitches, Stitch Count, Haunt and Tangle Watch.
+ * Stitches, Stitch Count, Haunt, Off Beat and Tangle Watch.
  *
  *   - at a new level there are three paws above the board (they are the round's, not each board's: a round of several boards keeps
  *     the same three), a wrong choice uses one and the round goes on, and the third wrong choice ends the round
@@ -71,6 +71,14 @@ const modes = {
       const st = await page.$$eval('.cell.crypt', els => els.map(e => e.classList.contains('wrong') || e.classList.contains('found')));
       const wrong = st.findIndex((x, i) => !x && !where.includes(i)), right = where.find(i => !st[i]);
       return { right: () => tapNth(page, '.cell.crypt', right), wrong: () => tapNth(page, '.cell.crypt', wrong) };
+    } },
+  beat: { name: 'Off Beat', sel: '#surface .beatdot', ruled: '.beatdot.ruled', boards: false,
+    acts: async page => {
+      const d = await page.$$eval('.beatdot', els => els.map(e => ({ dur: e.style.animationDuration, off: e.disabled, found: e.classList.contains('found') })));
+      const count = {}; d.forEach(x => count[x.dur] = (count[x.dur] || 0) + 1);
+      const period = Object.keys(count).sort((a, b) => count[b] - count[a])[0];
+      const right = d.findIndex(x => x.dur !== period && !x.found), wrong = d.findIndex(x => x.dur === period && !x.off);
+      return { right: () => tapNth(page, '.beatdot', right), wrong: () => tapNth(page, '.beatdot', wrong) };
     } },
   drift: { name: 'Tangle Watch', sel: '#surface .ddot', ruled: null, boards: false,
     acts: async page => {
