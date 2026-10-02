@@ -85,6 +85,31 @@ for (let tries = 0; tries < 20 && (played.across < 2 || played.down < 2); tries+
 }
 check(played.across >= 2 && played.down >= 2, `both folds were played: ${played.across} across the top, ${played.down} down the side`);
 
+/* ── a hint, and stitches that come back ─────────────────────────────────────────────────────────────────────────────── */
+{
+  const page = await open(0); let s = await read(page);
+  const want = wantedOf(s);
+  const budget = async () => parseInt(((await page.evaluate(() => (document.querySelector('.budget') || {}).textContent || '')).match(/\d+/) || ['0'])[0], 10);
+  const tool = async () => page.evaluate(() => { const b = document.querySelector('.sumcol .sumtool'), r = b.getBoundingClientRect(); return { text: b.textContent.trim(), x: r.left, y: r.top, w: r.width, h: r.height, off: b.disabled }; });
+  const sum = await page.evaluate(() => { const r = document.getElementById('surface').getBoundingClientRect(); return { y: r.top + r.height }; });
+  let tl = await tool();
+  check(tl.h >= 40 && tl.y + tl.h <= sum.y + 1, `Hint is inside the board and big enough to hit (${Math.round(tl.h)}px)`);
+  /* lighting a square costs a move, putting it out gives the move back */
+  const b0 = await budget(); const w0 = s.cells.find(c => !c.given && !want.has(c.i));
+  await page.mouse.click(w0.cx, w0.cy); await page.waitForTimeout(100); const b1 = await budget();
+  await page.mouse.click(w0.cx, w0.cy); await page.waitForTimeout(100); const b2 = await budget();
+  check(b1 === b0 - 1 && b2 === b0, `lighting a square costs a move and putting it out gives it back (${b0} -> ${b1} -> ${b2})`);
+  /* the hint lights one square that is still missing */
+  await page.mouse.click(tl.x + 20, tl.y + 18); await page.waitForTimeout(250);
+  const hinted = await page.evaluate(() => [...document.querySelectorAll('.mcell')].map((c, k) => c.classList.contains('hint') ? Number(c.dataset.idx) : -1).filter(i => i >= 0));
+  tl = await tool();
+  check(hinted.length === 1 && want.has(hinted[0]) && /1/.test(tl.text), `Hint lights one square the reflection needs (${hinted.join()}), and uses one of two (${tl.text})`);
+  const hc = s.cells.find(c => c.i === hinted[0]);
+  await page.mouse.click(hc.cx, hc.cy); await page.waitForTimeout(120);
+  const after = await page.evaluate(i => ({ on: document.querySelector('.mcell[data-idx="' + i + '"]').classList.contains('on'), hint: document.querySelector('.mcell[data-idx="' + i + '"]').classList.contains('hint') }), hinted[0]);
+  check(after.on && !after.hint, 'tapping the lit square lights it and clears the hint');
+  await page.close();
+}
 check(errs.length === 0, 'no script errors' + (errs.length ? ': ' + errs[0] : ''));
 await browser.close();
 console.log(bad ? `\n${bad} FAILED` : '\nMirror Stitch plays the way it says');

@@ -103,7 +103,11 @@ for (const [xp, lvl] of PROFILES){
 {
   const page = await boot(12000); const s = await read(page);
   /* the chalk runs out: a long scribble stops at the budget and says so */
-  await stroke(page, s, Array.from({ length: 420 }, (_, i) => { const row = Math.floor(i / 42), c = i % 42; return [row % 2 ? 92 - c * 2 : 8 + c * 2, 14 + row * 7]; }));
+  /* twenty-six passes across in long steps: how much chalk a board gives depends on the answer it was built from, and ten passes was not always
+     enough. Few, long moves, because the round has a clock and a scribble of a thousand tiny ones can outlast it. */
+  const scribble = Array.from({ length: 390 }, (_, i) => { const row = Math.floor(i / 15), c = i % 15; return [row % 2 ? 92 - c * 6 : 8 + c * 6, 6 + row * 3.3]; });
+  /* and again while there is still chalk: a board with a long answer gives more than one pass can spend */
+  for (let pass = 0; pass < 4; pass++){ await stroke(page, s, scribble); await page.waitForTimeout(300); if ((await read(page)).inkFrac < 0.012) break; }
   /* the bar eases down as the chalk is spent: read it once it has stopped, not mid-way */
   await page.waitForTimeout(500);
   const dry = await read(page);

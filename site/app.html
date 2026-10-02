@@ -657,6 +657,10 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transform:translateX(-50%);border-radius:4px 4px 2px 2px;
   background:linear-gradient(160deg,#c9b6ff,#7a5fd6);
   box-shadow:inset 0 -3px 0 #00000033,0 3px 8px -5px #000}
+.lvrband{position:absolute;display:block;top:calc(56% - 38px);height:84px;border-radius:12px;background:#ffc53d26;
+  border:1px solid #ffc53d88;opacity:0;pointer-events:none;transition:opacity var(--t-med)}
+.lvrband.on{opacity:1}
+.sumcol > .lvrstage{flex:1 1 0;min-height:0}
 .lvrwedge{position:absolute;display:block;top:56%;width:34px;height:26px;
   transform:translateX(-50%);
   background:linear-gradient(180deg,#ff9a3d,#a85a17);
@@ -713,6 +717,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   cursor:pointer;transition:background var(--t-fast),border-color var(--t-fast),transform var(--t-fast);
 }
 .brcell:active{transform:scale(.94)}
+.cell.mcell.hint{outline:3px solid #ffc53d;outline-offset:-3px;box-shadow:0 0 14px #ffc53d88}
 .brcell.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88;background:#ffc53d22}
 .sumcol > .brwrap{flex:1 1 0;min-height:0}
 .brcell.plank{border-color:#C08BFF;box-shadow:0 0 12px #c08bff55;cursor:pointer;background:
@@ -884,6 +889,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   background:radial-gradient(120% 90% at 50% 110%, #1b1440 0%, #0d0918 70%);
   border:1px solid var(--edge-soft);transition:box-shadow var(--t-fast)}
 .skimtrack.hot{box-shadow:inset 0 0 0 1px #4bc0ff66}
+.skimtrack.flinch{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
 .skimstars{position:absolute;inset:0;pointer-events:none}
 .skimstars i{position:absolute;width:2px;height:2px;border-radius:50%;background:var(--cream)}
 .skimzone{position:absolute;top:38%;height:24%;border-radius:var(--r-sm);pointer-events:none;
@@ -2224,6 +2230,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:color var(--t-fast),border-color var(--t-fast),transform var(--t-fast);
 }
 .budget.low{color:var(--bad);border-color:var(--bad);transform:scale(1.06)}
+.budget.paws{display:flex;gap:4px;padding:3px 8px;color:var(--flare)}
+.budget.paws i{display:block;width:15px;height:15px;transition:opacity var(--t-med)}
+.budget.paws i svg{display:block;width:100%;height:100%}
+.budget.paws i.used{opacity:.2}
+.budget.paws.low{color:var(--bad)}
 .wordcol{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:24px;width:100%;border-radius:var(--r-lg);
   background:radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--fam,transparent) 8%, transparent), transparent 75%)}
 .slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
@@ -4121,7 +4132,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.112.0';
+const VERSION_TAG = 'v0.113.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4825,7 +4836,7 @@ const STRINGS = {
     'p.stroop':'Tap the colour it is printed in', 'p.stroopRev':'Reversed — tap the colour it names', 
     'p.rewire':'Run the thread from the ball to the cat',
     'p.sum':'Tap two that add to {n}', 'p.sumDiff':'Tap two that differ by {n}', 'p.count':'How many {x}?',
-    'p.mirror':'Mirror it to the right', 
+    'mirror.hint':'Hint', 'p.mirror':'Mirror it to the right', 
 
     'p.tooSlow':'Too slow',
     'modes.families':'Families', 'modes.played':'{n} of {m} played', 'modes.allCard':'All {n} modes', 'modes.allSub':'One long list, every family', 'modes.hold':'Hold a card to read what a mode is before you start it.', 'mpv.best':'Your best', 'mpv.mastery':'Mastery', 'mpv.play':'Play', 'mpv.mastered':'Mastered — all three stars', 'mpv.toNext':'{n} more points for the next star',
@@ -4843,7 +4854,7 @@ const STRINGS = {
     'p.trace':'{n} more to reach — stay on the line', 'trace.back':'Drifting — ease back onto the thread', 'trace.box':'Drag along the line from the bright dot to the ring', 'm.trace':'Follow the Thread|Follow the thread to its end — no hurry',
     'set.version':'Version', 'set.checkUpd':'Check', 'set.checking':'Checking…', 'set.upToDate':'Up to date', 'set.updating':'Updating…',
     'halve.hint':'Hint', 'p.halve':'{n} apart', 'halve.chip':'{v}, in basket {s}', 'm.halve':'Even Skeins|Move skeins until both baskets weigh the same',
-    'p.lever':'Slide the wedge, let go to test', 'lever.wedge':'The wedge — drag it along the beam', 'lever.loadL':'Weight {w}, {d} to the left', 'lever.loadR':'Weight {w}, {d} to the right', 'm.lever':'Balance|Find the balance point by eye, then test it',
+    'lever.hint':'Hint', 'p.lever':'Slide the wedge, let go to test', 'lever.wedge':'The wedge — drag it along the beam', 'lever.loadL':'Weight {w}, {d} to the left', 'lever.loadR':'Weight {w}, {d} to the right', 'm.lever':'Balance|Find the balance point by eye, then test it',
     'perk.callSlot1':'A slot is free — pick a perk', 'perk.callSlot':'{n} slots free — pick a perk', 'perk.callToken1':'A token to spend — make a perk stronger', 'perk.callToken':'{n} tokens to spend — make a perk stronger',
 
     'set.vibNone':'This phone has no vibration for a web app to use',
@@ -4870,7 +4881,7 @@ const STRINGS = {
     'p.gather':'{n} more to catch — let the dark ones fall', 'gather.pail':'Your basket', 'gather.keep':'A ripe one, worth catching', 'gather.dud':'A dud, let it fall', 'm.gather':'Catch the Balls|Catch the good ones, let the tangles fall',
     'p.chalk':'Chalk ramps for the yarn — then press Drop', 'p.chalkGo':'Too late to change it now', 'chalk.draw':'Draw a chalk ramp for the ball', 'chalk.ball':'The ball of yarn', 'chalk.basket':'The cat’s basket', 'm.chalk':'Chalk Line|Chalk the ramps, peek, then drop the yarn in the basket',
     'p.drift':'Two are on a collision course — tap both, or draw a thread between them', 'drift.dot':'Drifting dot {n}', 'm.drift':'Tangle Watch|Two of these will meet — find them before they tangle',
-    'p.cairn':'{n} more to stack', 'cairn.tap':'Tap to drop the stone', 'm.cairn':'Folds|Stack the knits — every overhang is gone for good',
+    'cairn.slip':'It slipped off — a little narrower now. Chances left: {n}', 'p.cairn':'{n} more to stack', 'cairn.tap':'Tap to drop the stone', 'm.cairn':'Folds|Stack the knits — every overhang is gone for good',
 
     'p.siphon':'{n} jars still empty', 'sip.source':'source', 'sip.wants':'Jar wanting {c}', 'sip.done':'jar, filled', 'sip.empty':'source, emptied', 'm.siphon':'Dye Pots|Pour each dye into the pot that wants it',
     'p.descent':'{n} gaps below', 'm.descent':'Dropped Stitch|Steer the falling bobbin through every gap',
@@ -4885,7 +4896,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Mending|Finish the frayed ones before they unravel',
-    'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
+    'paws.left':'{n} chances left', 'skim.again':'Not there — the needle keeps going', 'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
     'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble Dryer|Pair the socks faster than the drum refills',
     'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Cat Fight|Read the tell, pick the counter, win the scrap',
     'p.arc':'{n} left to reach', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Cat’s Cradle|Loop every peg before the thread goes slack',  'm.slack':'No Crossing|Drag the pegs until no thread crosses',  'm.tide':'Purr|Hold to swell, let go to settle — stay in the band',  'm.plink':'Basket Drop|Pull one peg, then drop into the lit basket',  'p.missed':'Missed', 'p.slide':'Tap the end of a bar to slide it that way', 
@@ -5320,7 +5331,7 @@ const STRINGS = {
     'p.stroop':'Touchez la couleur de l’encre', 'p.stroopRev':'Inversé — touchez la couleur qu’il nomme', 
     'p.rewire':'Menez le fil de la pelote au chat',
     'p.sum':'Touchez deux nombres faisant {n}', 'p.sumDiff':'Touchez deux nombres dont la différence fait {n}', 'p.count':'Combien de {x} ?',
-    'p.mirror':'Reflétez vers la droite', 
+    'mirror.hint':'Indice', 'p.mirror':'Reflétez vers la droite', 
 
     'p.tooSlow':'Trop lent',
     'modes.families':'Familles', 'modes.played':'{n} sur {m} joués', 'modes.allCard':'Les {n} modes', 'modes.allSub':'Une seule longue liste, toutes familles', 'modes.hold':'Maintenez une carte pour lire ce qu’est un mode avant de le lancer.', 'mpv.best':'Votre record', 'mpv.mastery':'Maîtrise', 'mpv.play':'Jouer', 'mpv.mastered':'Maîtrisé — les trois étoiles', 'mpv.toNext':'Encore {n} points pour la prochaine étoile',
@@ -5338,7 +5349,7 @@ const STRINGS = {
     'p.trace':'Encore {n} à atteindre — restez sur la ligne', 'trace.back':'Vous dérivez — revenez doucement sur le fil', 'trace.box':'Glissez le long de la ligne, du point lumineux jusqu’à l’anneau', 'm.trace':'Suivre le Fil|Suivez le fil jusqu’au bout — sans hâte',
     'set.version':'Version', 'set.checkUpd':'Vérifier', 'set.checking':'Vérification…', 'set.upToDate':'À jour', 'set.updating':'Mise à jour…',
     'halve.hint':'Indice', 'p.halve':'Écart de {n}', 'halve.chip':'{v}, dans le panier {s}', 'm.halve':'Pelotes Égales|Déplacez les pelotes jusqu’à équilibrer les paniers',
-    'p.lever':'Glissez le coin, lâchez pour tester', 'lever.wedge':'Le coin — glissez-le le long de la barre', 'lever.loadL':'Poids {w}, {d} à gauche', 'lever.loadR':'Poids {w}, {d} à droite', 'm.lever':'Équilibre|Trouvez le point d’équilibre à l’œil, puis testez',
+    'lever.hint':'Indice', 'p.lever':'Glissez le coin, lâchez pour tester', 'lever.wedge':'Le coin — glissez-le le long de la barre', 'lever.loadL':'Poids {w}, {d} à gauche', 'lever.loadR':'Poids {w}, {d} à droite', 'm.lever':'Équilibre|Trouvez le point d’équilibre à l’œil, puis testez',
     'perk.callSlot1':'Un emplacement libre — choisissez un atout', 'perk.callSlot':'{n} emplacements libres — choisissez un atout', 'perk.callToken1':'Un jeton à dépenser — renforcez un atout', 'perk.callToken':'{n} jetons à dépenser — renforcez un atout',
 
     'set.vibNone':'Ce téléphone n’offre pas de vibration à une application web',
@@ -5365,7 +5376,7 @@ const STRINGS = {
     'p.gather':'Encore {n} à attraper — laissez tomber les sombres', 'gather.pail':'Votre panier', 'gather.keep':'Un mûr, à attraper', 'gather.dud':'Un gâté, laissez-le tomber', 'm.gather':'Attrapez les Pelotes|Attrapez les bonnes, laissez tomber les nœuds',
     'p.chalk':'Tracez des rampes pour la pelote — puis Lâcher', 'p.chalkGo':'Trop tard pour corriger', 'chalk.draw':'Tracez une rampe à la craie pour la bille', 'chalk.ball':'La pelote de laine', 'chalk.basket':'Le panier du chat', 'm.chalk':'Trait de Craie|Tracez les rampes, jetez un œil, puis lâchez la pelote dans le panier',
     'p.drift':'Deux vont se percuter — touchez-les, ou tracez un fil entre eux', 'drift.dot':'Point dérivant {n}', 'm.drift':'Guet des Nœuds|Deux vont se croiser — trouvez-les avant le nœud',
-    'p.cairn':'Encore {n} à empiler', 'cairn.tap':'Touchez pour poser la pierre', 'm.cairn':'Pliage|Empilez les tricots — tout débord est perdu',
+    'cairn.slip':'Ça a glissé — un peu plus étroit maintenant. Chances restantes : {n}', 'p.cairn':'Encore {n} à empiler', 'cairn.tap':'Touchez pour poser la pierre', 'm.cairn':'Pliage|Empilez les tricots — tout débord est perdu',
 
     'p.siphon':'{n} bocaux vides', 'sip.source':'source', 'sip.wants':'Bocal attendant {c}', 'sip.done':'bocal, rempli', 'sip.empty':'source, vidée', 'm.siphon':'Pots de Teinture|Versez chaque teinture dans le bon pot',
     'p.descent':'{n} passages plus bas', 'm.descent':'Maille Filée|Guidez la bobine qui tombe dans chaque trou',
@@ -5380,7 +5391,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Raccommodage|Finissez les effilochés avant qu’ils ne filent',
-    'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
+    'paws.left':'{n} chances restantes', 'skim.again':'Pas là — l’aiguille continue', 'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
     'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Sèche-Linge|Appariez les chaussettes plus vite que le tambour',
     'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Bagarre|Lisez l’indice, choisissez la parade, gagnez la bagarre',
     'p.arc':'{n} à relier', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Jeu de Ficelle|Bouclez chaque piquet avant que le fil ne mollisse',  'm.slack':'Sans Croisement|Déplacez les piquets jusqu’à ce qu’aucun fil ne se croise',  'm.tide':'Ronron|Maintenez pour enfler, lâchez pour calmer — restez dans la bande',  'm.plink':'Chute au Panier|Retirez un piquet, puis tombez dans le panier allumé',  'p.missed':'Raté', 'p.slide':'Touchez le bout d’une barre pour la pousser', 
@@ -5815,7 +5826,7 @@ const STRINGS = {
     'p.stroop':'Toca el color de la tinta', 'p.stroopRev':'Invertido — toca el color que nombra', 
     'p.rewire':'Lleva el hilo del ovillo al gato',
     'p.sum':'Toca dos que sumen {n}', 'p.sumDiff':'Toca dos que difieran en {n}', 'p.count':'¿Cuántos {x}?',
-    'p.mirror':'Refléjalo a la derecha', 
+    'mirror.hint':'Pista', 'p.mirror':'Refléjalo a la derecha', 
 
     'p.tooSlow':'Demasiado lento',
     'modes.families':'Familias', 'modes.played':'{n} de {m} jugados', 'modes.allCard':'Los {n} modos', 'modes.allSub':'Una sola lista, todas las familias', 'modes.hold':'Mantén pulsada una tarjeta para leer qué es un modo antes de empezar.', 'mpv.best':'Tu récord', 'mpv.mastery':'Dominio', 'mpv.play':'Jugar', 'mpv.mastered':'Dominado — las tres estrellas', 'mpv.toNext':'{n} puntos más para la siguiente estrella',
@@ -5833,7 +5844,7 @@ const STRINGS = {
     'p.trace':'Quedan {n} por alcanzar — no te salgas de la línea', 'trace.back':'Te desvías — vuelve despacio al hilo', 'trace.box':'Arrastra por la línea desde el punto brillante hasta el anillo', 'm.trace':'Sigue el Hilo|Sigue el hilo hasta el final — sin prisa',
     'set.version':'Versión', 'set.checkUpd':'Comprobar', 'set.checking':'Comprobando…', 'set.upToDate':'Actualizado', 'set.updating':'Actualizando…',
     'halve.hint':'Pista', 'p.halve':'{n} de diferencia', 'halve.chip':'{v}, en la cesta {s}', 'm.halve':'Ovillos Iguales|Mueve ovillos hasta igualar las cestas',
-    'p.lever':'Desliza la cuña y suelta para probar', 'lever.wedge':'La cuña — deslízala por la barra', 'lever.loadL':'Peso {w}, {d} a la izquierda', 'lever.loadR':'Peso {w}, {d} a la derecha', 'm.lever':'Equilibrio|Encuentra el punto de equilibrio a ojo y pruébalo',
+    'lever.hint':'Pista', 'p.lever':'Desliza la cuña y suelta para probar', 'lever.wedge':'La cuña — deslízala por la barra', 'lever.loadL':'Peso {w}, {d} a la izquierda', 'lever.loadR':'Peso {w}, {d} a la derecha', 'm.lever':'Equilibrio|Encuentra el punto de equilibrio a ojo y pruébalo',
     'perk.callSlot1':'Una ranura libre — elige una ventaja', 'perk.callSlot':'{n} ranuras libres — elige una ventaja', 'perk.callToken1':'Una ficha por gastar — mejora una ventaja', 'perk.callToken':'{n} fichas por gastar — mejora una ventaja',
 
     'set.vibNone':'Este teléfono no ofrece vibración a una aplicación web',
@@ -5860,7 +5871,7 @@ const STRINGS = {
     'p.gather':'{n} más que atrapar — deja caer los oscuros', 'gather.pail':'Tu cesta', 'gather.keep':'Uno maduro, para atrapar', 'gather.dud':'Uno malo, déjalo caer', 'm.gather':'Atrapa Ovillos|Atrapa los buenos, deja caer los enredos',
     'p.chalk':'Dibuja rampas para el ovillo — luego Soltar', 'p.chalkGo':'Ya no puedes cambiarlo', 'chalk.draw':'Dibuja una rampa de tiza para la bola', 'chalk.ball':'El ovillo', 'chalk.basket':'La cesta del gato', 'm.chalk':'Línea de Tiza|Dibuja las rampas, ojea y suelta el ovillo en la cesta',
     'p.drift':'Dos van a chocar — toca los dos, o traza un hilo entre ellos', 'drift.dot':'Punto a la deriva {n}', 'm.drift':'Vigila el Enredo|Dos se van a cruzar — encuéntralos antes del nudo',
-    'p.cairn':'{n} más para apilar', 'cairn.tap':'Toca para soltar la piedra', 'm.cairn':'Pliegues|Apila los tejidos — lo que sobresale se pierde',
+    'cairn.slip':'Se resbaló — ahora algo más estrecho. Oportunidades: {n}', 'p.cairn':'{n} más para apilar', 'cairn.tap':'Toca para soltar la piedra', 'm.cairn':'Pliegues|Apila los tejidos — lo que sobresale se pierde',
 
     'p.siphon':'{n} frascos vacíos', 'sip.source':'fuente', 'sip.wants':'Frasco que pide {c}', 'sip.done':'frasco, lleno', 'sip.empty':'fuente, vacía', 'm.siphon':'Tintes|Vierte cada tinte en el bote que lo pide',
     'p.descent':'{n} huecos más abajo', 'm.descent':'Punto Caído|Guía la bobina que cae por cada hueco',
@@ -5875,7 +5886,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Remiendo|Termina los deshilachados antes de que se suelten',
-    'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
+    'paws.left':'Quedan {n} oportunidades', 'skim.again':'Ahí no — la aguja sigue', 'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
     'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Secadora|Empareja los calcetines más rápido que el tambor',
     'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Riña de Gatos|Lee la señal, elige la réplica, gana la riña',
     'p.arc':'Faltan {n}', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Cuna de Gato|Enlaza cada clavija antes de que afloje el hilo',  'm.slack':'Sin Cruces|Mueve las clavijas hasta que ningún hilo se cruce',  'm.tide':'Ronroneo|Mantén para crecer, suelta para calmar — quédate en la banda',  'm.plink':'Caída al Cesto|Quita una clavija y cae en la cesta encendida',  'p.missed':'Fallado', 'p.slide':'Toca el extremo de una barra para empujarla', 
@@ -6310,7 +6321,7 @@ const STRINGS = {
     'p.stroop':'Tippe die Tintenfarbe', 'p.stroopRev':'Umgekehrt — tippe die genannte Farbe', 
     'p.rewire':'Führe den Faden vom Knäuel zur Katze',
     'p.sum':'Tippe zwei, die {n} ergeben', 'p.sumDiff':'Tippe zwei, deren Differenz {n} ist', 'p.count':'Wie viele {x}?',
-    'p.mirror':'Spiegle es nach rechts', 
+    'mirror.hint':'Tipp', 'p.mirror':'Spiegle es nach rechts', 
 
     'p.tooSlow':'Zu langsam',
     'modes.families':'Familien', 'modes.played':'{n} von {m} gespielt', 'modes.allCard':'Alle {n} Modi', 'modes.allSub':'Eine lange Liste, alle Familien', 'modes.hold':'Halte eine Karte gedrückt, um vor dem Start zu lesen, was ein Modus ist.', 'mpv.best':'Dein Bestwert', 'mpv.mastery':'Meisterschaft', 'mpv.play':'Spielen', 'mpv.mastered':'Gemeistert — alle drei Sterne', 'mpv.toNext':'Noch {n} Punkte bis zum nächsten Stern',
@@ -6328,7 +6339,7 @@ const STRINGS = {
     'p.trace':'Noch {n} zu erreichen — bleib auf der Linie', 'trace.back':'Du driftest ab — geh sanft zurück zum Faden', 'trace.box':'Zieh entlang der Linie vom hellen Punkt bis zum Ring', 'm.trace':'Dem Faden Folgen|Folge dem Faden bis zum Ende — ohne Eile',
     'set.version':'Version', 'set.checkUpd':'Prüfen', 'set.checking':'Prüfe…', 'set.upToDate':'Aktuell', 'set.updating':'Aktualisiere…',
     'halve.hint':'Tipp', 'p.halve':'{n} Unterschied', 'halve.chip':'{v}, in Korb {s}', 'm.halve':'Gleiche Knäuel|Verschiebe Knäuel, bis beide Körbe gleich sind',
-    'p.lever':'Keil schieben, loslassen zum Prüfen', 'lever.wedge':'Der Keil — schieb ihn über den Balken', 'lever.loadL':'Gewicht {w}, {d} nach links', 'lever.loadR':'Gewicht {w}, {d} nach rechts', 'm.lever':'Gleichgewicht|Finde den Punkt nach Augenmaß und teste ihn',
+    'lever.hint':'Tipp', 'p.lever':'Keil schieben, loslassen zum Prüfen', 'lever.wedge':'Der Keil — schieb ihn über den Balken', 'lever.loadL':'Gewicht {w}, {d} nach links', 'lever.loadR':'Gewicht {w}, {d} nach rechts', 'm.lever':'Gleichgewicht|Finde den Punkt nach Augenmaß und teste ihn',
     'perk.callSlot1':'Ein Platz ist frei — wähl einen Vorteil', 'perk.callSlot':'{n} Plätze frei — wähl einen Vorteil', 'perk.callToken1':'Eine Marke übrig — mach einen Vorteil stärker', 'perk.callToken':'{n} Marken übrig — mach einen Vorteil stärker',
 
     'set.vibNone':'Dieses Telefon bietet Web-Apps keine Vibration',
@@ -6355,7 +6366,7 @@ const STRINGS = {
     'p.gather':'Noch {n} zu fangen — die dunklen fallen lassen', 'gather.pail':'Dein Korb', 'gather.keep':'Ein reifer, den fängst du', 'gather.dud':'Ein fauler, lass ihn fallen', 'm.gather':'Knäuel Fangen|Fang die guten, lass die Knoten fallen',
     'p.chalk':'Zeichne Rampen für das Knäuel — dann Fallen', 'p.chalkGo':'Zu spät zum Ändern', 'chalk.draw':'Zeichne eine Kreiderampe für die Kugel', 'chalk.ball':'Das Wollknäuel', 'chalk.basket':'Der Korb der Katze', 'm.chalk':'Kreidestrich|Zeichne die Rampen, wirf einen Blick darauf und lass das Knäuel in den Korb fallen',
     'p.drift':'Zwei laufen aufeinander zu — tippe beide an oder zieh einen Faden dazwischen', 'drift.dot':'Treibender Punkt {n}', 'm.drift':'Knotenwache|Zwei treffen sich — finde sie vor dem Knoten',
-    'p.cairn':'Noch {n} zu stapeln', 'cairn.tap':'Tippen, um den Stein zu setzen', 'm.cairn':'Falten|Staple die Strickstücke — jeder Überhang ist für immer weg',
+    'cairn.slip':'Abgerutscht — jetzt etwas schmaler. Chancen übrig: {n}', 'p.cairn':'Noch {n} zu stapeln', 'cairn.tap':'Tippen, um den Stein zu setzen', 'm.cairn':'Falten|Staple die Strickstücke — jeder Überhang ist für immer weg',
 
     'p.siphon':'Noch {n} Gläser leer', 'sip.source':'Quelle', 'sip.wants':'Glas will {c}', 'sip.done':'Glas, gefüllt', 'sip.empty':'Quelle, geleert', 'm.siphon':'Färbetöpfe|Gieß jede Farbe in den passenden Topf',
     'p.descent':'Noch {n} Lücken', 'm.descent':'Fallmasche|Lenke die fallende Spule durch jede Lücke',
@@ -6370,7 +6381,7 @@ const STRINGS = {
     
 
     'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Ausbessern|Flicke die Ausgefransten, bevor sie sich auflösen',
-    'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
+    'paws.left':'Noch {n} Chancen', 'skim.again':'Nicht dort — die Nadel läuft weiter', 'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
     'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Wäschetrockner|Paare die Socken schneller, als die Trommel füllt',
     'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Katzenstreit|Lies das Zeichen, wähl die Antwort, gewinn den Streit',
     'p.arc':'Noch {n}', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Fadenspiel|Schling jeden Stift, bevor der Faden erschlafft',  'm.slack':'Ohne Kreuzung|Zieh die Stifte, bis kein Faden kreuzt',  'm.tide':'Schnurren|Halten zum Anschwellen, loslassen zum Abklingen — bleib im Band',  'm.plink':'Korbwurf|Zieh einen Stift, dann fall in den erleuchteten Korb',  'p.missed':'Verpasst', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 
@@ -6805,6 +6816,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.113.0', date:'2026-10-02', items:[
+    'Balance has a Hint (two a round): it shades a stretch of the beam for a moment, and the balance point is somewhere inside it. The shade is wider than the target and not centred on it, so it narrows the search without doing the looking for you.',
+    'Mirror Stitch gives squares back. The allowance counts squares you have lit, so putting one out returns its move (it used to charge a second move for taking one back). A Hint (two a round) points at one square the reflection still needs, or, once nothing is missing, at one that should not be lit.',
+    'Folds gives you chances while the tower is young. A drop that misses the stack altogether used to end the round; now it slips off, the next block is a little narrower, and you try again. You get two chances at first, one in the middle and none at the top. Fidget Loop never ends.',
+    'Needle Pass has paws. A stitch while the needle is outside the window used to end the round; now it takes a paw, the board shakes, and the needle keeps going. Three paws at first, two in the middle, one at the top (which plays as before), shown as a row above the board. Fidget Loop never ends.',
+  ] },
   { v:'0.112.0', date:'2026-10-02', items:[
     'Darning gives stitches back. The allowance counts stitches you have laid, so lifting one now returns it (it used to charge you a second move for taking one back).',
     'A Hint (two a round) lights the next stitch on the cheapest way across from where your thread stands: stitches you have laid cost nothing to cross, empty squares cost one, rocks cannot be crossed.',
@@ -8033,6 +8050,34 @@ function moveBudget(ctx, minimum){
   };
 }
 
+/* Paws: chances for a mode in which one mistake used to end the round. A mistake takes a paw and the round goes on; the round ends when the
+   last paw goes, so one paw is the old behaviour. Three at first, two in the middle, one at the top, and a row of paws above the board while
+   there is more than one. Fidget Loop has no losing, so there a mistake is only a mistake. use(node) is true while the round survives. */
+function pawsFor(ctx){ return ctx.level < 8 ? 3 : ctx.level < 20 ? 2 : 1; }
+const PAW_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><ellipse cx="12" cy="16" rx="5.2" ry="4.2"/><ellipse cx="5.4" cy="11" rx="2.2" ry="2.9"/><ellipse cx="9.6" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="14.4" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="18.6" cy="11" rx="2.2" ry="2.9"/></svg>';
+function pawChances(ctx, count){
+  if (ctx.relaxed) return { use(){ return true; }, left: () => 99 };
+  const total = Math.max(1, count || pawsFor(ctx));
+  let left = total, chip = null, pips = [];
+  if (total > 1){
+    chip = mk('div','budget paws');
+    chip.setAttribute('role','img');
+    for (let i = 0; i < total; i++){ const e = mk('i'); e.innerHTML = PAW_SVG; chip.appendChild(e); pips.push(e); }
+    ctx.surface.parentNode.insertBefore(chip, ctx.surface);
+  }
+  const paint = () => {
+    if (!chip) return;
+    pips.forEach((e, k) => e.classList.toggle('used', k >= left));
+    chip.setAttribute('aria-label', t('paws.left', { n: left }));
+    chip.classList.toggle('low', left === 1);
+  };
+  paint();
+  return {
+    use(at){ left--; paint(); if (left <= 0){ ctx.miss(at); return false; } return true; },
+    left: () => left
+  };
+}
+
 /* Dragging. No mode needed it until now, and a dozen of the ones coming do —
    tracing, untangling, aiming, pouring. Pointer capture means a drag that
    leaves the element still reports, which is the whole difficulty of doing this
@@ -8742,6 +8787,7 @@ const MODES = {
       });
       const placed = new Set();
       const budget = moveBudget(ctx, wanted.size);
+      let done = false, hints = 2;
       /* Every empty square on the far side looks the same. There used to be a decoy from level 14, one square picked out in orange that
          had nothing to do with the reflection; it read as a glitch in the pattern, not as a puzzle, and it is gone. */
 
@@ -8754,8 +8800,10 @@ const MODES = {
         if (on) placed.add(idx); else placed.delete(idx);
         b.classList.toggle('on', on);
         sfx.tap(); buzz('tap');
-        if (placed.size === wanted.size && Array.from(wanted).every(i => placed.has(i))){ ctx.win(b); return true; }
-        budget.spend(b);
+        b.classList.remove('hint');
+        if (placed.size === wanted.size && Array.from(wanted).every(i => placed.has(i))){ done = true; paintHint(); ctx.win(b); return true; }
+        /* The allowance counts squares lit, so putting one out gives it back. */
+        if (on) budget.spend(b); else budget.refund();
         return true;
       };
       let brush = null;
@@ -8786,7 +8834,23 @@ const MODES = {
       /* The fold itself, stitched down the middle. */
       g.classList.add('folded'); if (down) g.classList.add('flat');
       g.style.position = 'relative';
-      ctx.surface.appendChild(g);
+      const col = mk('div','sumcol');
+      col.appendChild(g);
+      ctx.surface.appendChild(col);
+      /* A hint points at one square that is still missing from the reflection (or, if nothing is missing, one that should not be lit). */
+      const tools = mk('div','sumtools'), hint = mk('button','sumtool'); hint.type = 'button';
+      tools.appendChild(hint); col.appendChild(tools);
+      const paintHint = () => { hint.textContent = t('mirror.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
+      paintHint();
+      onTap(hint, () => {
+        if (done || hints <= 0) return;
+        const missing = Array.from(wanted).filter(i => !placed.has(i)), extra = Array.from(placed).filter(i => !wanted.has(i));
+        const pool = missing.length ? missing : extra; if (!pool.length) return;
+        const i = pool[Math.floor(ctx.rnd() * pool.length)], el = cellEls.get(i);
+        hints--; paintHint(); sfx.tap();
+        el.classList.add('hint');
+        ctx.after(2200, () => el.classList.remove('hint'));
+      });
       ctx.prompt(t(down ? 'p.mirrorDown' : 'p.mirror'));
     }
   },
@@ -9951,6 +10015,7 @@ const MODES = {
       let pos = 8, dir = 1, hits = 0, zone = 50, zone0 = 50, live = true, raf2 = 0, knotW = 0, knotOff = 0, tick = 0;
       const clean = [];
       const pace = ctx.clock();
+      const paws = pawChances(ctx);
 
       const track = mk('div','skimtrack');
       const stars = mk('div','skimstars'); track.appendChild(stars);
@@ -10007,7 +10072,14 @@ const MODES = {
 
       onTap(hit, () => {
         if (!live) return;
-        if (!clear()){ stop(); return ctx.miss(hit); }
+        if (!clear()){
+          /* A stitch in the wrong place takes a paw; the needle keeps going. The round ends when the last paw does. */
+          track.classList.remove('flinch'); void track.offsetWidth; track.classList.add('flinch');
+          sfx.tap(); buzz('bad');
+          if (!paws.use(hit)){ stop(); return; }
+          ctx.prompt(t('skim.again'));
+          return;
+        }
         /* Through the middle of the window is a clean stitch: it lights its pip gold and the next window is not made as hard. */
         const centred = Math.abs(pos - (zone + (knotW ? 0 : 0))) <= width * 0.18;
         clean[hits] = centred;
@@ -11006,6 +11078,9 @@ const MODES = {
       wrap.appendChild(mover);
 
       let done = false, raf2 = 0, t0 = performance.now(), mx = 0, pace = 1;
+      /* A drop that misses the stack altogether is not the end while you have chances left (two at first, one in the middle, none at the top;
+         Fidget Loop never ends): the knit slips off, the next one is a little narrower, and you try again. */
+      let chances = ctx.relaxed ? 99 : ctx.level < 8 ? 2 : ctx.level < 20 ? 1 : 0;
       const say = () => ctx.prompt(t('p.cairn', { n: need - (layers.length - 1) }));
       say();
 
@@ -11032,6 +11107,12 @@ const MODES = {
         const r = Math.min(mx + w, prev.left + prev.width);
         const ov = r - l;
         if (ov <= 0.6){
+          if (chances > 0){
+            chances--; w = Math.max(12, w * 0.85); t0 = performance.now();
+            sfx.tap(); buzz('bad');
+            ctx.prompt(t('cairn.slip', { n: chances }));
+            return;
+          }
           done = true; cancelAnimationFrame(raf2);
           mover.classList.add('fell');
           return ctx.miss(mover);
@@ -13164,9 +13245,12 @@ const MODES = {
       wedge.setAttribute('role','img');
       wedge.setAttribute('aria-label', t('lever.wedge'));
       const ground = mk('i','lvrground');
-      rig.appendChild(beam); rig.appendChild(wedge); rig.appendChild(ground);
+      const band = mk('i','lvrband');
+      rig.appendChild(band); rig.appendChild(beam); rig.appendChild(wedge); rig.appendChild(ground);
       stage.appendChild(rig);
-      ctx.surface.appendChild(stage);
+      const col = mk('div','sumcol');
+      col.appendChild(stage);
+      ctx.surface.appendChild(col);
 
       /* One test is enough for a perfect eye, so the allowance is one plus slack. */
       const budget = moveBudget(ctx, 1);
@@ -13180,11 +13264,28 @@ const MODES = {
       place(0);
       ctx.prompt(t('p.lever'));
 
+      /* A hint shades a stretch of the beam that the balance point is somewhere inside, for a moment. It is wider than the target and not
+         centred on it, so it narrows the search without doing the looking for you. */
+      let hints = 2;
+      const tools = mk('div','sumtools'), hint = mk('button','sumtool'); hint.type = 'button';
+      tools.appendChild(hint); col.appendChild(tools);
+      const paintHint = () => { hint.textContent = t('lever.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
+      paintHint();
+      onTap(hint, () => {
+        if (done || hints <= 0) return;
+        hints--; paintHint(); sfx.tap();
+        const span = Math.max(14, tol * 5);
+        const lo = clamp(star - span/2 + (ctx.rnd() - 0.5) * (span/2 - tol*1.2), -END, END - span);
+        band.style.left = pct(lo) + '%'; band.style.width = pct(lo + span) - pct(lo) + '%';
+        band.classList.add('on');
+        ctx.after(2200, () => band.classList.remove('on'));
+      });
+
       const test = () => {
         if (done) return;
         const err = star - f;
         if (Math.abs(err) <= tol){
-          done = true;
+          done = true; paintHint();
           stage.classList.add('level');
           place(0);
           return ctx.win(wedge);
