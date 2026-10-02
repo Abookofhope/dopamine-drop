@@ -690,6 +690,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:border-color var(--t-fast),background var(--t-fast),transform var(--t-fast);
 }
 .hlvchip:active{transform:scale(.92);border-color:var(--zap)}
+.hlvchip.hint{border-color:#ffc53d;background:#ffc53d26;color:#ffe29a}
 .hlvtot{
   flex:none;text-align:center;font-family:var(--f-data);font-size:21px;font-weight:700;
   color:var(--zap);line-height:1;padding-top:2px;
@@ -4118,7 +4119,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.110.0';
+const VERSION_TAG = 'v0.111.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4839,7 +4840,7 @@ const STRINGS = {
     'splice.hint':'Hint', 'p.splice':'{n} words still in pieces', 'splice.head':'Beginning: {s}', 'splice.tail':'Ending: {s}', 'm.splice':'Splice|Join each loose end to the right beginning',
     'p.trace':'{n} more to reach — stay on the line', 'trace.back':'Drifting — ease back onto the thread', 'trace.box':'Drag along the line from the bright dot to the ring', 'm.trace':'Follow the Thread|Follow the thread to its end — no hurry',
     'set.version':'Version', 'set.checkUpd':'Check', 'set.checking':'Checking…', 'set.upToDate':'Up to date', 'set.updating':'Updating…',
-    'p.halve':'{n} apart', 'halve.chip':'{v}, in basket {s}', 'm.halve':'Even Skeins|Move skeins until both baskets weigh the same',
+    'halve.hint':'Hint', 'p.halve':'{n} apart', 'halve.chip':'{v}, in basket {s}', 'm.halve':'Even Skeins|Move skeins until both baskets weigh the same',
     'p.lever':'Slide the wedge, let go to test', 'lever.wedge':'The wedge — drag it along the beam', 'lever.loadL':'Weight {w}, {d} to the left', 'lever.loadR':'Weight {w}, {d} to the right', 'm.lever':'Balance|Find the balance point by eye, then test it',
     'perk.callSlot1':'A slot is free — pick a perk', 'perk.callSlot':'{n} slots free — pick a perk', 'perk.callToken1':'A token to spend — make a perk stronger', 'perk.callToken':'{n} tokens to spend — make a perk stronger',
 
@@ -5334,7 +5335,7 @@ const STRINGS = {
     'splice.hint':'Indice', 'p.splice':'Encore {n} mots en morceaux', 'splice.head':'Début : {s}', 'splice.tail':'Fin : {s}', 'm.splice':'Raccord|Reliez chaque bout libre au bon début',
     'p.trace':'Encore {n} à atteindre — restez sur la ligne', 'trace.back':'Vous dérivez — revenez doucement sur le fil', 'trace.box':'Glissez le long de la ligne, du point lumineux jusqu’à l’anneau', 'm.trace':'Suivre le Fil|Suivez le fil jusqu’au bout — sans hâte',
     'set.version':'Version', 'set.checkUpd':'Vérifier', 'set.checking':'Vérification…', 'set.upToDate':'À jour', 'set.updating':'Mise à jour…',
-    'p.halve':'Écart de {n}', 'halve.chip':'{v}, dans le panier {s}', 'm.halve':'Pelotes Égales|Déplacez les pelotes jusqu’à équilibrer les paniers',
+    'halve.hint':'Indice', 'p.halve':'Écart de {n}', 'halve.chip':'{v}, dans le panier {s}', 'm.halve':'Pelotes Égales|Déplacez les pelotes jusqu’à équilibrer les paniers',
     'p.lever':'Glissez le coin, lâchez pour tester', 'lever.wedge':'Le coin — glissez-le le long de la barre', 'lever.loadL':'Poids {w}, {d} à gauche', 'lever.loadR':'Poids {w}, {d} à droite', 'm.lever':'Équilibre|Trouvez le point d’équilibre à l’œil, puis testez',
     'perk.callSlot1':'Un emplacement libre — choisissez un atout', 'perk.callSlot':'{n} emplacements libres — choisissez un atout', 'perk.callToken1':'Un jeton à dépenser — renforcez un atout', 'perk.callToken':'{n} jetons à dépenser — renforcez un atout',
 
@@ -5829,7 +5830,7 @@ const STRINGS = {
     'splice.hint':'Pista', 'p.splice':'Quedan {n} palabras partidas', 'splice.head':'Principio: {s}', 'splice.tail':'Final: {s}', 'm.splice':'Empalme|Une cada cabo suelto con su principio',
     'p.trace':'Quedan {n} por alcanzar — no te salgas de la línea', 'trace.back':'Te desvías — vuelve despacio al hilo', 'trace.box':'Arrastra por la línea desde el punto brillante hasta el anillo', 'm.trace':'Sigue el Hilo|Sigue el hilo hasta el final — sin prisa',
     'set.version':'Versión', 'set.checkUpd':'Comprobar', 'set.checking':'Comprobando…', 'set.upToDate':'Actualizado', 'set.updating':'Actualizando…',
-    'p.halve':'{n} de diferencia', 'halve.chip':'{v}, en la cesta {s}', 'm.halve':'Ovillos Iguales|Mueve ovillos hasta igualar las cestas',
+    'halve.hint':'Pista', 'p.halve':'{n} de diferencia', 'halve.chip':'{v}, en la cesta {s}', 'm.halve':'Ovillos Iguales|Mueve ovillos hasta igualar las cestas',
     'p.lever':'Desliza la cuña y suelta para probar', 'lever.wedge':'La cuña — deslízala por la barra', 'lever.loadL':'Peso {w}, {d} a la izquierda', 'lever.loadR':'Peso {w}, {d} a la derecha', 'm.lever':'Equilibrio|Encuentra el punto de equilibrio a ojo y pruébalo',
     'perk.callSlot1':'Una ranura libre — elige una ventaja', 'perk.callSlot':'{n} ranuras libres — elige una ventaja', 'perk.callToken1':'Una ficha por gastar — mejora una ventaja', 'perk.callToken':'{n} fichas por gastar — mejora una ventaja',
 
@@ -6324,7 +6325,7 @@ const STRINGS = {
     'splice.hint':'Tipp', 'p.splice':'Noch {n} Wörter in Teilen', 'splice.head':'Anfang: {s}', 'splice.tail':'Ende: {s}', 'm.splice':'Spleißen|Verbinde jedes lose Ende mit dem richtigen Anfang',
     'p.trace':'Noch {n} zu erreichen — bleib auf der Linie', 'trace.back':'Du driftest ab — geh sanft zurück zum Faden', 'trace.box':'Zieh entlang der Linie vom hellen Punkt bis zum Ring', 'm.trace':'Dem Faden Folgen|Folge dem Faden bis zum Ende — ohne Eile',
     'set.version':'Version', 'set.checkUpd':'Prüfen', 'set.checking':'Prüfe…', 'set.upToDate':'Aktuell', 'set.updating':'Aktualisiere…',
-    'p.halve':'{n} Unterschied', 'halve.chip':'{v}, in Korb {s}', 'm.halve':'Gleiche Knäuel|Verschiebe Knäuel, bis beide Körbe gleich sind',
+    'halve.hint':'Tipp', 'p.halve':'{n} Unterschied', 'halve.chip':'{v}, in Korb {s}', 'm.halve':'Gleiche Knäuel|Verschiebe Knäuel, bis beide Körbe gleich sind',
     'p.lever':'Keil schieben, loslassen zum Prüfen', 'lever.wedge':'Der Keil — schieb ihn über den Balken', 'lever.loadL':'Gewicht {w}, {d} nach links', 'lever.loadR':'Gewicht {w}, {d} nach rechts', 'm.lever':'Gleichgewicht|Finde den Punkt nach Augenmaß und teste ihn',
     'perk.callSlot1':'Ein Platz ist frei — wähl einen Vorteil', 'perk.callSlot':'{n} Plätze frei — wähl einen Vorteil', 'perk.callToken1':'Eine Marke übrig — mach einen Vorteil stärker', 'perk.callToken':'{n} Marken übrig — mach einen Vorteil stärker',
 
@@ -6802,6 +6803,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.111.0', date:'2026-10-02', items:[
+    'Even Skeins sorts each basket biggest skein first, so a basket reads at a glance instead of in a jumble.',
+    'A Hint (two a round) lights the next skein to move: the first step of the shortest way from where the baskets are now to a split that balances.',
+  ] },
   { v:'0.110.0', date:'2026-10-02', items:[
     'Splice fills the board and shows the words it makes. The tiles share the whole height of the screen instead of sitting in a small stack in the middle, and when a pair is joined the word reads in full on the left while the loose end it came from is ticked off.',
     'A Hint (two a round) lights one beginning and the end that belongs to it, which helps most when the words are in a language you are still learning.',
@@ -14377,7 +14382,7 @@ const MODES = {
         sfx.tap(); buzz('tap');
         paint();
         if (totalOf(0) === totalOf(1)){
-          done = true;
+          done = true; paintHint();
           wrap.classList.add('good');
           return ctx.win(b);
         }
@@ -14398,11 +14403,33 @@ const MODES = {
       const tools = mk('div','sumtools'), undo = mk('button','sumtool'); undo.type = 'button';
       undo.textContent = t('chalk.undo'); undo.disabled = true;
       onTap(undo, () => { const i = history.pop(); if (i === undefined || done) return; side[i] ^= 1; sfx.tap(); budget.refund(); paint(); undo.disabled = !history.length; });
-      tools.appendChild(undo); col.appendChild(tools);
+      /* A hint points at one skein to move: the first step of the shortest way from where the baskets are now to a split that balances. */
+      let hints = 2;
+      const hint = mk('button','sumtool'); hint.type = 'button'; hint.style.marginLeft = '10px';
+      const paintHint = () => { hint.textContent = t('halve.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
+      onTap(hint, () => {
+        if (done || hints <= 0) return;
+        let bestMask = -1, bestCost = 1e9;
+        for (let mask = 0; mask < (1 << n); mask++){
+          let sm = 0;
+          for (let i = 0; i < n; i++) if (mask & (1 << i)) sm += vals[i];
+          if (sm !== half) continue;
+          let c = 0; for (let i = 0; i < n; i++) if (((mask >> i) & 1) !== side[i]) c++;
+          if (c < bestCost){ bestCost = c; bestMask = mask; }
+        }
+        const i = bestMask < 0 ? -1 : vals.findIndex((_, k) => ((bestMask >> k) & 1) !== side[k]);
+        if (i < 0) return;
+        hints--; paintHint(); sfx.tap();
+        chips[i].classList.add('hint');
+        ctx.after(2200, () => chips[i].classList.remove('hint'));
+      });
+      tools.appendChild(undo); tools.appendChild(hint); col.appendChild(tools);
+      paintHint();
 
       const paint = () => {
         trays.forEach((tr, w) => {
-          const mine = chips.filter((_, i) => side[i] === w);
+          /* biggest first, so a basket reads at a glance */
+          const mine = chips.filter((_, i) => side[i] === w).sort((a, b) => vals[b._i] - vals[a._i] || a._i - b._i);
           tr.grid.replaceChildren.apply(tr.grid, mine);
           const total = totalOf(w);
           tr.tot.textContent = String(total);
