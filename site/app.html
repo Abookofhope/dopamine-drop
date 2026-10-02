@@ -529,9 +529,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   background:radial-gradient(circle at 34% 30%,#ffe29a,#f0a81c);box-shadow:inset 0 -2px 4px #00000033}
 
 /* ── Latch ────────────────────────────────────────────────────────────── */
-.ltcwrap{display:flex;flex-direction:column;gap:9px;width:100%;height:100%;
+.ltcwrap{display:flex;flex-direction:column;gap:10px;width:100%;height:100%;
   min-height:0;min-width:0;max-width:100%;justify-content:center}
-.ltcrow{display:flex;align-items:center;gap:7px;flex:0 1 auto;min-height:0}
+/* The rows share the board between them, up to a limit, instead of sitting in a small stack in the middle of it. */
+.ltcrow{display:flex;align-items:stretch;gap:7px;flex:1 1 0;max-height:96px;min-height:48px}
+.ltcrow > .ltcturn{align-self:center}
 .ltcturn{
   width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:13px;
   border:1px solid var(--edge);background:#ffffff06;color:var(--haze);cursor:pointer;
@@ -545,7 +547,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:border-color var(--t-fast),background var(--t-fast);
 }
 .ltccell{
-  display:block;aspect-ratio:1;max-height:30px;border-radius:6px;background:#ffffff0a;
+  display:block;min-height:0;border-radius:6px;background:#ffffff0a;
   transition:background var(--t-fast),box-shadow var(--t-fast);
 }
 .ltccell.notch{background:#C08BFF;box-shadow:0 0 12px #c08bff66}
@@ -3216,7 +3218,9 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .lvrload{border-radius:7px 7px 3px 3px;
   background:repeating-linear-gradient(90deg,#ffffff2e 0 2px,transparent 2px 6px),linear-gradient(160deg,#c9b6ff,#7a5fd6)}
 .ltccell.notch{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'%3E%3Cpath d='M.8 .8 4 5.2 7.2 .8' fill='none' stroke='%23fff' stroke-opacity='.3' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/8px 6px,#C08BFF}
-.ltccell{border-radius:50%;background:radial-gradient(circle closest-side,#ffffff1c 0 55%,#ffffff08 56%)}
+.ltccell{border-radius:999px;background:linear-gradient(#ffffff14,#ffffff08)}
+.ltccell.meet{box-shadow:inset 0 0 0 2px #c08bffcc,0 0 14px #c08bff77}
+.ltcwrap > .sumtools{margin-top:2px}
 .driftthread{opacity:0;transition:opacity var(--t-fast)}
 .driftthread.on{opacity:1}
 .driftthread line{stroke:var(--cream);stroke-width:2.4;stroke-dasharray:none;stroke-linecap:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 2px #000a)}
@@ -4109,7 +4113,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.108.0';
+const VERSION_TAG = 'v0.109.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4826,7 +4830,7 @@ const STRINGS = {
 
     
 
-    'p.latch':'{n} rows still off the line', 'latch.row':'Row {n}, notch at position {c}', 'latch.left':'Turn row {n} left', 'latch.right':'Turn row {n} right', 'm.latch':'Latch Hook|Turn the rows until every hook lines up',
+    'latch.undo':'Undo', 'latch.hint':'Hint', 'latch.meet':'Line them up on the marked column', 'p.latch':'{n} rows still off the line', 'latch.row':'Row {n}, notch at position {c}', 'latch.left':'Turn row {n} left', 'latch.right':'Turn row {n} right', 'm.latch':'Latch Hook|Turn the rows until every hook lines up',
     'p.splice':'{n} words still in pieces', 'splice.head':'Beginning: {s}', 'splice.tail':'Ending: {s}', 'm.splice':'Splice|Join each loose end to the right beginning',
     'p.trace':'{n} more to reach — stay on the line', 'trace.back':'Drifting — ease back onto the thread', 'trace.box':'Drag along the line from the bright dot to the ring', 'm.trace':'Follow the Thread|Follow the thread to its end — no hurry',
     'set.version':'Version', 'set.checkUpd':'Check', 'set.checking':'Checking…', 'set.upToDate':'Up to date', 'set.updating':'Updating…',
@@ -5321,7 +5325,7 @@ const STRINGS = {
 
     
 
-    'p.latch':'Encore {n} rangées hors de l’axe', 'latch.row':'Rangée {n}, encoche en position {c}', 'latch.left':'Tourner la rangée {n} vers la gauche', 'latch.right':'Tourner la rangée {n} vers la droite', 'm.latch':'Crochet|Tournez les rangs jusqu’à aligner tous les crochets',
+    'latch.undo':'Annuler', 'latch.hint':'Indice', 'latch.meet':'Alignez-les sur la colonne marquée', 'p.latch':'Encore {n} rangées hors de l’axe', 'latch.row':'Rangée {n}, encoche en position {c}', 'latch.left':'Tourner la rangée {n} vers la gauche', 'latch.right':'Tourner la rangée {n} vers la droite', 'm.latch':'Crochet|Tournez les rangs jusqu’à aligner tous les crochets',
     'p.splice':'Encore {n} mots en morceaux', 'splice.head':'Début : {s}', 'splice.tail':'Fin : {s}', 'm.splice':'Raccord|Reliez chaque bout libre au bon début',
     'p.trace':'Encore {n} à atteindre — restez sur la ligne', 'trace.back':'Vous dérivez — revenez doucement sur le fil', 'trace.box':'Glissez le long de la ligne, du point lumineux jusqu’à l’anneau', 'm.trace':'Suivre le Fil|Suivez le fil jusqu’au bout — sans hâte',
     'set.version':'Version', 'set.checkUpd':'Vérifier', 'set.checking':'Vérification…', 'set.upToDate':'À jour', 'set.updating':'Mise à jour…',
@@ -5816,7 +5820,7 @@ const STRINGS = {
 
     
 
-    'p.latch':'Quedan {n} filas fuera de la línea', 'latch.row':'Fila {n}, muesca en la posición {c}', 'latch.left':'Girar la fila {n} a la izquierda', 'latch.right':'Girar la fila {n} a la derecha', 'm.latch':'Ganchillo|Gira las filas hasta alinear cada gancho',
+    'latch.undo':'Deshacer', 'latch.hint':'Pista', 'latch.meet':'Aliníalas en la columna marcada', 'p.latch':'Quedan {n} filas fuera de la línea', 'latch.row':'Fila {n}, muesca en la posición {c}', 'latch.left':'Girar la fila {n} a la izquierda', 'latch.right':'Girar la fila {n} a la derecha', 'm.latch':'Ganchillo|Gira las filas hasta alinear cada gancho',
     'p.splice':'Quedan {n} palabras partidas', 'splice.head':'Principio: {s}', 'splice.tail':'Final: {s}', 'm.splice':'Empalme|Une cada cabo suelto con su principio',
     'p.trace':'Quedan {n} por alcanzar — no te salgas de la línea', 'trace.back':'Te desvías — vuelve despacio al hilo', 'trace.box':'Arrastra por la línea desde el punto brillante hasta el anillo', 'm.trace':'Sigue el Hilo|Sigue el hilo hasta el final — sin prisa',
     'set.version':'Versión', 'set.checkUpd':'Comprobar', 'set.checking':'Comprobando…', 'set.upToDate':'Actualizado', 'set.updating':'Actualizando…',
@@ -6311,7 +6315,7 @@ const STRINGS = {
 
     
 
-    'p.latch':'Noch {n} Reihen neben der Linie', 'latch.row':'Reihe {n}, Kerbe an Position {c}', 'latch.left':'Reihe {n} nach links drehen', 'latch.right':'Reihe {n} nach rechts drehen', 'm.latch':'Knüpfhaken|Dreh die Reihen, bis jeder Haken passt',
+    'latch.undo':'Zurück', 'latch.hint':'Tipp', 'latch.meet':'Richte sie an der markierten Spalte aus', 'p.latch':'Noch {n} Reihen neben der Linie', 'latch.row':'Reihe {n}, Kerbe an Position {c}', 'latch.left':'Reihe {n} nach links drehen', 'latch.right':'Reihe {n} nach rechts drehen', 'm.latch':'Knüpfhaken|Dreh die Reihen, bis jeder Haken passt',
     'p.splice':'Noch {n} Wörter in Teilen', 'splice.head':'Anfang: {s}', 'splice.tail':'Ende: {s}', 'm.splice':'Spleißen|Verbinde jedes lose Ende mit dem richtigen Anfang',
     'p.trace':'Noch {n} zu erreichen — bleib auf der Linie', 'trace.back':'Du driftest ab — geh sanft zurück zum Faden', 'trace.box':'Zieh entlang der Linie vom hellen Punkt bis zum Ring', 'm.trace':'Dem Faden Folgen|Folge dem Faden bis zum Ende — ohne Eile',
     'set.version':'Version', 'set.checkUpd':'Prüfen', 'set.checking':'Prüfe…', 'set.upToDate':'Aktuell', 'set.updating':'Aktualisiere…',
@@ -6793,6 +6797,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.109.0', date:'2026-10-02', items:[
+    'Latch Hook fills the board. The rows used to sit in a small stack in the middle of a tall, mostly empty screen with tiny dots to hit; they now share the whole board, each row a tall capsule you can hit with a thumb.',
+    'Every turn can be taken back: Undo puts the row back and gives the move back.',
+    'A Hint (two a round) marks the column that is cheapest to meet in on every row for a moment.',
+  ] },
   { v:'0.108.0', date:'2026-10-02', items:[
     'Needle Pass, Ripples and Dropped Stitch now run at the same speed on every screen. They moved one step per animation frame, so on a 120 Hz phone the needle, the rings and the falling bobbin all went twice as fast as on a 60 Hz one, and the game felt unfairly hard.',
     'The Game speed setting (Relaxed and Slow) now reaches them too. It used to slow the round clock only, so a slow needle was never actually slow.',
@@ -12640,6 +12649,10 @@ const MODES = {
       const budget = moveBudget(ctx, least);
       let done = false;
       const lined = () => at.every(v => v === at[0]);
+      /* Every turn can be taken back, and the move comes back with it. */
+      const history = [];
+      let hints = 2, meetAt = 0;
+      for (let c = 1; c < cols; c++) if (costAt(c) < costAt(meetAt)) meetAt = c;
 
       const rowEls = [];
       for (let r = 0; r < rows; r++){
@@ -12680,9 +12693,10 @@ const MODES = {
           try { strip.releasePointerCapture(g2.id); } catch (e) {}
           const to = ((at[r] + g2.steps) % cols + cols) % cols;
           if (to === at[r]){ paint(); return; }
+          history.push({ r, prev: at[r] });
           at[r] = to; sfx.tap(); buzz('tap'); paint();
-          if (lined()){ done = true; wrap.classList.add('good'); return ctx.win(strip); }
-          budget.spend(strip);
+          if (lined()){ done = true; paintTools(); wrap.classList.add('good'); return ctx.win(strip); }
+          budget.spend(strip); paintTools();
         };
         strip.addEventListener('pointerup', release);
         strip.addEventListener('pointercancel', ev => { if (grip) grip.steps = 0; release(ev); });
@@ -12690,17 +12704,38 @@ const MODES = {
           btn.setAttribute('aria-label', t(dir < 0 ? 'latch.left' : 'latch.right', { n: r + 1 }));
           onTap(btn, () => {
             if (done) return;
+            history.push({ r, prev: at[r] });
             at[r] = (at[r] + dir + cols) % cols;
             paint();
             if (lined()){
-              done = true;
+              done = true; paintTools();
               wrap.classList.add('good');
               return ctx.win(btn);
             }
-            budget.spend(btn);
+            budget.spend(btn); paintTools();
           });
         });
       }
+
+      const tools = mk('div','sumtools'), undo = mk('button','sumtool'), hint = mk('button','sumtool');
+      undo.type = 'button'; hint.type = 'button'; undo.style.marginRight = '10px';
+      tools.appendChild(undo); tools.appendChild(hint); wrap.appendChild(tools);
+      const paintTools = () => {
+        undo.textContent = t('latch.undo'); undo.disabled = done || !history.length;
+        hint.textContent = t('latch.hint') + ' ' + hints; hint.disabled = done || hints <= 0;
+      };
+      onTap(undo, () => {
+        const h = history.pop(); if (done || !h) return;
+        at[h.r] = h.prev; sfx.tap(); buzz('tap'); budget.refund(); paint(); paintTools();
+      });
+      /* A hint marks the column that is cheapest to meet in, for a moment. */
+      onTap(hint, () => {
+        if (done || hints <= 0) return;
+        hints--; sfx.tap(); paintTools();
+        rowEls.forEach(re => re.cells[meetAt].classList.add('meet'));
+        ctx.prompt(t('latch.meet'));
+        ctx.after(2800, () => { rowEls.forEach(re => re.cells[meetAt].classList.remove('meet')); if (!done) paint(); });
+      });
 
       const paint = () => {
         const agree = lined();
@@ -12716,7 +12751,7 @@ const MODES = {
           best = Math.max(best, at.reduce((n, a) => n + (a === c ? 1 : 0), 0));
         ctx.prompt(t('p.latch', { n: rows - best }));
       };
-      paint();
+      paint(); paintTools();
     }
   },
 
