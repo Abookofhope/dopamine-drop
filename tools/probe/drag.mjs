@@ -204,7 +204,7 @@ if (!only || only.includes('halve')){
   const b = await centre(page, '.hlvtray:nth-child(2) .hlvchip', 0), t2b = await centre(page, '.hlvtray:nth-child(2)', 0);
   await drag(page, b, { x: t2b.x, y: t2b.y + t2b.h * 0.4 }); await page.waitForTimeout(150);
   check(JSON.stringify(await where()) === JSON.stringify(w1), 'letting go over its own basket changes nothing');
-  await page.locator('.sumtool').click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(100);
+  await page.locator('.sumtool').first().click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(100);
   check(JSON.stringify(await where()) === JSON.stringify(w0), 'Undo puts it back');
   const tapped = await centre(page, '.hlvtray:nth-child(1) .hlvchip', 0); await page.mouse.click(tapped.x, tapped.y); await page.waitForTimeout(120);
   check(JSON.stringify(await where()) !== JSON.stringify(w0), 'and a plain tap still moves a skein');
