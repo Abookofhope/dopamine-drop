@@ -3432,6 +3432,9 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .oddpips{display:flex;gap:7px}
 /* Kitten's Snack Attack: a place outside the shape of the patch holds the grid's slot and shows nothing. */
 .patch .cell.wall{visibility:hidden;pointer-events:none}
+/* Patchwork, the Tetris way: a covered row or column glows and fades before it is taken off the quilt. Nothing moves or changes size. */
+@keyframes stitchout{0%{filter:brightness(1)}45%{filter:brightness(1.9)}100%{filter:brightness(1.3);opacity:.15}}
+.fcell.set.stitching{animation:stitchout .32s ease both}
 /* Odd Skein, Smooth: no stitch pattern, and each skein's own colour fills the gap around it, so the board is one flush field and an odd shade is an edge. */
 .oddwrap.smooth .cell.tile{border-radius:0;border-color:transparent;box-shadow:0 0 0 calc(var(--ogap,10px)/2) var(--c)}
 .oddwrap.smooth .cell.tile::before,.oddwrap.smooth .cell.tile::after{display:none}
@@ -4158,7 +4161,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.131.0';
+const VERSION_TAG = 'v0.132.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -5102,7 +5105,7 @@ const STRINGS = {
     'syn.moonlit.d':'The first miss of every stage is free.', 'syn.curious':'Curious Pair', 'syn.curious.d':'A mode new to this run pays +10% points.',
     'syn.autumn':'Autumn Walk', 'syn.autumn.d':'Focus and reflex solves pay half a yarn more.',
     /* patchwork */
-    'forge.undo':'Undo', 'forge.hint':'Hint', 'forge.turn':'Tap to turn it',
+    'forge.undo':'Undo', 'forge.clearNote':'Fill a whole row or column and it stitches itself away', 'p.forgeClear':'Lines to clear: {n}', 'forge.jam':'No room for any of them — the cat tidied two rows', 'forge.swap':'Swap', 'forge.hint':'Hint', 'forge.turn':'Tap to turn it',
     'forge.anyLine':'Any row or column counts', 'forge.anyBlock':'A solid block anywhere counts', 'forge.spares':'Spare patches — you won’t need them all', 'forge.open':'Quilt, column {x} row {y}',
     'p.forgeLine':'{n} more squares for a straight line, edge to edge', 'p.forgeBlock':'{n} more squares for a solid {w}×{h} block',
     'forge.dead':'That leaves no way to finish — undo a patch', 'p.forgeRule':'{n} squares left — the same colour can’t touch',
@@ -5597,7 +5600,7 @@ const STRINGS = {
     'syn.moonlit.d':'Le premier raté de chaque étape est gratuit.', 'syn.curious':'Duo curieux', 'syn.curious.d':'Un mode nouveau dans cette partie rapporte +10 % de points.',
     'syn.autumn':'Promenade d’automne', 'syn.autumn.d':'Les réussites d’attention et de réflexes rapportent une demi-laine de plus.',
     /* patchwork */
-    'forge.undo':'Annuler', 'forge.hint':'Indice', 'forge.turn':'Touchez pour la tourner',
+    'forge.undo':'Annuler', 'forge.clearNote':'Remplissez une rangée ou une colonne entière : elle se couture et disparaît', 'p.forgeClear':'Lignes à effacer : {n}', 'forge.jam':'Plus de place pour aucun — le chat a rangé deux rangées', 'forge.swap':'Changer', 'forge.hint':'Indice', 'forge.turn':'Touchez pour la tourner',
     'forge.anyLine':'Toute ligne ou colonne compte', 'forge.anyBlock':'Un bloc plein, n’importe où, compte', 'forge.spares':'Pièces en plus — inutile de toutes les poser', 'forge.open':'Courtepointe, colonne {x} ligne {y}',
     'p.forgeLine':'Encore {n} cases pour une ligne droite, d’un bord à l’autre', 'p.forgeBlock':'Encore {n} cases pour un bloc plein de {w}×{h}',
     'forge.dead':'Plus de solution possible — annulez une pièce', 'p.forgeRule':'Encore {n} cases — deux pièces de même couleur ne se touchent pas',
@@ -6092,7 +6095,7 @@ const STRINGS = {
     'syn.moonlit.d':'El primer fallo de cada etapa es gratis.', 'syn.curious':'Pareja curiosa', 'syn.curious.d':'Un modo nuevo en esta partida paga +10 % de puntos.',
     'syn.autumn':'Paseo de otoño', 'syn.autumn.d':'Los aciertos de atención y reflejos dan media lana más.',
     /* patchwork */
-    'forge.undo':'Deshacer', 'forge.hint':'Pista', 'forge.turn':'Toca para girarla',
+    'forge.undo':'Deshacer', 'forge.clearNote':'Llena una fila o columna entera y se cose sola y desaparece', 'p.forgeClear':'Líneas por borrar: {n}', 'forge.jam':'No cabe ninguno — el gato ordenó dos filas', 'forge.swap':'Cambiar', 'forge.hint':'Pista', 'forge.turn':'Toca para girarla',
     'forge.anyLine':'Vale cualquier fila o columna', 'forge.anyBlock':'Vale un bloque macizo en cualquier sitio', 'forge.spares':'Piezas de sobra: no hace falta usarlas todas', 'forge.open':'Colcha, columna {x} fila {y}',
     'p.forgeLine':'Faltan {n} casillas para una línea recta, de borde a borde', 'p.forgeBlock':'Faltan {n} casillas para un bloque macizo de {w}×{h}',
     'forge.dead':'Así ya no se puede terminar: deshaz una pieza', 'p.forgeRule':'Quedan {n} casillas — el mismo color no puede tocarse',
@@ -6587,7 +6590,7 @@ const STRINGS = {
     'syn.moonlit.d':'Der erste Fehler jeder Etappe ist frei.', 'syn.curious':'Neugieriges Paar', 'syn.curious.d':'Ein in diesem Lauf neuer Modus bringt +10 % Punkte.',
     'syn.autumn':'Herbstspaziergang', 'syn.autumn.d':'Konzentrations- und Reaktionstreffer bringen eine halbe Wolle mehr.',
     /* patchwork */
-    'forge.undo':'Zurück', 'forge.hint':'Tipp', 'forge.turn':'Tippen zum Drehen',
+    'forge.undo':'Zurück', 'forge.clearNote':'Fülle eine ganze Reihe oder Spalte, und sie näht sich selbst weg', 'p.forgeClear':'Linien zu räumen: {n}', 'forge.jam':'Keiner passt mehr — die Katze hat zwei Reihen aufgeräumt', 'forge.swap':'Tauschen', 'forge.hint':'Tipp', 'forge.turn':'Tippen zum Drehen',
     'forge.anyLine':'Jede Reihe oder Spalte zählt', 'forge.anyBlock':'Ein voller Block irgendwo zählt', 'forge.spares':'Ersatzteile — du brauchst nicht alle', 'forge.open':'Quilt, Spalte {x} Zeile {y}',
     'p.forgeLine':'Noch {n} Felder für eine gerade Linie von Rand zu Rand', 'p.forgeBlock':'Noch {n} Felder für einen vollen {w}×{h}-Block',
     'forge.dead':'So lässt es sich nicht beenden — nimm ein Teil zurück', 'p.forgeRule':'Noch {n} Felder — gleiche Farben dürfen sich nicht berühren',
@@ -6842,6 +6845,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.132.0', date:'2026-10-02', items:[
+    'Patchwork has a Tetris way to play, and it is now the most common one. The quilt starts empty and patches are dealt to you without end: three in the tray, and a new one for every one you lay. Cover a whole row or column and it stitches itself away, freeing the room, pays points at once (more for two at a time) and gives some time back. Clear the number of lines it asks for to win. There is no move allowance to run out of: you only lose when nothing in the tray fits anywhere, and even then a paw tidies two rows and the game goes on. Swap deals the tray again (twice a round) and Hint shows a place that fills a line.',
+    'Patchwork’s other three ways to finish are gentler too: the move allowance is three times what a clean run takes, and lifting a patch off the quilt to put it somewhere else no longer costs a move.',
+  ] },
   { v:'0.131.0', date:'2026-10-02', items:[
     'Kitten’s Snack Attack is harder, and no longer one square patch after another. From level 3 the patch is sometimes cut into a shape: corners trimmed, a plus, a ring with bare ground in the middle for the kittens to come in from, or a diamond. Boards are built so that a careless order of sends costs more, and the spare moves over the best line start at five and shrink to one (they used to be eight, and never fewer than three). The second hint goes after level 8, and five colours arrive sooner. Every board still has a perfect line.',
   ] },
@@ -12204,7 +12211,7 @@ const MODES = {
          number of patches and the rule rather than a smaller target. */
       const room = Math.min(ctx.surface.clientWidth || 350, Math.max(0, (ctx.surface.clientHeight || 560) - 190));
       const maxG = Math.max(4, Math.floor((room + GAP) / 46));
-      const g = clamp(ctx.level < 4 ? 5 : ctx.level < 12 ? 6 : 7, 4, maxG);
+      let g = clamp(ctx.level < 4 ? 5 : ctx.level < 12 ? 6 : 7, 4, maxG);
       const cap = Math.floor(g*g*0.7/3.3);
       const wantAt = clamp(3 + Math.floor(ctx.level/4), 3, 8);       /* how many patches the level asks for */
       const want = Math.min(wantAt, cap);
@@ -12215,14 +12222,18 @@ const MODES = {
          ladder leans on the open ones, and every kind comes with spare patches, so there is more than one way to do any of them. */
       const forced = (() => { try { return localStorage.getItem('dd.forge'); } catch(e){ return null; } })();
       const roll = ctx.rnd();
-      let goal = forced === 'fill' || forced === 'line' || forced === 'block' ? forced
-        : ctx.level < 4 ? (roll < 0.5 ? 'line' : roll < 0.8 ? 'block' : 'fill')
-        : ctx.level < 12 ? (roll < 0.3 ? 'line' : roll < 0.55 ? 'block' : 'fill')
-        : (roll < 0.25 ? 'line' : roll < 0.45 ? 'block' : 'fill');
+      /* The fourth way is the Tetris way, and the most common: patches are dealt without end, a whole row or column that is covered stitches
+         itself away and frees the room, and there is no move allowance to run out of. Only a quilt where nothing in the tray fits anywhere
+         is a lost round, and then a paw tidies two rows rather than ending it. */
+      let goal = forced === 'fill' || forced === 'line' || forced === 'block' || forced === 'clear' ? forced
+        : ctx.level < 4 ? (roll < 0.45 ? 'clear' : roll < 0.7 ? 'line' : roll < 0.85 ? 'block' : 'fill')
+        : ctx.level < 12 ? (roll < 0.4 ? 'clear' : roll < 0.58 ? 'line' : roll < 0.75 ? 'block' : 'fill')
+        : (roll < 0.4 ? 'clear' : roll < 0.55 ? 'line' : roll < 0.68 ? 'block' : 'fill');
+      if (goal === 'clear'){ g = clamp(ctx.level < 8 ? 6 : 7, 4, maxG); ctx.grace(9000 * clamp(2 + Math.floor(ctx.level/4), 2, 6)); }
       const ruleOn = goal === 'fill' && ctx.level >= 12;
       /* A short screen has no room for a long tray, so it gets fewer spares rather than a smaller quilt. */
       const tight = (ctx.surface.clientHeight || 560) < 520;
-      const spareN = Math.min(tight ? 1 : 3, goal === 'fill' ? clamp(3 - Math.floor(ctx.level/8), 1, 3) : clamp(3 - Math.floor(ctx.level/10), 1, 3));
+      const spareN = goal === 'clear' ? 0 : Math.min(tight ? 1 : 3, goal === 'fill' ? clamp(3 - Math.floor(ctx.level/8), 1, 3) : clamp(3 - Math.floor(ctx.level/10), 1, 3));
 
       const norm = cs => { const mx = Math.min(...cs.map(c=>c[0])), my = Math.min(...cs.map(c=>c[1]));
         return cs.map(c=>[c[0]-mx, c[1]-my]).sort((a,b)=> a[1]-b[1] || a[0]-b[0]); };
@@ -12292,7 +12303,7 @@ const MODES = {
          made of. Knots (squares that are already stitched, which nothing can go on) are then scattered where the plan is not. */
       let blockW = 0, blockH = 0, cands = [], knots = new Set();
       const SMALLER = FAMILY.filter(f => f[0].length <= (ctx.level < 12 ? 4 : 5)).flat();
-      if (goal !== 'fill'){
+      if (goal === 'line' || goal === 'block'){
         const at = (x, y) => y*g + x;
         const rowOf = k => Array.from({ length: g }, (_, i) => at(i, k)), colOf = k => Array.from({ length: g }, (_, i) => at(k, i));
         if (goal === 'block'){
@@ -12341,6 +12352,18 @@ const MODES = {
         const playable = new Set(); for (let i = 0; i < g*g; i++) if (!knots.has(i)) playable.add(i);
         parts = { list: plan.list, cells: playable };
       }
+      /* The Tetris way: every square is open, and the tray is dealt, not planned. Each patch is dealt from a few tries, the first of which
+         fits somewhere, so the tray never holds a patch the quilt has no room for while it still has room for one. */
+      const fitsShape = (sh, fl) => { const seen = new Set(); let c = sh;
+        for (let r = 0; r < 4; r++, c = turn(c)){ const k0 = key(c); if (seen.has(k0)) continue; seen.add(k0);
+          for (let ay = 0; ay < g; ay++) for (let ax = 0; ax < g; ax++){
+            let ok = true; for (const q of c){ const x = ax + q[0], y = ay + q[1]; if (x >= g || y >= g || fl.has(y*g + x)){ ok = false; break; } }
+            if (ok) return true; } }
+        return false; };
+      const dealShape = fl => { let sh = null;
+        for (let tries = 0; tries < 14; tries++){ const fam = FAMILY[Math.floor(ctx.rnd()*FAMILY.length)]; sh = fam[0]; if (fitsShape(sh, fl)) break; }
+        return sh; };
+      if (goal === 'clear') parts = { list: [], cells: new Set(Array.from({ length: g*g }, (_, i) => i)) };
       /* Lay patches down, each touching what is already there, so the hole is in one piece. */
       for (let attempt = 0; attempt < 260 && !parts; attempt++){
         const taken = new Set(), list = [];
@@ -12371,6 +12394,7 @@ const MODES = {
         const d = SHAPES[0];
         parts = { list: [{ sh: d, at: [0, 1] }, { sh: d, at: [g, g+1] }], cells: new Set([0, 1, g, g+1]) };
       }
+      if (goal === 'clear') for (let i = 0; i < 3; i++) parts.list.push({ sh: dealShape(new Set()), at: [], spare: false });
       const target = parts.cells;
       const N = parts.list.length;
       const pictureName = picture ? t('forge.pic.' + picture) : '';
@@ -12415,6 +12439,7 @@ const MODES = {
       /* The colour rule is on the quilt itself whenever it applies, so a quilt that is a picture (whose line says what it is) is
          never a quilt with a rule nobody told you about. */
       if (ruleOn){ const note = mk('span','fnote'); note.textContent = t('forge.rule'); wrap.appendChild(note); }
+      else if (goal === 'clear'){ const note = mk('span','fnote'); note.textContent = t('forge.clearNote'); wrap.appendChild(note); }
       else if (goal !== 'fill'){ const note = mk('span','fnote'); note.textContent = t(goal === 'line' ? 'forge.anyLine' : 'forge.anyBlock'); wrap.appendChild(note); }
       else if (spareN){ const note = mk('span','fnote'); note.textContent = t('forge.spares'); wrap.appendChild(note); }
       if (tight) wrap.style.setProperty('--bit', '12px');
@@ -12437,19 +12462,27 @@ const MODES = {
       const undoBtn = mk('button','ftool'); undoBtn.type = 'button';
       undoBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5M4 12h11a5 5 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -5)"/></svg><b></b>';
       undoBtn.querySelector('b').textContent = t('forge.undo'); undoBtn.setAttribute('aria-label', t('forge.undo'));
+      if (goal === 'clear') undoBtn.querySelector('svg').innerHTML = '<path d="M4 8h13l-3-3.4M20 16H7l3 3.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
       const hintBtn = mk('button','ftool'); hintBtn.type = 'button';
       hintBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><ellipse cx="12" cy="16" rx="5.2" ry="4.2"/><ellipse cx="5.4" cy="11" rx="2.2" ry="2.9"/><ellipse cx="9.6" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="14.4" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="18.6" cy="11" rx="2.2" ry="2.9"/></svg><b></b>';
       tools.appendChild(undoBtn); tools.appendChild(hintBtn);
       ctx.surface.appendChild(wrap);
 
       /* Every patch you lay costs a move, and taking one back with Undo gives it back; the allowance is twice what a clean run takes. */
-      const budget = moveBudget(ctx, N*2 + 4);
+      /* A patch costs a move the first time it is laid; lifting one off the quilt and putting it somewhere else is free, and Undo gives the
+         move back. The allowance is three times what a clean run takes, and the Tetris way has no allowance at all. */
+      const budget = goal === 'clear' ? { spend(){}, refund(){} } : moveBudget(ctx, N*3 + 8);
+      const paid = new Set();
       const filled = new Map();           /* cell index -> placement */
       const placed = [];                  /* placements, oldest first */
       let held = null, done = false, hints = 3;
-
-      const inTray = i => !placed.some(p => p.part === i) && !(held && held.part === i);
+      const used = new Set();             /* the Tetris way: patches that have been laid (their squares may since have cleared) or thrown back */
+      const inTray = i => !used.has(i) && !placed.some(p => p.part === i) && !(held && held.part === i);
+      let lines = 0, swaps = 2, busy = false;
+      const paws = goal === 'clear' ? pawChances(ctx) : null;
+      const wantLines = clamp(2 + Math.floor(ctx.level/4), 2, 6);
       const say = (key, args) => ctx.prompt(key ? t(key, args)
+        : goal === 'clear' ? t('p.forgeClear', { n: Math.max(0, wantLines - lines) })
         : goal === 'line' ? t('p.forgeLine', { n: nearGoal().gap })
         : goal === 'block' ? t('p.forgeBlock', { n: nearGoal().gap, w: blockW, h: blockH })
         : picture ? t('p.forgePic', { n: target.size - filled.size, what: pictureName }) : t(ruleOn ? 'p.forgeRule' : 'p.forge', { n: target.size - filled.size }));
@@ -12521,7 +12554,7 @@ const MODES = {
         }
         return { sol: null, gaveUp: gave };
       };
-      const won = () => goal === 'fill' ? filled.size === target.size : cands.some(R => R.every(i => filled.has(i)));
+      const won = () => goal === 'clear' ? lines >= wantLines : goal === 'fill' ? filled.size === target.size : cands.some(R => R.every(i => filled.has(i)));
 
       /* ── Drawing ── */
       /* The line or block that is closest to done is outlined on the quilt, once any of it is laid, so a straight line shows as one. */
@@ -12530,7 +12563,7 @@ const MODES = {
       let aimAt = new Set();
       const paint = () => {
         aimAt = new Set();
-        if (goal !== 'fill' && placed.length){ const n = nearGoal(); if (n.R && n.gap < n.R.length) n.R.forEach(i => aimAt.add(i)); }
+        if ((goal === 'line' || goal === 'block') && placed.length){ const n = nearGoal(); if (n.R && n.gap < n.R.length) n.R.forEach(i => aimAt.add(i)); }
         cellEls.forEach((c, i) => {
           const p = filled.get(i);
           c.className = 'fcell' + (target.has(i) ? ' mould' : '') + (knots.has(i) ? ' knot' : '') + (p ? ' set' : '') + (aimAt.has(i) && !p ? ' aim' : '');
@@ -12546,7 +12579,8 @@ const MODES = {
             if (i === p.cells[0]) c.classList.add('m');
           }
         });
-        undoBtn.disabled = !placed.length;
+        undoBtn.disabled = goal === 'clear' ? (swaps <= 0 || done) : !placed.length;
+        if (goal === 'clear') undoBtn.querySelector('b').textContent = t('forge.swap') + ' ' + swaps;
         hintBtn.querySelector('b').textContent = t('forge.hint') + ' ' + hints;
         hintBtn.disabled = !hints || done;
         hintBtn.setAttribute('aria-label', t('forge.hint') + ': ' + hints);
@@ -12635,6 +12669,77 @@ const MODES = {
         if (n.best) n.best.cells.forEach(i => cellEls[i].classList.add('drop-ok'));
         else if (n.bad) n.bad.cells.forEach(i => cellEls[i].classList.add('drop-bad'));
       };
+      /* The quilt is done: the squares come alive, and the cat settles on it. */
+      const finishQuilt = () => {
+        done = true; grid.classList.add('made');
+        if (goal === 'line' || goal === 'block'){ const R = cands.find(q => q.every(i => filled.has(i))); if (R) R.forEach(i => cellEls[i].classList.add('win')); }
+        const lead = Pals.on()[0] || PAL_BY_ID.biscuit;
+        const cat = mk('div','fcat'); cat.innerHTML = catSvg(lead.coat, { pose: 'sleep' }); grid.appendChild(cat);
+        ctx.win(grid);
+      };
+
+      /* ── The Tetris way ── */
+      const dealPart = () => { const sh = dealShape(new Set(filled.keys())); parts.list.push({ sh, at: [], spare: false }); colour.push(Math.floor(ctx.rnd()*PAL.length)); rot.push(Math.floor(ctx.rnd()*4)); return parts.list.length - 1; };
+      const fits = part => fitsShape(parts.list[part].sh, new Set(filled.keys()));
+      const trayParts = () => parts.list.map((_, i) => i).filter(inTray);
+      const lineSets = () => { const out = [];
+        for (let y = 0; y < g; y++) out.push(Array.from({ length: g }, (_, x) => y*g + x));
+        for (let x = 0; x < g; x++) out.push(Array.from({ length: g }, (_, y) => y*g + x));
+        return out; };
+      /* Every row and column that is covered edge to edge stitches itself away together, so two at once is worth more than two one by one. */
+      const clearLines = then => {
+        const full = lineSets().filter(L => L.every(i => filled.has(i)));
+        if (!full.length) return then(0);
+        const gone = new Set(full.flat());
+        busy = true;
+        gone.forEach(i => cellEls[i].classList.add('stitching'));
+        sfx.good(2 + full.length); buzz('good');
+        ctx.after(motionOff() ? 0 : 320, () => {
+          gone.forEach(i => { const q = filled.get(i); filled.delete(i); if (q) q.cells = q.cells.filter(c => c !== i); });
+          for (let k = placed.length - 1; k >= 0; k--) if (!placed[k].cells.length) placed.splice(k, 1);
+          lines += full.length; busy = false;
+          then(full.length);
+        });
+      };
+      /* Fresh patches in every slot: what Swap does, and what a tidy-up does after a jam. */
+      const redealTray = () => { trayParts().forEach(i => used.add(i)); for (let k = 0; k < 3; k++) dealPart(); };
+      /* Nothing in the tray fits anywhere. A paw tidies the two fullest rows and deals again; with no paw left the round is lost. */
+      const checkJam = () => {
+        if (done || trayParts().some(fits)) return;
+        if (!paws.use(grid)){ done = true; return; }
+        const byRow = Array.from({ length: g }, (_, y) => ({ y, n: Array.from({ length: g }, (_, x) => filled.has(y*g + x) ? 1 : 0).reduce((a2, v) => a2 + v, 0) })).sort((p, q) => q.n - p.n).slice(0, 2);
+        const gone = byRow.flatMap(r => Array.from({ length: g }, (_, x) => r.y*g + x)).filter(i => filled.has(i));
+        busy = true; gone.forEach(i => cellEls[i].classList.add('stitching'));
+        ctx.after(motionOff() ? 0 : 320, () => {
+          gone.forEach(i => { const q = filled.get(i); filled.delete(i); if (q) q.cells = q.cells.filter(c => c !== i); });
+          for (let k = placed.length - 1; k >= 0; k--) if (!placed[k].cells.length) placed.splice(k, 1);
+          redealTray(); busy = false; redraw(); say('forge.jam');
+        });
+      };
+      /* The best place for one of the tray's patches: one that completes a row or column if there is one, otherwise the one that fills a
+         row or column the most. */
+      const bestPlacement = () => {
+        let best = null;
+        const sets = lineSets();
+        for (const i of trayParts()){
+          let c = parts.list[i].sh; const seen = new Set();
+          for (let r = 0; r < 4; r++, c = turn(c)){
+            const k0 = key(c); if (seen.has(k0)) continue; seen.add(k0);
+            for (let ay = 0; ay < g; ay++) for (let ax = 0; ax < g; ax++){
+              const cells = spot(i, c, ax, ay, filled); if (!cells) continue;
+              const fl = new Set(filled.keys()); cells.forEach(x => fl.add(x));
+              let sc = 0; sets.forEach(L => { const n = L.filter(x => fl.has(x)).length; if (n === g) sc += 100; else if (L.some(x => cells.includes(x))) sc += (n / g) * (n / g) * 10; });
+              if (!best || sc > best.sc) best = { sc, part: i, cells, o: c };
+            }
+          }
+        }
+        return best;
+      };
+      const swap = () => {
+        if (done || busy || held || swaps <= 0) return;
+        swaps--; redealTray(); redraw(); say(); sfx.tap();
+      };
+
       const dropIt = () => {
         const h = held; held = null;
         if (ghost){ ghost.remove(); ghost = null; }
@@ -12643,22 +12748,26 @@ const MODES = {
         if (h.snap){
           const pl = { part: h.part, cells: h.snap.cells, o: h.snap.o };
           pl.cells.forEach(i => filled.set(i, pl)); placed.push(pl);
+          if (goal === 'clear'){ used.add(h.part); dealPart(); }
           redraw();
           pl.cells.forEach(i => { cellEls[i].classList.add('laid'); });
           ctx.after(260, () => pl.cells.forEach(i => cellEls[i] && cellEls[i].classList.remove('laid')));
           sfx.tap();
-          if (won()){
-            done = true; grid.classList.add('made');
-            if (goal !== 'fill'){ const R = cands.find(q => q.every(i => filled.has(i))); if (R) R.forEach(i => cellEls[i].classList.add('win')); }
-            const lead = Pals.on()[0] || PAL_BY_ID.biscuit;
-            const cat = mk('div','fcat'); cat.innerHTML = catSvg(lead.coat, { pose: 'sleep' }); grid.appendChild(cat);
-            ctx.win(grid); return;
+          if (goal === 'clear'){
+            clearLines(n => {
+              if (n){ ctx.points(15*n*n, cellEls[pl.cells[0]]); ctx.grace(6000*n); }
+              redraw();
+              if (won()){ finishQuilt(); return; }
+              say(); checkJam();
+            });
+            return;
           }
+          if (won()){ finishQuilt(); return; }
           /* Dead end? Say so kindly, once, rather than let them find out by running out of moves. */
           const s = solve();
           if (!s.sol && !s.gaveUp){ say('forge.dead'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge')); }
           else say();
-          budget.spend(cellEls[pl.cells[0]]);
+          if (!paid.has(pl.part)){ paid.add(pl.part); budget.spend(cellEls[pl.cells[0]]); }
         } else {
           redraw();
           say();
@@ -12674,14 +12783,14 @@ const MODES = {
       const undo = () => {
         if (done || held || !placed.length) return;
         const p = placed.pop(); p.cells.forEach(i => filled.delete(i));
-        budget.refund();
+        if (paid.delete(p.part)) budget.refund();
         redraw(); say(); sfx.tap();
       };
-      onTap(undoBtn, undo);
+      onTap(undoBtn, goal === 'clear' ? swap : undo);
       onTap(hintBtn, () => {
         if (done || held || hints <= 0) return;
-        const s = solve();
-        if (!s.sol || !s.sol.length){ say('forge.dead'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge')); return; }
+        const s = goal === 'clear' ? { sol: [bestPlacement()].filter(Boolean) } : solve();
+        if (!s.sol || !s.sol.length){ say(goal === 'clear' ? 'forge.jam' : 'forge.dead'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge')); return; }
         hints--;
         /* The placement that covers the first empty square, and the patch turned the way it goes. */
         const pl = s.sol[0];
@@ -12701,13 +12810,13 @@ const MODES = {
         const el2 = document.elementFromPoint(x, y);
         if (!el2 || !el2.closest) return null;
         const pc = el2.closest('.fpiece'); if (pc && tray.contains(pc)) return { part: Number(pc.dataset.idx), from: 'tray' };
-        const cl = el2.closest('.fcell'); if (cl && cl.classList.contains('set')){
+        const cl = el2.closest('.fcell'); if (goal !== 'clear' && cl && cl.classList.contains('set')){
           const p = filled.get(cellEls.indexOf(cl)); if (p) return { part: p.part, from: 'board' };
         }
         return null;
       };
       wrap.addEventListener('pointerdown', ev => {
-        if (done || ev.button) return;
+        if (done || busy || ev.button) return;
         if (hand && ev.pointerId !== hand.id){ if (held){ ev.preventDefault(); turnHeld(); } return; }
         if (ev.target.closest && ev.target.closest('.ftool')) return;
         const at = pieceAt(ev.clientX, ev.clientY);
@@ -12749,6 +12858,11 @@ const MODES = {
         if ((ev.key === 'r' || ev.key === 'R') && held){ ev.preventDefault(); turnHeld(); }
       };
       document.addEventListener('keydown', onKey);
+      /* A probe-only hook: what kind of quilt this is, and how many lines it asks for. */
+      try { if (localStorage.getItem('dd.probe')){ wrap.dataset.lines = String(wantLines); wrap.dataset.g = String(g);
+        /* ...and a way to fill squares that nothing in the tray could ever cover, so a test can reach a jam without hoping for one. */
+        wrap._fill = list => { const idx = parts.list.push({ sh: [[0, 0]], at: [], spare: false }) - 1; colour.push(0); rot.push(0); used.add(idx);
+          const pl = { part: idx, cells: list.filter(i => !filled.has(i)), o: [[0, 0]] }; pl.cells.forEach(i => filled.set(i, pl)); placed.push(pl); redraw(); checkJam(); }; } } catch(e){}
     }
   },
 
@@ -18003,6 +18117,9 @@ function beginRound(mode, firstMeet){
       renderHud();
       return pts;
     },
+    /* More time on the round's own clock, for a mode that pays time for good play (a cleared line). Nothing happens when the run has no per-round
+       clock: a timed run shares one clock between all its rounds. */
+    grace: ms => { if (run && run.roundLimit && run.roundLeft > 0){ run.roundLimit += ms; run.roundLeft += ms; } },
     win: node => resolve(true, node),
     miss: node => resolve(false, node)
   };
