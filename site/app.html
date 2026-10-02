@@ -4109,7 +4109,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.107.0';
+const VERSION_TAG = 'v0.108.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6793,6 +6793,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.108.0', date:'2026-10-02', items:[
+    'Needle Pass, Ripples and Dropped Stitch now run at the same speed on every screen. They moved one step per animation frame, so on a 120 Hz phone the needle, the rings and the falling bobbin all went twice as fast as on a 60 Hz one, and the game felt unfairly hard.',
+    'The Game speed setting (Relaxed and Slow) now reaches them too. It used to slow the round clock only, so a slow needle was never actually slow.',
+  ] },
   { v:'0.107.0', date:'2026-10-02', items:[
     'Purr runs at the same speed on every screen. It moved one step per frame, so on a 120 Hz phone (most recent flagships) the cat swelled and the band swung twice as fast as on a 60 Hz one. It now moves by the time that has passed, and the Game speed setting (Relaxed and Slow) slows it too, which it never did.',
     'A purr you can feel: while the cat is in the band the phone gives a soft pulse a few times a second, quicker in the golden middle, and is quiet when you are out of it.',
@@ -9917,6 +9921,7 @@ const MODES = {
       const sway = clamp((ctx.level - 13) * 0.5, 0, 6);
       let pos = 8, dir = 1, hits = 0, zone = 50, zone0 = 50, live = true, raf2 = 0, knotW = 0, knotOff = 0, tick = 0;
       const clean = [];
+      const pace = ctx.clock();
 
       const track = mk('div','skimtrack');
       const stars = mk('div','skimstars'); track.appendChild(stars);
@@ -9959,11 +9964,12 @@ const MODES = {
 
       const frame = () => {
         if (!live) return;
-        pos += dir * speed;
+        const k = pace();            /* time, not frames: the needle crosses at the same speed on a 120 Hz screen */
+        pos += dir * speed * k;
         if (pos >= 96){ pos = 96; dir = -1; }
         if (pos <= 4){ pos = 4; dir = 1; }
         mark.style.left = pos + '%';
-        if (sway){ tick++; zone = zone0 + Math.sin(tick * 0.021) * sway; band.style.left = (zone - width/2) + '%'; }
+        if (sway){ tick += k; zone = zone0 + Math.sin(tick * 0.021) * sway; band.style.left = (zone - width/2) + '%'; }
         track.classList.toggle('hot', clear());
         raf2 = requestAnimationFrame(frame);
       };
@@ -10630,29 +10636,32 @@ const MODES = {
       say();
 
       const waves = [];
+      const pace = ctx.clock();
       const frame = () => {
         if (done) return;
+        const k = pace();            /* time, not frames: the same on a 120 Hz screen */
         for (let i=waves.length-1;i>=0;i--){
           const w = waves[i];
-          w.r += 1.5;
+          w.r += 1.5 * k;
           w.el.style.width = (w.r*2)+'%'; w.el.style.aspectRatio = '1'; w.el.style.height = 'auto';
           w.el.style.opacity = Math.max(0, 1 - w.r/34).toFixed(2);
           const d = Math.hypot(lx-w.x, ly-w.y);
           /* Only the wavefront pushes, not the whole disc — that is what makes
              the delay legible instead of feeling like a magnet. */
           if (Math.abs(d - w.r) < 4 && d > 0.5){
-            const f = push * (1 - w.r/34) * (w.k || 1);
+            const f = push * (1 - w.r/34) * (w.k || 1) * k;
             vx += (lx-w.x)/d * f; vy += (ly-w.y)/d * f;
           }
           if (w.r > 34){ w.el.remove(); waves.splice(i,1); }
         }
         if (gust){
-          wt += 1; wind += Math.sin(wt * 0.011) * 0.012;
-          vx += Math.cos(wind) * gust; vy += Math.sin(wind) * gust;
+          wt += k; wind += Math.sin(wt * 0.011) * 0.012 * k;
+          vx += Math.cos(wind) * gust * k; vy += Math.sin(wind) * gust * k;
           vane.style.transform = 'rotate(' + wind.toFixed(3) + 'rad)';
         }
-        vx *= 0.93; vy *= 0.93;          /* settle quickly, so a nudge is readable */
-        lx += vx; ly += vy;
+        const damp = Math.pow(0.93, k);
+        vx *= damp; vy *= damp;          /* settle quickly, so a nudge is readable */
+        lx += vx * k; ly += vy * k;
         /* A sleeping cat is not moved by a ripple and does not move for a leaf: it is bounced off. */
         for (const z of sleepers){
           const dx = lx - z.x, dy = ly - z.y, d = Math.hypot(dx, dy);
@@ -10764,6 +10773,7 @@ const MODES = {
       sky.appendChild(star);
 
       let sx = 50, sy = 10, vx = 0, want = 50, through = 0, done = false, raf2 = 0;
+      const pace = ctx.clock();
       const say = () => ctx.prompt(t('p.descent', { n: gates - through }));
       say();
 
@@ -10771,13 +10781,14 @@ const MODES = {
         if (done) return;
         /* Weight, not teleporting: the star chases the finger rather than
            snapping to it, so a late correction genuinely cannot save you. */
-        vx += (want - sx) * 0.055;
-        vx *= 0.80;
-        sx = clamp(sx + vx, 3, 97);
-        sy += fall;
+        const k = pace();            /* time, not frames: the same fall on a 120 Hz screen */
+        vx += (want - sx) * 0.055 * k;
+        vx *= Math.pow(0.80, k);
+        sx = clamp(sx + vx * k, 3, 97);
+        sy += fall * k;
 
         bars.forEach(b => {
-          b.gx += b.dir * drift;
+          b.gx += b.dir * drift * k;
           if (b.gx < 6 + gapW/2){ b.gx = 6 + gapW/2; b.dir = 1; }
           if (b.gx > 94 - gapW/2){ b.gx = 94 - gapW/2; b.dir = -1; }
           const top = b.y - sy + 10;
