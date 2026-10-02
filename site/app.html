@@ -3379,6 +3379,15 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .quilt .fcell.aim{background:#FFC53D1f;border:1.5px solid #FFC53D99}
 .quilt .fcell.win{animation:quiltwin .5s ease-in-out 2}
 @keyframes quiltwin{50%{filter:brightness(1.6);transform:scale(1.05)}}
+/* ── Odd Skein: tries as paws, a Sniff, and tiles that fade out ───────────────────────────────────────────── */
+.oddwrap{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;height:100%;min-height:0}
+.oddwrap .grid{flex:1 1 0;min-height:0;width:auto;max-width:100%;align-self:center}
+.oddbar{display:flex;align-items:center;justify-content:center;gap:14px;flex:none;min-height:44px}
+.oddpips{display:flex;gap:7px}
+.oddpips i{display:block;width:22px;height:22px;color:var(--flare);transition:opacity var(--t-med)}
+.oddpips i svg{width:100%;height:100%;display:block}
+.oddpips i.used{opacity:.22}
+.cell.tile.ruled{opacity:.22;transition:opacity var(--t-med)}
 </style>
 
 <div class="cab">
@@ -4097,7 +4106,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.103.0';
+const VERSION_TAG = 'v0.104.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4834,6 +4843,7 @@ const STRINGS = {
     'how.forage':'tap a kitten to send the kittens at its colour; they come in through the bare gaps and take only what they can reach, then wait in the basket until you send them again. Tap a waiting kitten to call it home', 'how.first':'First time — taking it gently.', 'how.sift':'tap a colour to drop that spool on the BACK of the belt; the belt shifts one slot per strand, so you are placing for a strand further down the chute, not the one falling. Tap the front spool to knock it off',
     'modes.find':'Find a mode', 'modes.none':'Nothing matches “{q}”', 'modes.clearFind':'Clear the search',
     'pause.title':'Paused', 'pause.end':'End the run', 'pause.resume':'Back to it', 'pause.sub':'This round starts over when you come back, so nothing is lost but the seconds you had spent on it.',
+    'odd.again':'Not that one — try again ({n} left)', 'odd.sniff':'Sniff', 'odd.sniffed':'The cat ruled out half of them',
     'a.tile':'Tile {n}', 'a.dot':'Dot {n}', 'a.node':'Node {n}', 'a.favAdd':'Add to favorites', 'a.favRemove':'Remove from favorites', 'a.verdictChange':'Tap to change your rating','a.bin':'Basket {n}', 'a.guess':'Guess {c}', 'a.colRow':'Column {x}, row {y}', 'a.gate':'Gate {a} of {b}', 'a.gap':'Gap {a} of {b}', 'a.lampOff':'Eyes {n}, closed', 'a.lampOn':'Eyes {n}, open', 'a.source':'Ball of yarn, tap to turn', 'a.sink':'The cat, tap to turn', 'a.pipe':'Knot, tap to turn', 'a.targetBin':'Target basket', 'a.peg':'Peg', 'a.empty':'Empty', 'a.emptySlot':'Empty slot', 'a.skimNow':'Skim now', 'a.firefly':'Light', 'a.leaf':'Leaf', 'a.star':'Falling bobbin', 'a.hitsLeft':'{n} hits left', 'a.barFlat':'Flat bar, tap an end to slide it', 'a.barUp':'Upright bar, tap an end to slide it', 'p.ready':'Get ready', 'p.nice':'Nice', 'p.streak':'Streak ×{n}!', 'p.minusSec':'−{n} seconds', 'over.twice':'Can you do it twice?', 'over.beat':'Beat {n}', 'over.another':'Another round',
     'over.ribbon':'{a} of {b} rounds solved',
     'p.saved':'Streak held', 'perk.title':'Perks', 'perk.used':'{a} of {b} slots', 'perk.toSlot':'{n} points to the next slot', 'perk.toToken':'{n} points to the next token', 'perk.equipped':'equipped, level {n}', 'perk.notEquipped':'not equipped', 'perk.upgrade':'Spend a token on {p}', 'perk.tokensLeft':'{n} tokens to spend', 'perk.spare':'Spare Life', 'perk.spare.d':'Start a Marathon with {n} more lives', 'perk.spare.d1':'Start a Marathon with one more life', 'perk.shield':'Streak Shield', 'perk.shield.d':'Keep your streak through {n} misses a run', 'perk.shield.d1':'Keep your streak through one miss a run', 'perk.patience':'Long Fuse', 'perk.patience.d':'{n}% longer on the round clock', 'perk.zeal':'Zeal', 'perk.zeal.d':'The multiplier climbs sooner (rank {n})', 'perk.steady':'Steady Hands', 'perk.steady.d':'{n} more moves where moves are counted', 'perk.rally':'Rally', 'perk.rally.d':'Timed runs start {n} seconds longer',
@@ -5328,6 +5338,7 @@ const STRINGS = {
     'how.forage':'touchez un chaton pour lancer les chatons sur sa couleur ; ils entrent par les trous, ne prennent que ce qu’ils atteignent, puis attendent dans le panier que vous les relanciez. Touchez un chaton en attente pour le rappeler', 'how.first':'Première fois — on y va doucement.', 'how.sift':'touchez une couleur pour poser cette bobine à l’ARRIÈRE du tapis ; le tapis avance d’un cran par brin, donc vous posez pour un brin plus loin dans la trémie, pas pour celui qui tombe. Touchez la bobine de tête pour la faire tomber',
     'modes.find':'Chercher un mode', 'modes.none':'Rien ne correspond à « {q} »', 'modes.clearFind':'Effacer la recherche',
     'pause.title':'En pause', 'pause.end':'Terminer la partie', 'pause.resume':'Reprendre', 'pause.sub':'Cette manche recommence à votre retour : vous ne perdez que les secondes déjà passées dessus.',
+    'odd.again':'Pas celle-là — encore une chance ({n} restantes)', 'odd.sniff':'Flairer', 'odd.sniffed':'Le chat en a écarté la moitié',
     'a.tile':'Tuile {n}', 'a.dot':'Point {n}', 'a.node':'Nœud {n}', 'a.favAdd':'Ajouter aux favoris', 'a.favRemove':'Retirer des favoris', 'a.verdictChange':'Touchez pour changer votre avis','a.bin':'Panier {n}', 'a.guess':'Proposer {c}', 'a.colRow':'Colonne {x}, ligne {y}', 'a.gate':'Porte {a} sur {b}', 'a.gap':'Passage {a} sur {b}', 'a.lampOff':'Yeux {n}, fermés', 'a.lampOn':'Yeux {n}, ouverts', 'a.source':'Pelote, touchez pour tourner', 'a.sink':'Le chat, touchez pour tourner', 'a.pipe':'Nœud, touchez pour tourner', 'a.targetBin':'Panier cible', 'a.peg':'Clou', 'a.empty':'Vide', 'a.emptySlot':'Case vide', 'a.skimNow':'Touchez maintenant', 'a.firefly':'Lueur', 'a.leaf':'Feuille', 'a.star':'Bobine qui tombe', 'a.hitsLeft':'{n} coups restants', 'a.barFlat':'Barre à plat, touchez un bout pour la pousser', 'a.barUp':'Barre debout, touchez un bout pour la pousser', 'p.ready':'Prêt', 'p.nice':'Bien', 'p.streak':'Série ×{n} !', 'p.minusSec':'−{n} secondes', 'over.twice':'Encore une fois ?', 'over.beat':'Battre {n}', 'over.another':'Une autre manche',
     'over.ribbon':'{a} manches sur {b} réussies',
     'p.saved':'Série gardée', 'perk.title':'Atouts', 'perk.used':'{a} sur {b} emplacements', 'perk.toSlot':'{n} points avant le prochain emplacement', 'perk.toToken':'{n} points avant le prochain jeton', 'perk.equipped':'équipé, niveau {n}', 'perk.notEquipped':'non équipé', 'perk.upgrade':'Dépenser un jeton sur {p}', 'perk.tokensLeft':'{n} jetons à dépenser', 'perk.spare':'Vie en plus', 'perk.spare.d':'Commencez un Marathon avec {n} vies de plus', 'perk.spare.d1':'Commencez un Marathon avec une vie de plus', 'perk.shield':'Bouclier de série', 'perk.shield.d':'Gardez votre série malgré {n} échecs par partie', 'perk.shield.d1':'Gardez votre série malgré un échec par partie', 'perk.patience':'Mèche longue', 'perk.patience.d':'{n}% de temps en plus par manche', 'perk.zeal':'Ferveur', 'perk.zeal.d':'Le multiplicateur monte plus tôt (rang {n})', 'perk.steady':'Main sûre', 'perk.steady.d':'{n} coups de plus là où les coups comptent', 'perk.rally':'Élan', 'perk.rally.d':'Les parties chronométrées durent {n} secondes de plus',
@@ -5822,6 +5833,7 @@ const STRINGS = {
     'how.forage':'toca un gatito para lanzar los gatitos a su color; entran por los huecos, toman solo lo que alcanzan y luego esperan en la cesta a que los vuelvas a lanzar. Toca un gatito en espera para llamarlo', 'how.first':'Primera vez: vamos con calma.', 'how.sift':'toca un color para poner ese carrete al FINAL de la cinta; la cinta avanza un hueco por hebra, así que colocas para una hebra más adelante en la tolva, no para la que cae. Toca el carrete delantero para tirarlo',
     'modes.find':'Buscar un modo', 'modes.none':'Nada coincide con «{q}»', 'modes.clearFind':'Borrar la búsqueda',
     'pause.title':'En pausa', 'pause.end':'Terminar la partida', 'pause.resume':'Seguir', 'pause.sub':'Esta ronda empieza de nuevo al volver, así que solo pierdes los segundos que llevabas.',
+    'odd.again':'Esa no — prueba otra vez (quedan {n})', 'odd.sniff':'Olfatear', 'odd.sniffed':'El gato descartó la mitad',
     'a.tile':'Casilla {n}', 'a.dot':'Punto {n}', 'a.node':'Nodo {n}', 'a.favAdd':'Añadir a favoritos', 'a.favRemove':'Quitar de favoritos', 'a.verdictChange':'Toca para cambiar tu valoración','a.bin':'Cesta {n}', 'a.guess':'Probar {c}', 'a.colRow':'Columna {x}, fila {y}', 'a.gate':'Puerta {a} de {b}', 'a.gap':'Hueco {a} de {b}', 'a.lampOff':'Ojos {n}, cerrados', 'a.lampOn':'Ojos {n}, abiertos', 'a.source':'Ovillo, toca para girar', 'a.sink':'El gato, toca para girar', 'a.pipe':'Nudo, toca para girar', 'a.targetBin':'Cesta objetivo', 'a.peg':'Clavija', 'a.empty':'Vacío', 'a.emptySlot':'Hueco vacío', 'a.skimNow':'Toca ahora', 'a.firefly':'Luz', 'a.leaf':'Hoja', 'a.star':'Bobina que cae', 'a.hitsLeft':'{n} golpes restantes', 'a.barFlat':'Barra tumbada, toca un extremo para moverla', 'a.barUp':'Barra de pie, toca un extremo para moverla', 'p.ready':'Preparado', 'p.nice':'Bien', 'p.streak':'Racha ×{n}!', 'p.minusSec':'−{n} segundos', 'over.twice':'¿Puedes repetirlo?', 'over.beat':'Supera {n}', 'over.another':'Otra ronda',
     'over.ribbon':'{a} de {b} rondas resueltas',
     'p.saved':'Racha mantenida', 'perk.title':'Ventajas', 'perk.used':'{a} de {b} ranuras', 'perk.toSlot':'{n} puntos para la próxima ranura', 'perk.toToken':'{n} puntos para la próxima ficha', 'perk.equipped':'equipada, nivel {n}', 'perk.notEquipped':'no equipada', 'perk.upgrade':'Gastar una ficha en {p}', 'perk.tokensLeft':'{n} fichas por gastar', 'perk.spare':'Vida extra', 'perk.spare.d':'Empieza un Maratón con {n} vidas más', 'perk.spare.d1':'Empieza un Maratón con una vida más', 'perk.shield':'Escudo de racha', 'perk.shield.d':'Conserva tu racha pese a {n} fallos por partida', 'perk.shield.d1':'Conserva tu racha pese a un fallo por partida', 'perk.patience':'Mecha larga', 'perk.patience.d':'{n}% más de tiempo por ronda', 'perk.zeal':'Fervor', 'perk.zeal.d':'El multiplicador sube antes (rango {n})', 'perk.steady':'Pulso firme', 'perk.steady.d':'{n} movimientos más donde se cuentan', 'perk.rally':'Empuje', 'perk.rally.d':'Las partidas con reloj empiezan {n} segundos más largas',
@@ -6316,6 +6328,7 @@ const STRINGS = {
     'how.forage':'tippe ein Kätzchen an, um die Kätzchen auf seine Farbe zu schicken; sie kommen durch die Lücken herein, nehmen nur, was sie erreichen, und warten dann im Korb, bis du sie erneut schickst. Tippe ein wartendes Kätzchen an, um es zurückzurufen', 'how.first':'Zum ersten Mal — wir fangen sanft an.', 'how.sift':'tippe eine Farbe an, um die Spule HINTEN aufs Band zu stellen; das Band rückt je Faden einen Platz vor, du stellst also für einen Faden weiter oben im Schacht, nicht für den fallenden. Tippe die vorderste Spule an, um sie herunterzustoßen',
     'modes.find':'Modus suchen', 'modes.none':'Nichts passt zu „{q}“', 'modes.clearFind':'Suche löschen',
     'pause.title':'Pause', 'pause.end':'Lauf beenden', 'pause.resume':'Weiter', 'pause.sub':'Diese Runde beginnt neu, wenn du zurückkommst — verloren sind nur die Sekunden, die schon vergangen waren.',
+    'odd.again':'Die nicht — versuch es nochmal (noch {n})', 'odd.sniff':'Schnuppern', 'odd.sniffed':'Die Katze hat die Hälfte ausgeschlossen',
     'a.tile':'Feld {n}', 'a.dot':'Punkt {n}', 'a.node':'Knoten {n}', 'a.favAdd':'Zu Favoriten hinzufügen', 'a.favRemove':'Aus Favoriten entfernen', 'a.verdictChange':'Tippen, um deine Bewertung zu ändern','a.bin':'Korb {n}', 'a.guess':'{c} raten', 'a.colRow':'Spalte {x}, Zeile {y}', 'a.gate':'Tor {a} von {b}', 'a.gap':'Lücke {a} von {b}', 'a.lampOff':'Augen {n}, geschlossen', 'a.lampOn':'Augen {n}, offen', 'a.source':'Wollknäuel, zum Drehen tippen', 'a.sink':'Die Katze, zum Drehen tippen', 'a.pipe':'Knoten, zum Drehen tippen', 'a.targetBin':'Zielkorb', 'a.peg':'Stift', 'a.empty':'Leer', 'a.emptySlot':'Leeres Feld', 'a.skimNow':'Jetzt tippen', 'a.firefly':'Licht', 'a.leaf':'Blatt', 'a.star':'Fallende Spule', 'a.hitsLeft':'Noch {n} Treffer', 'a.barFlat':'Liegender Riegel, tippe ein Ende zum Schieben', 'a.barUp':'Stehender Riegel, tippe ein Ende zum Schieben', 'p.ready':'Bereit', 'p.nice':'Gut', 'p.streak':'Serie ×{n}!', 'p.minusSec':'−{n} Sekunden', 'over.twice':'Schaffst du das nochmal?', 'over.beat':'Schlage {n}', 'over.another':'Noch eine Runde',
     'over.ribbon':'{a} von {b} Runden gelöst',
     'p.saved':'Serie gehalten', 'perk.title':'Boni', 'perk.used':'{a} von {b} Plätzen', 'perk.toSlot':'{n} Punkte bis zum nächsten Platz', 'perk.toToken':'{n} Punkte bis zur nächsten Marke', 'perk.equipped':'ausgerüstet, Stufe {n}', 'perk.notEquipped':'nicht ausgerüstet', 'perk.upgrade':'Eine Marke für {p} ausgeben', 'perk.tokensLeft':'{n} Marken übrig', 'perk.spare':'Extraleben', 'perk.spare.d':'Starte einen Marathon mit {n} Leben mehr', 'perk.spare.d1':'Starte einen Marathon mit einem Leben mehr', 'perk.shield':'Serienschild', 'perk.shield.d':'Behalte deine Serie trotz {n} Fehlern pro Lauf', 'perk.shield.d1':'Behalte deine Serie trotz einem Fehler pro Lauf', 'perk.patience':'Lange Lunte', 'perk.patience.d':'{n}% mehr Zeit pro Runde', 'perk.zeal':'Eifer', 'perk.zeal.d':'Der Multiplikator steigt früher (Rang {n})', 'perk.steady':'Ruhige Hand', 'perk.steady.d':'{n} Züge mehr, wo Züge zählen', 'perk.rally':'Aufholjagd', 'perk.rally.d':'Zeitläufe starten {n} Sekunden länger',
@@ -6777,6 +6790,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.104.0', date:'2026-10-02', items:[
+    'Odd Skein is kinder, and the first of a game-by-game pass through every mode. A wrong skein no longer ends the round: it fades out and takes a paw. You start with three paws, two as you get better and one at the top, and Fidget Loop never runs out. A line under the board says how many tries are left.',
+    'New Sniff button: the cat rules out about half of the skeins that are left, never the odd one. You get two to start with and one later on.',
+    'The grid stops at seven across instead of eight (a wall of sixty-four near-identical skeins was a chore, not a puzzle), and on a small phone it stops sooner so every skein stays easy to hit.',
+  ] },
   { v:'0.103.0', date:'2026-10-02', items:[
     'Patchwork has three ways to finish, and it is a lot easier. Fill the hole is the old puzzle. Straight line asks for any one row or any one column covered from edge to edge, anywhere on an open quilt. Solid block asks for a rectangle (2×3, 3×3 or 3×4 as you level up) anywhere at all. Every round says which one it is, and the early rounds lean on the open ones.',
     'There are always patches to spare. A tray holds a few more than the quilt needs, so you do not have to come out exactly, and there is more than one way to do any round. Pictures and the colour rule come in later, and the tray holds fewer spares as you get better.',
@@ -8108,7 +8126,10 @@ const MODES = {
     stages: lvl => clamp(2 + Math.floor(lvl/9), 2, 4),
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#6C6191" stroke-width="2"><circle cx="6.5" cy="7.5" r="3.6"/><circle cx="17.5" cy="7.5" r="3.6"/></g><circle cx="12" cy="16.5" r="4.2" fill="none" stroke="#FF5B39" stroke-width="2.4"/><path d="M8.4 15.2 Q12 18.6 15.6 15.2" fill="none" stroke="#FF5B39" stroke-width="1.6"/></svg>',
     build(ctx){
-      const n = clamp(3 + Math.floor(ctx.level/3), 3, 8);
+      /* The grid grows to seven across, not eight: a wall of sixty-four near-identical tiles was a chore, not a puzzle. */
+      const roomW = ctx.surface.clientWidth || 350, roomH = (ctx.surface.clientHeight || 560) - 60;
+      const fit = Math.floor((Math.min(roomW, roomH / 1.2) + 10) / 46);   /* a tile is never smaller than about 36px on a small phone */
+      const n = clamp(3 + Math.floor(ctx.level/4), 3, clamp(fit, 3, 7));
       /* From level 8, about two rounds in five ask a different question of the same grid: not "which one is not like the
          others" but "which is the lightest" or "which is the darkest". Every skein is then a slightly different shade, so
          nothing is odd, and the one you want is only ever a little further along than the rest. */
@@ -8134,17 +8155,47 @@ const MODES = {
          in every round from level 14, which read as a glitch, not as a puzzle.
          Every tile is the same size; only the colour was ever the question. */
       const g = gridEl(n);
+      /* A wrong tile is not the end of the round while you still have tries (three, then two, then one as you get better; no limit in
+         Fidget Loop): it fades out, a paw is used, and the cat can Sniff to rule out half of what is left. */
+      const tries0 = ctx.relaxed ? 0 : ctx.level < 8 ? 3 : ctx.level < 20 ? 2 : 1;
+      let tries = tries0, sniffs = ctx.level < 10 ? 2 : 1, done = false;
+      const tiles = [];
+      const bar = mk('div','oddbar'), pips = mk('span','oddpips');
+      const PAW = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><ellipse cx="12" cy="16" rx="5.2" ry="4.2"/><ellipse cx="5.4" cy="11" rx="2.2" ry="2.9"/><ellipse cx="9.6" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="14.4" cy="6.4" rx="2.2" ry="2.9"/><ellipse cx="18.6" cy="11" rx="2.2" ry="2.9"/></svg>';
+      for (let k = 0; k < tries0; k++){ const i2 = mk('i'); i2.innerHTML = PAW; pips.appendChild(i2); }
+      const paintPips = () => Array.from(pips.children).forEach((e, k) => e.classList.toggle('used', k >= tries));
+      if (tries0){ pips.setAttribute('role','img'); bar.appendChild(pips); }
+      const sniff = mk('button','sumtool'); sniff.type = 'button';
+      const paintSniff = () => { sniff.textContent = t('odd.sniff') + ' ' + sniffs; sniff.disabled = sniffs <= 0 || done; sniff.setAttribute('aria-label', sniff.textContent); };
+      paintSniff(); bar.appendChild(sniff);
       for (let i=0;i<n*n;i++){
         const b = mk('button','cell tile');
         b.type = 'button';
+        tiles.push(b);
         if (ask === 'odd') b.style.background = 'hsl(' + (i===odd ? oddHue : hue)
           + ' 68% ' + (i===odd ? oddBaseLight+light : 58) + '%)';
         else b.style.background = 'hsl(' + hue + ' 62% ' + (i === odd ? (ask === 'light' ? 46 + spread + gapL : 46 - gapL) : 46 + ctx.rnd()*spread) + '%)';
         b.setAttribute('aria-label', t('a.tile', { n: i+1 }));
-        onTap(b, () => i===odd ? ctx.win(b) : ctx.miss(b));
+        onTap(b, () => {
+          if (done || b.disabled) return;
+          if (i === odd){ done = true; paintSniff(); return ctx.win(b); }
+          tries--; paintPips();
+          if (tries0 && tries <= 0){ done = true; paintSniff(); return ctx.miss(b); }
+          b.disabled = true; b.classList.add('ruled'); sfx.tap(); buzz('tap');
+          ctx.prompt(tries0 ? t('odd.again', { n: tries }) : t(ask === 'light' ? 'p.oddLight' : ask === 'dark' ? 'p.oddDark' : 'p.odd'));
+        });
         g.appendChild(b);
       }
-      ctx.surface.appendChild(g);
+      onTap(sniff, () => {
+        if (done || sniffs <= 0) return;
+        sniffs--; paintSniff();
+        const pool = tiles.map((_, i) => i).filter(i => i !== odd && !tiles[i].disabled);
+        shuffle(pool, ctx.rnd).slice(0, Math.floor(pool.length/2)).forEach(i => { tiles[i].disabled = true; tiles[i].classList.add('ruled'); });
+        sfx.good(2); buzz('tap');
+        ctx.prompt(t('odd.sniffed'));
+      });
+      const wrap = mk('div','oddwrap'); wrap.appendChild(g); wrap.appendChild(bar);
+      ctx.surface.appendChild(wrap);
       ctx.prompt(t(ask === 'light' ? 'p.oddLight' : ask === 'dark' ? 'p.oddDark' : 'p.odd'));
     }
   },

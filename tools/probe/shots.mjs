@@ -10,6 +10,7 @@
  *
  *   node tools/probe/shots.mjs            compare against the baseline
  *   UPDATE=1 node tools/probe/shots.mjs   accept what is on screen now
+ *   ONLY=odd,sum node tools/probe/shots.mjs   just those modes (add UPDATE=1 to accept only them)
  *
  * Comparison is byte-exact, which is only honest if the render is actually
  * deterministic, so the run does not assume that — it shoots every mode TWICE
@@ -34,7 +35,8 @@ const UPDATE = !!process.env.UPDATE;
 const SITE = process.env.SITE || '/tmp/pw/_site';
 
 if (!existsSync(BASE)) mkdirSync(BASE, { recursive: true });
-const ids = modeIdsFromBuild(SITE);
+const ONLY = (process.env.ONLY || '').split(',').filter(Boolean);
+const ids = modeIdsFromBuild(SITE).filter(id => !ONLY.length || ONLY.includes(id));
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 400, height: 820 }, hasTouch: true });
@@ -120,7 +122,7 @@ for (const id of ids){
 }
 await browser.close();
 
-floorOrDie('shots', ids.length, 40);
+if (!ONLY.length) floorOrDie('shots', ids.length, 40);
 console.log('');
 if (UPDATE){
   console.log(`baseline written for ${fresh.length} modes; ${unstable.length} could not hold still`);
