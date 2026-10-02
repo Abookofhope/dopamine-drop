@@ -556,8 +556,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 
 /* ── Splice ───────────────────────────────────────────────────────────── */
 .splwrap{display:flex;gap:12px;width:100%;height:100%;
-  min-height:0;min-width:0;max-width:100%;align-items:center;justify-content:center}
-.splcol{display:flex;flex-direction:column;gap:9px;flex:1 1 0;min-width:0;max-width:150px}
+  min-height:0;min-width:0;max-width:100%;align-items:stretch;justify-content:center}
+.sumcol > .splwrap{flex:1 1 0;min-height:0}
+.splcol{display:flex;flex-direction:column;gap:10px;flex:1 1 0;min-width:0;max-width:170px;justify-content:center}
+/* The tiles share the height of the board, up to a limit, so they are big to hit and the board is not a small stack in the middle. */
+.splcol > .spltile{flex:1 1 0;max-height:92px;min-height:48px}
+.spltile.hint{border-color:#ffc53d;background:#ffc53d1f;color:#ffe29a;animation:none}
+.spltile.joined{font-size:21px}
 .spltile{
   width:100%;min-height:48px;padding:10px 6px;border-radius:13px;cursor:pointer;
   border:1px solid var(--edge);background:#ffffff06;color:var(--cream);
@@ -4113,7 +4118,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.109.0';
+const VERSION_TAG = 'v0.110.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4831,7 +4836,7 @@ const STRINGS = {
     
 
     'latch.undo':'Undo', 'latch.hint':'Hint', 'latch.meet':'Line them up on the marked column', 'p.latch':'{n} rows still off the line', 'latch.row':'Row {n}, notch at position {c}', 'latch.left':'Turn row {n} left', 'latch.right':'Turn row {n} right', 'm.latch':'Latch Hook|Turn the rows until every hook lines up',
-    'p.splice':'{n} words still in pieces', 'splice.head':'Beginning: {s}', 'splice.tail':'Ending: {s}', 'm.splice':'Splice|Join each loose end to the right beginning',
+    'splice.hint':'Hint', 'p.splice':'{n} words still in pieces', 'splice.head':'Beginning: {s}', 'splice.tail':'Ending: {s}', 'm.splice':'Splice|Join each loose end to the right beginning',
     'p.trace':'{n} more to reach — stay on the line', 'trace.back':'Drifting — ease back onto the thread', 'trace.box':'Drag along the line from the bright dot to the ring', 'm.trace':'Follow the Thread|Follow the thread to its end — no hurry',
     'set.version':'Version', 'set.checkUpd':'Check', 'set.checking':'Checking…', 'set.upToDate':'Up to date', 'set.updating':'Updating…',
     'p.halve':'{n} apart', 'halve.chip':'{v}, in basket {s}', 'm.halve':'Even Skeins|Move skeins until both baskets weigh the same',
@@ -5326,7 +5331,7 @@ const STRINGS = {
     
 
     'latch.undo':'Annuler', 'latch.hint':'Indice', 'latch.meet':'Alignez-les sur la colonne marquée', 'p.latch':'Encore {n} rangées hors de l’axe', 'latch.row':'Rangée {n}, encoche en position {c}', 'latch.left':'Tourner la rangée {n} vers la gauche', 'latch.right':'Tourner la rangée {n} vers la droite', 'm.latch':'Crochet|Tournez les rangs jusqu’à aligner tous les crochets',
-    'p.splice':'Encore {n} mots en morceaux', 'splice.head':'Début : {s}', 'splice.tail':'Fin : {s}', 'm.splice':'Raccord|Reliez chaque bout libre au bon début',
+    'splice.hint':'Indice', 'p.splice':'Encore {n} mots en morceaux', 'splice.head':'Début : {s}', 'splice.tail':'Fin : {s}', 'm.splice':'Raccord|Reliez chaque bout libre au bon début',
     'p.trace':'Encore {n} à atteindre — restez sur la ligne', 'trace.back':'Vous dérivez — revenez doucement sur le fil', 'trace.box':'Glissez le long de la ligne, du point lumineux jusqu’à l’anneau', 'm.trace':'Suivre le Fil|Suivez le fil jusqu’au bout — sans hâte',
     'set.version':'Version', 'set.checkUpd':'Vérifier', 'set.checking':'Vérification…', 'set.upToDate':'À jour', 'set.updating':'Mise à jour…',
     'p.halve':'Écart de {n}', 'halve.chip':'{v}, dans le panier {s}', 'm.halve':'Pelotes Égales|Déplacez les pelotes jusqu’à équilibrer les paniers',
@@ -5821,7 +5826,7 @@ const STRINGS = {
     
 
     'latch.undo':'Deshacer', 'latch.hint':'Pista', 'latch.meet':'Aliníalas en la columna marcada', 'p.latch':'Quedan {n} filas fuera de la línea', 'latch.row':'Fila {n}, muesca en la posición {c}', 'latch.left':'Girar la fila {n} a la izquierda', 'latch.right':'Girar la fila {n} a la derecha', 'm.latch':'Ganchillo|Gira las filas hasta alinear cada gancho',
-    'p.splice':'Quedan {n} palabras partidas', 'splice.head':'Principio: {s}', 'splice.tail':'Final: {s}', 'm.splice':'Empalme|Une cada cabo suelto con su principio',
+    'splice.hint':'Pista', 'p.splice':'Quedan {n} palabras partidas', 'splice.head':'Principio: {s}', 'splice.tail':'Final: {s}', 'm.splice':'Empalme|Une cada cabo suelto con su principio',
     'p.trace':'Quedan {n} por alcanzar — no te salgas de la línea', 'trace.back':'Te desvías — vuelve despacio al hilo', 'trace.box':'Arrastra por la línea desde el punto brillante hasta el anillo', 'm.trace':'Sigue el Hilo|Sigue el hilo hasta el final — sin prisa',
     'set.version':'Versión', 'set.checkUpd':'Comprobar', 'set.checking':'Comprobando…', 'set.upToDate':'Actualizado', 'set.updating':'Actualizando…',
     'p.halve':'{n} de diferencia', 'halve.chip':'{v}, en la cesta {s}', 'm.halve':'Ovillos Iguales|Mueve ovillos hasta igualar las cestas',
@@ -6316,7 +6321,7 @@ const STRINGS = {
     
 
     'latch.undo':'Zurück', 'latch.hint':'Tipp', 'latch.meet':'Richte sie an der markierten Spalte aus', 'p.latch':'Noch {n} Reihen neben der Linie', 'latch.row':'Reihe {n}, Kerbe an Position {c}', 'latch.left':'Reihe {n} nach links drehen', 'latch.right':'Reihe {n} nach rechts drehen', 'm.latch':'Knüpfhaken|Dreh die Reihen, bis jeder Haken passt',
-    'p.splice':'Noch {n} Wörter in Teilen', 'splice.head':'Anfang: {s}', 'splice.tail':'Ende: {s}', 'm.splice':'Spleißen|Verbinde jedes lose Ende mit dem richtigen Anfang',
+    'splice.hint':'Tipp', 'p.splice':'Noch {n} Wörter in Teilen', 'splice.head':'Anfang: {s}', 'splice.tail':'Ende: {s}', 'm.splice':'Spleißen|Verbinde jedes lose Ende mit dem richtigen Anfang',
     'p.trace':'Noch {n} zu erreichen — bleib auf der Linie', 'trace.back':'Du driftest ab — geh sanft zurück zum Faden', 'trace.box':'Zieh entlang der Linie vom hellen Punkt bis zum Ring', 'm.trace':'Dem Faden Folgen|Folge dem Faden bis zum Ende — ohne Eile',
     'set.version':'Version', 'set.checkUpd':'Prüfen', 'set.checking':'Prüfe…', 'set.upToDate':'Aktuell', 'set.updating':'Aktualisiere…',
     'p.halve':'{n} Unterschied', 'halve.chip':'{v}, in Korb {s}', 'm.halve':'Gleiche Knäuel|Verschiebe Knäuel, bis beide Körbe gleich sind',
@@ -6797,6 +6802,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.110.0', date:'2026-10-02', items:[
+    'Splice fills the board and shows the words it makes. The tiles share the whole height of the screen instead of sitting in a small stack in the middle, and when a pair is joined the word reads in full on the left while the loose end it came from is ticked off.',
+    'A Hint (two a round) lights one beginning and the end that belongs to it, which helps most when the words are in a language you are still learning.',
+  ] },
   { v:'0.109.0', date:'2026-10-02', items:[
     'Latch Hook fills the board. The rows used to sit in a small stack in the middle of a tall, mostly empty screen with tiny dots to hit; they now share the whole board, each row a tall capsule you can hit with a thumb.',
     'Every turn can be taken back: Undo puts the row back and gives the move back.',
@@ -12803,10 +12812,12 @@ const MODES = {
       const colA = mk('div','splcol');
       const colB = mk('div','splcol');
       wrap.appendChild(colA); wrap.appendChild(colB);
-      ctx.surface.appendChild(wrap);
+      const col = mk('div','sumcol');
+      col.appendChild(wrap);
+      ctx.surface.appendChild(col);
 
       const budget = moveBudget(ctx, words.length);
-      let done = false, sel = -1, joined = 0;
+      let done = false, sel = -1, joined = 0, hints = 2;
       const headEls = [], tailEls = [];
 
       const say = () => ctx.prompt(t('p.splice', { n: words.length - joined }));
@@ -12842,13 +12853,15 @@ const MODES = {
         const src = Number(b.dataset.src);
         const head = headEls[sel];
         if (src === sel){
-          head.classList.add('locked'); head.classList.remove('on');
-          b.classList.add('locked');
+          head.classList.add('locked', 'joined'); head.classList.remove('on', 'hint');
+          b.classList.add('locked'); b.classList.remove('hint');
+          /* The two halves become the word: it reads in full on the left, and the loose end it came from is ticked off. */
+          head.textContent = words[src]; b.textContent = '✓';
           joined++;
           sfx.good(joined);
           clearSel();
           if (joined >= words.length){
-            done = true;
+            done = true; paintHint();
             wrap.classList.add('good');
             return ctx.win(b);
           }
@@ -12863,6 +12876,20 @@ const MODES = {
       }; onTap(b, b._go); });
       /* Or pick an end up and carry it to the beginning it belongs to: the same as selecting the one and tapping the other. */
       carry(wrap, { grab: '.spltile.head', over: '.spltile.tail', land: (from, to) => { if (to._go) to._go(); } });
+
+      /* A hint shows one beginning and the end that belongs to it, for a moment. */
+      const tools = mk('div','sumtools'), hint = mk('button','sumtool'); hint.type = 'button';
+      tools.appendChild(hint); col.appendChild(tools);
+      const paintHint = () => { hint.textContent = t('splice.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
+      paintHint();
+      onTap(hint, () => {
+        if (done || hints <= 0) return;
+        const i = headEls.findIndex(e => !e.classList.contains('locked')); if (i < 0) return;
+        const tail = tailEls.find(e => Number(e.dataset.src) === i);
+        hints--; paintHint(); sfx.tap();
+        headEls[i].classList.add('hint'); tail.classList.add('hint');
+        ctx.after(2200, () => { headEls[i].classList.remove('hint'); tail.classList.remove('hint'); });
+      });
       say();
     }
   },
