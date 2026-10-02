@@ -3430,6 +3430,8 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .oddwrap .grid{flex:1 1 0;min-height:0;width:auto;max-width:100%;align-self:center}
 .oddbar{display:flex;align-items:center;justify-content:center;gap:14px;flex:none;min-height:44px}
 .oddpips{display:flex;gap:7px}
+/* Kitten's Snack Attack: a place outside the shape of the patch holds the grid's slot and shows nothing. */
+.patch .cell.wall{visibility:hidden;pointer-events:none}
 /* Odd Skein, Smooth: no stitch pattern, and each skein's own colour fills the gap around it, so the board is one flush field and an odd shade is an edge. */
 .oddwrap.smooth .cell.tile{border-radius:0;border-color:transparent;box-shadow:0 0 0 calc(var(--ogap,10px)/2) var(--c)}
 .oddwrap.smooth .cell.tile::before,.oddwrap.smooth .cell.tile::after{display:none}
@@ -4156,7 +4158,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.130.0';
+const VERSION_TAG = 'v0.131.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6840,6 +6842,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.131.0', date:'2026-10-02', items:[
+    'Kitten’s Snack Attack is harder, and no longer one square patch after another. From level 3 the patch is sometimes cut into a shape: corners trimmed, a plus, a ring with bare ground in the middle for the kittens to come in from, or a diamond. Boards are built so that a careless order of sends costs more, and the spare moves over the best line start at five and shrink to one (they used to be eight, and never fewer than three). The second hint goes after level 8, and five colours arrive sooner. Every board still has a perfect line.',
+  ] },
   { v:'0.130.0', date:'2026-10-02', items:[
     'Tumble Dryer pays for every pair. Each pair you match is worth 10 points straight away, and a pair made within a couple of seconds of the last one is worth 5 more each time (up to 20). A wrong pair pays nothing, and clearing the drum still pays as before.',
     'Odd Skein has a Smooth button next to Sniff. It takes the stitch pattern off the skeins and fills the gaps between them, so they sit flush against one another and a shade that is a little off shows as an edge. Nothing moves, and it stays on for the rest of the boards in a round.',
@@ -8108,9 +8113,9 @@ function onHold(node, fn){
    it is generous, and running out is the same thing a player means when they
    say they should have had it by now. The minimum is computed per board, never
    guessed, so the budget is always beatable. */
-function moveBudget(ctx, minimum){
+function moveBudget(ctx, minimum, spare){
   if (ctx.relaxed) return { spend(){}, refund(){} };            /* Fidget Loop has no losing */
-  const slack = clamp(8 - Math.floor(ctx.level/4), 3, 8) + Perk.step('steady');
+  const slack = (spare === undefined ? clamp(8 - Math.floor(ctx.level/4), 3, 8) : spare) + Perk.step('steady');
   let left = Math.max(1, minimum) + slack, dead = false;
   const chip = mk('div','budget');
   const paint = () => {
@@ -13637,8 +13642,10 @@ const MODES = {
          never costs you a slot at all. The order IS the puzzle. */
       const N     = ctx.level < 6 ? 5 : ctx.level < 16 ? 6 : 7;
       const CELLS = N*N;
-      const GONE  = -1;
-      const k     = clamp(3 + Math.floor(ctx.level/8), 3, 5);
+      const GONE  = -1, WALL = -2;                   /* bare ground, and a place the patch does not reach */
+      const BERRY = v => v >= 0;
+      const cleared = g => g.every(v => !BERRY(v));
+      const k     = clamp(3 + Math.floor(ctx.level/6), 3, 5);
       /* How many swarms can be out waiting. Every one of them is a colour you
          committed to before its way was clear. */
       const cap   = clamp(k - 2 - Math.floor(ctx.level/20), 1, 3);
@@ -13646,7 +13653,27 @@ const MODES = {
          happen to work. A board where most orders work is not a puzzle. */
       /* What a careless order has to cost, in extra sends, averaged over every
          order there is. Under a number here the patch is not a puzzle. */
-      const want  = clamp(1 + ctx.level/18, 1, 3);
+      const want  = clamp(1.5 + ctx.level/9, 1.5, 4);
+      /* Spare moves over the perfect line: five at first, down to one. (The shared budget gave eight, and a careless order never ran it dry.) */
+      const spare = clamp(5 - Math.floor(ctx.level/5), 1, 5);
+
+      /* The shape of the patch. From level 3 it is not always a square: corners cut off, a plus, a ring with bare ground in the middle for the
+         swarm to come in from, a diamond. Cells outside the shape are walls: not berries, not bare ground, and never tapped. */
+      const shapes = ['square'];
+      if (ctx.level >= 3) shapes.push('rounded', 'ring');
+      if (ctx.level >= 3 && N >= 6) shapes.push('plus');
+      if (ctx.level >= 8 && N >= 6) shapes.push('diamond');
+      const shape = shapes[Math.floor(ctx.rnd()*shapes.length)];
+      const W = new Set();
+      { const c0 = (N - 1)/2;
+        for (let i = 0; i < CELLS; i++){
+          const r = Math.floor(i/N), c = i % N, dr = Math.abs(r - c0), dc = Math.abs(c - c0);
+          const s2 = N >= 6 ? 2 : 1, mid = N === 5 ? 1 : N === 6 ? 2 : 3, lo = Math.floor((N - mid)/2);
+          if (shape === 'rounded' && (r === 0 || r === N-1) && (c === 0 || c === N-1)) W.add(i);
+          if (shape === 'plus' && (r < s2 || r >= N - s2) && (c < s2 || c >= N - s2)) W.add(i);
+          if (shape === 'ring' && r >= lo && r < lo + mid && c >= lo && c < lo + mid) W.add(i);
+          if (shape === 'diamond' && dr + dc > N/2 + 0.01) W.add(i);
+        } }
 
       const rc   = i => [Math.floor(i/N), i % N];
       const nbrs = i => { const [r, c] = rc(i); const out = [];
@@ -13656,7 +13683,8 @@ const MODES = {
         });
         return out; };
       const onEdge = i => { const [r, c] = rc(i);
-        return r === 0 || c === 0 || r === N-1 || c === N-1; };
+        return r === 0 || c === 0 || r === N-1 || c === N-1 || nbrs(i).some(j => W.has(j)); };
+      const reach = i => nbrs(i).filter(j => !W.has(j));
       /* How many ways in the patch has. A swarm can only start from bare ground,
          so these gaps are the whole reason one colour can be behind another:
          with the rim itself counting as a way in, nothing is ever buried. */
@@ -13680,6 +13708,7 @@ const MODES = {
         return waves;
       };
       const has = (g, colour) => g.some(v => v === colour);
+      const walled = g => { W.forEach(i => { g[i] = WALL; }); return g; };
 
       /* Send a swarm at a colour: it eats everything it can reach right now and
          nothing more. Anything left keeps it out there, holding a slot, until
@@ -13708,9 +13737,9 @@ const MODES = {
             }
             taps++;
           }
-          if (g.every(v => v === GONE)) break;
+          if (cleared(g)) break;
         }
-        return { done: g.every(v => v === GONE), taps };
+        return { done: cleared(g), taps };
       };
 
       /* Two ways to draw a patch. Blobs grown from scattered seeds give a board
@@ -13720,7 +13749,7 @@ const MODES = {
          once and then never read again. */
       const cutGaps = () => {
         const rim = [];
-        for (let i = 0; i < CELLS; i++) if (onEdge(i)) rim.push(i);
+        for (let i = 0; i < CELLS; i++) if (!W.has(i) && onEdge(i)) rim.push(i);
         return shuffle(rim, ctx.rnd).slice(0, gaps);
       };
       /* Flood out from the gaps, so the order cells come up in IS the order a
@@ -13728,15 +13757,15 @@ const MODES = {
       const flood = holes => {
         const order = holes.slice(), seen = new Set(holes);
         for (let x = 0; x < order.length; x++)
-          for (const j of shuffle(nbrs(order[x]), ctx.rnd))
+          for (const j of shuffle(reach(order[x]), ctx.rnd))
             if (!seen.has(j)){ seen.add(j); order.push(j); }
-        return order.length === CELLS ? order.slice(holes.length) : null;
+        return order.length === CELLS - W.size ? order.slice(holes.length) : null;
       };
       const blobs = () => {
         const holes = cutGaps();
-        const g = new Array(CELLS).fill(GONE);
+        const g = walled(new Array(CELLS).fill(GONE));
         const free = [];
-        for (let i = 0; i < CELLS; i++) if (holes.indexOf(i) < 0) free.push(i);
+        for (let i = 0; i < CELLS; i++) if (holes.indexOf(i) < 0 && !W.has(i)) free.push(i);
         const seeds = shuffle(free.slice(), ctx.rnd).slice(0, k);
         seeds.forEach((i, c) => { g[i] = c; });
         let room = free.length - k;
@@ -13765,7 +13794,7 @@ const MODES = {
           cuts.push(size); room -= size;
         }
         cuts.push(room);
-        const g = new Array(CELLS).fill(GONE);
+        const g = walled(new Array(CELLS).fill(GONE));
         let at = 0;
         cuts.forEach((n, c) => { for (let x = 0; x < n; x++) g[order[at++]] = c; });
         return order.every(i => g[i] !== GONE) ? g : null;
@@ -13796,9 +13825,9 @@ const MODES = {
       }
       if (!board && bestSeen && bestPen > 0) board = bestSeen;
       if (!board){
-        board = new Array(CELLS).fill(0);
-        for (let i = 0; i < CELLS; i++) board[i] = Math.min(k-1, Math.floor(i / Math.ceil(CELLS/k)));
-        board[0] = GONE;
+        board = walled(new Array(CELLS).fill(0));
+        for (let i = 0; i < CELLS; i++) if (!W.has(i)) board[i] = Math.min(k-1, Math.floor(i / Math.ceil(CELLS/k)));
+        board[board.findIndex((_, i) => !W.has(i))] = GONE;
       }
 
       const inks = shuffle(INKS.slice(), ctx.rnd).slice(0, k);
@@ -13811,6 +13840,7 @@ const MODES = {
       const grid = gridEl(N);
       grid.classList.add('patch');
       const cells = board.map((v, i) => {
+        if (v === WALL){ const w = mk('div','cell wall'); grid.appendChild(w); return w; }
         const b = mk('button','cell bug');
         b.type = 'button';
         grid.appendChild(b);
@@ -13825,19 +13855,20 @@ const MODES = {
         d.type = 'button'; rail.appendChild(d); return d; });
       wrap.appendChild(rail);
       /* Hints: the colour worth sending next glows. Whatever finishes outright first, then whatever clears most. Two at first, one later. */
-      let hints = ctx.level < 12 ? 2 : 1;
+      let hints = ctx.level < 8 ? 2 : 1;
       const hintRow = mk('div','sumtools'), hintBtn = mk('button','sumtool'); hintBtn.type = 'button';
       hintRow.appendChild(hintBtn); wrap.appendChild(hintRow);
       const paintHint = () => { hintBtn.textContent = t('slack.hint') + ' ' + hints; hintBtn.disabled = hints <= 0; };
       paintHint();
       ctx.surface.appendChild(wrap);
 
-      const budget = moveBudget(ctx, answer);
+      const budget = moveBudget(ctx, answer, spare);
       const left = colour => g.reduce((a, v) => a + (v === colour ? 1 : 0), 0);
 
       const paint = () => {
         cells.forEach((b, i) => {
           const v = g[i];
+          if (v === WALL) return;
           /* Touching bare ground is the whole rule, so the board says which
              berries do. It does not say which COLOURS come away whole, which
              is the part worth working out. */
@@ -13858,7 +13889,7 @@ const MODES = {
           d.setAttribute('aria-label', colour === undefined ? t('forage.free')
             : t('forage.slot', { k: inkName(inks[colour]), n: left(colour) }));
         });
-        ctx.prompt(t('p.forage', { n: g.reduce((a, v) => a + (v !== GONE ? 1 : 0), 0) }));
+        ctx.prompt(t('p.forage', { n: g.filter(BERRY).length }));
       };
 
       /* Eating, drawn one wave at a time out from the gaps. The board is already
@@ -13897,7 +13928,7 @@ const MODES = {
           if (finishes && out.indexOf(colour) >= 0) out.splice(out.indexOf(colour), 1);
           if (waves.length){ sfx.good(2 + waves.length); buzz('good'); }
           paint();
-          if (g.every(v => v === GONE)){
+          if (cleared(g)){
             done = true;
             grid.classList.add('clear');
             return ctx.win(grid);
@@ -13908,7 +13939,7 @@ const MODES = {
       onTap(hintBtn, () => {
         if (done || busy || hints <= 0) return;
         let best = null, top = -1e9;
-        for (const c of new Set(g.filter(v => v !== GONE))){
+        for (const c of new Set(g.filter(BERRY))){
           const p = g.slice(), w = chew(p, c), finishes = !has(p, c);
           const score = (finishes ? 100 : 0) + w.reduce((a2, x) => a2 + x.length, 0) - (out.indexOf(c) < 0 && out.length >= cap ? 1000 : 0);
           if (score > top){ top = score; best = c; }
@@ -13918,10 +13949,10 @@ const MODES = {
         cells.forEach((bt, i) => { if (g[i] === best) bt.classList.add('nudge'); });
         ctx.after(1500, () => cells.forEach(bt => bt.classList.remove('nudge')));
       });
-      cells.forEach((b, i) => onTap(b, () => {
+      cells.forEach((b, i) => g[i] !== WALL && onTap(b, () => {
         if (done || busy) return;
         const colour = g[i];
-        if (colour === GONE) return;
+        if (!BERRY(colour)) return;
         send(colour);
       }));
 
@@ -13935,6 +13966,8 @@ const MODES = {
         budget.spend(d);
       }));
 
+      /* A probe-only hook: what the round was built from. */
+      try { if (localStorage.getItem('dd.probe')){ grid.dataset.shape = shape; grid.dataset.k = k; grid.dataset.cap = cap; grid.dataset.pen = bestPen.toFixed(2); grid.dataset.spare = spare; } } catch(e){}
       paint();
     }
   },
