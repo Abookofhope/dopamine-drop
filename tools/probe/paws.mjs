@@ -1,7 +1,7 @@
 /* Paws: a wrong answer takes a paw, not the round.
  *
  * Needle Pass has its own probe (skim.mjs); this one covers the modes that share the helper: Dye Trap, Quick Count, Count the
- * Stitches, Stitch Count, Haunt, Off Beat and Tangle Watch.
+ * Stitches, Stitch Count, Haunt, Off Beat, Dye Pots, Tidy Up and Tangle Watch.
  *
  *   - at a new level there are three paws above the board (they are the round's, not each board's: a round of several boards keeps
  *     the same three), a wrong choice uses one and the round goes on, and the third wrong choice ends the round
@@ -79,6 +79,23 @@ const modes = {
       const period = Object.keys(count).sort((a, b) => count[b] - count[a])[0];
       const right = d.findIndex(x => x.dur !== period && !x.found), wrong = d.findIndex(x => x.dur === period && !x.off);
       return { right: () => tapNth(page, '.beatdot', right), wrong: () => tapNth(page, '.beatdot', wrong) };
+    } },
+  siphon: { name: 'Dye Pots', sel: '#surface .vial', ruled: null, boards: false,
+    acts: async page => {
+      const info = await page.evaluate(() => ({ v: [...document.querySelectorAll('.vial')].map(e => ({ hex: e.dataset.hex, spent: e.classList.contains('empty') })), j: [...document.querySelectorAll('.jar')].map(e => ({ hex: e.dataset.hex, full: e.classList.contains('full') })) }));
+      const vi = info.v.findIndex((x, i) => !x.spent && info.j.some(j => j.hex === x.hex && !j.full));
+      const ji = info.j.findIndex(j => j.hex === info.v[vi].hex), wj = info.j.findIndex((j, k) => k !== ji && !j.full && j.hex !== info.v[vi].hex);
+      const pour = async (v, j) => { const c = await page.evaluate(([a, b]) => { const A = document.querySelectorAll('.vial')[a].getBoundingClientRect(), B = document.querySelectorAll('.jar')[b].getBoundingClientRect(); return [A.left + A.width / 2, A.top + A.height / 2, B.left + B.width / 2, B.top + B.height / 2]; }, [v, j]);
+        await page.mouse.move(c[0], c[1]); await page.mouse.down(); await page.mouse.move(c[2], c[3], { steps: 8 }); await page.mouse.up(); await page.waitForTimeout(200); };
+      return { right: () => pour(vi, ji), wrong: () => pour(vi, wj) };
+    } },
+  tidy: { name: 'Tidy Up', sel: '#surface .tidyitem', ruled: null, boards: false,
+    acts: async page => {
+      const info = await page.evaluate(() => ({ items: [...document.querySelectorAll('.tidyitem')].map(e => ({ hex: e.dataset.hex, gone: e.classList.contains('binned') })), bins: [...document.querySelectorAll('.tidybin')].map(e => e.dataset.hex) }));
+      const ii = info.items.findIndex(x => !x.gone), want = info.bins.indexOf(info.items[ii].hex), other = info.bins.findIndex(h => h !== info.items[ii].hex);
+      const drag = async (i, b) => { const c = await page.evaluate(([a, k]) => { const A = document.querySelectorAll('.tidyitem')[a].getBoundingClientRect(), B = document.querySelectorAll('.tidybin')[k].getBoundingClientRect(); return [A.left + A.width / 2, A.top + A.height / 2, B.left + B.width / 2, B.top + B.height / 2]; }, [i, b]);
+        await page.mouse.move(c[0], c[1]); await page.mouse.down(); await page.mouse.move(c[2], c[3], { steps: 8 }); await page.mouse.up(); await page.waitForTimeout(250); };
+      return { right: () => drag(ii, want), wrong: () => drag(ii, other) };
     } },
   drift: { name: 'Tangle Watch', sel: '#surface .ddot', ruled: null, boards: false,
     acts: async page => {

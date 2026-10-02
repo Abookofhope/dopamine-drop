@@ -162,10 +162,16 @@ check(hotRim !== cold.rim, 'the board has picked up a rim it did not have at x1'
 await page.screenshot({ path: '/tmp/pw/shots/momentum-hot.png' });
 
 /* One wrong answer cools everything. */
-const missed = await play(true);
+/* Odd Skein and Dye Trap give paws now, so one wrong answer is not the end of a round: answer wrongly once for every paw shown. */
+const lose = async () => {
+  const n = Math.max(1, await page.evaluate(() => document.querySelectorAll('.budget.paws i').length));
+  let last; for (let k = 0; k < n; k++){ last = await play(true); await page.waitForTimeout(150); }
+  return last;
+};
+const missed = await lose();
 await page.waitForTimeout(700);
 const cool = await heat();
-check(/^(odd|dye)$/.test(missed) && (cool === '0'), `a single miss cools it back to nothing (--heat "${cool}")`);
+check(/^(odd|dye)$/.test(missed) && (cool === '0'), `losing a round cools it back to nothing (--heat "${cool}")`);
 
 if (errs.length){ bad++; console.log('PAGE ERRORS', errs.slice(0, 3)); }
 await browser.close();

@@ -4138,7 +4138,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.117.0';
+const VERSION_TAG = 'v0.118.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6822,6 +6822,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.118.0', date:'2026-10-02', items:[
+    'Dye Pots and Tidy Up have paws. Pouring a dye into the wrong pot, or dropping a piece in the wrong basket, used to end the round; now it takes a paw. The dye stays in its jar and the piece goes back where it was, so you can try again. Three paws at first, two in the middle, one at the top, which plays as before. Fidget Loop never ends.',
+    'Two checks that cause a lost round on purpose (the run-shape and Noodle probes) now answer wrongly once for every paw shown, since one wrong answer is no longer the end of a round.',
+  ] },
   { v:'0.117.0', date:'2026-10-02', items:[
     'Off Beat and Catch the Balls have paws. Tapping the wrong dot used to end the round, and so did a ball going wrong; now each takes a paw. A wrong dot is ruled out (it stops pulsing and dims, which narrows the search), and in Catch the Balls a keeper that got away is replaced by another a little later, so there are always enough left to win with. Three paws at first, two in the middle, one at the top, which plays as before. Fidget Loop never ends.',
   ] },
@@ -10356,6 +10360,7 @@ const MODES = {
     name:'Tidy Up', blurb:'Drag the mess into the right baskets', input:'drag', cat:'focus', par:11000, bonus:3000,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5h16l-1.7 8H5.7z" fill="none" stroke="#6C6191" stroke-width="2" stroke-linejoin="round"/><circle cx="8" cy="5" r="2.3" fill="#FF5B39"/><circle cx="15.4" cy="7.2" r="2.3" fill="#FF5B39" opacity=".55"/></svg>',
     build(ctx){
+      const paws = pawChances(ctx);
       const kinds = clamp(3 + Math.floor(ctx.level/8), 3, 5);
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, kinds);
       /* From level 12 some of the mess is nobody's colour, and there is a lost-and-found basket for it. */
@@ -10437,9 +10442,15 @@ const MODES = {
             return;
           }
           if (bn.ink !== it.ink){
+            /* The wrong basket takes a paw and the piece goes back where it was, to be tried again. */
             it.el.classList.add('wrong');
-            done = true;
-            return ctx.miss(it.el);
+            sfx.tap(); buzz('bad');
+            if (!paws.use(it.el)){ done = true; return; }
+            it.x = it.home.x; it.y = it.home.y;
+            it.el.style.left = it.x+'%'; it.el.style.top = it.y+'%';
+            ctx.after(420, () => it.el.classList.remove('wrong'));
+            ctx.prompt(t('paws.again'));
+            return;
           }
           it.gone = true;
           it.el.classList.add('binned');
@@ -10984,6 +10995,7 @@ const MODES = {
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h5.4v3l-1.8 4H6.8L5 6.5z" fill="none" stroke="#6C6191" stroke-width="1.9" stroke-linejoin="round"/><path d="M13.4 12.5h7.2l-1.3 8h-4.6z" fill="none" stroke="#FF5B39" stroke-width="2" stroke-linejoin="round"/><path d="M9 11.4 Q11.6 14.4 15 14.4" fill="none" stroke="#FF5B39" stroke-width="1.8" stroke-linecap="round"/></svg>',
     build(ctx){
       const n = clamp(3 + Math.floor(ctx.level/6), 3, 6);
+      const paws = pawChances(ctx);
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, n);
       /* From level 10 a pot sometimes wants a mix: purple is red and blue, green is blue and yellow, orange is red and yellow.
          Two of the dyes go into that pot, in either order, and neither of them has a pot of its own. */
@@ -11061,9 +11073,13 @@ const MODES = {
              wrong answer, the same rule Tidy settled on. */
           if (!j || j.filled) return;
           if (!j.needs.has(src.ink.name)){
+            /* The wrong pot takes a paw; the dye is still in its jar, so it can be poured again. */
             j.e.classList.add('reject');
-            done = true;
-            return ctx.miss(j.e);
+            sfx.tap(); buzz('bad');
+            if (!paws.use(j.e)){ done = true; return; }
+            ctx.after(520, () => j.e.classList.remove('reject'));
+            ctx.prompt(t('paws.again'));
+            return;
           }
           j.needs.delete(src.ink.name); src.spent = true;
           src.e.classList.add('empty');

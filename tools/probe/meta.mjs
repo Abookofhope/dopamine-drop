@@ -50,6 +50,12 @@ const play = (page, wrong = false) => page.evaluate(w => {
   }
   return 'no board';
 }, wrong);
+/* Lose a round. Odd Skein and Dye Trap give paws now, so one wrong answer is not the end of a round: answer wrongly once for every paw shown
+   (once if there is no row of them). */
+const lose = async page => {
+  const n = Math.max(1, await page.evaluate(() => document.querySelectorAll('.budget.paws i').length));
+  for (let k = 0; k < n; k++){ await lose(page); await page.waitForTimeout(150); }
+};
 const nextBoard = page => page.waitForFunction(() => {
   const n = document.querySelector('#surface .swatch:not([disabled]), #surface .grid button:not([disabled])');
   return n && n !== window.__last;
@@ -174,12 +180,12 @@ const firstBoard = page => page.waitForFunction(() => document.querySelector('#s
   await firstBoard(page);
   const lives = () => page.evaluate(() => ({ n: document.querySelectorAll('#hudLives span').length, out: document.querySelectorAll('#hudLives span.out').length }));
   const before = await lives();
-  await play(page, true);                                    // the first miss
+  await lose(page);                                    // the first miss
   await page.waitForTimeout(900);
   const afterOne = await lives();
   check(before.out === 0 && afterOne.out === 0, "Noodle's first miss costs no life (" + afterOne.out + ' of ' + afterOne.n + ' spent)');
   await firstBoard(page);
-  await play(page, true);                                    // the second miss is a real one
+  await lose(page);                                    // the second miss is a real one
   await page.waitForTimeout(900);
   const afterTwo = await lives();
   check(afterTwo.out === 1, 'the second costs one, as it always did (' + afterTwo.out + ' spent)');
@@ -260,7 +266,7 @@ const firstBoard = page => page.waitForFunction(() => document.querySelector('#s
   await firstBoard(page);
   const iron = await page.evaluate(() => ({ kind: document.getElementById('hudKind').textContent, lives: document.querySelectorAll('#hudLives span').length }));
   check(/Ironclad/.test(iron.kind) && iron.lives === 1, 'Ironclad is announced in the header and leaves one life (' + JSON.stringify(iron) + ')');
-  await play(page, true);
+  await lose(page);
   /* interval polling: the app wraps requestAnimationFrame, and the default polling rides it */
   await page.waitForFunction(() => !document.getElementById('over').hidden, null, { timeout: 8000, polling: 100 });
   const after = await stored(page);
