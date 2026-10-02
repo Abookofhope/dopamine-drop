@@ -78,8 +78,17 @@ mode.build(ctx)   // renders into ctx.surface, then calls ctx.win() or ctx.miss(
 ```
 
 `ctx` carries `level`, `rnd`, `surface`, `prompt()`, `after()` (a timer the
-shell will clean up), `deal()` (non-repeating content) and `relaxed` (true in
-Fidget Loop, where nothing can be lost).
+shell will clean up), `deal()` (non-repeating content), `relaxed` (true in
+Fidget Loop, where nothing can be lost), `clock()` (see below) and `shared`
+(an object that lives as long as the round, across the several boards a staged
+round builds).
+
+A mode that moves things once per animation frame must not add a fixed step per
+frame, or a 120 Hz phone runs it twice as fast: `const pace = ctx.clock()` once,
+then `const k = pace()` at the top of each frame is the time since the last one
+in 60 fps frames, already scaled by the Game speed setting. Multiply per-frame
+motion by `k` (and use `Math.pow(damping, k)`). `tools/probe/framerate.mjs`
+shows how to test it.
 
 The shell owns the timer, scoring, streak multiplier, difficulty, teardown and
 persistence. A mode owns **only its puzzle**. That split is what makes
@@ -105,6 +114,25 @@ idea the game is built on: it exists because a single mechanic loses people by
 round three, so withholding modes recreates the problem it solves. Mastery
 stars per mode replace it — something to chase that is not permission to play.
 
+### Mistakes: paws, hints and refunds
+
+Where one wrong answer used to end a round, a mistake takes a **paw** instead
+(`pawChances(ctx)`: three at first, two from level 8, one from level 20, which
+plays as before; a row of paws above the board while there is more than one;
+Fidget Loop never loses). `wrongTap(ctx, paws, node)` dims or shakes the
+choice and says so. The paws belong to the round, through `ctx.shared`, so a
+round of several boards keeps one set. Two rules came out of this: the number
+of paws must be less than the number of ways to be wrong (a dimmed choice stays
+tappable so that a round can always be lost), and a probe that loses a round on
+purpose has to answer wrongly once per paw (`.budget.paws` or Odd Skein's
+`.oddpips`).
+
+Puzzles with a move budget refund a move when a move is taken back, and most
+have a hint that comes from a real search over the board (breadth first for
+Let the Cat Out, Spool Shots and Darning; the cheapest balance for Even Skeins)
+so that following it always brings the solution one step nearer. Their probes
+check exactly that.
+
 ### Every mode can be lost
 
 A mode with no failure path cannot end a Marathon, which has lives and no
@@ -118,7 +146,10 @@ beatable and never endless. Fidget Loop is the deliberate exception.
    `bonus`, `glyph` and `build(ctx)`.
 2. Add its strings to all four language tables — the build fails otherwise.
 3. Make sure it can be lost, and that it scales past effective level 20.
-4. Run `tools/check_site.py`, then look at it on a 400px-wide screen.
+4. Run `tools/check_site.py`, then look at it on a 400px-wide screen (and a
+   320px one: `tools/probe/sizes.mjs` lists every control under 40px).
+5. Add a probe for what is new about it (`tools/probe/README.md` has the
+   pattern), and put it in `all.mjs`.
 
 ### Accessibility
 
