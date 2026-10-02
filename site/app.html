@@ -726,6 +726,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .duelbtn.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88}
 .cell.sock.hint{outline:3px solid #ffc53d;outline-offset:-3px;box-shadow:0 0 14px #ffc53d88}
 .hdisc{position:absolute;border-radius:50%;pointer-events:none;background:#ffc53d33;border:2px solid #ffc53d;box-shadow:0 0 14px #ffc53d66}
+.slacknode.hot{box-shadow:0 0 0 4px #ffc53d,0 0 16px #ffc53d}
 .brcell.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88;background:#ffc53d22}
 .sumcol > .brwrap{flex:1 1 0;min-height:0}
 .brcell.plank{border-color:#C08BFF;box-shadow:0 0 12px #c08bff55;cursor:pointer;background:
@@ -4148,7 +4149,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.125.0';
+const VERSION_TAG = 'v0.126.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6832,6 +6833,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.126.0', date:'2026-10-02', items:[
+    'No Crossing’s Hint now says which peg to move. As well as lighting the two threads of one crossing, it rings the peg among their four ends that is caught up in the most crossings, which is the quickest one to untangle.',
+  ] },
   { v:'0.125.0', date:'2026-10-02', items:[
     'Heft has a Squint (one at a time, until level 12): for a moment each pile is drawn as a single disc holding all of its area, so two piles can be compared by size instead of by adding up pieces by eye. The pile with the biggest disc is the heavier one.',
   ] },
@@ -9687,7 +9691,8 @@ const MODES = {
       });
       const col = mk('div','sumcol');
       col.appendChild(box);
-      /* A hint lights the two threads of one crossing for a moment. Two a round. */
+      /* A hint lights the two threads of one crossing for a moment, and rings the peg among their four ends that is caught up in the most
+         crossings: moving that one is the quickest way to untangle. Two a round. */
       let hints = 2;
       const tools = mk('div','sumtools'), hintBtn = mk('button','sumtool'); hintBtn.type = 'button';
       const paintHint = () => { hintBtn.textContent = t('slack.hint') + ' ' + hints; hintBtn.disabled = hints <= 0 || done; };
@@ -9699,7 +9704,15 @@ const MODES = {
           if (cross(pos[a1],pos[b1],pos[c1],pos[d1])){
             hints--; paintHint(); sfx.tap();
             lines[i].classList.add('hint'); lines[j].classList.add('hint');
-            ctx.after(1600, () => { lines[i].classList.remove('hint'); lines[j].classList.remove('hint'); });
+            const caught = new Array(n).fill(0);
+            for (let x=0;x<edges.length;x++) for (let y=x+1;y<edges.length;y++){
+              const [p1,q1] = edges[x], [r1,u1] = edges[y];
+              if (p1===r1||p1===u1||q1===r1||q1===u1) continue;
+              if (cross(pos[p1],pos[q1],pos[r1],pos[u1])){ caught[p1]++; caught[q1]++; caught[r1]++; caught[u1]++; }
+            }
+            const worst = [a1,b1,c1,d1].reduce((m, k) => caught[k] > caught[m] ? k : m, a1);
+            knobs[worst].classList.add('hot');
+            ctx.after(1600, () => { lines[i].classList.remove('hint'); lines[j].classList.remove('hint'); knobs[worst].classList.remove('hot'); });
             return;
           }
         }
