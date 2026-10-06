@@ -348,7 +348,18 @@ if (!only || only.includes('drift')){
   const page2 = await open('drift', '.ddot', 12000);
   const q = (await readDots(page2))[0];
   await page2.mouse.move(q.x, q.y); await page2.mouse.down(); await page2.mouse.move(q.x + 12, q.y + 12, { steps: 3 });
-  await page2.mouse.move(q.x + 40, q.y + 5, { steps: 4 }); await page2.mouse.up(); await page2.waitForTimeout(120);
+  /* The dots drift, so a fixed spot 40px away is sometimes another dot (one run in the v0.139.0 chain): look where they are now and let go in the clear. */
+  const rel = await page2.evaluate(([qx, qy]) => {
+    const ds = [...document.querySelectorAll('.ddot')].map(e => { const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width }; });
+    const f = document.getElementById('surface').getBoundingClientRect();
+    for (const [dx, dy] of [[40, 5], [-40, 5], [5, 40], [5, -40], [30, 30], [-30, 30], [30, -30], [-30, -30], [60, 0], [-60, 0]]){
+      const x = qx + dx, y = qy + dy;
+      if (x < f.left + 6 || x > f.right - 6 || y < f.top + 6 || y > f.bottom - 6) continue;
+      if (ds.every((d, i) => i === 0 || Math.hypot(d.x - x, d.y - y) > d.w * 1.2)) return { x, y };
+    }
+    return { x: qx + 40, y: qy + 5 };
+  }, [q.x, q.y]);
+  await page2.mouse.move(rel.x, rel.y, { steps: 4 }); await page2.mouse.up(); await page2.waitForTimeout(120);
   const after = await page2.evaluate(() => ({ sel: document.querySelectorAll('.ddot.dsel').length, thread: !!document.querySelector('.driftthread.on'), over: !document.querySelector('.stagepips') && !!document.querySelector('.over:not([hidden])') }));
   check(after.sel === 1 && !after.thread, 'a thread let go over nothing leaves its first dot chosen and the thread gone');
   await page2.close();

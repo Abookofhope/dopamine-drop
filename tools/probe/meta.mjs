@@ -184,7 +184,8 @@ const firstBoard = page => page.waitForFunction(() => document.querySelector('#s
   await page.waitForTimeout(900);
   const afterOne = await lives();
   check(before.out === 0 && afterOne.out === 0, "Noodle's first miss costs no life (" + afterOne.out + ' of ' + afterOne.n + ' spent)');
-  await firstBoard(page);
+  /* The NEXT board, not any enabled tile: the lost round's tiles can still be on the page, and wrong answers aimed at them cost nothing. */
+  await nextBoard(page);
   await lose(page);                                    // the second miss is a real one
   await page.waitForTimeout(900);
   const afterTwo = await lives();
