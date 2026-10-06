@@ -6,8 +6,6 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 
 | # | Item | Why | Expected impact | Effort |
 |---|---|---|---|---|
-| Q2 | Streak chip pulses and a second token trail on a streak step | Extends the token that now flies on every solve | Medium | S |
-| Q3 | Perk and yarn lines on Game Over count up and fill like the XP bar now does (done for XP in v0.138.0) | Finishes the pay-out beat | Medium | S |
 | Q4 | A 44px token (`--hit`) and a probe that scans every visible control on every shell screen | Stops the next small button from sneaking in | Medium (prevention) | S |
 | Q5 | Settings: a "Recently changed" line in the presets header; Reset on a single panel | Small clarity gains once the panels exist | Low to medium | S |
 | Q6 | Section jump on Stats and Room via an optional sticky chip row | Only worth doing if analytics show people open many panels per visit | Low | S |
@@ -19,7 +17,7 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 | M1 | Text size setting (100, 115, 130, 150 percent) after a px to rem migration of type and spacing | WCAG 1.4.4; the one AA criterion known to fail | High for low-vision players | M |
 | M2 | Sound captions: a brief text strip for chimes, warnings and the level-up, off by default, on in the Easy to see preset | Hearing-impaired and sound-off play | Medium | M |
 | M3 | One-handed mode: exit and the HUD actions move to the lower right, the pause sheet anchors to the bottom | The exit is top-left, the hardest place for a right thumb | Medium | M |
-| M4 | First-30-seconds flow: a run that starts on the first tap from a fresh install, a first win inside 15 seconds in a short forgiving mode, the rest of onboarding deferred | Hook and retention at the point of highest drop-off | High | M |
+| M4 | First 30 seconds, part two: v0.139.0 gives a first solve in about 3 s; still to do is a guided second and third round, a quicker path past the welcome screen for a reinstall, and measuring drop-off with the opt-in analytics (L3) | Hook and retention at the point of highest drop-off | Medium to high | M |
 | M5 | Adaptive difficulty: nudge level within a band from the last three rounds (win streak raises, two losses ease), visible and switchable | Fewer too-hard or too-easy rounds; ties to ADHD-friendly goals | High, needs tuning from play data | M |
 | M6 | Hints, skip and undo as a consistent trio on every mode that can offer them; each costs a little yarn or nothing in Relaxed | Agency and fewer dead-ends | Medium to high | M |
 | M7 | Session shapes: pick 2, 5 or 10 minutes on Play and get a fitting playlist and a clear end | Matches the player's real time; clean stopping points are kind to attention | Medium | M |
@@ -48,7 +46,7 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 
 ## Done in this overhaul so far
 
-See [05-before-after.md](05-before-after.md). Brief items now complete: a level-up card that stays until closed and a reward token on every solve (v0.137.0); mobile HUD and Game Over never hide the way out; Room, Settings and Games scroll without pressing items; Settings, You and the Room as panels; settings search, presets, reset to defaults, undo; easy-read text; 44px targets across the shell; axe clean on the shell screens.
+See [05-before-after.md](05-before-after.md). Brief items now complete: the first run opens on the two plainest boards, with a first solve in seconds, and the Game Over pay-out and the streak token are done (v0.139.0); a level-up card that stays until closed and a reward token on every solve (v0.137.0); mobile HUD and Game Over never hide the way out; Room, Settings and Games scroll without pressing items; Settings, You and the Room as panels; settings search, presets, reset to defaults, undo; easy-read text; 44px targets across the shell; axe clean on the shell screens.
 
 ## Principles for choosing
 

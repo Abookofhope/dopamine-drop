@@ -2876,16 +2876,24 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
    Below the language sheet in the stack, because choosing a language is the
    one thing you can do from here without leaving. */
 .welcome{
-  position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;
+  position:fixed;inset:0;z-index:70;display:flex;justify-content:center;
   padding:calc(18px + env(safe-area-inset-top)) var(--gut) calc(18px + env(safe-area-inset-bottom));
   background:
     radial-gradient(80% 55% at 50% 0%, #ff5b3914, transparent 62%),
     var(--ink);
   overflow-y:auto;
 }
+/* Auto margins, not align-items:center: centred, a panel taller than the screen is cropped
+   equally top and bottom and the Start button is out of reach; with auto margins it centres
+   when it fits and scrolls from the top when it does not. */
 .welcome .panel{
-  width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px;
+  width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px;margin:auto;
   animation:sheetup 340ms cubic-bezier(.2,.9,.3,1);
+}
+@media (max-height:460px){
+  .welcome{padding-top:calc(10px + env(safe-area-inset-top));padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+  .welcome .panel{gap:10px}
+  .welcome .wcpoints{display:none}
 }
 .wordmark.big{font-size:27px;letter-spacing:.03em}
 .welcome .lead{margin:0;font-size:14.5px;line-height:1.5;color:var(--haze);max-width:30ch}
@@ -4444,7 +4452,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.138.0';
+const VERSION_TAG = 'v0.139.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -5109,6 +5117,7 @@ const STRINGS = {
     'set.speed':'Game speed', 'set.speedSub':'More time to think, same puzzles and scoring',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Relaxed', 'set.speedSlow':'Slow',
     'set.lang':'Language', 'set.data':'Data',
+    'first.eyebrow':'First solve', 'first.title':'That is the game', 'first.desc':'Solve again straight away and the streak pays more.',
     'lvl.eyebrow':'Level up', 'lvl.title':'Level {n}', 'lvl.star1':'1 star earned so far', 'lvl.stars':'{n} stars earned so far',
     'lvl.allModes':'Every mode is already yours to play.', 'lvl.xp':'+{n} XP this run', 'lvl.unlock':'New victory colour: {name}',
     'lvl.next':'Next unlock: {name} at level {n}', 'lvl.ok':'Nice!', 'lvl.levels':'{n} levels in one run!', 'lvl.range':'Level {a} → {b}',
@@ -5619,6 +5628,7 @@ const STRINGS = {
     'set.speed':'Vitesse de jeu', 'set.speedSub':'Plus de temps pour réfléchir, mêmes énigmes et le même score',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Détendu', 'set.speedSlow':'Lent',
     'set.lang':'Langue', 'set.data':'Données',
+    'first.eyebrow':'Première réussite', 'first.title':'Voilà le principe', 'first.desc':'Enchaînez tout de suite : la série rapporte plus.',
     'lvl.eyebrow':'Niveau supérieur', 'lvl.title':'Niveau {n}', 'lvl.star1':'1 étoile gagnée jusqu’ici', 'lvl.stars':'{n} étoiles gagnées jusqu’ici',
     'lvl.allModes':'Tous les modes sont déjà à vous.', 'lvl.xp':'+{n} XP sur cette partie', 'lvl.unlock':'Nouvelle couleur de victoire : {name}',
     'lvl.next':'Prochain déblocage : {name} au niveau {n}', 'lvl.ok':'Super !', 'lvl.levels':'{n} niveaux en une partie !',
@@ -6131,6 +6141,7 @@ const STRINGS = {
     'set.speed':'Velocidad de juego', 'set.speedSub':'Más tiempo para pensar, mismos puzles y puntuación',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Relajado', 'set.speedSlow':'Lento',
     'set.lang':'Idioma', 'set.data':'Datos',
+    'first.eyebrow':'Primer acierto', 'first.title':'Así se juega', 'first.desc':'Acierta otra vez enseguida y la racha paga más.',
     'lvl.eyebrow':'Subes de nivel', 'lvl.title':'Nivel {n}', 'lvl.star1':'1 estrella ganada hasta ahora',
     'lvl.stars':'{n} estrellas ganadas hasta ahora', 'lvl.allModes':'Todos los modos ya son tuyos.', 'lvl.xp':'+{n} XP en esta partida',
     'lvl.unlock':'Nuevo color de victoria: {name}', 'lvl.next':'Próximo desbloqueo: {name} en el nivel {n}', 'lvl.ok':'¡Genial!',
@@ -6642,6 +6653,7 @@ const STRINGS = {
     'set.speed':'Spielgeschwindigkeit', 'set.speedSub':'Mehr Zeit zum Nachdenken, gleiche Rätsel und Wertung',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Entspannt', 'set.speedSlow':'Langsam',
     'set.lang':'Sprache', 'set.data':'Daten',
+    'first.eyebrow':'Erste Lösung', 'first.title':'So geht das Spiel', 'first.desc':'Gleich noch eine, und die Serie zahlt mehr.',
     'lvl.eyebrow':'Level-up', 'lvl.title':'Level {n}', 'lvl.star1':'1 Stern bisher verdient', 'lvl.stars':'{n} Sterne bisher verdient',
     'lvl.allModes':'Alle Modi stehen dir schon offen.', 'lvl.xp':'+{n} XP in dieser Runde', 'lvl.unlock':'Neue Siegesfarbe: {name}',
     'lvl.next':'Nächste Freischaltung: {name} ab Level {n}', 'lvl.ok':'Super!', 'lvl.levels':'{n} Level in einer Runde!', 'lvl.range':'Level {a} → {b}',
@@ -7192,6 +7204,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.139.0', date:'2026-10-06', items:[
+    'A first win in seconds. Your very first run now opens on the two plainest boards (spot the skein that does not match, then tap the stitches in order), so the first solve comes a few seconds after the first tap, and it says so once. The welcome screen is also laid out so Start can never be pushed out of reach on a short screen.',
+    'More to see when a run ends. Perk progress and yarn count up, and the perk bar fills from where the run found it, like the XP bar does.',
+    'A step up the streak sends a second token to the multiplier, a beat behind the one that goes to the score.',
+    'Chalk Line: a rare round could not be won even by drawing its own answer (about one top-level board in forty, on an empty field). The fallback ramp now crosses under the ball from the right side and is checked first, and generated answers are tested against the way a screen rounds a line to pixels.',
+  ] },
   { v:'0.138.0', date:'2026-10-06', items:[
     'The end of a run pays out where you can see it. The XP you earned counts up and the level bar fills from where the run found it. If you reached a new level the bar runs to the end, wraps round and carries on, and the level-up card arrives after it instead of covering it.',
   ] },
@@ -12222,9 +12240,15 @@ const MODES = {
         const wobble = (lines, k) => lines.map((ln, li) => ln.map((q, i) => {
           const a = Math.sin((li*131 + i*17 + k*7919)*12.9898)*43758.5453, b = Math.sin((li*71 + i*29 + k*104729)*78.233)*12345.6789;
           return { x: q.x + ((a - Math.floor(a))*2 - 1)*0.14, y: q.y + ((b - Math.floor(b))*2 - 1)*0.14 }; }));
-        const robust = lines => { evals += 8;
+        /* What a screen actually does to a line: every point lands on a whole pixel. The three random wobbles above are about a pixel
+           each, but a replay on a real grid can be unlucky in a way three samples miss (a handful of top-level boards in a hundred, nearly
+           all with the moving paw), so the four ways a grid can sit are tried as well. */
+        const fw = Math.max(200, sw - 28), pxX = 100/fw, pxY = 100/(fw*A0);
+        const snapped = (lines, ox, oy) => lines.map(ln => ln.map(q => ({ x: Math.round(q.x/pxX + ox)*pxX, y: Math.round(q.y/pxY + oy)*pxY })));
+        const robust = lines => { evals += 12;
           return runAll(w0, lines, 0).status === 'caught' && wds.every(wd => runAll(wd, lines, 0).status === 'caught') && [[-0.6, 0], [0.6, 0], [0, 0.6]].every(d => runAll(w0, nudged(lines, d[0], d[1]), 0).status === 'caught')
-            && [1, 2, 3].every(k => runAll(w0, wobble(lines, k), 0).status === 'caught'); };
+            && [1, 2, 3].every(k => runAll(w0, wobble(lines, k), 0).status === 'caught')
+            && [[0, 0], [0.5, 0], [0, 0.5], [0.5, 0.5]].every(o => runAll(w0, snapped(lines, o[0], o[1]), 0).status === 'caught'); };
         let beam = [{ lines: [], sc: 1e9 }];
         for (let depth = 0; depth < 5 && evals < sims; depth++){
           const next = [];
@@ -12271,7 +12295,23 @@ const MODES = {
       /* Nothing on the field at all always has an answer; it is searched for the same way rather than assumed. */
       for (let k = 0; k < 6 && !answer; k++){ place(); W.blocks.length = W.bumps.length = W.pads.length = W.ribbons.length = W.portals.length = W.scis.length = 0; W.paw = null;
         answer = cascade(world(A0), [A0*0.95, A0*1.05].map(world), evals + 200); }
-      if (!answer) answer = [lineFrom([[bx + (tx > bx ? 9 : -9), by + 8], [tx, ty - 3]])];
+      /* Probe-only: pretend the search found nothing, so the last resort can be played on every board rather than on one in a hundred. */
+      try { if (localStorage.getItem('dd.chalkguess')) answer = null; } catch(e){}
+      const guessed = !answer;   /* no answer found inside the budget */
+      /* The last resort is a straight ramp, and it has to cross under the ball from the side away from the basket: it used to start on
+         the basket's side, so the ball fell past the end of it and the round could not be won by drawing it (1 empty field in 60 at the
+         top level). A handful of ramps are tried and the first that lands on every field shape is kept. */
+      if (!answer){
+        const away = tx > bx ? -1 : 1, shapes = [A0, A0*0.95, A0*1.05].map(world);
+        const lands = lines => shapes.every(wd => runAll(wd, lines, 0).status === 'caught');
+        for (const before of [8, 12, 5, 16]){ for (const drop of [6, 10, 3, 14]){ for (const reach of [0, 6, -6, 12]){
+          const sx = bx + away*before;
+          if (answer || sx < 3 || sx > 97) continue;
+          const tryLines = [lineFrom([[sx, by + drop], [tx + reach, ty - 3]])];
+          if (lands(tryLines)) answer = tryLines;
+        } } }
+        if (!answer) answer = [lineFrom([[bx + (tx > bx ? -9 : 9), by + 8], [tx, ty - 3]])];
+      }
       const need = answer.reduce((n, ln) => n + lenOf(ln), 0);
       const inkCap = Math.max(need*margin, need + 10);
 
@@ -12415,7 +12455,7 @@ const MODES = {
         raf2 = requestAnimationFrame(frame);
       });
       /* A probe-only hook: the round was built from an answer, and a test that cannot be told it cannot check the round is winnable. */
-      try { if (localStorage.getItem('dd.probe')) box.dataset.solution = JSON.stringify(answer.map(ln => ln.map(p => [+p.x.toFixed(2), +p.y.toFixed(2)]))); } catch(e){}
+      try { if (localStorage.getItem('dd.probe')){ box.dataset.solution = JSON.stringify(answer.map(ln => ln.map(p => [+p.x.toFixed(2), +p.y.toFixed(2)]))); box.dataset.guessed = guessed ? '1' : '0'; box.dataset.a0 = A0.toFixed(3); } } catch(e){}
     }
   },
 
@@ -18043,34 +18083,39 @@ function dismissLevel(){
 }
 
 /* A solve's reward travels. A token leaves the piece that was solved, arcs up and lands
-   on the score, which answers. Three at a time at most, so a fast mode never hangs a
-   cloud of them over the board; nothing at all with reduced motion. */
+   on the score, which answers; a step up the streak sends a second one, a beat behind, to
+   the multiplier. Four at a time at most, so a fast mode never hangs a cloud of them over
+   the board; nothing at all with reduced motion. */
 let flying = 0;
-function flyToScore(from, color){
-  if (motionOff() || flying >= 3 || !f_ok()) return;
-  const to = $('hudScore');
-  let a = from && from.getBoundingClientRect();
-  if (!a || !a.width) a = el.surface.getBoundingClientRect();
-  const b = to.getBoundingClientRect();
-  if (!a.width || !b.width) return;
-  const x0 = a.left + a.width / 2, y0 = a.top + a.height / 2, x1 = b.left + b.width / 2, y1 = b.top + b.height / 2;
-  const mx = (x0 + x1) / 2 + (x1 >= x0 ? -34 : 34), my = Math.min(y0, y1) - 46;
-  const f = mk('i', 'flyer');
-  f.style.background = color; f.style.color = color;
-  document.body.appendChild(f);
-  flying++;
-  const an = f.animate([
-    { transform: `translate(${x0}px,${y0}px) scale(.5)`, opacity: 0 },
-    { transform: `translate(${x0}px,${y0 - 22}px) scale(1.15)`, opacity: 1, offset: .16 },
-    { transform: `translate(${mx}px,${my}px) scale(1)`, opacity: 1, offset: .52 },
-    { transform: `translate(${x1}px,${y1}px) scale(.55)`, opacity: .85 }
-  ], { duration: 560, easing: 'cubic-bezier(.4,0,.2,1)' });
-  const land = () => {
-    f.remove(); flying--;
-    to.classList.add('pop'); setTimeout(() => to.classList.remove('pop'), 200);
+function flyTo(from, color, to, delay){
+  if (motionOff() || !f_ok() || !to) return;
+  const go = () => {
+    if (flying >= 4) return;
+    let a = from && from.getBoundingClientRect();
+    if (!a || !a.width) a = el.surface.getBoundingClientRect();
+    const b = to.getBoundingClientRect();
+    if (!a.width || !b.width) return;
+    const x0 = a.left + a.width / 2, y0 = a.top + a.height / 2, x1 = b.left + b.width / 2, y1 = b.top + b.height / 2;
+    const mx = (x0 + x1) / 2 + (x1 >= x0 ? -34 : 34), my = Math.min(y0, y1) - 46;
+    const f = mk('i', 'flyer');
+    f.style.background = color; f.style.color = color;
+    document.body.appendChild(f);
+    flying++;
+    const an = f.animate([
+      { transform: `translate(${x0}px,${y0}px) scale(.5)`, opacity: 0 },
+      { transform: `translate(${x0}px,${y0 - 22}px) scale(1.15)`, opacity: 1, offset: .16 },
+      { transform: `translate(${mx}px,${my}px) scale(1)`, opacity: 1, offset: .52 },
+      { transform: `translate(${x1}px,${y1}px) scale(.55)`, opacity: .85 }
+    ], { duration: 560, easing: 'cubic-bezier(.4,0,.2,1)' });
+    an.onfinish = () => {
+      f.remove(); flying--;
+      to.classList.add('pop'); setTimeout(() => to.classList.remove('pop'), 220);
+    };
+    an.oncancel = () => { f.remove(); flying--; };
   };
-  an.onfinish = land; an.oncancel = () => { f.remove(); flying--; };
+  if (delay) setTimeout(go, delay); else go();
 }
+const flyToScore = (from, color) => flyTo(from, color, $('hudScore'));
 const f_ok = () => typeof Element !== 'undefined' && !!Element.prototype.animate;
 
 /* ═══ HUD ═════════════════════════════════════════════════════════════════ */
@@ -18358,10 +18403,15 @@ function dailyBag(rnd){
   return shuffle(picked, rnd).slice(0, 12);
 }
 
+/* The very first run opens on the two plainest boards in the game: spot the skein that does
+   not match, then tap the stitches in order. Both are one-gesture, obvious and quick, so the
+   first solve lands within seconds of the first tap; the shuffle carries on as usual after. */
+const OPENING_MODES = ['odd', 'order'];
 function pickMode(){
   /* Set only by a pause, so resuming hands back the puzzle it took away. */
   if (run.forceMode){ const id = run.forceMode; run.forceMode = null; return id; }
   if (run.mode) return run.mode;
+  if (run.opening && run.opening.length){ const id = run.opening.shift(); run.lastMode = id; return id; }
   if (!run.bag || !run.bag.length){
     run.bag = shuffle(run.pool.slice(), run.rnd);
     /* A fresh bag must not open with the mode the old one closed on. */
@@ -18723,6 +18773,10 @@ function resolve(ok, node){
     save.xp += Prog.xpForSolve(mult);
     save.solved = (save.solved || 0) + 1;
     persist();
+    /* The first solve a player ever makes is the moment the game has been explaining. */
+    if (save.solved === 1) announceToast({ ink:'#33E6C8',
+      glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg>',
+      eyebrow: t('first.eyebrow'), title: t('first.title'), desc: t('first.desc') });
     const after = Prog.levelForXp(save.xp);
     if (after > before) pendingLevel = after;
 
@@ -18765,6 +18819,7 @@ function resolve(ok, node){
       const st = $('hudStreak');
       st.classList.add('pop'); st.classList.toggle('big', big);
       setTimeout(() => { st.classList.remove('pop', 'big'); }, 300);
+      flyTo($('hudScore'), '#FFC53D', st, 150);
       /* A tier-up is rare enough in a run to earn its own beat — the small
          prompt text already says "Streak ×N!" but reads it in passing; this
          is the same words, said louder, at the moment that's actually worth
@@ -18935,6 +18990,8 @@ function startRun(kind, modeId, twistId, poolIds){
   /* pickMode only reshuffles when the bag is empty, so a bag handed over here
      is played in the order it was built. */
   if (kind === 'daily') run.bag = dailyBag(run.rnd);
+  if (!save.runs && (kind === 'shuffle' || kind === 'endless'))
+    run.opening = OPENING_MODES.filter(id => run.pool.indexOf(id) >= 0);
   save.runs++; persist();
   pendingLevel = 0;
 
@@ -19227,9 +19284,10 @@ function endRun(){
       ? (PERK_TIERS[PERK_TIERS.indexOf(next.at) - 1] || 0)
       : next.at - TOKEN_EVERY;
     const life = save.lifetime || 0;
-    $('lifeGain').textContent = '+' + fmt(gained);
+    $('lifeGain').dataset.v = '0';
+    countTo($('lifeGain'), gained, 700, n => '+' + fmt(Math.round(n)));
     $('lifeNext').textContent = t(next.slot ? 'perk.toSlot' : 'perk.toToken', { n: fmt(next.at - life) });
-    $('lifeFill').style.transform = 'scaleX(' + clamp((life - floor) / (next.at - floor), 0, 1) + ')';
+    fillBar($('lifeFill'), clamp(((r.lifeAtStart || 0) - floor) / (next.at - floor), 0, 1), clamp((life - floor) / (next.at - floor), 0, 1));
     $('lifeStrip').hidden = !k.scored;
   }
   /* The two facts about a run worth a line each. */
@@ -19252,7 +19310,8 @@ function endRun(){
   {
     const y = r.yarn || 0;
     $('yarnStrip').hidden = !(y > 0);
-    $('yarnGain').textContent = '+' + fmt(y);
+    $('yarnGain').dataset.v = '0';
+    countTo($('yarnGain'), y, 700, n => '+' + fmt(Math.round(n)));
     $('yarnNote').textContent = t('over.yarnHave', { n: fmt(Yarn.have()) });
   }
   paintPerkCall();
@@ -19401,6 +19460,12 @@ function fillGrid(host, ids, opts){
 
 /* A number that lands instantly reads as a label. One that climbs reads as
    something you earned. Capped short so it never delays a tap. */
+/* A bar that starts where the run found it and fills to where it left it. */
+function fillBar(f, from, to, delay){
+  const set = v => { f.style.transform = 'scaleX(' + clamp(v, 0, 1) + ')'; };
+  f.style.transition = 'none'; set(motionOff() ? to : from); void f.offsetWidth; f.style.transition = '';
+  if (!motionOff()) setTimeout(() => set(to), delay || 350);
+}
 function countTo(node, value, ms, show){
   const from = Number(node.dataset.v || 0), out = show || fmt;
   node.dataset.v = String(value);

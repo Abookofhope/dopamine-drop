@@ -50,6 +50,19 @@ Other sizes (closed): 320x568 Settings 1.29 screens, You 1.41, Room 1.52; 390x84
 | With Reduce motion | n/a | bar and XP already in place |
 | `runend.mjs` failed checks | 5 | 0 |
 
+## v0.139.0: the first thirty seconds, and a rare unwinnable board
+
+| Measure | Before (v0.138.0) | After (v0.139.0) |
+|---|---|---|
+| First board of a brand-new player's first run | random of 44; Odd Skein in 0 of 5 fresh visits | Odd Skein in 5 of 5, then Count the Stitches |
+| First solve after the first tap | depends on the draw (a bot that plays Odd Skein never got one) | 3.3 s in 5 of 5 fresh visits (limit 15) |
+| The first solve | nothing said | "First solve: That is the game", once |
+| A step up the streak | one token | a second token to the multiplier |
+| Game Over perk and yarn lines | static | count up; the perk bar starts where the run found it |
+| `firstrun.mjs` failed checks | 14 | 0 |
+| Chalk Line fallback ramp, forced on 50 boards | 0 won | 36 won (10 of 10 on empty fields) |
+| Chalk Line boards that lose to their own answer, natural play | 12 of 390 (3.1%) | 0 of 150 |
+
 ## How to reproduce
 
 ```

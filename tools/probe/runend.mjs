@@ -44,8 +44,8 @@ async function run(xp, reduce){
     if (await score(page) > 0) break;
     const at = await oddAt(page); await page.mouse.click(at.x, at.y); await page.waitForTimeout(800);
   }
-  const solvedXp = await page.evaluate(() => JSON.parse(localStorage.getItem('dd.v1')).xp);
-  /* lose, and catch the first look at Game Over */
+  /* lose, and catch the first look at Game Over. The first tile can be the odd one (a second solve),
+     so what the run earned is read once the run is over, not before. */
   let first = null;
   for (let k = 0; k < 16 && !first; k++){
     if (await page.evaluate(() => !document.getElementById('over').hidden)) break;
@@ -56,6 +56,7 @@ async function run(xp, reduce){
     }
   }
   if (!first) first = { bar: await barNow(page), text: await page.evaluate(() => document.getElementById('xpGain').textContent), card: false };
+  const solvedXp = await page.evaluate(() => JSON.parse(localStorage.getItem('dd.v1')).xp);
   return { page, solvedXp, first };
 }
 
