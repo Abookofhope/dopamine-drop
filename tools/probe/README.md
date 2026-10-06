@@ -32,6 +32,7 @@ Or one at a time:
 | `home.mjs` | Does the home tab hold up fresh, mid-climb, and with every mode mastered — four distinct picks, each with a reason, in four languages at three sizes? |
 | `settings.mjs` | Does a settings row toggle when you tap it, does a row holding a button *not*, and does erasing your progress ask in the page? |
 | `settingsacc.mjs` | Is Settings a set of folded panels with a summary on each header, does search find one row (accents ignored, in four languages), do presets and Reset to defaults apply and undo, does easy-read text apply at boot, and is every control 44px? |
+| `runend.mjs` | Does Game Over open with the level bar where the run found it, count the XP up, fill the bar (wrapping on a new level), hold the level card back until the bar has finished, and with reduced motion show everything already in place? |
 | `panels.mjs` | Do You and the Room open as about a screen of folded panels with counts in the headings, does the Perks link open its panel and scroll to it, does a ready wish light its heading, and does axe pass with every panel open? |
 | `levelup.mjs` | Does a level earned mid-run wait for the run to end, then stay until it is closed (button, Escape, tap outside), say what the run was worth and what it unlocked, work in four languages on small and landscape phones, and does a solve send a token to the score (none with reduced motion)? |
 | `firstvisit.mjs` | Does a first visit load the page once, and does the offline worker still take control and apply updates? |

@@ -40,6 +40,16 @@ Other sizes (closed): 320x568 Settings 1.29 screens, You 1.41, Room 1.52; 390x84
 | With Reduce motion | n/a | no token, no sparks; same card |
 | `levelup.mjs` failed checks | 35 | 0 |
 
+## v0.138.0: the pay-out is visible
+
+| Measure | Before (v0.137.0) | After (v0.138.0) |
+|---|---|---|
+| XP earned on Game Over | a number, already final | counts up over 0.7 s |
+| Level progress on Game Over | text only | a bar that starts where the run found it and fills; wraps on a new level |
+| Level-up card | 0.42 s after Game Over, covering it | 1.5 s after (0.5 s with reduced motion), once the bar has finished |
+| With Reduce motion | n/a | bar and XP already in place |
+| `runend.mjs` failed checks | 5 | 0 |
+
 ## How to reproduce
 
 ```

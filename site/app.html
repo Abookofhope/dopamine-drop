@@ -2060,6 +2060,11 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .xpstrip .row .sp{flex:1}
 .xpstrip .row small{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--haze);font-weight:600}
 .xpstrip .got{font-size:12.5px;font-weight:650;color:var(--cream)}
+/* The run's XP fills the level bar, and wraps round when the level changes. */
+.xpstrip .track{height:7px;margin:9px 0 2px}
+.xpstrip .track i{display:block;height:100%;transform-origin:left;border-radius:99px;
+  background:linear-gradient(90deg,var(--zap),var(--flare));transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.xpstrip.up .track i{box-shadow:0 0 12px #FFC53D88}
 .cta{
   border-radius:var(--r-lg);background:linear-gradient(168deg,var(--flare),var(--flare-deep));
   color:#1A0A04;padding:15px 18px;display:flex;align-items:center;gap:14px;width:100%;
@@ -4211,6 +4216,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
       <div class="ribbon" id="overRibbon" role="img"></div>
       <div class="xpstrip" id="xpStrip">
         <div class="row"><b id="xpGain">+0 XP</b><span class="sp"></span><small id="xpLevel">Level 1</small></div>
+        <div class="track" id="xpTrack"><i id="xpFill" style="transform:scaleX(0)"></i></div>
         <p class="got" id="xpGot" hidden></p>
       </div>
       <div class="statgrid">
@@ -4438,7 +4444,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.137.0';
+const VERSION_TAG = 'v0.138.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -7186,6 +7192,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.138.0', date:'2026-10-06', items:[
+    'The end of a run pays out where you can see it. The XP you earned counts up and the level bar fills from where the run found it. If you reached a new level the bar runs to the end, wraps round and carries on, and the level-up card arrives after it instead of covering it.',
+  ] },
   { v:'0.137.0', date:'2026-10-06', items:[
     'Level-ups wait for you. The card now stays until you close it (the Nice button, the back button, Escape or a tap outside it), instead of vanishing after two seconds. It says what the run was worth in XP, which victory colour the level unlocked and what comes next, and it is in all four languages, as is the level line on Game Over.',
     'Every solve sends its reward to the score. A small token leaves the piece you solved, arcs up and lands on the score, which jumps in answer. It is left out when Reduce motion is on.',
@@ -19165,8 +19174,22 @@ function endRun(){
   const up = lvlAfter > r.playerLevel;
   const strip = $('xpStrip');
   strip.classList.toggle('up', up);
-  $('xpGain').textContent = '+' + gained + ' XP';
+  $('xpGain').dataset.v = '0';
+  countTo($('xpGain'), gained, 700, n => '+' + Math.round(n) + ' XP');
   $('xpLevel').textContent = t('lvl.title', { n: lvlAfter });
+  {
+    /* The bar starts where the run found it, fills with what the run earned and,
+       if that crossed a level, runs to the end, wraps and carries on. */
+    const f = $('xpFill');
+    const was = clamp(Prog.xpIntoLevel(r.xpAtStart) / Prog.xpSpanOfLevel(r.xpAtStart), 0, 1);
+    const now = clamp(Prog.xpIntoLevel(save.xp) / Prog.xpSpanOfLevel(save.xp), 0, 1);
+    const jump = v => { f.style.transition = 'none'; f.style.transform = 'scaleX(' + v + ')'; void f.offsetWidth; f.style.transition = ''; };
+    jump(motionOff() ? now : was);
+    if (!motionOff()) setTimeout(() => {
+      if (up){ f.style.transform = 'scaleX(1)'; setTimeout(() => { jump(0); f.style.transform = 'scaleX(' + now + ')'; }, 780); }
+      else f.style.transform = 'scaleX(' + now + ')';
+    }, 350);
+  }
   const got = $('xpGot');
   got.hidden = !up;
   if (up) got.textContent = t('lvl.range', { a: r.playerLevel, b: lvlAfter });
@@ -19282,7 +19305,7 @@ function endRun(){
 
   /* The celebration waits for the run to be over. Freezing the board mid-run
      to congratulate someone is the opposite of a reward. */
-  if (pendingLevel){ const lv = pendingLevel; pendingLevel = 0; const from = r.playerLevel, got = save.xp - r.xpAtStart; setTimeout(() => celebrateLevel(lv, from, got), 420); }
+  if (pendingLevel){ const lv = pendingLevel; pendingLevel = 0; const from = r.playerLevel, got = save.xp - r.xpAtStart; setTimeout(() => celebrateLevel(lv, from, got), motionOff() ? 500 : 1500); }
   paintAll();
 }
 
@@ -19378,18 +19401,18 @@ function fillGrid(host, ids, opts){
 
 /* A number that lands instantly reads as a label. One that climbs reads as
    something you earned. Capped short so it never delays a tap. */
-function countTo(node, value, ms){
-  const from = Number(node.dataset.v || 0);
+function countTo(node, value, ms, show){
+  const from = Number(node.dataset.v || 0), out = show || fmt;
   node.dataset.v = String(value);
   if (motionOff() || from === value || Math.abs(value - from) < 2){
-    node.textContent = fmt(value); return;
+    node.textContent = out(value); return;
   }
   const t0 = performance.now(), dur = ms || 520;
   node.classList.add('count');
   (function step(now){
     const p = Math.min(1, (now - t0) / dur);
     const eased = 1 - Math.pow(1 - p, 3);
-    node.textContent = fmt(from + (value - from) * eased);
+    node.textContent = out(from + (value - from) * eased);
     if (p < 1) rawRAF(step);
   })(performance.now());
 }

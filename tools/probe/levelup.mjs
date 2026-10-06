@@ -82,7 +82,7 @@ for (const how of ['button', 'escape', 'outside']){
   const r = await playAndLose(page, how === 'button' ? true : null);
   check(r.solved, `${how}: one board solved`);
   check(!r.midRun, `${how}: the level card waits for the run to end`);
-  await page.waitForTimeout(1300);
+  await page.waitForTimeout(2300);
   let c = await card(page);
   check(c.shown && /10/.test(c.title), `${how}: the card shows level 10 after the run ("${c.title}")`);
   check(c.role === 'dialog' && c.modal === 'true' && c.named, `${how}: it is a named modal dialog`);
@@ -114,7 +114,7 @@ for (const how of ['button', 'escape', 'outside']){
   const page = await newRun({ width: 360, height: 640 }, { reduceMotion: true, lang: 'en' });
   const r = await playAndLose(page, true);
   check(r.solved && !r.flyer, 'reduced motion: a solve sends no token');
-  await page.waitForTimeout(1300);
+  await page.waitForTimeout(2300);
   const c = await card(page);
   const sparks = await page.evaluate(() => document.querySelectorAll('#levelup .burst').length);
   check(c.shown && sparks === 0, `reduced motion: the card shows with no sparks (${sparks})`);
@@ -126,7 +126,7 @@ for (const how of ['button', 'escape', 'outside']){
 for (const [w, h, lang, hint] of [[320, 568, 'de', /Level 10/], [568, 320, 'fr', /Niveau 10/], [390, 844, 'es', /Nivel 10/]]){
   const page = await newRun({ width: w, height: h }, { reduceMotion: true, lang });
   const r = await playAndLose(page, null);
-  await page.waitForTimeout(1300);
+  await page.waitForTimeout(2300);
   const c = await card(page);
   const tag = `${w}x${h} ${lang}`;
   check(r.solved && c.shown && hint.test(c.title), `${tag}: the card shows in the player's language ("${c.title}")`);

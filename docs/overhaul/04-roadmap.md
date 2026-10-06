@@ -7,7 +7,7 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 | # | Item | Why | Expected impact | Effort |
 |---|---|---|---|---|
 | Q2 | Streak chip pulses and a second token trail on a streak step | Extends the token that now flies on every solve | Medium | S |
-| Q3 | Run summary shows XP earned, the level progress bar filling, yarn earned and anything newly unlocked, with a count-up | The end of a run is the natural reward beat and currently says too little | Medium to high | S |
+| Q3 | Perk and yarn lines on Game Over count up and fill like the XP bar now does (done for XP in v0.138.0) | Finishes the pay-out beat | Medium | S |
 | Q4 | A 44px token (`--hit`) and a probe that scans every visible control on every shell screen | Stops the next small button from sneaking in | Medium (prevention) | S |
 | Q5 | Settings: a "Recently changed" line in the presets header; Reset on a single panel | Small clarity gains once the panels exist | Low to medium | S |
 | Q6 | Section jump on Stats and Room via an optional sticky chip row | Only worth doing if analytics show people open many panels per visit | Low | S |
