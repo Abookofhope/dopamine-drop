@@ -1630,6 +1630,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   border-radius:11px;border:1px solid var(--edge-soft);color:var(--haze);background:#ffffff06;
 }
 .icobtn svg{width:17px;height:17px;display:block}
+/* The exit button is drawn 34px but is a 44px target (the minimum for a thumb), with negative margins so the row stays as tall as it was. */
+.hudtop .icobtn{width:44px;height:44px;margin:-5px 0 -5px -5px;border-radius:14px}
 .kind{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--haze);font-weight:600}
 /* Which of the ten families the current mode belongs to, at a glance — the
    same colour already tinting the board and the card that launched it, not
@@ -1841,9 +1843,12 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    claims; #levelup already uses this exact pattern for the same reason. */
 .pausebox{
   position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:10px;padding:22px;
-  background:#0D0918f2;text-align:center;
+  align-items:center;justify-content:flex-start;gap:10px;
+  padding:calc(22px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom));
+  background:#0D0918f2;text-align:center;overflow-y:auto;overscroll-behavior:contain;
 }
+.pausebox > :first-child{margin-top:auto}
+.pausebox > :last-child{margin-bottom:auto}
 .pausebox b{font-family:var(--f-disp);font-weight:800;font-size:clamp(24px,7vw,32px);color:var(--cream)}
 .pausebox > small{font-size:11.5px;color:var(--haze);line-height:1.45;max-width:30ch;margin-bottom:6px}
 .pauserule{
@@ -1855,9 +1860,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .pauserule b{font-family:var(--f-disp);font-size:14px;font-weight:700;color:var(--fam);letter-spacing:.01em}
 .pauserule small{font-size:11.5px;color:var(--cream);opacity:.85;line-height:1.4;text-align:center}
 .pausebox .cta{width:100%;max-width:240px;justify-content:center;padding:14px 18px;font-size:15px}
-.pausebox .ghost{width:100%;max-width:240px;padding:11px 18px;font-size:13px}
+.pausebox .ghost{width:100%;max-width:240px;padding:11px 18px;font-size:13px;min-height:46px}
 .pausequick{display:flex;gap:18px;margin-top:8px}
-.pauseswrow{display:flex;align-items:center;gap:9px;padding:8px;cursor:pointer}
+.pauseswrow{display:flex;align-items:center;gap:9px;padding:8px 10px;min-height:44px;cursor:pointer}
 .pauseswrow small{font-size:11px;color:var(--haze);font-weight:600}
 
 /* ── Taste Test's rate step ─────────────────────────────────────────────── */
@@ -1970,7 +1975,32 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    making it big rather than on centring it. */
 /* Centred as one stack rather than one item grown to fill: letting the head
    take all the slack left the score floating alone in the top half. */
-#over{justify-content:center;gap:12px;padding-top:6px}
+/* The result is a scrolling body with the two ways out pinned beneath it. It used to be one centred column with no scrolling, so on a phone
+   shorter than the result both ends were cropped: the score off the top and, worst, Back to menu off the bottom with no way to reach it.
+   The auto margins keep it centred when there is room and let it scroll from the top when there is not. */
+#over{justify-content:flex-start;gap:0;padding-top:0;padding-bottom:0}
+.overscroll{
+  flex:1;min-height:0;min-width:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;gap:12px;padding:6px 0 14px;
+}
+.overscroll > :first-child{margin-top:auto}
+.overscroll > :last-child{margin-bottom:auto}
+.overbar{
+  flex:none;position:relative;display:flex;flex-direction:column;gap:8px;
+  padding:10px 0 calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,transparent,var(--ink) 22%);
+}
+.overbar::before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px;pointer-events:none;background:linear-gradient(180deg,transparent,var(--ink))}
+#over .cta{padding:12px 18px;min-height:56px}
+#over .cta .lbl b{font-size:19px}
+#over .ghost{min-height:48px;padding:11px}
+/* A phone on its side, or any screen under about 460px tall: the result keeps its head and shrinks it, and the two actions sit side by side. */
+@media (max-height:460px){
+  .overbar{flex-direction:row;gap:10px;padding-top:8px}
+  .overbar > *{flex:1;width:auto}
+  .overhead .big{font-size:clamp(40px,16vh,76px)}
+  .overscroll{gap:8px}
+}
 .overhead{
   position:relative;flex:0 0 auto;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
@@ -3918,6 +3948,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 
     <!-- ── GAME OVER ───────────────────────────────────────────────── -->
     <section class="screen" id="over" hidden>
+      <div class="overscroll" id="overScroll">
       <div class="overhead">
         <span class="eyebrow" id="overKind">Shuffle</span>
         <span class="big" id="overScore">0</span>
@@ -3966,11 +3997,14 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
         </span>
         <span class="arrow" aria-hidden="true">&rarr;</span>
       </button>
+      </div>
+      <div class="overbar">
       <button class="cta" id="againBtn" type="button">
         <span class="lbl"><b data-i18n="btn.goAgain">Go again</b><small id="againSub">Beat 0</small></span>
         <span aria-hidden="true" style="font-size:22px">&#8635;</span>
       </button>
       <button class="ghost" id="homeBtn" type="button" data-i18n="btn.backToMenu">Back to menu</button>
+      </div>
     </section>
 
   </main>
@@ -4161,7 +4195,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.134.0';
+const VERSION_TAG = 'v0.135.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6845,6 +6879,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.135.0', date:'2026-10-06', items:[
+    'The way out is always there. After a lost run on a small phone, Game Over used to be cut off: the score ran off the top and Back to menu was below the bottom of the screen with no way to reach it. The result now scrolls between the score and two buttons, Go again and Back to menu, which stay at the bottom of the screen on every phone, on its side, and on tablets.',
+    'The exit button in a round is a proper thumb-sized target (it was a little too small), and the pause sheet’s buttons are all full size and the sheet scrolls on short screens.',
+    'Scrolling no longer presses things. In the Room, Settings and Games, a finger that lands on a button to start a scroll used to press it, so scrolling could buy things, open sheets or stop the list from moving. Those buttons now fire when you lift your finger, and only if it hasn’t moved. Boards still answer the instant you touch them.',
+  ] },
   { v:'0.134.0', date:'2026-10-02', items:[
     'Patchwork’s Tetris way is tuned. The quilt is six squares across at every level, it asks for two lines at first and up to eight at the top, and the patches you are dealt are kind about fitting early on and less so as you climb. The early levels stay very forgiving; the top ones can be lost by laying patches carelessly.',
   ] },
@@ -8075,20 +8114,47 @@ function dealFrom(items, id){
    permanent latch would break the modes you tap the same element twice in
    (Rewire rotates a pipe on every tap). preventDefault also stops the tap
    turning into a page drag when someone is hammering the board. */
+/* Inside something that scrolls (the Room, Settings, a long sheet), landing a finger is how a scroll starts, so firing on the landing made every
+   item under the thumb a button: scrolling bought things, opened sheets, and made it hard to scroll past them at all. Those buttons fire on
+   release instead, and only for a real tap: the finger has not moved more than a thumb's slop and the list has not scrolled. Everything that is
+   not in a scrolling list (the boards) still fires on the landing, as above. A mouse can't start a scroll by pressing, so it keeps the fast path. */
+function scrollerOf(node){
+  for (let e = node.parentElement; e && e !== document.body; e = e.parentElement){
+    const o = getComputedStyle(e).overflowY;
+    if ((o === 'auto' || o === 'scroll') && e.scrollHeight > e.clientHeight + 1) return e;
+  }
+  return null;
+}
+const TAP_SLOP = 10;
 function onTap(node, fn){
-  let fired = 0;
-  const hit = ev => {
-    if (ev.type === 'pointerdown'){
-      if (ev.button) return;
+  let fired = 0, press = null;
+  node.addEventListener('pointerdown', ev => {
+    if (ev.button) return;
+    const sc = ev.pointerType === 'mouse' ? null : scrollerOf(node);
+    if (!sc){
       ev.preventDefault();
       fired = ev.timeStamp || performance.now();
-    } else if (fired && ((ev.timeStamp || performance.now()) - fired) < 700){
+      fn(ev);
       return;
     }
+    press = { id: ev.pointerId, x: ev.clientX, y: ev.clientY, sc, top: sc.scrollTop, still: true };
+  });
+  node.addEventListener('pointermove', ev => {
+    if (press && ev.pointerId === press.id && Math.hypot(ev.clientX - press.x, ev.clientY - press.y) > TAP_SLOP) press.still = false;
+  });
+  node.addEventListener('pointercancel', ev => { if (press && ev.pointerId === press.id) press = null; });
+  node.addEventListener('pointerup', ev => {
+    if (!press || ev.pointerId !== press.id) return;
+    const p = press; press = null;
+    if (p.still && Math.abs(p.sc.scrollTop - p.top) < 3 && Math.hypot(ev.clientX - p.x, ev.clientY - p.y) <= TAP_SLOP){
+      fired = ev.timeStamp || performance.now();
+      fn(ev);
+    }
+  });
+  node.addEventListener('click', ev => {
+    if (fired && ((ev.timeStamp || performance.now()) - fired) < 700) return;
     fn(ev);
-  };
-  node.addEventListener('pointerdown', hit);
-  node.addEventListener('click', hit);
+  });
 }
 
 /* A press that is held rather than tapped. A normal tap is untouched: the hold
