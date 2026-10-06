@@ -31,6 +31,8 @@ Or one at a time:
 | `mix.mjs` | Under a real touch gesture — not a synthetic click — do taps in the Mix tab add up, or does each one cancel the last? |
 | `home.mjs` | Does the home tab hold up fresh, mid-climb, and with every mode mastered — four distinct picks, each with a reason, in four languages at three sizes? |
 | `settings.mjs` | Does a settings row toggle when you tap it, does a row holding a button *not*, and does erasing your progress ask in the page? |
+| `settingsacc.mjs` | Is Settings a set of folded panels with a summary on each header, does search find one row (accents ignored, in four languages), do presets and Reset to defaults apply and undo, does easy-read text apply at boot, and is every control 44px? |
+| `panels.mjs` | Do You and the Room open as about a screen of folded panels with counts in the headings, does the Perks link open its panel and scroll to it, does a ready wish light its heading, and does axe pass with every panel open? |
 | `firstvisit.mjs` | Does a first visit load the page once, and does the offline worker still take control and apply updates? |
 | `threads.mjs` | Measured in pixels: does every thread end on a peg, is a peg grabbed from a circle and not an ellipse, does Snip's trail end under the finger? Attempts where the round ended underneath the measurement are thrown out and retried. |
 | `layoutshift.mjs` | Does the play area hold still around the board appearing, the first touch and the how-to line's timeout, in every mode? |

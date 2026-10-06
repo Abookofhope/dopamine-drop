@@ -2081,6 +2081,84 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .assistprev .sq .shp{padding:5px;box-sizing:border-box}
 .assistprev span{font-size:11px;color:var(--haze)}
 
+/* ── Settings accordions, search and presets ─────────────────────────────────
+   Settings was one 3.2-screen column of 25 controls, 17 of them under 40px.
+   Each group is a closed panel now: its header says what is inside and what it
+   is set to, a tap opens it, and a search box reaches any single row without
+   opening anything by hand. The bar stays under the thumb while the list
+   scrolls. Every control a thumb has to hit is at least 44px tall. */
+.setbar{
+  position:sticky;top:0;z-index:6;display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  margin:0 -2px 2px;padding:2px 2px 8px;
+  background:linear-gradient(180deg,var(--ink) 82%,#0D091800);
+}
+.setsearch{flex:1;min-width:0;position:relative;display:flex;align-items:center}
+.setsearch > svg{position:absolute;left:13px;width:18px;height:18px;color:var(--haze);pointer-events:none}
+.setq{
+  width:100%;height:46px;padding:0 46px 0 40px;border-radius:var(--r-md);
+  border:1px solid var(--edge);background:var(--ink-2);color:var(--cream);
+  font:inherit;font-size:16px;-webkit-appearance:none;appearance:none;
+  -webkit-user-select:text;user-select:text;
+}
+.setq:focus-visible,.setall:focus-visible,.setqx:focus-visible{outline-offset:-3px}
+.setq::placeholder{color:var(--haze);opacity:1}
+.setq::-webkit-search-cancel-button,.setq::-webkit-search-decoration{-webkit-appearance:none;display:none}
+.setqx{position:absolute;right:0;width:46px;height:46px;display:grid;place-items:center;color:var(--haze)}
+.setqx[hidden]{display:none}
+.setqx svg{width:16px;height:16px}
+.setall{
+  flex:none;width:46px;height:46px;display:grid;place-items:center;border-radius:var(--r-md);
+  border:1px solid var(--edge);background:var(--ink-2);color:var(--haze);
+}
+.setall svg{width:20px;height:20px}
+.setall[data-open="1"] .pa,.setall:not([data-open="1"]) .pb{display:none}
+.setstatus{
+  flex:1 0 100%;display:flex;align-items:center;gap:8px;min-height:46px;padding:0 4px 0 14px;
+  border-radius:var(--r-md);font-size:13px;color:var(--cream);
+  background:color-mix(in srgb,var(--cool) 14%,var(--ink-2));
+  border:1px solid color-mix(in srgb,var(--cool) 45%,transparent);
+}
+.setstatus[hidden]{display:none}
+.setstatus span{flex:1;min-width:0}
+.setstatus button{min-height:44px;padding:0 14px;border-radius:var(--r-sm);font-weight:700;color:var(--cool)}
+.setstatus button[hidden]{display:none}
+.setnone{padding:22px 8px;text-align:center;color:var(--haze);font-size:13.5px}
+.sfhide{display:none!important}
+
+.setcard.acc{padding:0;margin-bottom:8px}
+.statgrid + .setcard.acc,.giftcard + .setcard.acc{margin-top:14px}
+.acch{margin:0;font:inherit}
+.acchead{
+  display:flex;align-items:center;gap:10px;width:100%;min-height:54px;padding:6px 14px;
+  text-align:left;border-radius:var(--r-lg);
+}
+.acchead:focus-visible{outline-offset:-3px}
+.acct{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.acct b{font-size:14.5px;font-weight:700}
+.acct small{font-size:11.5px;color:var(--haze);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acct small:empty{display:none}
+.acct small u{text-decoration:none}
+/* Something inside is waiting: the same gold dot the tab bar uses. */
+.setcard.hot .acct b::after{content:"";display:inline-block;width:8px;height:8px;margin-left:8px;border-radius:50%;background:var(--zap);vertical-align:middle}
+.setcard.hot .acct small{color:var(--zap)}
+.acc .actstrip{margin-top:4px}
+.chev{width:20px;height:20px;flex:none;color:var(--haze);transition:transform .22s ease}
+.acc.open .chev,.acc.sfopen .chev{transform:rotate(180deg)}
+.accbody{
+  display:grid;grid-template-rows:0fr;visibility:hidden;
+  transition:grid-template-rows .24s ease,visibility 0s .24s;
+}
+.acc.open .accbody,.acc.sfopen .accbody{
+  grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .24s ease,visibility 0s;
+}
+.accin{min-height:0;overflow:hidden;padding:0 14px}
+.acc.open .accin,.acc.sfopen .accin{padding-bottom:6px}
+.setrow .ghost{min-height:44px}
+.setrow .ghost[aria-pressed="true"]{border-color:var(--cool);color:var(--cool)}
+.setcard .seg{min-height:44px}
+html.easyread{--f-body:Verdana,Tahoma,"Trebuchet MS",system-ui,sans-serif;--f-disp:Verdana,Tahoma,"Trebuchet MS",system-ui,sans-serif}
+html.easyread body{letter-spacing:.02em;word-spacing:.08em}
+
 /* ── Cosmetic swatches ──────────────────────────────────────────────────── */
 .swrow{display:flex;flex-wrap:wrap;gap:9px;margin:2px 0 10px}
 .swatch{
@@ -2435,7 +2513,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .wbar{height:6px;border-radius:99px;background:#ffffff14;overflow:hidden}
 .wbar i{display:block;height:100%;width:100%;transform-origin:left;background:linear-gradient(90deg,#FF8AD8,var(--zap));
   border-radius:99px;transition:transform var(--t-med)}
-.wclaim{flex:none;min-width:76px;padding:10px 13px;border-radius:99px;font-weight:800;font-size:12px;letter-spacing:.05em;
+.wclaim{flex:none;min-width:76px;min-height:44px;padding:10px 13px;border-radius:99px;font-weight:800;font-size:12px;letter-spacing:.05em;
   text-transform:uppercase;background:linear-gradient(180deg,#FF8AD8,#E0559F);color:#2A0B1E;border:0;
   box-shadow:0 6px 14px -8px #FF8AD8;font-family:inherit}
 .wclaim:disabled{background:#ffffff12;color:var(--haze);box-shadow:none}
@@ -2578,7 +2656,7 @@ html.hc{--haze:#D6CEF0;--edge:#6553B8;--edge-soft:#4A3B90}
 html.hc .note,html.hc small{color:#D6CEF0}
 html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html.hc .decor{border-color:#6553B8}
 .sliderrow{gap:14px}
-.volrange{flex:none;width:44%;max-width:190px;accent-color:#FF8AD8;height:28px}
+.volrange{flex:none;width:44%;max-width:190px;accent-color:#FF8AD8;height:44px}
 
 /* Fourteen days of solves, and the bits of a run worth a line. */
 .actstrip{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;align-items:end;height:74px;padding:6px 4px 0}
@@ -3443,8 +3521,8 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .justPlay{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:56px;margin-bottom:6px;border-radius:20px;
   background:linear-gradient(180deg,var(--flare),var(--flare-deep));color:#1A0A04;font-family:var(--f-disp);font-weight:800;font-size:18px;box-shadow:inset 0 -3px 0 #00000026}
 .justPlay svg{width:22px;height:22px}
-.ysub{display:flex;gap:4px;padding:4px;margin-bottom:14px;border-radius:16px;background:var(--ink-2);flex:none}
-.ysub button{flex:1;height:38px;border-radius:12px;color:var(--haze);font-weight:800;font-size:14px}
+.ysub{display:flex;gap:4px;padding:4px;margin-bottom:10px;border-radius:16px;background:var(--ink-2);flex:none}
+.ysub button{flex:1;height:44px;border-radius:12px;color:var(--haze);font-weight:800;font-size:14px}
 .ysub button[aria-pressed="true"]{background:var(--flare);color:#1A0A04}
 .tab{font-size:11.5px;letter-spacing:.02em;text-transform:none;font-weight:700}
 .tab .ti{display:grid;place-items:center;width:52px;height:30px;border-radius:15px;transition:background var(--t-fast)}
@@ -3735,7 +3813,12 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
           <div class="stat"><b id="sMastered">0</b><small data-i18n="stats.mastered">Modes mastered</small></div>
           <div class="stat"><b id="sStars">0</b><small data-i18n="stats.stars">Stars earned</small></div>
         </div>
-        <div class="seclbl"><span data-i18n="stats.activity">Last 14 days</span><u id="actTotal"></u></div>
+        <section class="setcard acc" data-acc="s-act">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_s-act" aria-expanded="false" aria-controls="accB_s-act">
+            <span class="acct"><b data-i18n="stats.activity">Last 14 days</b><small><u id="actTotal"></u></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_s-act" role="region" aria-labelledby="accH_s-act"><div class="accin">
         <div class="actstrip" id="actStrip" role="img"></div>
         <div class="statgrid" style="margin-top:8px">
           <div class="stat"><b id="sCats">0</b><small data-i18n="stats.cats">Cats</small></div>
@@ -3750,6 +3833,8 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
         <div class="statgrid" style="margin-top:8px;grid-template-columns:1fr">
           <div class="stat"><b id="sFavFam">—</b><small data-i18n="stats.favFam">Favourite family</small></div>
         </div>
+          </div></div>
+        </section>
         <!-- Nothing to show yet is worth saying out loud, rather than six zeroes
              and sixty-six dashes pretending to be a table. -->
         <p class="note firstnote" id="sFirst" hidden></p>
@@ -3758,24 +3843,43 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
              how you're doing; this says what to go do next. Locked ones stay
              visible rather than hidden behind mystery, because a goal you can't
              see isn't one you can chase. -->
-        <div class="seclbl"><span data-i18n="stats.achievements">Achievements</span><u id="achCount"></u></div>
-        <div class="achgrid" id="achGrid"></div>
+        <section class="setcard acc" data-acc="s-ach">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_s-ach" aria-expanded="false" aria-controls="accB_s-ach">
+            <span class="acct"><b data-i18n="stats.achievements">Achievements</b><small><u id="achCount"></u></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_s-ach" role="region" aria-labelledby="accH_s-ach"><div class="accin">
+            <div class="achgrid" id="achGrid"></div>
+          </div></div>
+        </section>
 
-        <div class="seclbl"><span data-i18n="stats.everyMode">Every mode</span></div>
-        <div class="segrow" id="sFilter" role="group" data-i18n-aria="stats.filter">
-          <button class="seg on" type="button" data-f="all"><span data-i18n="stats.fAll">All</span><u></u></button>
-          <button class="seg" type="button" data-f="played"><span data-i18n="stats.fPlayed">Played</span><u></u></button>
-          <button class="seg" type="button" data-f="new"><span data-i18n="stats.fNew">Not tried</span><u></u></button>
-        </div>
-        <div id="sRows"></div>
-        <div class="pkpanel" id="pkPanel">
-          <div class="seclbl"><span data-i18n="perk.title">Perks</span><u id="pkSlots"></u></div>
-          <div class="perknext">
-            <div class="track"><i id="pkFill" style="transform:scaleX(0)"></i></div>
-            <small id="pkNext"></small>
-          </div>
-          <div class="perkgrid" id="pkGrid"></div>
-        </div>
+        <section class="setcard acc" data-acc="s-modes">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_s-modes" aria-expanded="false" aria-controls="accB_s-modes">
+            <span class="acct"><b data-i18n="stats.everyMode">Every mode</b><small><u id="modesSum"></u></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_s-modes" role="region" aria-labelledby="accH_s-modes"><div class="accin">
+            <div class="segrow" id="sFilter" role="group" data-i18n-aria="stats.filter">
+              <button class="seg on" type="button" data-f="all"><span data-i18n="stats.fAll">All</span><u></u></button>
+              <button class="seg" type="button" data-f="played"><span data-i18n="stats.fPlayed">Played</span><u></u></button>
+              <button class="seg" type="button" data-f="new"><span data-i18n="stats.fNew">Not tried</span><u></u></button>
+            </div>
+            <div id="sRows"></div>
+          </div></div>
+        </section>
+        <section class="setcard acc pkpanel" data-acc="s-perks" id="pkPanel">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_s-perks" aria-expanded="false" aria-controls="accB_s-perks">
+            <span class="acct"><b data-i18n="perk.title">Perks</b><small><u id="pkSlots"></u></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_s-perks" role="region" aria-labelledby="accH_s-perks"><div class="accin">
+            <div class="perknext">
+              <div class="track"><i id="pkFill" style="transform:scaleX(0)"></i></div>
+              <small id="pkNext"></small>
+            </div>
+            <div class="perkgrid" id="pkGrid"></div>
+          </div></div>
+        </section>
       </div>
     </section>
 
@@ -3789,15 +3893,47 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
         <div class="introcard" id="roomIntro" hidden></div>
         <div class="roomscene" id="roomScene"></div>
         <div class="giftcard" id="giftCard"></div>
-        <div class="seclbl"><span data-i18n="room.seats">Riding along</span><u id="seatCount"></u></div>
-        <div class="seatrow" id="seatRow"></div>
-        <div class="synrow" id="synRow"></div>
-        <div class="seclbl"><span data-i18n="wish.title">Wishes</span><u id="wishCount"></u></div>
-        <div id="wishList"></div>
-        <div class="seclbl"><span data-i18n="pal.title">Cats</span><u id="palCount"></u></div>
-        <div class="palgrid" id="palGrid"></div>
-        <div class="seclbl"><span data-i18n="room.decor">The room</span><u id="roomLevel"></u></div>
-        <div id="decorList"></div>
+        <!-- Four long lists, one after another, made the Room five screens of
+             scrolling with the thing you came for (today's wishes) in the middle.
+             Each is a panel now whose header carries its count, and a gold dot
+             when something in it is waiting to be collected. -->
+        <section class="setcard acc" data-acc="r-seats">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_r-seats" aria-expanded="false" aria-controls="accB_r-seats">
+            <span class="acct"><b data-i18n="room.seats">Riding along</b><small><u id="seatCount"></u></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_r-seats" role="region" aria-labelledby="accH_r-seats"><div class="accin">
+            <div class="seatrow" id="seatRow"></div>
+            <div class="synrow" id="synRow"></div>
+          </div></div>
+        </section>
+        <section class="setcard acc" data-acc="r-wishes">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_r-wishes" aria-expanded="false" aria-controls="accB_r-wishes">
+            <span class="acct"><b data-i18n="wish.title">Wishes</b><small><u id="wishCount"></u></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_r-wishes" role="region" aria-labelledby="accH_r-wishes"><div class="accin">
+            <div id="wishList"></div>
+          </div></div>
+        </section>
+        <section class="setcard acc" data-acc="r-cats">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_r-cats" aria-expanded="false" aria-controls="accB_r-cats">
+            <span class="acct"><b data-i18n="pal.title">Cats</b><small><u id="palCount"></u></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_r-cats" role="region" aria-labelledby="accH_r-cats"><div class="accin">
+            <div class="palgrid" id="palGrid"></div>
+          </div></div>
+        </section>
+        <section class="setcard acc" data-acc="r-decor">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_r-decor" aria-expanded="false" aria-controls="accB_r-decor">
+            <span class="acct"><b data-i18n="room.decor">The room</b><small><u id="roomLevel"></u></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_r-decor" role="region" aria-labelledby="accH_r-decor"><div class="accin">
+            <div id="decorList"></div>
+          </div></div>
+        </section>
       </div>
     </section>
 
@@ -3808,111 +3944,190 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
           <button type="button" data-tab="Stats" aria-pressed="true"><span data-i18n="you.progress">Progress</span></button>
           <button type="button" data-tab="Settings" aria-pressed="false"><span data-i18n="tab.Settings">Settings</span></button>
         </div>
-        <div class="setcard">
-        <div class="seclbl"><span data-i18n="set.feedback">Feedback</span></div>
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.sound">Sound</b><small data-i18n="set.soundSub">Taps and streak chimes — each family in its own key</small></span>
-          <button class="sw" id="swSound" role="switch" aria-checked="true" aria-label="Sound"></button>
+
+        <!-- Search and expand-all stay under your thumb while the list scrolls.
+             Every group below is a closed panel whose header already says what
+             is inside it, so the whole tab fits on one screen and a setting is
+             one tap — or one word typed — away rather than a long scroll. -->
+        <div class="setbar">
+          <div class="setsearch">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            <input type="search" id="setQ" class="setq" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" data-i18n-aria="set.searchLbl">
+            <button type="button" class="setqx" id="setQx" hidden data-i18n-aria="set.searchClear">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <button type="button" class="setall" id="setAll" aria-label="Expand all">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="pa" d="m7 9 5-5 5 5M7 15l5 5 5-5"/><path class="pb" d="m7 4 5 5 5-5M7 20l5-5 5 5"/></svg>
+          </button>
+          <div class="setstatus" id="setStatus" role="status" aria-live="polite" hidden>
+            <span id="setStatusTxt"></span>
+            <button type="button" id="setUndo" data-i18n="set.undo">Undo</button>
+          </div>
         </div>
-        <div class="setrow sliderrow">
-          <span class="txt"><b id="volLbl" data-i18n="set.volume">Volume</b><small data-i18n="set.volumeSub">How loud every sound is</small></span>
-          <input type="range" class="volrange" id="volRange" min="0" max="100" step="5" aria-labelledby="volLbl">
-        </div>
-        <div class="setrow" id="vibRow">
-          <span class="txt"><b data-i18n="set.vib">Vibration</b><small id="vibSub" data-i18n="set.vibSub">A short pulse on every answer</small></span>
-          <button class="sw" id="swHaptics" role="switch" aria-checked="true" aria-label="Vibration"></button>
-        </div>
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.flash">Screen flashes</b><small data-i18n="set.flashSub">The colour wash on every solve and miss</small></span>
-          <button class="sw" id="swFlashes" role="switch" aria-checked="true" aria-label="Screen flashes"></button>
-        </div>
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.motion">Reduce motion</b><small data-i18n="set.motionSub">No particles, no screen shake</small></span>
-          <button class="sw" id="swMotion" role="switch" aria-checked="false" aria-label="Reduce motion"></button>
-        </div>
-        </div>
+        <p class="setnone" id="setNone" role="status" hidden data-i18n="set.none">No setting matches that.</p>
+
+        <section class="setcard acc" data-acc="presets">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_presets" aria-expanded="false" aria-controls="accB_presets">
+            <span class="acct"><b data-i18n="set.presets">Presets and reset</b><small id="accS_presets"></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_presets" role="region" aria-labelledby="accH_presets"><div class="accin">
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.pCalm">Calm</b><small data-i18n="set.pCalmSub">Soft and slow: quiet sound, no vibration, no flashes, more time</small></span>
+              <button class="ghost" type="button" data-p="calm" data-i18n="set.apply">Apply</button>
+            </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.pFocus">Focus</b><small data-i18n="set.pFocusSub">Less visual noise: no flashes or shake, sound and vibration kept</small></span>
+              <button class="ghost" type="button" data-p="focus" data-i18n="set.apply">Apply</button>
+            </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.pEasy">Easy to see</b><small data-i18n="set.pEasySub">High contrast, colour assist, easy-read text, more time</small></span>
+              <button class="ghost" type="button" data-p="easy" data-i18n="set.apply">Apply</button>
+            </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.pDefault">Reset to defaults</b><small data-i18n="set.pDefaultSub">Every setting back to how it started. Your progress is kept.</small></span>
+              <button class="ghost" type="button" data-p="default" data-i18n="btn.reset">Reset</button>
+            </div>
+          </div></div>
+        </section>
+
+        <section class="setcard acc" data-acc="feedback">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_feedback" aria-expanded="false" aria-controls="accB_feedback">
+            <span class="acct"><b data-i18n="set.feedback">Feedback</b><small id="accS_feedback"></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_feedback" role="region" aria-labelledby="accH_feedback"><div class="accin">
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.sound">Sound</b><small data-i18n="set.soundSub">Taps and streak chimes — each family in its own key</small></span>
+              <button class="sw" id="swSound" role="switch" aria-checked="true" aria-label="Sound"></button>
+            </div>
+            <div class="setrow sliderrow">
+              <span class="txt"><b id="volLbl" data-i18n="set.volume">Volume</b><small data-i18n="set.volumeSub">How loud every sound is</small></span>
+              <input type="range" class="volrange" id="volRange" min="0" max="100" step="5" aria-labelledby="volLbl">
+            </div>
+            <div class="setrow" id="vibRow">
+              <span class="txt"><b data-i18n="set.vib">Vibration</b><small id="vibSub" data-i18n="set.vibSub">A short pulse on every answer</small></span>
+              <button class="sw" id="swHaptics" role="switch" aria-checked="true" aria-label="Vibration"></button>
+            </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.flash">Screen flashes</b><small data-i18n="set.flashSub">The colour wash on every solve and miss</small></span>
+              <button class="sw" id="swFlashes" role="switch" aria-checked="true" aria-label="Screen flashes"></button>
+            </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.motion">Reduce motion</b><small data-i18n="set.motionSub">No particles, no screen shake</small></span>
+              <button class="sw" id="swMotion" role="switch" aria-checked="false" aria-label="Reduce motion"></button>
+            </div>
+          </div></div>
+        </section>
 
         <!-- Locked swatches stay in the row rather than vanishing — the level
              they unlock at is the whole point of showing them at all. -->
-        <div class="setcard">
-        <div class="seclbl"><span data-i18n="set.cosmetic">Victory color</span></div>
-        <p class="note" id="cosmeticSub" data-i18n="set.cosmeticSub">The colour every solve bursts in.</p>
-        <div class="swrow" id="cosmeticRow"></div>
-        </div>
+        <section class="setcard acc" data-acc="cosmetic">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_cosmetic" aria-expanded="false" aria-controls="accB_cosmetic">
+            <span class="acct"><b data-i18n="set.cosmetic">Victory color</b><small id="accS_cosmetic"></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_cosmetic" role="region" aria-labelledby="accH_cosmetic"><div class="accin">
+            <p class="note" id="cosmeticSub" data-i18n="set.cosmeticSub">The colour every solve bursts in.</p>
+            <div class="swrow" id="cosmeticRow"></div>
+          </div></div>
+        </section>
 
-        <div class="setcard">
-        <div class="seclbl"><span data-i18n="set.access">Accessibility</span></div>
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.contrast">High contrast</b><small data-i18n="set.contrastSub">Brighter text and clearer edges</small></span>
-          <button class="sw" id="swContrast" role="switch" aria-checked="false" aria-label="High contrast"></button>
-        </div>
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.assist">Colour assist</b><small data-i18n="set.assistSub">Adds shapes and brightness so no puzzle depends on telling two colours apart</small></span>
-          <button class="sw" id="swAssist" role="switch" aria-checked="false" aria-label="Colour assist"></button>
-        </div>
-        <div class="assistprev" id="assistPrev" hidden></div>
+        <section class="setcard acc" data-acc="access">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_access" aria-expanded="false" aria-controls="accB_access">
+            <span class="acct"><b data-i18n="set.access">Accessibility</b><small id="accS_access"></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_access" role="region" aria-labelledby="accH_access"><div class="accin">
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.contrast">High contrast</b><small data-i18n="set.contrastSub">Brighter text and clearer edges</small></span>
+              <button class="sw" id="swContrast" role="switch" aria-checked="false" aria-label="High contrast"></button>
+            </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.assist">Colour assist</b><small data-i18n="set.assistSub">Adds shapes and brightness so no puzzle depends on telling two colours apart</small></span>
+              <button class="sw" id="swAssist" role="switch" aria-checked="false" aria-label="Colour assist"></button>
+            </div>
+            <div class="assistprev" id="assistPrev" hidden></div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.easy">Easy-read text</b><small data-i18n="set.easySub">A plainer typeface with wider spacing</small></span>
+              <button class="sw" id="swEasy" role="switch" aria-checked="false" aria-label="Easy-read text"></button>
+            </div>
 
-        <!-- Slows the round clock and every mode's own internal pacing (via
-             the same ctx.after every mode already schedules through) without
-             touching scoring, par, or what counts as a solve — the puzzle is
-             the same puzzle, just with more room to think about it. -->
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.speed">Game speed</b><small data-i18n="set.speedSub">More time to think, same puzzles and scoring</small></span>
-        </div>
-        <div class="segrow" id="speedRow" role="group" data-i18n-aria="set.speed">
-          <button class="seg" type="button" data-sp="normal"><span data-i18n="set.speedNormal">Normal</span></button>
-          <button class="seg" type="button" data-sp="relaxed"><span data-i18n="set.speedRelaxed">Relaxed</span></button>
-          <button class="seg" type="button" data-sp="slow"><span data-i18n="set.speedSlow">Slow</span></button>
-        </div>
-        </div>
+            <!-- Slows the round clock and every mode's own internal pacing (via
+                 the same ctx.after every mode already schedules through) without
+                 touching scoring, par, or what counts as a solve — the puzzle is
+                 the same puzzle, just with more room to think about it. -->
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.speed">Game speed</b><small data-i18n="set.speedSub">More time to think, same puzzles and scoring</small></span>
+            </div>
+            <div class="segrow" id="speedRow" role="group" data-i18n-aria="set.speed">
+              <button class="seg" type="button" data-sp="normal"><span data-i18n="set.speedNormal">Normal</span></button>
+              <button class="seg" type="button" data-sp="relaxed"><span data-i18n="set.speedRelaxed">Relaxed</span></button>
+              <button class="seg" type="button" data-sp="slow"><span data-i18n="set.speedSlow">Slow</span></button>
+            </div>
+          </div></div>
+        </section>
 
-        <div class="setcard">
-        <div class="seclbl"><span data-i18n="set.lang">Language</span></div>
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.lang">Language</b><small data-i18n="lang.sub">The whole game, including the word puzzles.</small></span>
-          <button class="ghost" id="langBtn2" type="button"><span id="langName">English</span></button>
-        </div>
-        </div>
+        <section class="setcard acc" data-acc="lang">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_lang" aria-expanded="false" aria-controls="accB_lang">
+            <span class="acct"><b data-i18n="set.lang">Language</b><small id="accS_lang"></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_lang" role="region" aria-labelledby="accH_lang"><div class="accin">
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.lang">Language</b><small data-i18n="lang.sub">The whole game, including the word puzzles.</small></span>
+              <button class="ghost" id="langBtn2" type="button"><span id="langName">English</span></button>
+            </div>
+          </div></div>
+        </section>
 
-        <div class="setcard">
-        <div class="seclbl"><span data-i18n="set.about">About</span></div>
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
-          <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.23.1</span></button>
-        </div>
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.version">Version</b><small id="setVerSub"></small></span>
-          <button class="ghost" id="updCheck" type="button" data-i18n="set.checkUpd">Check</button>
-        </div>
-        </div>
+        <section class="setcard acc" data-acc="about">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_about" aria-expanded="false" aria-controls="accB_about">
+            <span class="acct"><b data-i18n="set.about">About</b><small id="accS_about"></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_about" role="region" aria-labelledby="accH_about"><div class="accin">
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.whatsNew">What’s new</b><small data-i18n="set.whatsNewSub">Everything that has changed, newest first</small></span>
+              <button class="ghost" id="logBtn" type="button"><span id="logBtnV">v0.23.1</span></button>
+            </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.version">Version</b><small id="setVerSub"></small></span>
+              <button class="ghost" id="updCheck" type="button" data-i18n="set.checkUpd">Check</button>
+            </div>
+            <p class="note" data-i18n="set.privacy">Progress is saved on this device only. There is no account, and nothing here is uploaded.</p>
+          </div></div>
+        </section>
 
-        <div class="setcard">
-        <div class="seclbl"><span data-i18n="set.data">Data</span></div>
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.backup">Back up progress</b><small data-i18n="set.backupSub">Save a file you can move to another phone</small></span>
-          <button class="ghost" id="exportBtn" type="button" data-i18n="btn.export">Export</button>
-        </div>
-        <div class="setrow">
-          <span class="txt"><b data-i18n="set.restore">Restore progress</b><small data-i18n="set.restoreSub">Load a backup. This replaces what is on this device.</small></span>
-          <button class="ghost" id="importBtn" type="button" data-i18n="btn.import">Import</button>
-          <input type="file" id="importFile" accept="application/json,.json" hidden>
-        </div>
-        <div class="setrow danger" id="resetRow">
-          <span class="txt"><b data-i18n="set.reset">Reset progress</b><small data-i18n="set.resetSub">Level, XP and every best score. Settings are kept.</small></span>
-          <button class="ghost" id="resetBtn" type="button" data-i18n="btn.reset">Reset</button>
-        </div>
-        <!-- Deleting one mixtape had a considered two-step; erasing everything
-             had a native confirm() people dismiss by reflex. -->
-        <div class="tapeconfirm resetconfirm" id="resetConfirm" hidden>
-          <span data-i18n="dlg.reset">This erases every score and level on this device. Settings are kept.</span>
-          <button class="no" type="button" id="resetKeep" data-i18n="dlg.resetKeep">Keep it</button>
-          <button class="yes" type="button" id="resetGone" data-i18n="dlg.resetGone">Erase</button>
-        </div>
-        </div>
-        <p class="note">
-          Progress is saved on this device only. There is no account, and nothing
-          here is uploaded.
-        </p>
+        <section class="setcard acc" data-acc="data">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_data" aria-expanded="false" aria-controls="accB_data">
+            <span class="acct"><b data-i18n="set.data">Data</b><small id="accS_data"></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_data" role="region" aria-labelledby="accH_data"><div class="accin">
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.backup">Back up progress</b><small data-i18n="set.backupSub">Save a file you can move to another phone</small></span>
+              <button class="ghost" id="exportBtn" type="button" data-i18n="btn.export">Export</button>
+            </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.restore">Restore progress</b><small data-i18n="set.restoreSub">Load a backup. This replaces what is on this device.</small></span>
+              <button class="ghost" id="importBtn" type="button" data-i18n="btn.import">Import</button>
+              <input type="file" id="importFile" accept="application/json,.json" hidden>
+            </div>
+            <div class="setrow danger" id="resetRow">
+              <span class="txt"><b data-i18n="set.reset">Reset progress</b><small data-i18n="set.resetSub">Level, XP and every best score. Settings are kept.</small></span>
+              <button class="ghost" id="resetBtn" type="button" data-i18n="btn.reset">Reset</button>
+            </div>
+            <!-- Deleting one mixtape had a considered two-step; erasing everything
+                 had a native confirm() people dismiss by reflex. -->
+            <div class="tapeconfirm resetconfirm" id="resetConfirm" hidden>
+              <span data-i18n="dlg.reset">This erases every score and level on this device. Settings are kept.</span>
+              <button class="no" type="button" id="resetKeep" data-i18n="dlg.resetKeep">Keep it</button>
+              <button class="yes" type="button" id="resetGone" data-i18n="dlg.resetGone">Erase</button>
+            </div>
+          </div></div>
+        </section>
       </div>
     </section>
 
@@ -4195,7 +4410,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.135.0';
+const VERSION_TAG = 'v0.136.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4211,7 +4426,7 @@ const defaults = {
   pbBlitz:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, pbEndless:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
-  volume:1, contrast:false, flashes:true,
+  volume:1, contrast:false, flashes:true, easyRead:false,
   lifetime:0, perks:[], perkLv:{}, tokens:0,
   dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0,
   lastMode:null, onboarded:false,
@@ -4860,6 +5075,18 @@ const STRINGS = {
     'set.speed':'Game speed', 'set.speedSub':'More time to think, same puzzles and scoring',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Relaxed', 'set.speedSlow':'Slow',
     'set.lang':'Language', 'set.data':'Data',
+    'wish.nReady':'{n} ready',
+    'stats.modesSum':'{a} of {b} played',
+    'set.privacy':'Progress is saved on this device only. There is no account, and nothing here is uploaded.',
+    'set.searchLbl':'Search settings', 'set.searchPh':'Search settings', 'set.searchClear':'Clear search', 'set.none':'No setting matches that.',
+    'set.expandAll':'Expand all sections', 'set.collapseAll':'Collapse all sections', 'set.presets':'Presets and reset', 'set.pCalm':'Calm',
+    'set.pCalmSub':'Soft and slow: quiet sound, no vibration, no flashes, more time', 'set.pFocus':'Focus',
+    'set.pFocusSub':'Less visual noise: no flashes or shake, sound and vibration kept', 'set.pEasy':'Easy to see',
+    'set.pEasySub':'High contrast, colour assist, easy-read text, more time', 'set.pDefault':'Reset to defaults',
+    'set.pDefaultSub':'Every setting back to how it started. Your progress is kept.', 'set.apply':'Apply', 'set.active':'Active', 'set.custom':'Custom',
+    'set.default':'Default', 'set.applied':'{name} preset applied', 'set.resetDone':'Settings reset to defaults', 'set.undo':'Undo',
+    'set.undone':'Back as it was', 'set.on':'on', 'set.off':'off', 'set.flashW':'Flashes', 'set.easy':'Easy-read text',
+    'set.easySub':'A plainer typeface with wider spacing',
     'set.backup':'Back up progress', 'set.backupSub':'Save a file you can move to another phone',
     'set.restore':'Restore progress', 'set.restoreSub':'Load a backup. This replaces what is on this device.',
     'set.reset':'Reset progress', 'set.resetSub':'Level, XP, perks and every best score. Settings are kept.',
@@ -5355,6 +5582,19 @@ const STRINGS = {
     'set.speed':'Vitesse de jeu', 'set.speedSub':'Plus de temps pour réfléchir, mêmes énigmes et le même score',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Détendu', 'set.speedSlow':'Lent',
     'set.lang':'Langue', 'set.data':'Données',
+    'wish.nReady':'{n} à récupérer',
+    'stats.modesSum':'{a} sur {b} essayés',
+    'set.privacy':'La progression est enregistrée sur cet appareil uniquement. Il n’y a pas de compte, et rien n’est envoyé.',
+    'set.searchLbl':'Rechercher dans les réglages', 'set.searchPh':'Rechercher un réglage', 'set.searchClear':'Effacer la recherche',
+    'set.none':'Aucun réglage ne correspond.', 'set.expandAll':'Tout déplier', 'set.collapseAll':'Tout replier',
+    'set.presets':'Préréglages et reset', 'set.pCalm':'Calme',
+    'set.pCalmSub':'Doux et lent : son discret, sans vibration ni flashs, plus de temps', 'set.pFocus':'Concentration',
+    'set.pFocusSub':'Moins de bruit visuel : sans flashs ni secousses, son et vibration conservés', 'set.pEasy':'Lisible',
+    'set.pEasySub':'Contraste élevé, aide aux couleurs, texte facile à lire, plus de temps', 'set.pDefault':'Réglages d’origine',
+    'set.pDefaultSub':'Tous les réglages comme au premier jour. Votre progression est conservée.', 'set.apply':'Appliquer', 'set.active':'Actif',
+    'set.custom':'Personnalisé', 'set.default':'Par défaut', 'set.applied':'Préréglage « {name} » appliqué',
+    'set.resetDone':'Réglages d’origine rétablis', 'set.undo':'Annuler', 'set.undone':'Retour à l’état précédent', 'set.on':'activé',
+    'set.off':'désactivé', 'set.flashW':'Flashs', 'set.easy':'Texte facile à lire', 'set.easySub':'Une police plus simple, aux espaces plus larges',
     'set.backup':'Sauvegarder la progression', 'set.backupSub':'Un fichier à transférer sur un autre téléphone',
     'set.restore':'Restaurer la progression', 'set.restoreSub':'Charger une sauvegarde. Remplace ce qui est sur cet appareil.',
     'set.reset':'Réinitialiser', 'set.resetSub':'Niveau, XP, atouts et tous les records. Les réglages sont conservés.',
@@ -5850,6 +6090,18 @@ const STRINGS = {
     'set.speed':'Velocidad de juego', 'set.speedSub':'Más tiempo para pensar, mismos puzles y puntuación',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Relajado', 'set.speedSlow':'Lento',
     'set.lang':'Idioma', 'set.data':'Datos',
+    'wish.nReady':'{n} por cobrar',
+    'stats.modesSum':'{a} de {b} probados',
+    'set.privacy':'El progreso se guarda solo en este dispositivo. No hay cuenta y no se sube nada.',
+    'set.searchLbl':'Buscar en los ajustes', 'set.searchPh':'Buscar un ajuste', 'set.searchClear':'Borrar la búsqueda',
+    'set.none':'Ningún ajuste coincide.', 'set.expandAll':'Desplegar todo', 'set.collapseAll':'Plegar todo', 'set.presets':'Preajustes y restablecer',
+    'set.pCalm':'Calma', 'set.pCalmSub':'Suave y lento: sonido bajo, sin vibración ni destellos, más tiempo', 'set.pFocus':'Concentración',
+    'set.pFocusSub':'Menos ruido visual: sin destellos ni sacudidas, con sonido y vibración', 'set.pEasy':'Fácil de ver',
+    'set.pEasySub':'Alto contraste, ayuda de color, texto fácil de leer, más tiempo', 'set.pDefault':'Restablecer ajustes',
+    'set.pDefaultSub':'Todos los ajustes como al principio. Tu progreso se conserva.', 'set.apply':'Aplicar', 'set.active':'Activo',
+    'set.custom':'Personalizado', 'set.default':'Por defecto', 'set.applied':'Preajuste «{name}» aplicado', 'set.resetDone':'Ajustes restablecidos',
+    'set.undo':'Deshacer', 'set.undone':'Todo como estaba', 'set.on':'activado', 'set.off':'desactivado', 'set.flashW':'Destellos',
+    'set.easy':'Texto fácil de leer', 'set.easySub':'Una letra más sencilla y con más espacio',
     'set.backup':'Guardar progreso', 'set.backupSub':'Un archivo que puedes llevar a otro teléfono',
     'set.restore':'Restaurar progreso', 'set.restoreSub':'Carga una copia. Reemplaza lo que hay en este dispositivo.',
     'set.reset':'Borrar progreso', 'set.resetSub':'Nivel, XP, ventajas y todos los récords. Los ajustes se conservan.',
@@ -6345,6 +6597,19 @@ const STRINGS = {
     'set.speed':'Spielgeschwindigkeit', 'set.speedSub':'Mehr Zeit zum Nachdenken, gleiche Rätsel und Wertung',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Entspannt', 'set.speedSlow':'Langsam',
     'set.lang':'Sprache', 'set.data':'Daten',
+    'wish.nReady':'{n} bereit',
+    'stats.modesSum':'{a} von {b} gespielt',
+    'set.privacy':'Der Fortschritt wird nur auf diesem Gerät gespeichert. Es gibt kein Konto, und nichts wird hochgeladen.',
+    'set.searchLbl':'Einstellungen durchsuchen', 'set.searchPh':'Einstellung suchen', 'set.searchClear':'Suche löschen',
+    'set.none':'Keine Einstellung passt dazu.', 'set.expandAll':'Alle aufklappen', 'set.collapseAll':'Alle zuklappen',
+    'set.presets':'Voreinstellungen & Reset', 'set.pCalm':'Ruhig',
+    'set.pCalmSub':'Sanft und langsam: leiser Ton, keine Vibration, keine Blitze, mehr Zeit', 'set.pFocus':'Fokus',
+    'set.pFocusSub':'Weniger visuelle Unruhe: keine Blitze oder Wackler, Ton und Vibration bleiben', 'set.pEasy':'Gut lesbar',
+    'set.pEasySub':'Hoher Kontrast, Farbhilfe, leicht lesbarer Text, mehr Zeit', 'set.pDefault':'Auf Standard zurücksetzen',
+    'set.pDefaultSub':'Alle Einstellungen wie am Anfang. Dein Fortschritt bleibt erhalten.', 'set.apply':'Anwenden', 'set.active':'Aktiv',
+    'set.custom':'Eigene', 'set.default':'Standard', 'set.applied':'Voreinstellung „{name}“ angewendet', 'set.resetDone':'Einstellungen zurückgesetzt',
+    'set.undo':'Rückgängig', 'set.undone':'Wieder wie vorher', 'set.on':'an', 'set.off':'aus', 'set.flashW':'Blitze', 'set.easy':'Leicht lesbarer Text',
+    'set.easySub':'Eine schlichtere Schrift mit weiterem Abstand',
     'set.backup':'Fortschritt sichern', 'set.backupSub':'Eine Datei für ein anderes Telefon',
     'set.restore':'Fortschritt laden', 'set.restoreSub':'Sicherung laden. Ersetzt, was auf diesem Gerät ist.',
     'set.reset':'Fortschritt löschen', 'set.resetSub':'Level, XP, Boni und alle Rekorde. Einstellungen bleiben.',
@@ -6879,6 +7144,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.136.0', date:'2026-10-06', items:[
+    'Settings is tidy. Every group is a folded panel whose heading already says what it is set to, so the whole tab now fits on about one screen (it ran to over three) and nothing is far away. Open the group you want, or open them all with the button beside the search box.',
+    'Find a setting by typing. Search ignores accents and shows only what matches, already open. Presets change several things in one tap: Calm, Focus and Easy to see, plus Reset to defaults. Every one can be taken back with Undo, and your progress is never touched.',
+    'You and the Room are short. Last 14 days, Achievements, Every mode and Perks in You, and Riding along, Wishes, Cats and The room in the Room, are folded panels with their count in the heading and a gold dot when a wish or a perk is waiting. You went from almost eleven screens to about one, and the Room from over five to about one and a half.',
+    'New in Accessibility: Easy-read text, a plainer typeface with wider spacing. Every settings control, the Progress and Settings switch, the Collect buttons and the volume slider are now at least thumb size, and the grade marks in the Room are announced by screen readers.',
+  ] },
   { v:'0.135.0', date:'2026-10-06', items:[
     'The way out is always there. After a lost run on a small phone, Game Over used to be cut off: the score ran off the top and Back to menu was below the bottom of the screen with no way to reach it. The result now scrolls between the score and two buttons, Go again and Back to menu, which stay at the bottom of the screen on every phone, on its side, and on tablets.',
     'The exit button in a round is a proper thumb-sized target (it was a little too small), and the pause sheet’s buttons are all full size and the sheet scrolls on short screens.',
@@ -7858,6 +8129,8 @@ function applyStatic(){
   }
   const findX = $('modeFindX');
   if (findX) findX.setAttribute('aria-label', t('modes.clearFind'));
+  const setQ = $('setQ');
+  if (setQ) setQ.placeholder = t('set.searchPh');
 }
 
 /* The Settings rows line up down the left; their buttons did not line up down
@@ -17105,7 +17378,10 @@ function paintWishes(){
     wk.appendChild(btn);
   }
   host.appendChild(wk);
-  $('wishCount').textContent = w.list.filter(x => x.done).length + '/' + w.list.length;
+  const waiting = Wish.waiting();
+  $('wishCount').textContent = w.list.filter(x => x.done).length + '/' + w.list.length
+    + (waiting ? ' · ' + t('wish.nReady', { n: waiting }) : '');
+  $('wishCount').closest('.setcard').classList.toggle('hot', waiting > 0);
 }
 
 /* ── Cats ─────────────────────────────────────────────────────────────────── */
@@ -17281,7 +17557,7 @@ function paintDecor(){
     const b = mk('b'); b.textContent = t('decor.' + slot);
     const sm = mk('small'); sm.textContent = lv ? t('decor.' + slot + '.' + lv) : t('decor.none');
     txt.appendChild(b); txt.appendChild(sm);
-    const pips = mk('span', 'gpips'); pips.setAttribute('aria-label', t('room.grade', { n: lv }));
+    const pips = mk('span', 'gpips'); pips.setAttribute('role', 'img'); pips.setAttribute('aria-label', t('room.grade', { n: lv }));
     for (let k = 0; k < 3; k++){ const d = mk('i'); if (k < lv) d.className = 'on'; pips.appendChild(d); }
     row.appendChild(txt); row.appendChild(pips);
     const btn = mk('button', 'wclaim up'); btn.type = 'button';
@@ -19034,8 +19310,14 @@ function openPerks(){
   goTab('Stats');
   const pk = $('pkPanel');
   if (!pk) return;
-  pk.scrollIntoView({ block:'center', behavior: motionOff() ? 'auto' : 'smooth' });
-  pk.classList.remove('hail'); void pk.offsetWidth; pk.classList.add('hail');
+  /* Opened first, and scrolled to once it has finished unfolding — centring on
+     a panel that is still a header's height lands somewhere else entirely. */
+  const wasShut = !pk.classList.contains('open');
+  if (wasShut) accSet(pk, true);
+  setTimeout(() => {
+    pk.scrollIntoView({ block:'center', behavior: motionOff() ? 'auto' : 'smooth' });
+    pk.classList.remove('hail'); void pk.offsetWidth; pk.classList.add('hail');
+  }, wasShut ? 260 : 0);
 }
 function paintPerkCall(){
   const n = Perk.waiting();
@@ -19447,6 +19729,7 @@ function paintPerks(){
   const life = save.lifetime || 0;
   const slots = Perk.slots(), used = (save.perks || []).length, free = Perk.free();
   $('pkSlots').textContent = t('perk.used', { a: used, b: slots });
+  $('pkPanel').classList.toggle('hot', Perk.waiting() > 0);
   const next = Perk.nextTier();
   const floor = next.slot
     ? (PERK_TIERS[PERK_TIERS.indexOf(next.at) - 1] || 0)
@@ -19587,6 +19870,7 @@ function paintStats(){
   const counts = { all: MODE_IDS.length,
                    played: MODE_IDS.filter(id => save.marathon[id]).length };
   counts['new'] = counts.all - counts.played;
+  $('modesSum').textContent = t('stats.modesSum', { a: counts.played, b: counts.all });
   Array.from($('sFilter').children).forEach(b => {
     const on = b.dataset.f === statFilter;
     b.classList.toggle('on', on);
@@ -19657,7 +19941,7 @@ function paintSettings(){
      made from another tab, this screen is hidden and every width measures zero.
      Painting happens when it is on screen. */
   levelSettingButtons();
-  [['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast']]
+  [['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swEasy','easyRead']]
     .forEach(([id,key]) => $(id).setAttribute('aria-checked', String(!!save[key])));
   $('swFlashes').setAttribute('aria-checked', String(save.flashes !== false));
   $('volRange').value = String(Math.round(volumeNow() * 100));
@@ -19684,6 +19968,7 @@ function paintSettings(){
     prev.dataset.built = '1';
   }
   paintCosmetics();
+  paintSettingsSummaries();
 }
 
 /* Rebuilt every visit, not cached once like the colour-assist preview above —
@@ -20226,6 +20511,7 @@ Array.from($('speedRow').children).forEach(b =>
 $('volRange').addEventListener('input', () => { save.volume = +$('volRange').value / 100; applyVolume(); });
 $('volRange').addEventListener('change', () => { persist(); sfx.tap(); });
 function applyContrast(){ document.documentElement.classList.toggle('hc', !!save.contrast); }
+function applyEasyRead(){ document.documentElement.classList.toggle('easyread', !!save.easyRead); }
 
 $('homeBtn').addEventListener('click', () => goTab('Play'));
 $('againBtn').addEventListener('click', () =>
@@ -20247,13 +20533,14 @@ $('quitBtn').addEventListener('click', () => {
   run = null; clearBoard(); goTab('Play');
 });
 
-[['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swFlashes','flashes']]
+[['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swFlashes','flashes'],['swEasy','easyRead']]
   .forEach(([id, key]) => {
     const sw = $(id);
     const flip = () => {
       if (sw.disabled) return;
       save[key] = key === 'flashes' ? (save.flashes === false) : !save[key];
       if (key === 'contrast') applyContrast();
+      if (key === 'easyRead') applyEasyRead();
       persist(); paintSettings();
       if (key === 'sound' && save.sound) sfx.tap();
       if (key === 'haptics' && save.haptics) buzz('good');
@@ -20363,6 +20650,186 @@ $('resetGone').addEventListener('click', () => {
   sfx.bad(); buzz('bad');
 });
 
+/* ═══ Settings: panels, search, presets ═══════════════════════════════════
+   A preset is a patch over the nine settings a player can change, and the one
+   before it is kept so that applying the wrong one is a single tap to undo —
+   no confirm dialog for something that can simply be taken back. "Reset to
+   defaults" is the same machinery with every key at its default. The open or
+   closed state of each panel is a view preference, not progress, so it lives
+   under its own key: a reset, an export or an import never touches it. */
+const SETTING_KEYS = ['sound','volume','haptics','flashes','reduceMotion','gameSpeed','contrast','colorAssist','easyRead'];
+const PRESETS = {
+  calm:  { sound:true, volume:0.4, haptics:false, flashes:false, reduceMotion:true, gameSpeed:'relaxed' },
+  focus: { sound:true, volume:0.6, haptics:true,  flashes:false, reduceMotion:true, gameSpeed:'normal' },
+  easy:  { contrast:true, colorAssist:true, easyRead:true, flashes:false, reduceMotion:true, gameSpeed:'relaxed' }
+};
+const PRESET_NAMES = { calm:'set.pCalm', focus:'set.pFocus', easy:'set.pEasy' };
+const settingNow = k => k === 'flashes' ? save.flashes !== false : k === 'volume' ? volumeNow() : (save[k] === undefined ? defaults[k] : save[k]);
+const settingsAre = patch => Object.keys(patch).every(k =>
+  k === 'volume' ? Math.abs(settingNow(k) - patch[k]) < 0.01 : settingNow(k) === patch[k]);
+const DEFAULT_PATCH = () => SETTING_KEYS.reduce((o, k) => { o[k] = defaults[k]; return o; }, {});
+
+let undoSnap = null, statusTimer = 0;
+function setStatus(text, undoable){
+  const box = $('setStatus');
+  $('setStatusTxt').textContent = text;
+  $('setUndo').hidden = !undoable;
+  box.hidden = false;
+  clearTimeout(statusTimer);
+  statusTimer = setTimeout(() => { box.hidden = true; undoSnap = null; }, undoable ? 12000 : 3500);
+}
+function applySettingsPatch(patch, text, undoable){
+  Object.assign(save, patch);
+  applyVolume(); applyGameSpeed(); applyContrast(); applyEasyRead();
+  persist(); paintSettings(); sfx.tap();
+  setStatus(text, undoable);
+}
+function applyPreset(id){
+  undoSnap = SETTING_KEYS.reduce((o, k) => { o[k] = save[k]; return o; }, {});
+  if (id === 'default') return applySettingsPatch(DEFAULT_PATCH(), t('set.resetDone'), true);
+  applySettingsPatch(PRESETS[id], t('set.applied', { name: t(PRESET_NAMES[id]) }), true);
+}
+$('setUndo').addEventListener('click', () => {
+  if (!undoSnap) return;
+  const back = undoSnap; undoSnap = null;
+  applySettingsPatch(back, t('set.undone'), false);
+});
+document.querySelectorAll('#accB_presets [data-p]').forEach(b => {
+  b.addEventListener('click', () => applyPreset(b.dataset.p));
+  const row = b.closest('.setrow');
+  row.addEventListener('click', ev => { if (!b.contains(ev.target)) applyPreset(b.dataset.p); });
+});
+
+function paintSettingsSummaries(){
+  const on = v => t(v ? 'set.on' : 'set.off');
+  const sum = {};
+  sum.presets = Object.keys(PRESETS).filter(id => settingsAre(PRESETS[id])).map(id => t(PRESET_NAMES[id]))[0]
+    || (settingsAre(DEFAULT_PATCH()) ? t('set.default') : t('set.custom'));
+  sum.feedback = [t('set.sound') + ': ' + on(save.sound), t('set.vib') + ': ' + on(save.haptics && canBuzz), t('set.flashW') + ': ' + on(save.flashes !== false)].join(' · ');
+  const c = COSMETICS.find(x => x.id === save.cosmetic) || COSMETICS[0];
+  sum.cosmetic = t('cosmetic.' + c.id);
+  const acc = [];
+  if (save.contrast) acc.push(t('set.contrast'));
+  if (save.colorAssist) acc.push(t('set.assist'));
+  if (save.easyRead) acc.push(t('set.easy'));
+  if (save.gameSpeed === 'relaxed') acc.push(t('set.speedRelaxed'));
+  if (save.gameSpeed === 'slow') acc.push(t('set.speedSlow'));
+  sum.access = acc.length ? acc.join(' · ') : t('set.default');
+  sum.lang = $('langName').textContent;
+  sum.about = VERSION_TAG;
+  sum.data = '';
+  Object.keys(sum).forEach(k => { $('accS_' + k).textContent = sum[k]; });
+  document.querySelectorAll('#accB_presets [data-p]').forEach(b => {
+    const p = PRESETS[b.dataset.p];
+    if (!p) return;
+    const live = settingsAre(p);
+    b.setAttribute('aria-pressed', String(live));
+    b.textContent = t(live ? 'set.active' : 'set.apply');
+  });
+  accSync(accCards()[0]);
+}
+
+const accOpen = (() => { try { return JSON.parse(localStorage.getItem('dd.acc') || '{}') || {}; } catch(e){ return {}; } })();
+/* Settings, You and Room all fold the same way, so the panels are found by class
+   and keyed by name. Only Settings has the search and the expand-all button. */
+const accCards = () => Array.from(document.querySelectorAll('#tabSettings .setcard.acc'));
+const accEvery = () => Array.from(document.querySelectorAll('.setcard.acc'));
+const accShown = c => c.classList.contains('open') || c.classList.contains('sfopen');
+function accSync(c){
+  c.querySelector('.acchead').setAttribute('aria-expanded', String(accShown(c)));
+  if (!c.closest('#tabSettings')) return;
+  const all = $('setAll'), cards = accCards().filter(x => !x.classList.contains('sfhide'));
+  const open = cards.length > 0 && cards.every(accShown);
+  all.dataset.open = open ? '1' : '0';
+  all.setAttribute('aria-label', t(open ? 'set.collapseAll' : 'set.expandAll'));
+}
+function accSet(c, open, bringIntoView){
+  c.classList.toggle('open', open);
+  accOpen[c.dataset.acc] = open ? 1 : 0;
+  try { localStorage.setItem('dd.acc', JSON.stringify(accOpen)); } catch(e){}
+  accSync(c);
+  /* A panel opened near the bottom grew off the screen; take the player to it
+     rather than leave them to scroll for what they just asked to see. */
+  if (open && bringIntoView) setTimeout(() => {
+    const sc = c.closest('.scroll'); if (!sc) return;
+    const bar = c.closest('#tabSettings') ? $('setStatus').parentNode : null;
+    const top = sc.getBoundingClientRect().top + (bar ? bar.offsetHeight : 0) + 6;
+    const r = c.getBoundingClientRect();
+    if (r.bottom > sc.getBoundingClientRect().bottom || r.top < top)
+      sc.scrollTo({ top: sc.scrollTop + r.top - top, behavior: motionOff() ? 'auto' : 'smooth' });
+  }, 260);
+}
+accEvery().forEach(c => {
+  /* What the player last chose wins; a panel that has never been touched opens
+     only if the page says it should (the day's wishes, which are the reason to
+     look in the Room at all). */
+  const was = accOpen[c.dataset.acc];
+  c.classList.toggle('open', was === undefined ? c.dataset.open === '1' : !!was);
+  c.querySelector('.acchead').addEventListener('click', () => {
+    if (c.classList.contains('sfopen')) return;
+    accSet(c, !c.classList.contains('open'), true);
+  });
+  accSync(c);
+});
+$('setAll').addEventListener('click', () => {
+  const cards = accCards().filter(c => !c.classList.contains('sfhide'));
+  const want = !cards.every(accShown);
+  cards.forEach(c => { if (c.classList.contains('sfopen')) return; accSet(c, want); });
+  sfx.tap();
+});
+
+/* Search: every word typed has to appear somewhere in the row (its name, its
+   explanation, the labels of the buttons that belong to it) or in the group's
+   own name, which keeps that group whole. Accents are ignored, so "contraste"
+   and "Kontrast" are found however they are typed. */
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+function settingUnits(card){
+  const units = []; let cur = null;
+  Array.from(card.querySelector('.accin').children).forEach(n => {
+    if (n.classList.contains('setrow') || !cur){ cur = []; units.push(cur); }
+    cur.push(n);
+  });
+  return units;
+}
+function filterSettings(){
+  const q = $('setQ').value;
+  const words = norm(q).split(/\s+/).filter(Boolean);
+  $('setQx').hidden = !words.length;
+  let shown = 0;
+  accCards().forEach(card => {
+    const units = settingUnits(card);
+    if (!words.length){
+      card.classList.remove('sfhide', 'sfopen');
+      units.forEach(u => u.forEach(n => n.classList.remove('sfhide')));
+      shown++;
+      return accSync(card);
+    }
+    const title = norm(card.querySelector('.acct b').textContent);
+    const whole = words.every(w => title.includes(w));
+    let hits = 0;
+    units.forEach(u => {
+      /* A preset's explanation names the settings it changes, so matching on it
+         would list every preset under "vibration" — only its name counts. */
+      const text = norm(u.map(n => card.dataset.acc === 'presets' ? n.querySelector('b').textContent : n.textContent).join(' '));
+      const hit = whole || words.every(w => text.includes(w));
+      u.forEach(n => n.classList.toggle('sfhide', !hit));
+      if (hit) hits++;
+    });
+    card.classList.toggle('sfhide', !hits);
+    card.classList.toggle('sfopen', !!hits);
+    if (hits) shown++;
+    accSync(card);
+  });
+  $('setNone').hidden = !words.length || shown > 0;
+  const first = accCards()[0]; if (first) accSync(first);
+}
+$('setQ').addEventListener('input', filterSettings);
+$('setQ').addEventListener('keydown', ev => {
+  if (ev.key === 'Escape' && $('setQ').value){ ev.stopPropagation(); $('setQ').value = ''; filterSettings(); }
+  else if (ev.key === 'Enter') $('setQ').blur();
+});
+$('setQx').addEventListener('click', () => { $('setQ').value = ''; filterSettings(); $('setQ').focus(); });
+
 /* ═══ Back button ═════════════════════════════════════════════════════════
    Every screen change above lives entirely in JS state — show(), setPlayView,
    catFilter — with nothing ever pushed to the History API, so a hardware or
@@ -20414,6 +20881,7 @@ function boot(){
   backfillAchievements();
   applyGameSpeed();
   applyContrast();
+  applyEasyRead();
   persist();
   show('Play');
   paintAll();

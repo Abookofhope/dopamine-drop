@@ -198,3 +198,15 @@ export async function openMyStuff(page){
   await page.evaluate(() => document.getElementById('waysBtn').click());
   await page.waitForTimeout(250);
 }
+
+/* Settings, You and Room fold their long sections into panels that start shut.
+ * A probe that wants a control inside one opens it the way a player does: by
+ * its header. With no names given, every shut panel on the screen opens. */
+export async function openPanels(page, ...keys){
+  const shut = await page.evaluate(want => [...document.querySelectorAll('.setcard.acc')]
+    .filter(c => c.getClientRects().length && c.querySelector('.acchead').getAttribute('aria-expanded') !== 'true'
+      && (!want.length || want.includes(c.dataset.acc))).map(c => c.dataset.acc), keys);
+  for (const k of shut) await page.click('#accH_' + k);
+  if (shut.length) await page.waitForTimeout(340);
+  return shut;
+}

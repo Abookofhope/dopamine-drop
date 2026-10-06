@@ -11,7 +11,7 @@
  *   node tools/probe/meta.mjs
  */
 import { chromium } from 'playwright';
-import { openApp, goTab, openMyStuff } from './harness.mjs';
+import { openApp, goTab, openMyStuff, openPanels } from './harness.mjs';
 
 let bad = 0;
 const check = (ok, msg) => { if (!ok) bad++; console.log((ok ? 'ok   ' : 'FAIL ') + msg); };
@@ -198,6 +198,7 @@ const firstBoard = page => page.waitForFunction(() => document.querySelector('#s
   await openApp(page, { schema: 11, reduceMotion: true, xp: 30000, lifetime: 50000, yarn: 400, room: {},
     pals: { biscuit: { bond: 5, pet: null, bow: '' } }, palsOn: ['biscuit'] });
   await goTab(page, 'Room');
+  await openPanels(page);   /* the lists sit in panels that start shut */
   const ui = await page.evaluate(() => ({
     yarn: document.getElementById('yarnNum').textContent.replace(/\D/g, ''),
     scene: !!document.querySelector('#roomScene svg.roomsvg'),
