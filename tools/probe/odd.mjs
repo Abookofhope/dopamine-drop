@@ -81,8 +81,10 @@ for (const [xp, label, paws] of [[0, 'a new player', 3], [2000, 'a middle level'
   check(a.faded === 1 && a.pawsLeft === 2 && (await score(page)) === 0, `a wrong tile at the start fades out and takes one paw, and the round goes on (faded ${a.faded}, ${a.pawsLeft} paws left)`);
   check(/2/.test(a.prompt) && /try again/i.test(a.prompt), `and the words say how many tries are left ("${a.prompt}")`);
   await tap(page, a, w);
+  /* The odd tile is read before the first tap, never after it: once a tile has been tapped or Sniffed the prompt line says something else, and on a
+     "lightest" or "darkest" board a read of the colours alone cannot tell which question was asked. */
   check((await read(page)).pawsLeft === 2, 'tapping the faded tile again costs nothing');
-  await tap(page, a, a.odd); await page.waitForTimeout(400);
+  await tap(page, a, s.odd); await page.waitForTimeout(400);
   check(await playOut(page), 'finding the odd one after a wrong tap still wins the round');
   await page.close();
 }
@@ -115,11 +117,11 @@ for (const [xp, label, count] of [[0, 'a new player', 2], [60000, 'a high level'
   const a = await read(page);
   const want = Math.floor((s.n - 1) / 2);
   check(a.faded === want, `${label}: Sniff fades about half of the tiles that are left (${a.faded} of ${s.n}, wanted ${want})`);
-  const stillOdd = await page.evaluate(i => !document.querySelectorAll('#surface .oddwrap .tile')[i].classList.contains('ruled'), a.odd);
+  const stillOdd = await page.evaluate(i => !document.querySelectorAll('#surface .oddwrap .tile')[i].classList.contains('ruled'), s.odd);
   check(stillOdd, `${label}: and never the odd one`);
   check(a.pawsLeft === a.paws, `${label}: and costs no paw`);
   if (count === 2){ await page.locator('.oddbar .sumtool').first().click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(250); const b = await read(page); check(b.faded > a.faded && b.sniffOff, `${label}: a second Sniff fades more, then Sniff is used up (${b.faded} faded)`); }
-  await tap(page, a, a.odd); await page.waitForTimeout(400);
+  await tap(page, a, s.odd); await page.waitForTimeout(400);
   check(await playOut(page), `${label}: the odd one still wins after Sniff`);
   await page.close();
 }
