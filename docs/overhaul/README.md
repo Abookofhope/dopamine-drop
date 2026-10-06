@@ -17,6 +17,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 |---|---|
 | v0.135.0 | The way out is always there: Game Over scrolls with a pinned Go again / Back to menu bar, the exit button and pause sheet are thumb-sized, scrolling a list no longer presses the buttons under the finger |
 | v0.136.0 | Settings, You and the Room are folded panels with live summaries; settings search; presets (Calm, Focus, Easy to see) and Reset to defaults, all with Undo; easy-read text; 44px targets |
+| v0.137.0 | The level-up card stays until you close it and says what the run was worth, what the level unlocked and what is next; every solve sends a token to the score |
 
 ## Ground rules the work follows
 

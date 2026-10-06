@@ -18,6 +18,7 @@ Target: WCAG 2.2 level AA. "Evidence" names the check that backs the status; "Op
 | 2.2.1 Timing adjustable | Partial | Game speed Relaxed and Slow stretch every clock, and an untimed Endless mode exists; the Daily and timed modes cannot be switched to untimed |
 | 2.2.2 Pause, stop, hide | Pass | Pause on every run; Reduce motion stops particles and shake |
 | 2.3.1 Three flashes | Control provided; not independently audited | The Screen flashes switch turns the colour wash off, and the Calm, Focus and Easy to see presets set it off. A solve or miss is one 200 to 260 ms wash, but a frame-by-frame photosensitivity audit is **Open** |
+| 2.1.2 No keyboard trap | Pass | The level-up card is modal and keeps Tab on its one button on purpose; Escape, Enter or a tap closes it and focus returns to where it was |
 | 2.4.3 Focus order | Pass | DOM order matches visual order in panels |
 | 2.4.7 Focus visible | Pass | Gold 2.5px ring; inside the sticky search and panel headers it is drawn inside so the scroller does not clip it |
 | 2.5.1 Pointer gestures | Partial | Path-based gestures (draw, drag) exist in several modes; which have a single-pointer tap alternative has not been audited mode by mode, **Open** |

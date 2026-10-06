@@ -14,8 +14,8 @@ Method: each finding was reproduced with a script on a served build (real touch 
 | 6 | Navigation | The Room is 5.3 screens: scene, gift, four long lists | measured | High | Fixed in v0.136.0 (1.35 screens) |
 | 7 | Accessibility | The Room's grade marks have an `aria-label` on a span with no role (8 axe violations) | axe, WCAG 2.1 A/AA | Medium | Fixed in v0.136.0 |
 | 8 | Localisation | The "progress is saved on this device only" line was English-only | read | Low | Fixed in v0.136.0 |
-| 9 | Game feel | The level-up celebration disappears by itself after 1.9 s, so a player who looked away misses it; its text is English-only | read | High | Open (next release) |
-| 10 | Game feel | A solve bursts and flashes at the tile; nothing travels to the score, so the reward does not "arrive" | read | Medium | Open (next release) |
+| 9 | Game feel | The level-up celebration disappears by itself after 1.9 s, so a player who looked away misses it; its text and the Game Over level line are English-only | read; `levelup.mjs` 35 failed checks on v0.136.0 | High | Fixed in v0.137.0 |
+| 10 | Game feel | A solve bursts and flashes at the tile; nothing travels to the score, so the reward does not "arrive" | read | Medium | Fixed in v0.137.0 (a token flies from the solved piece to the score) |
 | 11 | Game feel | The run summary does not say how much XP the run earned or what it unlocked | read | Medium | Open |
 | 12 | Accessibility | No text size control; the layout is built in px | read | Medium | Open (needs a rem migration) |
 | 13 | Accessibility | Sounds have no visual captions | read | Low to medium | Open |

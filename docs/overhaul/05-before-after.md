@@ -29,6 +29,17 @@ All numbers come from probes against served builds. "Before" is the build named 
 
 Other sizes (closed): 320x568 Settings 1.29 screens, You 1.41, Room 1.52; 390x844 Settings 1.0, You 1.0, Room 1.0 (all fit without scrolling).
 
+## v0.137.0: celebrations that wait, rewards that arrive
+
+| Measure | Before (v0.136.0) | After (v0.137.0) |
+|---|---|---|
+| How long the level-up card stays | 1.9 s, then gone | until closed (Nice, back button, Escape, tap outside) |
+| What it says | "Level N" and a star count, English only | level, XP the run earned, colour unlocked, next unlock, in four languages |
+| Game Over level line | English only | translated |
+| Where a solve's reward goes | a burst at the piece | a token flies from the piece to the score, which jumps |
+| With Reduce motion | n/a | no token, no sparks; same card |
+| `levelup.mjs` failed checks | 35 | 0 |
+
 ## How to reproduce
 
 ```

@@ -6,8 +6,7 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 
 | # | Item | Why | Expected impact | Effort |
 |---|---|---|---|---|
-| Q1 | Level-up stays until dismissed: a card with the level, the XP the run earned, anything unlocked and a Nice button; Escape, Enter and a tap outside also close it; no timeout; localised | Currently gone after 1.9 s and English-only; the moment players should savour is missable | High: the biggest celebration in the game becomes reliable | S |
-| Q2 | Solve reward travels: a small yarn token flies from the solved element to the score chip, which pulses on arrival; the streak chip pulses on a streak step | Reward feels earned when it arrives somewhere; works in all 44 modes through the shared solve path | High on "feels alive"; reduced-motion safe | S |
+| Q2 | Streak chip pulses and a second token trail on a streak step | Extends the token that now flies on every solve | Medium | S |
 | Q3 | Run summary shows XP earned, the level progress bar filling, yarn earned and anything newly unlocked, with a count-up | The end of a run is the natural reward beat and currently says too little | Medium to high | S |
 | Q4 | A 44px token (`--hit`) and a probe that scans every visible control on every shell screen | Stops the next small button from sneaking in | Medium (prevention) | S |
 | Q5 | Settings: a "Recently changed" line in the presets header; Reset on a single panel | Small clarity gains once the panels exist | Low to medium | S |
@@ -49,7 +48,7 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 
 ## Done in this overhaul so far
 
-See [05-before-after.md](05-before-after.md). Brief items now complete: mobile HUD and Game Over never hide the way out; Room, Settings and Games scroll without pressing items; Settings, You and the Room as panels; settings search, presets, reset to defaults, undo; easy-read text; 44px targets across the shell; axe clean on the shell screens.
+See [05-before-after.md](05-before-after.md). Brief items now complete: a level-up card that stays until closed and a reward token on every solve (v0.137.0); mobile HUD and Game Over never hide the way out; Room, Settings and Games scroll without pressing items; Settings, You and the Room as panels; settings search, presets, reset to defaults, undo; easy-read text; 44px targets across the shell; axe clean on the shell screens.
 
 ## Principles for choosing
 

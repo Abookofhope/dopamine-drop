@@ -1905,11 +1905,19 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 @keyframes swapIn{0%{opacity:0}14%{opacity:1}68%{opacity:1}100%{opacity:0}}
 @keyframes swapWord{0%{transform:translateY(8px) scale(.96)}22%{transform:none}100%{transform:none}}
 
+/* A solve's reward travels: a token leaves the solved piece and lands on the score. */
+.flyer{
+  position:fixed;left:0;top:0;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
+  pointer-events:none;z-index:60;will-change:transform,opacity;
+  box-shadow:0 0 10px 1px currentColor,inset 0 -3px 0 #00000026;
+}
+
 /* ── Level up ────────────────────────────────────────────────────────────── */
 #levelup{
-  position:fixed;inset:0;z-index:70;display:grid;place-items:center;
-  background:#0D0918ee;pointer-events:none;
+  position:fixed;inset:0;z-index:70;display:flex;overflow-y:auto;overscroll-behavior:contain;
+  background:#0D0918f4;
 }
+#levelup[hidden]{display:none}
 #levelup .burst{
   position:absolute;width:8px;height:8px;border-radius:2px;
   animation:lvspark 900ms ease-out forwards;
@@ -1918,14 +1926,30 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   0%{opacity:1;transform:translate(-50%,-50%) scale(1)}
   100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.2) rotate(220deg)}
 }
-#levelup .card{text-align:center;animation:lvcard 700ms cubic-bezier(.2,.9,.3,1)}
+#levelup .card{
+  text-align:center;animation:lvcard 700ms cubic-bezier(.2,.9,.3,1);
+  margin:auto;width:min(100%,360px);padding:22px 20px calc(22px + env(safe-area-inset-bottom));
+}
+/* What this level brought, one line each, so the card says more than a number. */
+#levelup .lurew{list-style:none;margin:14px 0 18px;padding:0;display:grid;gap:8px;text-align:left}
+#levelup .lurew:empty{display:none}
+#levelup .lurew li{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-md);
+  background:#ffffff0c;border:1px solid var(--edge-soft);font-size:13.5px;color:var(--cream);
+}
+#levelup .lurew li.next{color:var(--haze);background:none;border-style:dashed}
+#levelup .lurew .dot{width:16px;height:16px;border-radius:50%;flex:none;background:var(--c,var(--zap))}
+#levelup .cta{width:100%;justify-content:center;min-height:56px}
+#levelup .cta .lbl{text-align:center}
 @keyframes lvcard{0%{transform:scale(.6) translateY(20px);opacity:0}55%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
 #levelup .ring{
-  width:130px;height:130px;margin:0 auto 14px;border-radius:50%;
+  /* .ring is also the tap ripple's class, which is absolutely positioned: say so here. */
+  position:relative;width:130px;height:130px;margin:0 auto 14px;border-radius:50%;
   background:conic-gradient(var(--zap) 100%, var(--ink-3) 0);
   display:grid;place-items:center;
-  animation:lvring 900ms cubic-bezier(.2,.9,.3,1);
+  animation:lvring 900ms cubic-bezier(.2,.9,.3,1),lvglow 2.4s ease-in-out 900ms infinite alternate;
 }
+@keyframes lvglow{from{box-shadow:0 0 0 0 #FFC53D00}to{box-shadow:0 0 34px 2px #FFC53D55}}
 @keyframes lvring{0%{transform:rotate(-140deg) scale(.6)}100%{transform:rotate(0) scale(1)}}
 #levelup .ring i{
   width:112px;height:112px;border-radius:50%;background:var(--ink);
@@ -4347,12 +4371,16 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
   </div>
 </div>
 
-<div id="levelup" hidden>
+<!-- Stays until it is dismissed: the biggest moment in the game used to vanish
+     after 1.9 seconds, whether or not anyone was looking. -->
+<div id="levelup" hidden role="dialog" aria-modal="true" aria-labelledby="luTitle">
   <div class="card">
     <div class="ring"><i id="luNum">2</i></div>
-    <div class="eyebrow">Level up</div>
+    <div class="eyebrow" data-i18n="lvl.eyebrow">Level up</div>
     <h3 id="luTitle">Level 2</h3>
-    <p id="luSub">Keep going.</p>
+    <p id="luSub"></p>
+    <ul class="lurew" id="luRew"></ul>
+    <button class="cta" id="luOk" type="button"><span class="lbl"><b data-i18n="lvl.ok">Nice!</b></span></button>
   </div>
 </div>
 
@@ -4410,7 +4438,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.136.0';
+const VERSION_TAG = 'v0.137.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -5075,6 +5103,9 @@ const STRINGS = {
     'set.speed':'Game speed', 'set.speedSub':'More time to think, same puzzles and scoring',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Relaxed', 'set.speedSlow':'Slow',
     'set.lang':'Language', 'set.data':'Data',
+    'lvl.eyebrow':'Level up', 'lvl.title':'Level {n}', 'lvl.star1':'1 star earned so far', 'lvl.stars':'{n} stars earned so far',
+    'lvl.allModes':'Every mode is already yours to play.', 'lvl.xp':'+{n} XP this run', 'lvl.unlock':'New victory colour: {name}',
+    'lvl.next':'Next unlock: {name} at level {n}', 'lvl.ok':'Nice!', 'lvl.levels':'{n} levels in one run!', 'lvl.range':'Level {a} → {b}',
     'wish.nReady':'{n} ready',
     'stats.modesSum':'{a} of {b} played',
     'set.privacy':'Progress is saved on this device only. There is no account, and nothing here is uploaded.',
@@ -5582,6 +5613,10 @@ const STRINGS = {
     'set.speed':'Vitesse de jeu', 'set.speedSub':'Plus de temps pour réfléchir, mêmes énigmes et le même score',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Détendu', 'set.speedSlow':'Lent',
     'set.lang':'Langue', 'set.data':'Données',
+    'lvl.eyebrow':'Niveau supérieur', 'lvl.title':'Niveau {n}', 'lvl.star1':'1 étoile gagnée jusqu’ici', 'lvl.stars':'{n} étoiles gagnées jusqu’ici',
+    'lvl.allModes':'Tous les modes sont déjà à vous.', 'lvl.xp':'+{n} XP sur cette partie', 'lvl.unlock':'Nouvelle couleur de victoire : {name}',
+    'lvl.next':'Prochain déblocage : {name} au niveau {n}', 'lvl.ok':'Super !', 'lvl.levels':'{n} niveaux en une partie !',
+    'lvl.range':'Niveau {a} → {b}',
     'wish.nReady':'{n} à récupérer',
     'stats.modesSum':'{a} sur {b} essayés',
     'set.privacy':'La progression est enregistrée sur cet appareil uniquement. Il n’y a pas de compte, et rien n’est envoyé.',
@@ -6090,6 +6125,10 @@ const STRINGS = {
     'set.speed':'Velocidad de juego', 'set.speedSub':'Más tiempo para pensar, mismos puzles y puntuación',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Relajado', 'set.speedSlow':'Lento',
     'set.lang':'Idioma', 'set.data':'Datos',
+    'lvl.eyebrow':'Subes de nivel', 'lvl.title':'Nivel {n}', 'lvl.star1':'1 estrella ganada hasta ahora',
+    'lvl.stars':'{n} estrellas ganadas hasta ahora', 'lvl.allModes':'Todos los modos ya son tuyos.', 'lvl.xp':'+{n} XP en esta partida',
+    'lvl.unlock':'Nuevo color de victoria: {name}', 'lvl.next':'Próximo desbloqueo: {name} en el nivel {n}', 'lvl.ok':'¡Genial!',
+    'lvl.levels':'¡{n} niveles de golpe!', 'lvl.range':'Nivel {a} → {b}',
     'wish.nReady':'{n} por cobrar',
     'stats.modesSum':'{a} de {b} probados',
     'set.privacy':'El progreso se guarda solo en este dispositivo. No hay cuenta y no se sube nada.',
@@ -6597,6 +6636,9 @@ const STRINGS = {
     'set.speed':'Spielgeschwindigkeit', 'set.speedSub':'Mehr Zeit zum Nachdenken, gleiche Rätsel und Wertung',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Entspannt', 'set.speedSlow':'Langsam',
     'set.lang':'Sprache', 'set.data':'Daten',
+    'lvl.eyebrow':'Level-up', 'lvl.title':'Level {n}', 'lvl.star1':'1 Stern bisher verdient', 'lvl.stars':'{n} Sterne bisher verdient',
+    'lvl.allModes':'Alle Modi stehen dir schon offen.', 'lvl.xp':'+{n} XP in dieser Runde', 'lvl.unlock':'Neue Siegesfarbe: {name}',
+    'lvl.next':'Nächste Freischaltung: {name} ab Level {n}', 'lvl.ok':'Super!', 'lvl.levels':'{n} Level in einer Runde!', 'lvl.range':'Level {a} → {b}',
     'wish.nReady':'{n} bereit',
     'stats.modesSum':'{a} von {b} gespielt',
     'set.privacy':'Der Fortschritt wird nur auf diesem Gerät gespeichert. Es gibt kein Konto, und nichts wird hochgeladen.',
@@ -7144,6 +7186,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.137.0', date:'2026-10-06', items:[
+    'Level-ups wait for you. The card now stays until you close it (the Nice button, the back button, Escape or a tap outside it), instead of vanishing after two seconds. It says what the run was worth in XP, which victory colour the level unlocked and what comes next, and it is in all four languages, as is the level line on Game Over.',
+    'Every solve sends its reward to the score. A small token leaves the piece you solved, arcs up and lands on the score, which jumps in answer. It is left out when Reduce motion is on.',
+  ] },
   { v:'0.136.0', date:'2026-10-06', items:[
     'Settings is tidy. Every group is a folded panel whose heading already says what it is set to, so the whole tab now fits on about one screen (it ran to over three) and nothing is far away. Open the group you want, or open them all with the button beside the search box.',
     'Find a setting by typing. Search ignores accents and shows only what matches, already open. Presets change several things in one tap: Calm, Focus and Easy to see, plus Reset to defaults. Every one can be taken back with Undo, and your progress is never touched.',
@@ -17935,23 +17981,37 @@ function flash(cls){
 /* ═══ Level up ════════════════════════════════════════════════════════════
    Queued, never interrupting. A level earned mid-run waits for the run to end
    rather than freezing the board under the player's hands.                 */
-let pendingLevel = 0;
-function celebrateLevel(level){
+let pendingLevel = 0, luReturn = null;
+function celebrateLevel(level, from, gained){
   const host = $('levelup');
   $('luNum').textContent = String(level);
-  $('luTitle').textContent = 'Level ' + level;
+  $('luTitle').textContent = t('lvl.title', { n: level });
   const stars = totalStars();
   $('luSub').textContent = stars
-    ? stars + (stars === 1 ? ' star earned so far' : ' stars earned so far')
-    : 'Every mode is already yours to play.';
+    ? t(stars === 1 ? 'lvl.star1' : 'lvl.stars', { n: stars })
+    : t('lvl.allModes');
+  /* What it brought: the run's XP, a colour if a level just unlocked one, and
+     the next thing to aim for. */
+  const rew = [];
+  const row = (txt, cls, c) => { const li = mk('li', cls || ''); if (c){ const d = mk('i', 'dot'); d.style.setProperty('--c', c); li.appendChild(d); } li.appendChild(document.createTextNode(txt)); rew.push(li); };
+  if (level - from > 1) row(t('lvl.levels', { n: level - from }));
+  if (gained > 0) row(t('lvl.xp', { n: fmt(gained) }));
+  COSMETICS.filter(c => c.lvl > from && c.lvl <= level).forEach(c =>
+    row(t('lvl.unlock', { name: t('cosmetic.' + c.id) }), '', c.hex));
+  const nx = COSMETICS.find(c => c.lvl > level);
+  if (nx) row(t('lvl.next', { name: t('cosmetic.' + nx.id), n: nx.lvl }), 'next', nx.hex);
+  $('luRew').replaceChildren(...rew);
+  luReturn = document.activeElement;
   host.hidden = false;
+  host.scrollTop = 0;
+  $('luOk').focus();
   sfx.level(); buzz('win');
 
   if (!motionOff()){
     for (let i=0;i<26;i++){
       const s = mk('span','burst');
       const ang = Math.random()*Math.PI*2, dist = 90 + Math.random()*150;
-      s.style.left = '50%'; s.style.top = '46%';
+      s.style.left = '50%'; s.style.top = '40%';
       s.style.setProperty('--dx', Math.cos(ang)*dist + 'px');
       s.style.setProperty('--dy', Math.sin(ang)*dist + 'px');
       s.style.background = [ '#FFC53D','#FF5B39','#33E6C8' ][i % 3];
@@ -17960,8 +18020,49 @@ function celebrateLevel(level){
       setTimeout(() => s.remove(), 1200);
     }
   }
-  setTimeout(() => { host.hidden = true; }, motionOff() ? 900 : 1900);
 }
+/* No timer: it closes when the player says so — the button, Escape, a tap outside the card,
+   or the back button. */
+function dismissLevel(){
+  const host = $('levelup');
+  if (host.hidden) return false;
+  host.hidden = true;
+  sfx.tap();
+  const back = luReturn; luReturn = null;
+  if (back && back.focus && document.contains(back)) try { back.focus(); } catch(e){}
+  return true;
+}
+
+/* A solve's reward travels. A token leaves the piece that was solved, arcs up and lands
+   on the score, which answers. Three at a time at most, so a fast mode never hangs a
+   cloud of them over the board; nothing at all with reduced motion. */
+let flying = 0;
+function flyToScore(from, color){
+  if (motionOff() || flying >= 3 || !f_ok()) return;
+  const to = $('hudScore');
+  let a = from && from.getBoundingClientRect();
+  if (!a || !a.width) a = el.surface.getBoundingClientRect();
+  const b = to.getBoundingClientRect();
+  if (!a.width || !b.width) return;
+  const x0 = a.left + a.width / 2, y0 = a.top + a.height / 2, x1 = b.left + b.width / 2, y1 = b.top + b.height / 2;
+  const mx = (x0 + x1) / 2 + (x1 >= x0 ? -34 : 34), my = Math.min(y0, y1) - 46;
+  const f = mk('i', 'flyer');
+  f.style.background = color; f.style.color = color;
+  document.body.appendChild(f);
+  flying++;
+  const an = f.animate([
+    { transform: `translate(${x0}px,${y0}px) scale(.5)`, opacity: 0 },
+    { transform: `translate(${x0}px,${y0 - 22}px) scale(1.15)`, opacity: 1, offset: .16 },
+    { transform: `translate(${mx}px,${my}px) scale(1)`, opacity: 1, offset: .52 },
+    { transform: `translate(${x1}px,${y1}px) scale(.55)`, opacity: .85 }
+  ], { duration: 560, easing: 'cubic-bezier(.4,0,.2,1)' });
+  const land = () => {
+    f.remove(); flying--;
+    to.classList.add('pop'); setTimeout(() => to.classList.remove('pop'), 200);
+  };
+  an.onfinish = land; an.oncancel = () => { f.remove(); flying--; };
+}
+const f_ok = () => typeof Element !== 'undefined' && !!Element.prototype.animate;
 
 /* ═══ HUD ═════════════════════════════════════════════════════════════════ */
 /* Zeal shortens the run of solves each rung of the multiplier costs; it never
@@ -18633,7 +18734,7 @@ function resolve(ok, node){
       sfx.combo(5);
     }
 
-    burst(node, cosmeticHex(), mult); flash('flash-win');
+    burst(node, cosmeticHex(), mult); flash('flash-win'); flyToScore(node, cosmeticHex());
     sfx.good(run.streak); buzz('good');
     /* streak++ above already moved this — multAfter is what the player is
        actually looking at, the tier this solve landed them on, not the one
@@ -19065,10 +19166,10 @@ function endRun(){
   const strip = $('xpStrip');
   strip.classList.toggle('up', up);
   $('xpGain').textContent = '+' + gained + ' XP';
-  $('xpLevel').textContent = 'Level ' + lvlAfter;
+  $('xpLevel').textContent = t('lvl.title', { n: lvlAfter });
   const got = $('xpGot');
   got.hidden = !up;
-  if (up) got.textContent = 'Level ' + r.playerLevel + ' → ' + lvlAfter;
+  if (up) got.textContent = t('lvl.range', { a: r.playerLevel, b: lvlAfter });
 
   const attempts = r.solved + r.missed;
   $('overKind').textContent = (r.mode ? modeName(r.mode) + ' · ' : '') + kindName(r.kind)
@@ -19181,7 +19282,7 @@ function endRun(){
 
   /* The celebration waits for the run to be over. Freezing the board mid-run
      to congratulate someone is the opposite of a reward. */
-  if (pendingLevel){ const lv = pendingLevel; pendingLevel = 0; setTimeout(() => celebrateLevel(lv), 420); }
+  if (pendingLevel){ const lv = pendingLevel; pendingLevel = 0; const from = r.playerLevel, got = save.xp - r.xpAtStart; setTimeout(() => celebrateLevel(lv, from, got), 420); }
   paintAll();
 }
 
@@ -20314,10 +20415,14 @@ $('mpvVerdict').addEventListener('click', () => {
 $('modeSheet').addEventListener('click', ev => {
   if (ev.target === $('modeSheet')) closeModePreview();
 });
+$('luOk').addEventListener('click', dismissLevel);
+$('levelup').addEventListener('click', ev => { if (ev.target === $('levelup')) dismissLevel(); });
 /* Escape closes whichever sheet is up, and closes it the way its own button
    would — the changelog still counts as read. */
 document.addEventListener('keydown', ev => {
+  if (ev.key === 'Tab' && !$('levelup').hidden){ ev.preventDefault(); $('luOk').focus(); return; }
   if (ev.key !== 'Escape') return;
+  if (dismissLevel()) return;
   if (closeMetaSheet()) return;
   if (!$('modeSheet').hidden) return closeModePreview();
   if (!$('logSheet').hidden) return $('logClose').click();
@@ -20847,6 +20952,7 @@ function armBackGuard(){
 }
 
 function closeTopLayer(){
+  if (dismissLevel()) return;
   if (closeMetaSheet()) return;
   if (!$('modeSheet').hidden) return closeModePreview();
   if (!$('logSheet').hidden) return $('logClose').click();
