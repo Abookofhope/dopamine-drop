@@ -6,13 +6,16 @@
  *   node tools/probe/sweep.mjs            400x820, a mid-game save
  *   MAX=1 node tools/probe/sweep.mjs      the same at maximum difficulty
  *   VW=320 VH=568 node tools/probe/sweep.mjs
+ *   SAVE_EXTRA='{"oneHand":"right"}' node tools/probe/sweep.mjs
  */
 import { chromium } from 'playwright';
 import { openApp, openModeList, clickMode, quitToHome, modeList, axeOn, floorOrDie } from './harness.mjs';
 
 const VW = +(process.env.VW || 400), VH = +(process.env.VH || 820);
 const MAX = !!process.env.MAX;
-const PROF = MAX ? { xp: 900000, solved: 40000, runs: 900 } : { xp: 9000, solved: 600, runs: 40 };
+/* SAVE_EXTRA='{"oneHand":"right"}' sweeps every mode with a setting on (the board must still fit and still be 40px-targeted). */
+const PROF = Object.assign(MAX ? { xp: 900000, solved: 40000, runs: 900 } : { xp: 9000, solved: 600, runs: 40 },
+  process.env.SAVE_EXTRA ? JSON.parse(process.env.SAVE_EXTRA) : {});
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: VW, height: VH }, hasTouch: true });

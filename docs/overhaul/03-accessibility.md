@@ -45,15 +45,14 @@ Target: WCAG 2.2 level AA. "Evidence" names the check that backs the status; "Op
 | Adjustable text size | Done for menus, prompts, HUD and sheets; boards keep their size |
 | Adaptive difficulty and a different puzzle | Done (v0.141.0): visible, switchable, announced to screen readers through a status line |
 | Plain help for a new player | Done (v0.142.0): free misses while learning, the rule shown again, two short notes in the polite live region (so a screen reader says them), words that wrap rather than being cut off on a 320px phone |
-| Captions for sound | Open |
+| Captions for sound | Done (v0.143.0) for the tick, go, solve chime, combo, miss buzz, level-up and run over; a pill at the bottom, hidden from screen readers (the polite status line already says the same events), shown even when sound is off; Chalk Line's bounce tones and the tap click are not captioned |
 | Haptics toggle | Done |
-| One-handed mode | Open |
+| One-handed mode | Done (v0.143.0): the exit button moves to the lower corner on the chosen side (48px), the board gives up a strip for it, the pause sheet is built from the bottom; the score and streak stay at the top |
 | Localisation-ready | Done (four languages, gate-enforced) |
 
 ## Remediation order
 
 1. Scale board text where a board can grow to hold it (needs per-mode work).
-2. Sound captions (a short text strip for streak chimes and warnings, off by default, on in the Accessible preset).
-3. One-handed layout (bottom-anchored controls and the exit on the right, a setting).
-4. Keyboard play for board modes, starting with the tap-only ones.
-5. A person with a screen reader and a person with photosensitive epilepsy guidance review the releases.
+2. Caption the remaining sounds (Chalk Line's bounces, the tap click) once there is a reason to.
+3. Keyboard play for board modes, starting with the tap-only ones.
+4. A person with a screen reader and a person with photosensitive epilepsy guidance review the releases.

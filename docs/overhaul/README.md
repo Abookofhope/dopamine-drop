@@ -23,6 +23,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.140.0 | Text size (100, 115, 130, 150 percent) for menus, prompts, HUD and sheets, with the boards unchanged; the achievements grid fits a 320px phone |
 | v0.141.0 | The game keeps up: two misses ease the next boards a step (and show the rule again), three quick solves raise them a step, a note says so and a switch turns it off; the pause sheet deals a different puzzle three times a run |
 | v0.142.0 | A guided start: until three boards are solved a miss is free (three a run) and the rule comes back; the second and third solves each get a short note; the first Game Over points at the Room once |
+| v0.143.0 | Sound captions (a short word for the tick, go, chime, buzz and run over, off by default, on in Easy to see) and a one-handed layout (the exit moves to the lower corner on your side, the pause sheet builds from the bottom) |
 
 ## Ground rules the work follows
 

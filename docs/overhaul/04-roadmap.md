@@ -12,15 +12,15 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 | Q4 | A 44px token (`--hit`) and a probe that scans every visible control on every shell screen | Stops the next small button from sneaking in | Medium (prevention) | S |
 | Q5 | Settings: a "Recently changed" line in the presets header; Reset on a single panel | Small clarity gains once the panels exist | Low to medium | S |
 | Q6 | Section jump on Stats and Room via an optional sticky chip row | Only worth doing if analytics show people open many panels per visit | Low | S |
+| Q10 | Caption the sounds v0.143.0 left out: Chalk Line's ball bounces (direct tone calls) and the tap click | Captions that cover most but not all sounds can mislead a player who relies on them | Low | S |
+| Q11 | Mirror the score and streak in the one-handed strip (or let the strip carry the next hint) | The strip is dead space beside the exit button | Low | S |
 
 ## Medium term (one to three days each)
 
 | # | Item | Why | Expected impact | Effort |
 |---|---|---|---|---|
-| M2 | Sound captions: a brief text strip for chimes, warnings and the level-up, off by default, on in the Easy to see preset | Hearing-impaired and sound-off play | Medium | M |
-| M3 | One-handed mode: exit and the HUD actions move to the lower right, the pause sheet anchors to the bottom | The exit is top-left, the hardest place for a right thumb | Medium | M |
 | M4 | First 30 seconds, part three: v0.139.0 gives a first solve in about 3 s and v0.142.0 guides the next two (free misses, a note on each, the Room pointed at once); still to do is a quicker path past the welcome screen for a reinstall (the backup file already restores progress) and measuring drop-off with the opt-in analytics (L3) | Hook and retention at the point of highest drop-off | Medium to high | S to M |
-| M6 | Hints, skip and undo as a consistent trio: Different puzzle and the unasked rule reminder are done (v0.141.0); still open are an on-demand rule button (needs a place for it on the HUD, see M3), per-mode hints beyond the modes that already carry one (Stitch Sampler, Kitten's Snack Attack and No Crossing among them), and a yarn cost in non-Relaxed runs | Agency and fewer dead-ends | Medium | M |
+| M6 | Hints, skip and undo as a consistent trio: Different puzzle and the unasked rule reminder are done (v0.141.0); still open are an on-demand rule button (the strip the one-handed layout reserves is a candidate place, but mid-round it would push the board), per-mode hints beyond the modes that already carry one (Stitch Sampler, Kitten's Snack Attack and No Crossing among them), and a yarn cost in non-Relaxed runs | Agency and fewer dead-ends | Medium | M |
 | M7 | Session shapes: pick 2, 5 or 10 minutes on Play and get a fitting playlist and a clear end | Matches the player's real time; clean stopping points are kind to attention | Medium | M |
 | M8 | Command palette (search across modes, settings, tabs) reachable from the search icon | Fast route to anything | Low to medium | M |
 | M9 | Keyboard play for tap-only boards | WCAG 2.1.1 on boards | Medium for keyboard users | M to L |
@@ -44,10 +44,11 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 | E3 | Streak shield: one free miss forgiven a day | Less punishing streaks, no dark pattern since it only ever forgives | Streak length distribution |
 | E4 | Calm preset offered once after a lost run | Self-regulation helps ADHD players stay | Preset adoption; session length after |
 | E5 | Cat reactions on the level-up card (the riding cat celebrates) | Ties the new celebration to the Room's characters | Qualitative |
+| E6 | Offer the One-handed layout once, after the player has opened the pause sheet from the top-left exit several times on a tall phone | Players who struggle to reach it may not know the setting exists | Adoption rate; exits per run |
 
 ## Done in this overhaul so far
 
-See [05-before-after.md](05-before-after.md). Brief items now complete: a guided start, with free misses until three boards are solved, a note on the second and third solves and a pointer to the Room on the first Game Over (v0.142.0); adaptive difficulty with a visible note and a switch, and a Different puzzle on the pause sheet (v0.141.0); the first run opens on the two plainest boards, with a first solve in seconds, and the Game Over pay-out and the streak token are done (v0.139.0); a level-up card that stays until closed and a reward token on every solve (v0.137.0); mobile HUD and Game Over never hide the way out; Room, Settings and Games scroll without pressing items; Settings, You and the Room as panels; settings search, presets, reset to defaults, undo; easy-read text; 44px targets across the shell; axe clean on the shell screens.
+See [05-before-after.md](05-before-after.md). Brief items now complete: sound captions and a one-handed layout (v0.143.0); a guided start, with free misses until three boards are solved, a note on the second and third solves and a pointer to the Room on the first Game Over (v0.142.0); adaptive difficulty with a visible note and a switch, and a Different puzzle on the pause sheet (v0.141.0); the first run opens on the two plainest boards, with a first solve in seconds, and the Game Over pay-out and the streak token are done (v0.139.0); a level-up card that stays until closed and a reward token on every solve (v0.137.0); mobile HUD and Game Over never hide the way out; Room, Settings and Games scroll without pressing items; Settings, You and the Room as panels; settings search, presets, reset to defaults, undo; easy-read text; 44px targets across the shell; axe clean on the shell screens.
 
 ## Principles for choosing
 

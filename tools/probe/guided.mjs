@@ -34,7 +34,7 @@ const oddAt = (page, wrong) => page.evaluate(wrong => {
   const dark = cols.reduce((b, c, i) => lum(c) < lum(cols[b]) ? i : b, 0);
   const n = {}; cols.forEach(c => n[key(c)] = (n[key(c)] || 0) + 1);
   const uniq = cols.findIndex(c => n[key(c)] === 1);
-  let pick = /lightest/i.test(prompt) ? light : /darkest/i.test(prompt) ? dark : uniq;
+  let pick = /lightest|plus claire|más claro|hellste/i.test(prompt) ? light : /darkest|plus foncée|más oscuro|dunkelste/i.test(prompt) ? dark : uniq;
   if (wrong){ pick = tiles.findIndex((t, i) => !t.disabled && i !== light && i !== dark && i !== uniq); }
   if (pick < 0) return null;
   const r = tiles[pick].getBoundingClientRect();

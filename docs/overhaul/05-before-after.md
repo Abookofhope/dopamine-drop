@@ -111,6 +111,25 @@ Measured with a brand-new player (nothing in storage) held on Odd Skein by a pro
 
 What this does not prove: that a guided start keeps more people. The three-solve and three-miss numbers are reasoned, not tuned; roadmap Q9 and L3 are how to tune them.
 
+## v0.143.0: sound captions and a one-handed layout
+
+Measured on served builds; "before" is v0.142.0.
+
+| Measure | Before (v0.142.0) | After (v0.143.0) |
+|---|---|---|
+| A player who cannot hear the game | no sign of the tick, go, chime, buzz or run over | Sound captions: one word each for the tick, go, solve chime, combo, miss buzz, level-up and run over; off by default, on in the Easy to see preset, off after Reset to defaults; shown with sound on or off |
+| The caption on a 320x568 phone at 150 percent text | n/a | 160px wide (80 to 240), inside the screen, ignores touches, hidden from screen readers |
+| Which sounds are not captioned | n/a | Chalk Line's ball bounces and the tap click |
+| Where the exit is in a run | top left, 44x44, about 3px from the top edge | with One-handed layout: 48x48 in the lower corner on the chosen side, 9px from the bottom edge, at 320x568, 360x640, 390x844, 412x915, 568x320, 844x390, 768x1024 and 1024x768 |
+| What the board gives up for it | n/a | 36px of height on a phone in portrait; 8px of width at 568x320 and none at 844x390 (the exit is fixed to the screen's edge there; the screens are a 460px column) |
+| The pause sheet's End the run at 360x640 | 414 of 640 (upper half) | 533 of 640 (a thumb's reach), and on a 568x320 screen the sheet still scrolls from its title |
+| Game Over | Back to menu on screen and topmost | unchanged, and the exit does not show through it in either landscape |
+| Languages | n/a | the two settings, the group name and the seven captions in en, fr, es, de |
+| `captions.mjs` failed checks | 1 (no setting; the rest cannot run) | 0 of 21 |
+| `onehand.mjs` failed checks | 1 (no setting; the rest cannot run) | 0 of 113 |
+
+What this does not prove: that the lower corner is the best place for every hand (a left-handed player on a tall phone may prefer the middle; the setting is a first answer, not a measured one), or that captions are enough for a deaf player: they cover the seven moments above and nothing else. An on-demand rule button is still open (roadmap M6).
+
 ## How to reproduce
 
 ```
@@ -122,4 +141,6 @@ PORT=8400 SITE=/tmp/site node tools/probe/settingsacc.mjs
 PORT=8400 SITE=/tmp/site node tools/probe/panels.mjs
 PORT=8400 SITE=/tmp/site node tools/probe/adapt.mjs
 PORT=8400 SITE=/tmp/site node tools/probe/guided.mjs
+PORT=8400 SITE=/tmp/site node tools/probe/captions.mjs
+PORT=8400 SITE=/tmp/site node tools/probe/onehand.mjs
 ```

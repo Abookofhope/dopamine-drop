@@ -15,7 +15,7 @@
 | Layer | Probes |
 |---|---|
 | Gate | `tools/check_site.py`: four-language strings, every string used, difficulty ramp rule, manifest and worker |
-| Shell | `firstvisit`, `layoutshift`, `geometry`, `settings`, `settingsacc`, `panels`, `board`, `mix`, `home`, `meta`, `roomscroll`, `hudstates` |
+| Shell | `firstvisit`, `layoutshift`, `geometry`, `settings`, `settingsacc`, `panels`, `board`, `mix`, `home`, `meta`, `roomscroll`, `hudstates`, `captions`, `onehand` |
 | Feel and timing | `timing`, `momentum`, `fx_unit`, `framerate` |
 | Per mode | one probe per mode that matters plus `sweep` (every mode) and `alive` (every mode, at its hardest level) |
 | Long | `soak` (long run), `monkey` (random input) |
