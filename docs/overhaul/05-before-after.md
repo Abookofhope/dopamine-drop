@@ -142,6 +142,29 @@ Measured on served builds; "before" is v0.143.0.
 
 What this does not prove: that the other drag modes are free of the same kind of fault. Each of them has a check that a drop lands, and this one passed for about 47 releases because of how it counted. The same check is worth reading in every mode that has one.
 
+## v0.144.0: the motion overhaul
+
+Measured on served builds; "before" is v0.143.1. The vocabulary is in [07-motion.md](07-motion.md).
+
+| Measure | Before (v0.143.1) | After (v0.144.0) |
+|---|---|---|
+| A solve | ten square sparks inside the board, clipped at its edge, the same in every game | the game's own shapes on one canvas over the whole screen (curls and threads in Odd Skein, dye drops in Dye Trap, sand in Sandbox of Softness...), a ghost glowing over the piece, a ring from x3, glints and confetti from x4 |
+| Games with their own signature | 0 of 44 | 44 of 44; no two share both a style and a set of shapes |
+| A board opening | a 240 ms fade, the same everywhere | the game's reveal (iris, wipe, curtain, rise, split or diamond), 320 ms, a clip and a fade |
+| A miss | a red wash and a shake | the piece snags with a pulled thread, the game's shapes slump off it in grey, the screen's edge reddens (less when forgiven), the prompt shakes its head |
+| A game's own chime inside a round (a pair, a stage) | sound only | a little of the signature where the finger was, and a glow (or a snag) on the piece under it |
+| Squares moving or resizing with motion on (`stable.mjs`, 44 games) | 0 | 0 |
+| Particles alive at once, asked for 2000 | n/a | 251 (cap 260; a late frame lowers it) |
+| Endless animations that repaint every frame | 3 (hot streak, level ring, Daily) | 0: each glow is a layer whose opacity breathes |
+| What the in-app Reduce motion switch stopped | particles and shake | that and every ghost, veil, sweep, idle loop and entrance, through `html[data-motion]` |
+| Confetti at a level-up | 26 squares inside the card | from both lower corners (125 pieces in the probe run); none with Big celebrations off |
+| The tab bar | the tab you left goes dark, the new one lights | a pill slides under the new tab, its icon hops, the page slides the way the pill went |
+| The Room | cats sway and breathe | and now, one at a time, blink, twitch an ear, flick a tail, take a breath, a sleeper lets out a z; dust drifts in the window light; petting squashes and sends hearts. An idle Room: 0 layouts in 3 s before, 18 to 29 after (36 to 56 ms of work) |
+| Dragging a loaf at 4x CPU slowdown (`loaf.mjs`) | 0 layouts, 9.6 ms a move | 0 layouts (the first draft gave the run's mascot endless loops inside its drawing: 113 to 124 layouts and 16.5 ms a move, caught before shipping) |
+| `motion.mjs` failed checks | 26 of 40 | 0 of 40 |
+
+What this does not prove: that it feels right on a slow phone. The cap and the transform-only rule are the guard, and the probe measures the cap, not the frame rate on a real device; manual check 10 in [06-qa-plan.md](06-qa-plan.md) is for that.
+
 ## How to reproduce
 
 ```

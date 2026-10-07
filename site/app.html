@@ -1789,8 +1789,19 @@ html[data-ts="130"] .achgrid,html[data-ts="150"] .achgrid{grid-template-columns:
    nothing here touches pointer-events. It only fades: it used to grow in from
    97% and slide up four pixels, so every square in every mode shrank and moved for
    a quarter of a second each round. A square is a slot, and a slot does not move. */
-#surface.boardin > *{animation:boardin 240ms cubic-bezier(.2,.8,.3,1)}
-@keyframes boardin{0%{opacity:0}100%{opacity:1}}
+#surface.boardin > *{animation:boardin 320ms var(--e-out)}
+@keyframes boardin{0%{opacity:0;clip-path:circle(16% at 50% 50%)}100%{opacity:1;clip-path:circle(76% at 50% 50%)}}
+/* Each game opens its board its own way (see REVEAL_OF): a clip and a fade, never a square moving. */
+#surface.boardin[data-rv="wipe"] > *{animation-name:rvWipe}
+#surface.boardin[data-rv="curtain"] > *{animation-name:rvCurtain}
+#surface.boardin[data-rv="rise"] > *{animation-name:rvRise}
+#surface.boardin[data-rv="split"] > *{animation-name:rvSplit}
+#surface.boardin[data-rv="diamond"] > *{animation-name:rvDiamond}
+@keyframes rvWipe{0%{opacity:.2;clip-path:inset(0 100% 0 0)}100%{opacity:1;clip-path:inset(0 0 0 0)}}
+@keyframes rvCurtain{0%{opacity:.2;clip-path:inset(0 0 100% 0)}100%{opacity:1;clip-path:inset(0 0 0 0)}}
+@keyframes rvRise{0%{opacity:.2;clip-path:inset(100% 0 0 0)}100%{opacity:1;clip-path:inset(0 0 0 0)}}
+@keyframes rvSplit{0%{opacity:.2;clip-path:inset(0 50% 0 50%)}100%{opacity:1;clip-path:inset(0 0 0 0)}}
+@keyframes rvDiamond{0%{opacity:0;clip-path:polygon(50% 50%,50% 50%,50% 50%,50% 50%)}100%{opacity:1;clip-path:polygon(50% -50%,150% 50%,50% 150%,-50% 50%)}}
 #surface::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:var(--cool);opacity:0;transition:opacity 180ms ease}
 #surface.flash-win::after{opacity:.16;transition:opacity 60ms ease}
 #surface.flash-bad::after{background:var(--bad);opacity:.2;transition:opacity 60ms ease}
@@ -1927,12 +1938,199 @@ html[data-ts="130"] .achgrid,html[data-ts="150"] .achgrid{grid-template-columns:
 @keyframes swapIn{0%{opacity:0}14%{opacity:1}68%{opacity:1}100%{opacity:0}}
 @keyframes swapWord{0%{transform:translateY(8px) scale(.96)}22%{transform:none}100%{transform:none}}
 
+/* ── Shell motion ───────────────────────────────────────────────────────────
+   Everything below is decoration that runs only while html[data-motion="on"]
+   (Reduce motion off and the system not asking for less). Nothing here moves a
+   control while it can be pressed, except the pill under the tabs, which never
+   takes a touch. Idle loops run on a handful of small elements only. */
+
+/* The tab bar: a pill slides under the tab you are on, and that tab's icon hops. */
+.tabpill{position:absolute;left:0;top:0;border-radius:15px;pointer-events:none;opacity:0;
+  background:color-mix(in srgb,var(--flare) 18%,transparent);box-shadow:0 0 18px -6px color-mix(in srgb,var(--flare) 70%,transparent);
+  transition:transform 520ms var(--e-spring),opacity var(--m-quick)}
+.tabbar.haspill .tab[aria-current="page"] .ti{background:none}
+html[data-motion="on"] .tab.hop .ti svg{animation:tabHop 600ms var(--e-spring)}
+@keyframes tabHop{0%{transform:none}30%{transform:translateY(-5px) scale(1.14)}60%{transform:translateY(1px) scale(.97)}100%{transform:none}}
+
+/* Changing tab slides the page the way the pill went; the header and the bar stay where they are. */
+.tabbar{view-transition-name:tabbar}
+.chrome{view-transition-name:chrome}
+::view-transition-old(tabbar),::view-transition-old(chrome){animation:none;opacity:0}
+::view-transition-new(tabbar),::view-transition-new(chrome){animation:none}
+@media (prefers-reduced-motion: no-preference){
+  html[data-vtdir="fwd"]::view-transition-old(root){animation:vtOutL 220ms var(--e-in) both}
+  html[data-vtdir="fwd"]::view-transition-new(root){animation:vtInR 360ms var(--e-out) both}
+  html[data-vtdir="back"]::view-transition-old(root){animation:vtOutR 220ms var(--e-in) both}
+  html[data-vtdir="back"]::view-transition-new(root){animation:vtInL 360ms var(--e-out) both}
+  @keyframes vtOutL{to{opacity:0;transform:translateX(-26px)}}
+  @keyframes vtOutR{to{opacity:0;transform:translateX(26px)}}
+  @keyframes vtInR{from{opacity:0;transform:translateX(32px)}}
+  @keyframes vtInL{from{opacity:0;transform:translateX(-32px)}}
+}
+
+/* Lists arrive with a little lift and settle. */
+html[data-motion="on"] .stagger > *{animation:rise 460ms var(--e-out) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+
+/* Sheets come up on a spring over a backdrop that fades in. */
+html[data-motion="on"] .sheet:not([hidden]){animation:fadeOnly 220ms ease-out}
+html[data-motion="on"] .sheet .panel{animation:sheetup 560ms var(--e-spring)}
+html[data-motion="off"] .sheet .panel{animation:none}
+
+/* An accordion's contents fade up as it opens. */
+html[data-motion="on"] .acc.open .accin > *{animation:accIn 420ms var(--e-out) both}
+html[data-motion="on"] .acc.open .accin > :nth-child(2){animation-delay:40ms}
+html[data-motion="on"] .acc.open .accin > :nth-child(n+3){animation-delay:80ms}
+@keyframes accIn{from{opacity:0;transform:translateY(5px)}}
+
+/* Home. The logotype's "Drop" drops in once; the three big doors each catch a slow shine in turn and their cats bob;
+   the Daily breathes while it is waiting to be played. */
+html[data-motion="on"] .wordmark span{display:inline-block;animation:dropIn 900ms var(--e-spring) 120ms both}
+@keyframes dropIn{0%{opacity:0;transform:translateY(-70%) scaleY(1.2)}55%{opacity:1}70%{transform:translateY(0) scale(1.12,.86)}100%{transform:none}}
+.gateBtn{position:relative;overflow:hidden}
+html[data-motion="on"] .gateBtn::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(105deg,transparent 38%,#ffffff55 50%,transparent 62%);transform:translateX(-120%);
+  animation:gateSheen 9s cubic-bezier(.45,.05,.3,1) infinite}
+html[data-motion="on"] .gateBtn:nth-child(2)::after{animation-delay:3s}
+html[data-motion="on"] .gateBtn:nth-child(3)::after{animation-delay:6s}
+@keyframes gateSheen{0%,82%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+html[data-motion="on"] .gateBtn .g svg{animation:glyphBob 4.2s ease-in-out infinite}
+html[data-motion="on"] .gateBtn:nth-child(2) .g svg{animation-delay:-1.4s}
+html[data-motion="on"] .gateBtn:nth-child(3) .g svg{animation-delay:-2.8s}
+@keyframes glyphBob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(-3deg)}}
+.dailyCard .di{position:relative}
+.dailyCard .di::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;box-shadow:0 0 16px 2px #ff5b3966}
+html[data-motion="on"] .dailyCard:not(.done) .di::after{animation:dailyGlow 2.8s ease-in-out infinite}
+@keyframes dailyGlow{0%,100%{opacity:0}50%{opacity:1}}
+html[data-motion="on"] .mcard:active .glyph{animation:glyphWiggle 420ms var(--e-spring)}
+@keyframes glyphWiggle{30%{transform:rotate(-9deg) scale(1.1)}60%{transform:rotate(6deg)}100%{transform:none}}
+
+/* Cats that are alive wherever they idle (the Room, the seats, the cards): every second or so one of them blinks,
+   twitches an ear, flicks its tail or takes a breath, and a sleeper lets out a z. They are moments, not loops: an
+   endless animation on a part inside an SVG cannot be handed to the compositor, so it costs a layout every frame for as
+   long as it shows (it made a Loaf Box drag 120 layouts heavier through the run's own mascot). A moment costs that
+   only while it plays. Driven by catLife(); never during a run. */
+.catart .cwhole,.catart .ctail,.catart .cears,.catart .ceyes{transform-box:view-box}
+.catart .cwhole{transform-origin:32px 58px}
+.catart .ctail{transform-origin:47px 52px}
+.catart .cears{transform-origin:32px 21px}
+.catart .ceyes{transform-origin:32px 27.5px}
+html[data-motion="on"] .catart.lf-blink .ceyes{animation:oneBlink 240ms ease-in-out}
+html[data-motion="on"] .catart.lf-twitch .cears{animation:oneTwitch 380ms ease-in-out}
+html[data-motion="on"] .catart.lf-flick .ctail{animation:oneFlick 950ms ease-in-out}
+html[data-motion="on"] .catart.lf-breath .cwhole{animation:oneBreath 1100ms ease-in-out}
+@keyframes oneBlink{50%{transform:scaleY(.08)}}
+@keyframes oneTwitch{30%{transform:rotate(-6deg) scaleY(.92)}62%{transform:rotate(4deg)}}
+@keyframes oneFlick{38%{transform:rotate(-14deg)}74%{transform:rotate(5deg)}}
+@keyframes oneBreath{50%{transform:scale(1.025,1.045)}}
+/* Petted: a squash, a stretch, a settle. */
+html[data-motion="on"] .roomsvg .scat.petted .cwhole{animation:petSquish 720ms var(--e-spring)}
+@keyframes petSquish{0%{transform:none}25%{transform:scale(1.12,.84)}55%{transform:scale(.94,1.1)}100%{transform:none}}
+/* Dust turning in the light from the window: plain elements laid over the picture, moved by transform and opacity
+   only, so the compositor carries them. */
+.roommotes{position:absolute;inset:0;pointer-events:none;display:none}
+html[data-motion="on"] .roommotes{display:block}
+.roommotes i{position:absolute;width:3px;height:3px;border-radius:50%;background:#FFF3D6;opacity:0;animation:moteDrift 7s ease-in-out infinite}
+.roommotes.night i{background:#CDBCF7}
+@keyframes moteDrift{0%{opacity:0;transform:translate(0,0)}20%{opacity:.75}80%{opacity:.55}100%{opacity:0;transform:translate(14px,-18px)}}
+
+/* The first screen a new player sees: the card comes up on a spring, the four promises follow one by one and each
+   icon pops in after its line. */
+html[data-motion="on"] .welcome:not([hidden]) .panel{animation:sheetup 680ms var(--e-spring)}
+html[data-motion="on"] .welcome:not([hidden]) .wcpoints li{animation:overIn 520ms var(--e-out) both}
+html[data-motion="on"] .welcome:not([hidden]) .wcpoints li:nth-child(1){animation-delay:220ms}
+html[data-motion="on"] .welcome:not([hidden]) .wcpoints li:nth-child(2){animation-delay:300ms}
+html[data-motion="on"] .welcome:not([hidden]) .wcpoints li:nth-child(3){animation-delay:380ms}
+html[data-motion="on"] .welcome:not([hidden]) .wcpoints li:nth-child(4){animation-delay:460ms}
+html[data-motion="on"] .welcome:not([hidden]) .wcpoints .g{animation:toastGlyph 640ms var(--e-spring) both}
+html[data-motion="on"] .welcome:not([hidden]) .wcpoints li:nth-child(1) .g{animation-delay:320ms}
+html[data-motion="on"] .welcome:not([hidden]) .wcpoints li:nth-child(2) .g{animation-delay:400ms}
+html[data-motion="on"] .welcome:not([hidden]) .wcpoints li:nth-child(3) .g{animation-delay:480ms}
+html[data-motion="on"] .welcome:not([hidden]) .wcpoints li:nth-child(4) .g{animation-delay:560ms}
+
+/* The yarn count answers each token that lands on it. */
+html[data-motion="on"] .yarnchip.pop{animation:chipPop 340ms var(--e-snap)}
+@keyframes chipPop{40%{transform:scale(1.16)}}
+
+/* The pause sheet settles in line by line. */
+html[data-motion="on"] .pausebox{animation:fadeOnly 200ms ease-out}
+html[data-motion="on"] .pausebox > *{animation:overIn 440ms var(--e-out) both}
+html[data-motion="on"] .pausebox > :nth-child(2){animation-delay:50ms}
+html[data-motion="on"] .pausebox > :nth-child(3){animation-delay:100ms}
+html[data-motion="on"] .pausebox > :nth-child(n+4){animation-delay:150ms}
+
+/* Rings that fill: registered, so a change in how full they are is a fill you can watch rather than a jump. The level
+   ring in the header fills as you come back from a run; the multiplier's ring fills toward the next step. */
+@property --p{syntax:'<percentage>';inherits:true;initial-value:0%}
+@property --to{syntax:'<number>';inherits:true;initial-value:0}
+html[data-motion="on"] .avatar{transition:--p 1100ms var(--e-out)}
+html[data-motion="on"] .streak{transition:transform var(--t-med),color var(--t-fast),border-color var(--t-fast),box-shadow var(--t-fast),--to 320ms var(--e-out)}
+
+/* Game Over arrives in order (endRun adds .enter with motion on): the score lands with a spring, the lines under it
+   rise one after another, a new best is stamped on, and the buttons only fade, so they are where they will stay from
+   the first frame. */
+#over.enter .overscroll > *{animation:overIn 560ms var(--e-out) both}
+#over.enter .overscroll > :nth-child(2){animation-delay:60ms}
+#over.enter .overscroll > :nth-child(3){animation-delay:110ms}
+#over.enter .overscroll > :nth-child(4){animation-delay:160ms}
+#over.enter .overscroll > :nth-child(5){animation-delay:200ms}
+#over.enter .overscroll > :nth-child(6){animation-delay:240ms}
+#over.enter .overscroll > :nth-child(7){animation-delay:280ms}
+#over.enter .overscroll > :nth-child(8){animation-delay:320ms}
+#over.enter .overscroll > :nth-child(9){animation-delay:360ms}
+#over.enter .overscroll > :nth-child(n+10){animation-delay:400ms}
+#over.enter .overhead .big{animation:scoreLand 820ms var(--e-spring) 80ms both}
+#over.enter .overhead .eyebrow{animation:overIn 480ms var(--e-out) both}
+#over.enter #newBest:not([hidden]){animation:bestStamp 700ms var(--e-snap) 360ms both}
+#over.enter .statgrid .stat{animation:overIn 520ms var(--e-out) both}
+#over.enter .statgrid .stat:nth-child(2){animation-delay:330ms}
+#over.enter .statgrid .stat:nth-child(3){animation-delay:400ms}
+#over.enter .overbar{animation:fadeOnly 420ms ease-out 260ms both}
+@keyframes overIn{from{opacity:0;transform:translateY(16px)}}
+@keyframes scoreLand{0%{opacity:0;transform:scale(.55)}}
+@keyframes bestStamp{0%{opacity:0;transform:scale(2.4) rotate(-9deg)}55%{opacity:1;transform:scale(.92) rotate(2deg)}100%{opacity:1;transform:none}}
+@keyframes fadeOnly{from{opacity:0}}
+
 /* A solve's reward travels: a token leaves the solved piece and lands on the score. */
 .flyer{
   position:fixed;left:0;top:0;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
   pointer-events:none;z-index:60;will-change:transform,opacity;
   box-shadow:0 0 10px 1px currentColor,inset 0 -3px 0 #00000026;
 }
+
+/* ── Motion ─────────────────────────────────────────────────────────────────
+   One vocabulary for how things move. Arrivals ease out long (they land and
+   settle), departures ease in short (they get out of the way), and anything
+   that should feel alive springs: a little past the mark and back. linear()
+   is the spring where the browser has it; elsewhere the overshoot curve. */
+:root{
+  --m-quick:140ms; --m-base:260ms; --m-slow:520ms; --m-stage:900ms;
+  --e-out:cubic-bezier(.16,1,.3,1);
+  --e-in:cubic-bezier(.7,0,.84,0);
+  --e-snap:cubic-bezier(.34,1.56,.64,1);
+  --e-spring:linear(0,.009,.035 2.1%,.141,.281 6.7%,.723 12.9%,.938 16.7%,1.017,1.077,1.121 25%,1.149 28.4%,1.157,1.149 33.6%,1.071 42.6%,1.006 51.5%,.981 55.5%,.975 59.2%,.989 69.4%,1.001 82.3%,1);
+  --e-soft:linear(0,.06 4%,.24 9%,.53 16%,.84 25%,1.02 34%,1.06 41%,1.04 50%,1.005 64%,.998 78%,1);
+}
+@supports not (transition-timing-function:linear(0,1)){
+  :root{--e-spring:cubic-bezier(.34,1.56,.64,1);--e-soft:cubic-bezier(.2,.9,.3,1.1)}
+}
+/* Everything that flies is drawn here, over the whole screen, outside the board. Above the
+   level card and the pause sheet, below the sheets and the toasts; never under a finger. */
+#fxCanvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:75;contain:strict}
+.fxghost{position:fixed;pointer-events:none;z-index:59;box-sizing:border-box;will-change:transform,opacity}
+.fxghost.halo{box-shadow:0 0 0 3px currentColor,0 0 26px 6px color-mix(in srgb,currentColor 55%,transparent),inset 0 0 18px 2px color-mix(in srgb,currentColor 45%,transparent)}
+.fxghost.stamp{background:color-mix(in srgb,currentColor 28%,transparent);box-shadow:inset 0 0 0 2.5px currentColor,0 0 18px -2px currentColor}
+.fxghost.ripple{box-shadow:0 0 0 2px currentColor}
+.fxghost.pulse{background:radial-gradient(closest-side,color-mix(in srgb,currentColor 50%,transparent),transparent)}
+.fxghost.snag svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.fxghost.snag path{fill:none;stroke:var(--bad);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 5px #ff3d6e99)}
+.fxveil{position:fixed;inset:0;pointer-events:none;z-index:58;opacity:0;
+  background:radial-gradient(120% 90% at 50% 50%,transparent 46%,color-mix(in srgb,currentColor 70%,transparent) 120%)}
+.fxveil.center{background:radial-gradient(70% 55% at 50% 48%,color-mix(in srgb,currentColor 55%,transparent),transparent 70%)}
+.fxsweep{position:fixed;pointer-events:none;z-index:59;overflow:hidden}
+.fxsweep > i{position:absolute;top:-20%;bottom:-20%;left:0;width:36%;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,currentColor 42%,transparent) 45%,color-mix(in srgb,currentColor 62%,transparent) 50%,color-mix(in srgb,currentColor 42%,transparent) 55%,transparent)}
 
 /* ── Level up ────────────────────────────────────────────────────────────── */
 #levelup{
@@ -1969,9 +2167,11 @@ html[data-ts="130"] .achgrid,html[data-ts="150"] .achgrid{grid-template-columns:
   position:relative;width:130px;height:130px;margin:0 auto 14px;border-radius:50%;
   background:conic-gradient(var(--zap) 100%, var(--ink-3) 0);
   display:grid;place-items:center;
-  animation:lvring 900ms cubic-bezier(.2,.9,.3,1),lvglow 2.4s ease-in-out 900ms infinite alternate;
+  animation:lvring 900ms cubic-bezier(.2,.9,.3,1);
 }
-@keyframes lvglow{from{box-shadow:0 0 0 0 #FFC53D00}to{box-shadow:0 0 34px 2px #FFC53D55}}
+#levelup .ring::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;opacity:0;
+  box-shadow:0 0 34px 2px #FFC53D66;animation:lvglow 2.4s ease-in-out 900ms infinite alternate}
+@keyframes lvglow{from{opacity:0}to{opacity:1}}
 @keyframes lvring{0%{transform:rotate(-140deg) scale(.6)}100%{transform:rotate(0) scale(1)}}
 #levelup .ring i{
   width:112px;height:112px;border-radius:50%;background:var(--ink);
@@ -1996,10 +2196,19 @@ html[data-ts="130"] .achgrid,html[data-ts="150"] .achgrid{grid-template-columns:
   border-radius:var(--r-lg);background:var(--ink-2);
   border:1px solid var(--edge-soft);border-left:3px solid var(--ink);
   box-shadow:0 14px 30px -18px #000c;
-  transition:transform 320ms cubic-bezier(.2,.9,.3,1);
-  pointer-events:none;
+  transition:transform 560ms var(--e-spring);
+  pointer-events:none;overflow:hidden;
 }
 .achtoast.in{transform:translate(-50%,0)}
+/* It lands with a little bounce, its glyph pops in a beat later, and a shine crosses it once. */
+.achtoast::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,#ffffff1f 48%,#ffffff2e 50%,#ffffff1f 52%,transparent 70%);transform:translateX(-110%)}
+.achtoast.in::after{animation:toastShine 1000ms cubic-bezier(.45,.05,.3,1) 300ms}
+@keyframes toastShine{to{transform:translateX(110%)}}
+.achtoast.in .g{animation:toastGlyph 640ms var(--e-spring) 140ms both}
+@keyframes toastGlyph{from{transform:scale(.2) rotate(-30deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.achtoast.in::after,.achtoast.in .g{animation:none}}
+html[data-motion="off"] .achtoast.in::after,html[data-motion="off"] .achtoast.in .g{animation:none}
 .achtoast .g{
   width:34px;height:34px;flex:none;padding:6px;border-radius:11px;
   color:var(--ink);background:color-mix(in srgb, var(--ink) 16%, transparent);
@@ -2545,7 +2754,9 @@ html.easyread body{letter-spacing:.02em;word-spacing:.08em}
 
 /* Effects */
 .float{position:absolute;pointer-events:none;font-family:var(--f-data);font-weight:700;font-size:calc(18px*var(--ts));color:var(--zap);animation:floatup 720ms cubic-bezier(.2,.7,.3,1) forwards;text-shadow:0 2px 10px #000}
-@keyframes floatup{0%{opacity:0;transform:translate(-50%,4px) scale(.8)}22%{opacity:1;transform:translate(-50%,-10px) scale(1.06)}100%{opacity:0;transform:translate(-50%,-52px) scale(1)}}
+@keyframes floatup{0%{opacity:0;transform:translate(-50%,8px) scale(.45)}16%{opacity:1;transform:translate(-50%,-12px) scale(1.2)}30%{transform:translate(-50%,-17px) scale(.97)}42%{transform:translate(-50%,-21px) scale(1.03)}100%{opacity:0;transform:translate(-50%,-60px) scale(.98)}}
+.float.t4,.float.t5{animation-name:floatupHot}
+@keyframes floatupHot{0%{opacity:0;transform:translate(-50%,8px) scale(.4) rotate(-8deg)}16%{opacity:1;transform:translate(-50%,-14px) scale(1.32) rotate(4deg)}30%{transform:translate(-50%,-19px) scale(.96) rotate(-2deg)}44%{transform:translate(-50%,-23px) scale(1.05) rotate(0)}100%{opacity:0;transform:translate(-50%,-66px) scale(1)}}
 /* A ×1 solve and a ×5 solve used to spend the identical popup — same size,
    same colour, same everything, however hot the streak actually was. Size
    and colour only (still transform/opacity/paint), so it costs no more than
@@ -2680,6 +2891,21 @@ html.easyread body{letter-spacing:.02em;word-spacing:.08em}
 .charm:nth-child(3){animation-delay:160ms}
 @keyframes charmin{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.charm{animation:none}}
+/* Dealt, not listed: each card comes up from below with a little turn and settles on a spring, its keepsake spins in a
+   beat later, and a rare one has light running along it. */
+html[data-motion="on"] .charm{animation:charmDeal 620ms var(--e-spring) both;position:relative;overflow:hidden}
+html[data-motion="on"] .charm:nth-child(1){--tilt:-5deg}
+html[data-motion="on"] .charm:nth-child(2){--tilt:4deg;animation-delay:110ms}
+html[data-motion="on"] .charm:nth-child(3){--tilt:-3deg;animation-delay:220ms}
+@keyframes charmDeal{from{opacity:0;transform:translateY(70px) rotate(var(--tilt,0deg)) scale(.9)}to{opacity:1;transform:none}}
+html[data-motion="on"] .charm .cg svg{animation:charmSpin 700ms var(--e-spring) 120ms both}
+html[data-motion="on"] .charm:nth-child(2) .cg svg{animation-delay:230ms}
+html[data-motion="on"] .charm:nth-child(3) .cg svg{animation-delay:340ms}
+@keyframes charmSpin{from{transform:rotate(-180deg) scale(.3);opacity:0}}
+html[data-motion="on"] .charm.rare::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 35%,color-mix(in srgb,var(--rar) 40%,transparent) 50%,transparent 65%);
+  transform:translateX(-120%);animation:gateSheen 3.6s cubic-bezier(.45,.05,.3,1) 700ms infinite}
+html[data-motion="off"] .charm{animation:none}
 .charm:active{transform:scale(.98)}
 .charm .cg{flex:none;width:46px;height:46px}
 .charm .cg svg{width:100%;height:100%;display:block}
@@ -2802,8 +3028,12 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 @keyframes starpop{0%{transform:scale(.4) rotate(-30deg)}55%{transform:scale(1.5) rotate(8deg)}100%{transform:scale(1)}}
 
 /* A hot streak gets a flicker, so the multiplier reads as momentum. */
-.streak.hot{animation:emberpulse 1.4s ease-in-out infinite}
-@keyframes emberpulse{0%,100%{box-shadow:0 0 0 0 #ffc53d00}50%{box-shadow:0 0 12px 1px #ffc53d55}}
+/* The glow is a layer of its own whose opacity breathes: a shadow animated directly repaints the chip every frame for
+   as long as the streak lasts. */
+.streak::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  box-shadow:0 0 12px 1px #ffc53d66}
+.streak.hot::before{animation:emberpulse 1.4s ease-in-out infinite}
+@keyframes emberpulse{0%,100%{opacity:0}50%{opacity:1}}
 .streak.blaze{background:linear-gradient(90deg,var(--zap),var(--flare));border-color:var(--flare)}
 
 /* Numbers count rather than snap. */
@@ -4128,6 +4358,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
               <span class="txt"><b data-i18n="set.motion">Reduce motion</b><small data-i18n="set.motionSub">No particles, no screen shake</small></span>
               <button class="sw" id="swMotion" role="switch" aria-checked="false" aria-label="Reduce motion"></button>
             </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.bigfx">Big celebrations</b><small data-i18n="set.bigfxSub">Confetti, light across the board and the glow at the screen's edge. Off keeps the small touches.</small></span>
+              <button class="sw" id="swBig" role="switch" aria-checked="true" data-i18n-aria="set.bigfx" aria-label="Big celebrations"></button>
+            </div>
           </div></div>
         </section>
 
@@ -4561,7 +4795,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.143.1';
+const VERSION_TAG = 'v0.144.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4575,7 +4809,7 @@ const QUARANTINE = 'dd.v1.unreadable';
 const SCHEMA = 11;
 const defaults = {
   pbBlitz:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, pbEndless:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
-  mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false, gameSpeed:'normal',
+  mix:[], sound:true, haptics:true, reduceMotion:false, bigFx:true, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
   volume:1, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
   lifetime:0, perks:[], perkLv:{}, tokens:0,
@@ -4767,6 +5001,7 @@ function pruneDaily(){
   keys.slice(0, keys.length - 14).forEach(k => { delete save.daily[k]; });
 }
 function persist(){
+  applyMotion();
   pruneDaily();
   /* A month of days is plenty to draw a fortnight from. */
   { const hk = Object.keys(save.hist || {}); if (hk.length > 30){ hk.sort(); hk.slice(0, hk.length - 30).forEach(k => { delete save.hist[k]; }); } }
@@ -5004,6 +5239,12 @@ const prefersLessMotion = () => {
   try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; }
 };
 const motionOff = () => save.reduceMotion || prefersLessMotion();
+/* The page says which, so a decoration drawn in CSS alone (a shine, a glyph popping in) stops with the switch as well as
+   with the system setting. Written only when it changes; persist() runs after every setting. */
+function applyMotion(){
+  const v = motionOff() ? 'off' : 'on', h = document.documentElement;
+  if (h.dataset.motion !== v) h.dataset.motion = v;
+}
 
 /* ═══ Progression ═════════════════════════════════════════════════════════
    The level count is unbounded. Difficulty is not, and cannot be — a 12x12
@@ -5233,6 +5474,7 @@ const STRINGS = {
     'set.feedback':'Feedback', 'set.sound':'Sound', 'set.soundSub':'Taps and streak chimes — each family in its own key',
     'set.vib':'Vibration', 'set.vibSub':'A short pulse on every answer',
     'set.motion':'Reduce motion', 'set.motionSub':'No particles, no screen shake',
+    'set.bigfx':'Big celebrations', 'set.bigfxSub':'Confetti, light across the board and the glow at the screen\u2019s edge. Off keeps the small touches.',
     'set.cosmetic':'Victory color', 'set.cosmeticSub':'The colour every solve bursts in.', 'set.cosmeticLocked':'Unlocks at level {n}',
     'cosmetic.teal':'Teal', 'cosmetic.flare':'Flare', 'cosmetic.zap':'Gold', 'cosmetic.purple':'Violet', 'cosmetic.pink':'Pink', 'cosmetic.blue':'Sky',
     'set.access':'Accessibility', 'set.assist':'Colour assist',
@@ -5746,6 +5988,7 @@ const STRINGS = {
     'set.feedback':'Retours', 'set.sound':'Son', 'set.soundSub':'Touches et séries — chaque famille dans sa tonalité',
     'set.vib':'Vibration', 'set.vibSub':'Une brève impulsion à chaque réponse',
     'set.motion':'Réduire les animations', 'set.motionSub':'Ni particules, ni secousses',
+    'set.bigfx':'Grandes célébrations', 'set.bigfxSub':'Confettis, lumière sur le plateau et lueur au bord de l\u2019écran. Désactivé, il reste les petites touches.',
     'set.cosmetic':'Couleur de victoire', 'set.cosmeticSub':'La couleur de l’éclat à chaque réussite.', 'set.cosmeticLocked':'Débloqué au niveau {n}',
     'cosmetic.teal':'Turquoise', 'cosmetic.flare':'Flamme', 'cosmetic.zap':'Or', 'cosmetic.purple':'Violet', 'cosmetic.pink':'Rose', 'cosmetic.blue':'Ciel',
     'set.access':'Accessibilité', 'set.assist':'Aide aux couleurs',
@@ -6261,6 +6504,7 @@ const STRINGS = {
     'set.feedback':'Respuesta', 'set.sound':'Sonido', 'set.soundSub':'Toques y rachas — cada familia en su tono',
     'set.vib':'Vibración', 'set.vibSub':'Un pulso breve en cada respuesta',
     'set.motion':'Reducir movimiento', 'set.motionSub':'Sin partículas ni sacudidas',
+    'set.bigfx':'Grandes celebraciones', 'set.bigfxSub':'Confeti, luz sobre el tablero y el brillo en el borde de la pantalla. Desactivado, quedan los detalles pequeños.',
     'set.cosmetic':'Color de victoria', 'set.cosmeticSub':'El color con el que estalla cada acierto.', 'set.cosmeticLocked':'Se desbloquea en el nivel {n}',
     'cosmetic.teal':'Turquesa', 'cosmetic.flare':'Llama', 'cosmetic.zap':'Oro', 'cosmetic.purple':'Violeta', 'cosmetic.pink':'Rosa', 'cosmetic.blue':'Cielo',
     'set.access':'Accesibilidad', 'set.assist':'Ayuda de color',
@@ -6775,6 +7019,7 @@ const STRINGS = {
     'set.feedback':'Rückmeldung', 'set.sound':'Ton', 'set.soundSub':'Tippen und Serien — jede Familie in eigener Tonart',
     'set.vib':'Vibration', 'set.vibSub':'Ein kurzer Impuls bei jeder Antwort',
     'set.motion':'Bewegung reduzieren', 'set.motionSub':'Keine Partikel, kein Wackeln',
+    'set.bigfx':'Große Feiern', 'set.bigfxSub':'Konfetti, Licht über dem Brett und das Leuchten am Bildschirmrand. Aus bleiben die kleinen Effekte.',
     'set.cosmetic':'Siegesfarbe', 'set.cosmeticSub':'Die Farbe, in der jede Lösung aufblitzt.', 'set.cosmeticLocked':'Ab Level {n}',
     'cosmetic.teal':'Türkis', 'cosmetic.flare':'Flamme', 'cosmetic.zap':'Gold', 'cosmetic.purple':'Violett', 'cosmetic.pink':'Pink', 'cosmetic.blue':'Himmel',
     'set.access':'Barrierefreiheit', 'set.assist':'Farbhilfe',
@@ -7335,6 +7580,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.144.0', date:'2026-10-07', items:[
+    'Every game celebrates in its own way. A solve sends up that game\u2019s own shapes (curls of thread in Odd Skein, dye drops in Dye Trap, sand in Sandbox of Softness, sleepy z\u2019s off Loaf Box), the piece glows without moving, each board opens its own way, and a miss snags the piece with a pulled thread. Small moments inside a round get a little of the same.',
+    'Big moments feel big: the count-in rings, a hot streak smoulders, reaching \u00d75 sends light across the board, a stage sends up stars, a level fires confetti from both corners, and Game Over arrives line by line with a stamp for a new best.',
+    'The menus move: a pill slides under the tab you are on and the page slides the same way, the cats in your Room blink, twitch an ear, flick a tail and let out the odd sleepy z, petting one squashes it and sends hearts up, yarn you collect flies to your count, and charms are dealt like cards.',
+    'A new switch, Big celebrations, turns off the confetti, the light across the board and the glow at the screen\u2019s edge and keeps the small touches. Reduce motion still turns all of it off, and now stops the decorative touches the page draws by itself too.',
+  ] },
   { v:'0.143.1', date:'2026-10-07', items:[
     'Sandbox of Softness: a bucket you pick up and let go of over the belt now goes on the belt. Until now only touching a bucket worked, and a drag ended with nothing happening.',
   ] },
@@ -8342,7 +8593,7 @@ function applyStatic(){
   });
   document.querySelectorAll('[data-i18n-aria]').forEach(n =>
     n.setAttribute('aria-label', t(n.getAttribute('data-i18n-aria'))));
-  Array.from(el.tabbar.children).forEach(b => {
+  el.tabbar.querySelectorAll('.tab').forEach(b => {
     const lbl = b.querySelector('.lbl');
     if (lbl) lbl.textContent = t('tab.' + b.dataset.tab);
   });
@@ -16812,12 +17063,16 @@ function catSvg(coat, opts){
         + '" role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">';
   s += '<defs><clipPath id="' + uid + 'h"><path d="' + headP + '"/></clipPath>'
      + '<clipPath id="' + uid + 'b"><path d="' + bodyP + '"/></clipPath></defs>';
+  /* Parts a living cat moves (see .cwhole, .ctail, .cears, .ceyes): grouped so the CSS can breathe, swish, twitch
+     and blink them where cats idle (the Room, the lap, a card), and nowhere on a board. */
+  s += '<g class="cwhole' + (sleeping ? ' asleep' : '') + '" style="--cd:-' + (Math.random() * 5).toFixed(2) + 's">';
 
   /* tail, behind the body */
   const tailC = pat === 'points' ? (coat.point || A) : B;
-  s += '<path d="M47 52c8 1 12-6 8.5-13" fill="none" stroke="' + rim + '" stroke-width="7.4" stroke-linecap="round"/>'
+  s += '<g class="ctail"><path d="M47 52c8 1 12-6 8.5-13" fill="none" stroke="' + rim + '" stroke-width="7.4" stroke-linecap="round"/>'
      + '<path d="M47 52c8 1 12-6 8.5-13" fill="none" stroke="' + tailC + '" stroke-width="4.6" stroke-linecap="round"/>';
   if (pat === 'tabby') s += '<path d="M51.5 50.5l2-1.4M54.6 46.4l2.2-.6M55.4 42l2.1.4" stroke="' + A + '" stroke-width="1.6" stroke-linecap="round" fill="none"/>';
+  s += '</g>';
 
   /* body */
   s += '<path d="' + bodyP + '" fill="' + B + '" ' + out + '/>';
@@ -16836,8 +17091,8 @@ function catSvg(coat, opts){
   /* ears */
   const earIn = coat.earIn || '#FF9BB5';
   const earFill = pat === 'points' ? (coat.point || A) : B;
-  s += '<path d="M19.500 24L20.500 8.500 32 15z" fill="' + earFill + '" ' + out + '/><path d="M44.500 24L43.500 8.500 32 15z" fill="' + earFill + '" ' + out + '/>';
-  s += '<path d="M22 20.500l.6-8.400 6.400 3.900z" fill="' + earIn + '"/><path d="M42 20.500l-.6-8.400-6.400 3.900z" fill="' + earIn + '"/>';
+  s += '<g class="cears"><path d="M19.500 24L20.500 8.500 32 15z" fill="' + earFill + '" ' + out + '/><path d="M44.500 24L43.500 8.500 32 15z" fill="' + earFill + '" ' + out + '/>';
+  s += '<path d="M22 20.500l.6-8.400 6.400 3.900z" fill="' + earIn + '"/><path d="M42 20.500l-.6-8.400-6.400 3.900z" fill="' + earIn + '"/></g>';
 
   /* head */
   s += '<path d="' + headP + '" fill="' + B + '" ' + out + '/>';
@@ -16859,10 +17114,10 @@ function catSvg(coat, opts){
     s += '<path d="M23.500 29q3-3.800 6 0M34.500 29q3-3.800 6 0" stroke="' + CAT_INK_OUT + '" stroke-width="2" fill="none" stroke-linecap="round"/>';
     if (opts.expr === 'joy') s += '<path d="M19 21.500l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9zM45 20l.7 1.600 1.600.7-1.600.7-.7 1.600-.7-1.600-1.600-.7 1.600-.7z" fill="#FFF7D6"/>';
   } else {
-    s += '<ellipse cx="26.500" cy="27.500" rx="3" ry="3.500" fill="#FFFDF5" ' + out.replace('1.6', '1.2') + '/><ellipse cx="37.500" cy="27.500" rx="3" ry="3.500" fill="#FFFDF5" ' + out.replace('1.6', '1.2') + '/>';
+    s += '<g class="ceyes"><ellipse cx="26.500" cy="27.500" rx="3" ry="3.500" fill="#FFFDF5" ' + out.replace('1.6', '1.2') + '/><ellipse cx="37.500" cy="27.500" rx="3" ry="3.500" fill="#FFFDF5" ' + out.replace('1.6', '1.2') + '/>';
     s += '<ellipse cx="26.700" cy="27.800" rx="1.900" ry="2.600" fill="' + E + '"/><ellipse cx="37.300" cy="27.800" rx="1.900" ry="2.600" fill="' + E + '"/>';
     s += '<ellipse cx="26.700" cy="27.800" rx=".8" ry="2.100" fill="' + CAT_INK_OUT + '"/><ellipse cx="37.300" cy="27.800" rx=".8" ry="2.100" fill="' + CAT_INK_OUT + '"/>';
-    s += '<circle cx="27.400" cy="26.500" r=".8" fill="#fff"/><circle cx="38" cy="26.500" r=".8" fill="#fff"/>';
+    s += '<circle cx="27.400" cy="26.500" r=".8" fill="#fff"/><circle cx="38" cy="26.500" r=".8" fill="#fff"/></g>';
   }
   s += '<path d="M30.300 32.200h3.400l-1.700 2z" fill="' + (coat.nose || '#FF7FA0') + '" stroke="' + CAT_INK_OUT + '" stroke-width=".9" stroke-linejoin="round"/>';
   s += '<path d="M32 34.200v1.500M32 35.700q-1.800 1.800-3.400.6M32 35.700q1.800 1.800 3.400.6" stroke="' + CAT_INK_OUT + '" stroke-width="1" fill="none" stroke-linecap="round"/>';
@@ -16870,6 +17125,7 @@ function catSvg(coat, opts){
   /* blush, so even the plainest coat looks pleased to see you */
   if (!sleeping) s += '<ellipse cx="22.500" cy="33" rx="2.400" ry="1.500" fill="#FF9BB5" opacity=".45"/><ellipse cx="41.500" cy="33" rx="2.400" ry="1.500" fill="#FF9BB5" opacity=".45"/>';
   if (opts.bow) s += '<path d="M28 42.500l4 1.800 4-1.800v4l-4-1.800-4 1.800z" fill="' + opts.bow + '" ' + out.replace('1.6', '1') + '/>';
+  s += '</g>';
   s += '</svg>';
   return s;
 }
@@ -17570,6 +17826,8 @@ function roomSvg(){
    land on the cat at any size. */
 function heartsAt(scene, ev){
   if (motionOff()) return;
+  /* Drawn on the effects canvas now, from the point that was touched. */
+  if (ev && Vfx.on()){ Vfx.hearts({ getBoundingClientRect: () => ({ left: ev.clientX - 20, top: ev.clientY - 10, width: 40, height: 40 }) }, 7); return; }
   const r = scene.getBoundingClientRect();
   for (let i = 0; i < 5; i++){
     const h = mk('i', 'heart');
@@ -17602,6 +17860,7 @@ function paintWishes(){
       onTap(btn, () => {
         const r = Wish.claim(i); if (!r) return;
         sfx.combo(4); buzz('good');
+        yarnFx(btn, false);
         announceToast({ ink:'#FF8AD8', glyph: YARN_GLYPH, eyebrow: t('wish.title'), title: t('wish.reward', { y: r.yarn }), desc: t('wish.treat') });
         paintRoom(); paintChrome();
       });
@@ -17621,6 +17880,7 @@ function paintWishes(){
     onTap(btn, () => {
       const r = Wish.claimWeek(); if (!r) return;
       sfx.combo(5); buzz('good');
+      yarnFx(btn, true);
       announceToast({ ink:'#FFC53D', glyph: YARN_GLYPH, eyebrow: t('wish.week'), title: t('wish.reward', { y: r.yarn }), desc: t('wish.treat') });
       paintRoom(); paintChrome();
     });
@@ -17754,6 +18014,12 @@ function openPalSheet(id){
       meow(); sfx.combo(5); buzz('good');
       announceToast({ ink: p.coat.base, glyph: catSvg(p.coat), eyebrow: t('pal.new'), title: t('pal.' + id), desc: t('pal.' + id + '.fx') });
       closeMetaSheet(); paintRoom(); paintChrome();
+      /* A new cat comes home: confetti in its own colours, and it gives a little hop where it landed in the room. */
+      if (!motionOff()){
+        Vfx.cannons(34, [p.coat.base, p.coat.accent || p.coat.base, '#FF8AD8', '#FFC53D', '#FFF3E6']);
+        const g = $('roomScene').querySelector('[data-pal="' + id + '"]');
+        if (g){ g.classList.add('petted'); setTimeout(() => g.classList.remove('petted'), 760); Vfx.hearts(g, 6); }
+      }
     });
     btns.appendChild(a);
   } else {
@@ -17779,6 +18045,32 @@ function openPalSheet(id){
   const first = panel.querySelector('button:not([disabled])'); if (first) first.focus();
 }
 
+/* Idle life, a moment at a time: every 1.3 s one of the cats (two in a room of four or more) on screen (the Room, the seats, the cards) blinks,
+   twitches an ear, flicks its tail or takes a breath, and now and then a sleeper lets out a z on the effects canvas.
+   Nothing while a run is live, the page is hidden or motion is off. */
+const LIFE_CAT = ['lf-blink', 'lf-twitch', 'lf-flick', 'lf-breath', 'lf-blink'];
+let lifeTick = 0;
+setInterval(() => {
+  if (motionOff() || document.hidden || run) return;
+  const pool = [...document.querySelectorAll('#tabRoom:not([hidden]) .catart')];
+  if (!pool.length) return;
+  lifeTick++;
+  for (let i = 0; i < (pool.length >= 4 ? 2 : 1); i++){
+    const n = pool[(Math.random() * pool.length) | 0];
+    const sleeper = !!n.querySelector('.cwhole.asleep');
+    if (sleeper && lifeTick % 3 === 0){
+      const r = n.getBoundingClientRect();
+      if (r.width) Vfx.spray('drift', r.left + r.width * .74, r.top + r.height * .2, 1, { k: ['text'], text: 'z', pal: ['#CDBCF7'], sp: 1.4, s0: 2.6, s1: 3.4, l0: 1400, l1: 1800 });
+      continue;
+    }
+    const cls = LIFE_CAT[(Math.random() * LIFE_CAT.length) | 0];
+    if (sleeper && cls === 'lf-blink') continue;
+    if (n.classList.contains(cls)) continue;
+    n.classList.add(cls);
+    setTimeout(() => n.classList.remove(cls), 1600);
+  }
+}, 1300);
+
 function petPal(id, ev){
   const r = Pals.pet(id);
   if (!r) return;
@@ -17787,6 +18079,12 @@ function petPal(id, ev){
   if (r.crossed) bondMoment(PAL_BY_ID[id], r.crossed);
   else announceToast({ ink: PAL_BY_ID[id].coat.base, glyph: catSvg(PAL_BY_ID[id].coat), eyebrow: t('pal.' + id), title: t('pal.petGot', { n: r.yarn }), desc: t('pal.petSub') });
   paintRoom(); paintChrome();
+  /* The cat answers the hand: a happy squash and stretch, after the room is redrawn around it. */
+  if (!motionOff()){
+    const g = $('roomScene').querySelector('[data-pal="' + id + '"]');
+    if (g){ g.classList.add('petted'); setTimeout(() => g.classList.remove('petted'), 760); }
+    if (r.crossed) setTimeout(() => Vfx.cannons(26, [PAL_BY_ID[id].coat.base, '#FF8AD8', '#FFC53D', '#FFF3E6']), 200);
+  }
 }
 
 /* A bond deepening is the payoff for playing with a cat along, so it gets a moment. */
@@ -17824,6 +18122,11 @@ function paintDecor(){
         announceToast({ ink:'#FFC53D', glyph: YARN_GLYPH, eyebrow: t('decor.' + slot), title: t('decor.' + slot + '.' + Room.lv(slot)),
           desc: opened ? t('room.seatOpened') : t('room.comfort', { c: Room.comfort() }) });
         paintRoom(); paintChrome();
+        /* The room is new: light crosses it and it sparkles where it changed. */
+        if (!motionOff()){
+          const sc = $('roomScene'); Vfx.sweep(sc, '#FFE9A8', 900);
+          const b = Vfx.box(sc); Vfx.spray('twinkle', b.x, b.y, 10, { k: ['glint', 'star'], pal: ['#FFE9A8', '#FFF3E6', '#FFC53D'], w: b.w * .8, h: b.h * .8, s0: 4, s1: 8, add: true });
+        }
       });
     }
     row.appendChild(btn); host.appendChild(row);
@@ -17831,6 +18134,17 @@ function paintDecor(){
   $('roomLevel').textContent = t('room.grade', { n: Room.level() }) + ' · +' + Room.comfort() + '%';
 }
 
+/* Yarn changing hands: a fountain of little balls where it came from, and tokens that fly to the yarn count, which
+   answers as each lands. The button's place is taken before the room is redrawn under it. */
+function yarnFx(from, big){
+  if (motionOff() || !from || !from.getBoundingClientRect) return;
+  const r = from.getBoundingClientRect(); if (!r.width) return;
+  const at = { getBoundingClientRect: () => r };
+  const b = Vfx.box(at);
+  Vfx.spray('fountain', b.x, b.y, big ? 24 : 14, { k: ['yarnball'], pal: ['#FF8AD8', '#FFB3E6', '#FFC53D'], sp: 6.2, g: .26, s0: 3, s1: 5, l0: 700, l1: 1000 });
+  for (let i = 0; i < (big ? 4 : 3); i++) flyTo(at, '#FF8AD8', $('yarnChip'), 120 + i * 110);
+  if (big) Vfx.cannons(30, ['#FF8AD8', '#FFC53D', '#FFF3E6', '#CDBCF7']);
+}
 function paintGift(){
   const host = $('giftCard'); host.innerHTML = '';
   const ready = Gift.ready(), day = Gift.day();
@@ -17844,6 +18158,7 @@ function paintGift(){
   onTap(btn, () => {
     const r = Gift.claim(); if (!r) return;
     sfx.combo(r.day === 7 ? 5 : 4); buzz('good');
+    yarnFx(btn, r.day === 7);
     announceToast({ ink:'#FF8AD8', glyph: YARN_GLYPH, eyebrow: t('gift.title'), title: t('gift.got', { y: r.yarn }), desc: r.day === 7 ? t('wish.treat') : t('gift.day', { n: r.day }) });
     paintRoom(); paintChrome();
   });
@@ -17876,6 +18191,14 @@ function paintRoom(){
   const scene = $('roomScene');
   scene.querySelectorAll('svg.roomsvg').forEach(n => n.remove());
   scene.insertAdjacentHTML('afterbegin', roomSvg());
+  /* Motes in the window's light (see .roommotes): placed over the window, in the scene's own proportions. */
+  if (!scene.querySelector('.roommotes')){
+    const m = mk('div', 'roommotes'); m.setAttribute('aria-hidden', 'true');
+    [[19, 28, 0], [29, 23, -2.1], [35, 35, -4.3], [24, 40, -1.2], [39, 26, -3.4], [17, 37, -5.2]].forEach(([x, y, d]) => {
+      const i = mk('i'); i.style.cssText = 'left:' + x + '%;top:' + y + '%;animation-delay:' + d + 's'; m.appendChild(i); });
+    scene.appendChild(m);
+  }
+  { const hr = new Date().getHours(); scene.querySelector('.roommotes').classList.toggle('night', hr < 5 || hr >= 20); }
   paintRoomIntro(); paintGift(); paintSeats(); paintWishes(); paintPals(); paintDecor();
   paintRoomDot();
 }
@@ -17938,7 +18261,7 @@ function offerDraft(){
   box.appendChild(eb); box.appendChild(h); box.appendChild(sub);
   const list = mk('div', 'dflist');
   offer.forEach(c => {
-    const card = mk('button', 'charm' + (c.spicy ? ' spicy' : '')); card.type = 'button';
+    const card = mk('button', 'charm' + (c.spicy ? ' spicy' : '') + (c.rar >= 2 ? ' rare' : '')); card.type = 'button';
     card.style.setProperty('--rar', c.spicy ? '#FF3D6E' : RAR_INK[c.rar]);
     const g = mk('span', 'cg'); g.innerHTML = charmGlyph(c);
     const tx = mk('span', 'ct'); const nm = mk('b'); nm.textContent = t('charm.' + c.id);
@@ -17958,6 +18281,13 @@ function offerDraft(){
   const pick = c => {
     Charm.take(run, c.id);
     sfx.combo(5); buzz('good'); paintHudCharms();
+    /* The kept charm bursts in its rarity's colour as the others go. */
+    if (!motionOff()){
+      const card = [...box.querySelectorAll('.charm')][offer.indexOf(c)];
+      const ink = c.spicy ? '#FF3D6E' : RAR_INK[c.rar];
+      if (card){ const b = Vfx.box(card); Vfx.ghost(card, ink, 'halo'); Vfx.ring(b.x, b.y, ink, { r1: 120, line: 3 });
+        Vfx.spray('radial', b.x, b.y, 22, { k: ['star', 'glint'], pal: [ink, '#FFF3E6', '#FFC53D'], sp: 6, g: .05, s0: 3, s1: 6, add: true }); }
+    }
     announceToast({ ink: c.spicy ? '#FF3D6E' : RAR_INK[c.rar], glyph: charmGlyph(c), eyebrow: t('draft.taken'), title: t('charm.' + c.id), desc: t('charm.' + c.id + '.d') });
     done();
   };
@@ -18111,14 +18441,515 @@ function show(name){
   el.tabbar.hidden = inGame;
   el.chrome.hidden = inGame;
   document.querySelectorAll('.ysub button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === name)));
-  Array.from(el.tabbar.children).forEach(b => {
+  let hop = null;
+  el.tabbar.querySelectorAll('.tab').forEach(b => {
     /* Progress and Settings are two halves of one tab, and Custom is a part of Play. */
     const on = b.dataset.tab === name || (b.dataset.tab === 'Stats' && name === 'Settings') || (b.dataset.tab === 'Play' && name === 'Mix');
     /* aria-current, not aria-selected: selected belongs to a real tablist, and
        this is a navigation bar. */
+    if (on && !b.hasAttribute('aria-current')) hop = b;
     if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
+  movePill();
+  /* The tab you landed on hops once. */
+  if (hop && !motionOff()){ hop.classList.remove('hop'); void hop.offsetWidth; hop.classList.add('hop'); setTimeout(() => hop.classList.remove('hop'), 620); }
 }
+
+/* A pill slides under the tab you are on, instead of the old one going dark and the new one lighting up. It is laid
+   over the bar (absolute, so it takes no column) and never takes a touch. */
+function movePill(instant){
+  const bar = el.tabbar;
+  if (!bar || bar.hidden) return;
+  let pill = bar.querySelector('.tabpill');
+  if (!pill){ pill = mk('i', 'tabpill'); pill.setAttribute('aria-hidden', 'true'); bar.prepend(pill); bar.classList.add('haspill'); instant = true; }
+  const on = bar.querySelector('.tab[aria-current="page"] .ti');
+  if (!on){ pill.style.opacity = '0'; return; }
+  const b = bar.getBoundingClientRect(), r = on.getBoundingClientRect();
+  if (!r.width) return;
+  const still = instant || motionOff();
+  if (still) pill.style.transition = 'none';
+  pill.style.opacity = '1';
+  pill.style.width = r.width + 'px'; pill.style.height = r.height + 'px';
+  pill.style.transform = 'translate(' + (r.left - b.left).toFixed(1) + 'px,' + (r.top - b.top).toFixed(1) + 'px)';
+  if (still){ void pill.offsetWidth; pill.style.transition = ''; }
+}
+addEventListener('resize', () => movePill(true), { passive: true });
+
+/* ═══ Motion engine ═══════════════════════════════════════════════════════
+   Everything that flies is drawn on one canvas laid over the whole screen: it
+   ignores touches, screen readers never see it, and it sits outside the board,
+   so a square never moves or changes size to celebrate (the stability probe
+   holds every piece to that). Particles are pooled, the frame loop runs only
+   while one is alive, and a frame that comes in late lowers how many may be
+   alive at once until the phone catches up. Nothing here runs with Reduce
+   motion on, or when the system asks for less motion.
+
+   A piece itself answers a solve through a ghost: a copy of its outline laid
+   over it, outside the board, that glows and grows and fades. The piece only
+   changes what it is allowed to change (colour, light), never where it is. */
+const Vfx = (() => {
+  const TAU = Math.PI * 2, R = Math.random;
+  const CAP_MAX = 260, CAP_MIN = 70;
+  let cv = null, g = null, dpr = 1, W = 0, H = 0, raf = 0, last = 0, cap = CAP_MAX;
+  const live = [], pool = [];
+  const stats = { made: 0, peak: 0, frames: 0, slow: 0, ghosts: 0, kinds: {}, sigs: {}, last: '' };
+  const on = () => !motionOff();
+  const pick = a => a[(R() * a.length) | 0];
+  const span = (a, b) => a + R() * (b - a);
+
+  /* Shapes, drawn once as paths at unit size and scaled by the transform. */
+  const P2 = typeof Path2D !== 'undefined';
+  const path = fn => { if (!P2) return null; const p = new Path2D(); fn(p); return p; };
+  const SH = {
+    paw: path(p => { p.ellipse(0, .38, .56, .44, 0, 0, TAU);
+      [[-.66, -.22], [-.24, -.62], [.24, -.62], [.66, -.22]].forEach(([x, y]) => { p.moveTo(x + .21, y); p.arc(x, y, .21, 0, TAU); }); }),
+    heart: path(p => { p.moveTo(0, .82); p.bezierCurveTo(-1.15, .02, -.62, -.95, 0, -.36); p.bezierCurveTo(.62, -.95, 1.15, .02, 0, .82); }),
+    star: path(p => { for (let i = 0; i < 10; i++){ const r = i % 2 ? .44 : 1, a = -Math.PI / 2 + i * Math.PI / 5;
+      i ? p.lineTo(Math.cos(a) * r, Math.sin(a) * r) : p.moveTo(Math.cos(a) * r, Math.sin(a) * r); } p.closePath(); }),
+    glint: path(p => { p.moveTo(0, -1); p.lineTo(.16, -.16); p.lineTo(1, 0); p.lineTo(.16, .16); p.lineTo(0, 1);
+      p.lineTo(-.16, .16); p.lineTo(-1, 0); p.lineTo(-.16, -.16); p.closePath(); }),
+    drop: path(p => { p.moveTo(0, -1); p.bezierCurveTo(.18, -.55, .68, -.12, .68, .3); p.arc(0, .3, .68, 0, Math.PI);
+      p.bezierCurveTo(-.68, -.12, -.18, -.55, 0, -1); }),
+    fish: path(p => { p.moveTo(-.95, 0); p.quadraticCurveTo(-.1, -.78, .5, 0); p.quadraticCurveTo(-.1, .78, -.95, 0);
+      p.moveTo(.4, 0); p.lineTo(1, -.5); p.lineTo(.86, 0); p.lineTo(1, .5); p.closePath(); }),
+    crumb: path(p => { const k = [1, .72, .95, .62, .9, .7]; k.forEach((r, i) => { const a = i / k.length * TAU;
+      i ? p.lineTo(Math.cos(a) * r, Math.sin(a) * r) : p.moveTo(r, 0); }); p.closePath(); }),
+    shard: path(p => { p.moveTo(0, -1); p.lineTo(.62, .7); p.lineTo(-.5, .45); p.closePath(); }),
+    leaf: path(p => { p.moveTo(0, -1); p.quadraticCurveTo(.85, 0, 0, 1); p.quadraticCurveTo(-.85, 0, 0, -1); }),
+    coin: path(p => { p.arc(0, 0, 1, 0, TAU); }),
+    yarn: path(p => { p.arc(0, 0, 1, 0, TAU); })
+  };
+
+  function mount(){
+    if (cv) return !!g;
+    cv = document.createElement('canvas');
+    cv.id = 'fxCanvas';
+    cv.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(cv);
+    try { g = cv.getContext('2d'); } catch(e){ g = null; }
+    fit();
+    addEventListener('resize', fit, { passive: true });
+    return !!g;
+  }
+  function fit(){
+    if (!cv) return;
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = innerWidth; H = innerHeight;
+    cv.width = Math.max(1, Math.round(W * dpr)); cv.height = Math.max(1, Math.round(H * dpr));
+  }
+
+  /* One particle. Every field has a default, so a recipe says only what is particular to it. */
+  function add(o){
+    if (live.length >= cap || !mount()) return null;
+    const p = pool.pop() || {};
+    p.kind = o.kind || 'dot'; p.x = o.x; p.y = o.y; p.vx = o.vx || 0; p.vy = o.vy || 0;
+    p.g = o.g || 0; p.drag = o.drag == null ? .965 : o.drag; p.life = o.life || 700; p.age = -(o.delay || 0);
+    p.size = o.size || 4; p.grow = o.grow || 0; p.rot = o.rot == null ? R() * TAU : o.rot; p.vr = o.vr || 0;
+    p.color = o.color || '#FFF3E6'; p.alpha = o.alpha == null ? 1 : o.alpha; p.fade = o.fade == null ? .55 : o.fade;
+    p.flip = o.flip || 0; p.wob = o.wob || 0; p.ph = R() * TAU; p.line = o.line || 2; p.text = o.text || '';
+    p.floor = o.floor == null ? null : o.floor; p.add = !!o.add;
+    p.cx = o.cx == null ? null : o.cx; p.cy = o.cy; p.ang = o.ang || 0; p.rad = o.rad || 0; p.w = o.w || 0; p.vrad = o.vrad || 0;
+    live.push(p);
+    stats.made++; stats.kinds[p.kind] = (stats.kinds[p.kind] || 0) + 1;
+    if (live.length > stats.peak) stats.peak = live.length;
+    if (!raf){ last = performance.now(); raf = rawRAF(tick); }
+    return p;
+  }
+
+  function tick(now){
+    let dt = now - last; last = now;
+    if (dt > 64) dt = 64;
+    stats.frames++;
+    /* A late frame lowers the ceiling; on-time frames let it creep back. */
+    if (dt > 26){ stats.slow++; cap = Math.max(CAP_MIN, cap - 10); } else if (cap < CAP_MAX) cap++;
+    const k = dt / 16.667;
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    g.clearRect(0, 0, cv.width, cv.height);
+    for (let i = live.length - 1; i >= 0; i--){
+      const p = live[i];
+      p.age += dt;
+      if (p.age < 0) continue;
+      if (p.age >= p.life){ live[i] = live[live.length - 1]; live.pop(); pool.push(p); continue; }
+      if (p.cx != null){
+        p.ang += p.w * k; p.rad += p.vrad * k;
+        p.x = p.cx + Math.cos(p.ang) * p.rad; p.y = p.cy + Math.sin(p.ang) * p.rad * .9;
+      } else {
+        const d = Math.pow(p.drag, k);
+        p.vx *= d; p.vy = p.vy * d + p.g * k;
+        p.x += p.vx * k + (p.wob ? Math.sin(p.ph + p.age * .005) * p.wob * k : 0);
+        p.y += p.vy * k;
+        if (p.floor != null && p.y > p.floor && p.vy > 0){ p.y = p.floor; p.vy *= -.52; p.vx *= .8; }
+      }
+      p.rot += p.vr * k;
+      const t = p.age / p.life;
+      const a = p.alpha * (t < p.fade ? Math.min(1, p.age / 60) : 1 - (t - p.fade) / (1 - p.fade));
+      if (a > .01) draw(p, t, a);
+    }
+    g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+    if (live.length) raf = rawRAF(tick);
+    else { raf = 0; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cv.width, cv.height); }
+  }
+
+  function at(x, y, s, rot){
+    const c = Math.cos(rot) * s * dpr, n = Math.sin(rot) * s * dpr;
+    g.setTransform(c, n, -n, c, x * dpr, y * dpr);
+  }
+  function draw(p, t, a){
+    g.globalAlpha = a;
+    g.globalCompositeOperation = p.add ? 'lighter' : 'source-over';
+    const s = p.size * (1 + p.grow * t);
+    switch (p.kind){
+      case 'dot':
+        at(p.x, p.y, 1, 0); g.fillStyle = p.color; g.beginPath(); g.arc(0, 0, s, 0, TAU); g.fill(); break;
+      case 'glow':
+        at(p.x, p.y, 1, 0); g.fillStyle = p.color;
+        g.globalAlpha = a * .22; g.beginPath(); g.arc(0, 0, s * 2.4, 0, TAU); g.fill();
+        g.globalAlpha = a; g.beginPath(); g.arc(0, 0, s, 0, TAU); g.fill(); break;
+      case 'spark': {
+        at(0, 0, 1, 0); g.strokeStyle = p.color; g.lineWidth = s * .55; g.lineCap = 'round';
+        const L = Math.min(3.2, 1 + Math.hypot(p.vx, p.vy) * .5);
+        g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x - p.vx * L, p.y - p.vy * L); g.stroke(); break;
+      }
+      case 'ring': case 'ellring': {
+        const e = 1 - Math.pow(1 - t, 3), r = p.size + p.grow * e;
+        at(p.x, p.y, 1, 0); g.strokeStyle = p.color; g.lineWidth = Math.max(.5, p.line * (1 - t));
+        g.beginPath();
+        if (p.kind === 'ring') g.arc(0, 0, r, 0, TAU); else g.ellipse(0, 0, r, r * .38, 0, 0, TAU);
+        g.stroke(); break;
+      }
+      case 'confetti': {
+        at(p.x, p.y, 1, p.rot);
+        const f = Math.cos(p.ph + p.age * p.flip);
+        g.scale(1, f || .02); g.fillStyle = p.color; g.fillRect(-s, -s * .42, s * 2, s * .84); break;
+      }
+      case 'patch':
+        at(p.x, p.y, 1, p.rot); g.fillStyle = p.color; g.fillRect(-s, -s, s * 2, s * 2);
+        g.setLineDash([2, 2]); g.strokeStyle = '#FFF3E6aa'; g.lineWidth = 1; g.strokeRect(-s + 2, -s + 2, s * 2 - 4, s * 2 - 4); g.setLineDash([]); break;
+      case 'curl':
+        at(p.x, p.y, 1, p.rot); g.strokeStyle = p.color; g.lineWidth = p.line; g.lineCap = 'round';
+        g.beginPath(); g.arc(0, 0, s, 0, 4.4); g.stroke(); break;
+      case 'thread': {
+        at(p.x, p.y, 1, p.rot); g.strokeStyle = p.color; g.lineWidth = p.line; g.lineCap = 'round';
+        const w = Math.sin(p.ph + p.age * .014) * s * .9;
+        g.beginPath(); g.moveTo(-s, 0); g.quadraticCurveTo(0, w, s, 0); g.stroke(); break;
+      }
+      case 'stitch':
+        at(p.x, p.y, 1, p.rot); g.strokeStyle = p.color; g.lineWidth = p.line; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(-s, -s * .5); g.lineTo(s, s * .5); g.moveTo(-s, s * .5); g.lineTo(s, -s * .5); g.stroke(); break;
+      case 'bubble':
+        at(p.x, p.y, 1, 0); g.strokeStyle = p.color; g.lineWidth = 1.4;
+        g.beginPath(); g.arc(0, 0, s, 0, TAU); g.stroke();
+        g.fillStyle = p.color; g.globalAlpha = a * .6; g.beginPath(); g.arc(-s * .35, -s * .35, s * .22, 0, TAU); g.fill(); break;
+      case 'button':
+        at(p.x, p.y, 1, p.rot); g.fillStyle = p.color; g.beginPath(); g.arc(0, 0, s, 0, TAU); g.fill();
+        g.fillStyle = '#0D0918aa'; g.beginPath(); g.arc(-s * .3, 0, s * .17, 0, TAU); g.arc(s * .3, 0, s * .17, 0, TAU); g.fill(); break;
+      case 'yarnball':
+        at(p.x, p.y, 1, p.rot); g.fillStyle = p.color; g.beginPath(); g.arc(0, 0, s, 0, TAU); g.fill();
+        g.strokeStyle = '#0D091855'; g.lineWidth = 1.1; g.beginPath(); g.arc(-s * .5, 0, s * .9, -1, 1); g.moveTo(s * .2, -s * .9);
+        g.quadraticCurveTo(s * .9, 0, s * .2, s * .9); g.stroke(); break;
+      case 'text':
+        at(p.x, p.y, 1, p.rot * .15); g.fillStyle = p.color; g.font = '700 ' + Math.round(s * 3) + 'px "Archivo","Arial Black",sans-serif';
+        g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(p.text, 0, 0); break;
+      default: {
+        const sh = SH[p.kind];
+        if (!sh){ at(p.x, p.y, 1, 0); g.fillStyle = p.color; g.beginPath(); g.arc(0, 0, s, 0, TAU); g.fill(); break; }
+        at(p.x, p.y, s, p.rot); g.fillStyle = p.color; g.fill(sh);
+      }
+    }
+  }
+
+  /* Where a node is, in screen pixels. */
+  function box(node){
+    const r = node && node.getBoundingClientRect ? node.getBoundingClientRect() : null;
+    if (r && r.width) return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height, r };
+    const s = el.surface.getBoundingClientRect();
+    return { x: s.left + s.width / 2, y: s.top + s.height / 2, w: Math.min(120, s.width), h: Math.min(120, s.height), r: s };
+  }
+
+  /* ── Ghosts: the piece answers without moving ── */
+  const GHOST = {
+    halo:   { k: [{ transform: 'scale(.94)', opacity: 1 }, { transform: 'scale(1.1)', opacity: .9, offset: .35 }, { transform: 'scale(1.3)', opacity: 0 }], ms: 680, e: 'cubic-bezier(.2,.7,.3,1)' },
+    stamp:  { k: [{ transform: 'scale(1.5)', opacity: 0 }, { transform: 'scale(1)', opacity: .9, offset: .35 }, { transform: 'scale(1.06)', opacity: 0 }], ms: 560, e: 'cubic-bezier(.2,.9,.3,1)' },
+    ripple: { k: [{ transform: 'scale(1)', opacity: .95 }, { transform: 'scale(1.3)', opacity: .7, offset: .4 }, { transform: 'scale(1.8)', opacity: 0 }], ms: 760, e: 'cubic-bezier(.2,.7,.3,1)' },
+    pulse:  { k: [{ transform: 'scale(1)', opacity: 0 }, { transform: 'scale(1.12)', opacity: .9, offset: .3 }, { transform: 'scale(1.02)', opacity: 0 }], ms: 620, e: 'ease-out' },
+    snag:   { k: [{ opacity: 1 }, { opacity: 1, offset: .7 }, { opacity: 0 }], ms: 620, e: 'linear' }
+  };
+  function ghost(node, color, kind){
+    if (!on() || !f_ok() || !node || !node.getBoundingClientRect) return;
+    /* Only over a piece that is really there: a node the board has already replaced has no box, and the board's own
+       box is not a piece. */
+    const rr = node.getBoundingClientRect();
+    if (!rr.width || rr.width < 6 || rr.width > innerWidth * .98) return;
+    const b = { r: rr, w: rr.width, h: rr.height };
+    const spec = GHOST[kind] || GHOST.halo;
+    const d = mk('i', 'fxghost ' + (GHOST[kind] ? kind : 'halo'));
+    d.setAttribute('aria-hidden', 'true');
+    let rad = '14px';
+    try { rad = getComputedStyle(node).borderRadius || rad; } catch(e){}
+    d.style.cssText = 'left:' + b.r.left + 'px;top:' + b.r.top + 'px;width:' + b.w + 'px;height:' + b.h + 'px;border-radius:' + rad + ';color:' + color;
+    if (kind === 'snag'){
+      /* A pulled thread, scribbled across the piece and drawn on as you watch. */
+      const w = b.w, h = b.h, n = 5;
+      let dd = 'M' + (w * .12).toFixed(1) + ' ' + (h * .5).toFixed(1);
+      for (let i = 1; i <= n; i++) dd += ' L' + (w * (.12 + .76 * i / n)).toFixed(1) + ' ' + (h * (i % 2 ? .3 : .7)).toFixed(1);
+      d.innerHTML = '<svg viewBox="0 0 ' + w.toFixed(1) + ' ' + h.toFixed(1) + '"><path d="' + dd + '" pathLength="1"/></svg>';
+      const pth = d.querySelector('path');
+      if (pth && pth.animate) pth.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 220, easing: 'cubic-bezier(.3,.7,.4,1)', fill: 'forwards' });
+    }
+    document.body.appendChild(d);
+    stats.ghosts++;
+    const an = d.animate(spec.k, { duration: spec.ms, easing: spec.e, fill: 'forwards' });
+    const end = () => d.remove();
+    an.onfinish = end; an.oncancel = end;
+    setTimeout(end, spec.ms + 400);
+  }
+
+  /* ── Screen-wide light ── */
+  function veil(color, peak, ms, shape){
+    if (!big() || !f_ok()) return;
+    const v = mk('i', 'fxveil' + (shape ? ' ' + shape : ''));
+    v.setAttribute('aria-hidden', 'true');
+    v.style.color = color;
+    document.body.appendChild(v);
+    const an = v.animate([{ opacity: 0 }, { opacity: peak, offset: .22 }, { opacity: 0 }], { duration: ms || 520, easing: 'ease-out', fill: 'forwards' });
+    const end = () => v.remove();
+    an.onfinish = end; an.oncancel = end;
+    setTimeout(end, (ms || 520) + 400);
+  }
+  /* A band of light across a box (the board, a card): the moment it is crossed, it is done. */
+  function sweep(node, color, ms){
+    if (!big() || !f_ok() || !node) return;
+    const r = node.getBoundingClientRect(); if (!r.width) return;
+    const c = mk('i', 'fxsweep'); c.setAttribute('aria-hidden', 'true');
+    let rad = '22px'; try { rad = getComputedStyle(node).borderRadius || rad; } catch(e){}
+    c.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;height:' + r.height + 'px;border-radius:' + rad + ';color:' + (color || '#FFF3E6');
+    const band = mk('i'); c.appendChild(band);
+    document.body.appendChild(c);
+    const an = band.animate([{ transform: 'translateX(-120%) skewX(-18deg)' }, { transform: 'translateX(320%) skewX(-18deg)' }],
+      { duration: ms || 720, easing: 'cubic-bezier(.45,.05,.3,1)', fill: 'forwards' });
+    const end = () => c.remove();
+    an.onfinish = end; an.oncancel = end;
+    setTimeout(end, (ms || 720) + 400);
+  }
+
+  /* ── Recipes ── */
+  function ring(x, y, color, o){
+    o = o || {};
+    add({ kind: o.ell ? 'ellring' : 'ring', x, y, size: o.r0 || 6, grow: o.r1 || 70, line: o.line || 3, life: o.life || 520, color, fade: .2, delay: o.delay || 0, add: true });
+  }
+  function glints(x, y, n, spread, color, delay){
+    for (let i = 0; i < n; i++)
+      add({ kind: 'glint', x: x + span(-spread, spread), y: y + span(-spread, spread), size: span(4, 8), grow: -.6, vr: span(-.05, .05),
+        life: span(380, 620), delay: (delay || 0) + i * 45, color: color || '#FFF3E6', drag: .9, add: true, fade: .4 });
+  }
+  /* A spray of whatever a recipe says, laid out by its style. */
+  function spray(style, x, y, n, o){
+    const kinds = o.k, pal = o.pal, sp = o.sp || 4.2, w = o.w || 60, h = o.h || 60;
+    const base = (i, ang, v) => ({ kind: pick(kinds), x, y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v,
+      size: span(o.s0 || 3, o.s1 || 6.5), color: pick(pal), life: span(o.l0 || 520, o.l1 || 900), g: o.g == null ? .12 : o.g,
+      vr: span(-.18, .18), flip: .02, drag: o.drag || .955, line: 2.2, text: o.text, add: !!o.add, alpha: o.alpha });
+    for (let i = 0; i < n; i++){
+      let p;
+      switch (style){
+        case 'fountain': { const ang = -Math.PI / 2 + span(-.6, .6); p = base(i, ang, sp * span(.8, 1.35)); p.g = o.g == null ? .22 : o.g; break; }
+        case 'rain': p = base(i, Math.PI / 2, span(.4, 1.6)); p.x = x + span(-w * .7, w * .7); p.y = y - h * span(.7, 1.2); p.delay = i * 14; p.g = .16; p.drag = .99; break;
+        case 'spiral': { const ang = i / n * TAU; p = base(i, ang, sp * .5); p.vx -= Math.sin(ang) * sp * .9; p.vy += Math.cos(ang) * sp * .9; p.g = 0; break; }
+        case 'mirror': { const ang = -Math.PI / 2 + (i >> 1) / Math.max(1, n >> 1) * Math.PI * .9 - Math.PI * .45; p = base(i, ang, sp * span(.8, 1.2)); if (i % 2) p.vx = -p.vx; p.g = .05; break; }
+        case 'line': p = base(i, -Math.PI / 2, span(.6, 1.6)); p.x = x - w * .5 + w * (i + .5) / n; p.y = y + span(-4, 4); p.delay = i * 22; p.g = .03; break;
+        case 'orbit': p = base(i, 0, 0); p.cx = x; p.cy = y; p.ang = i / n * TAU; p.rad = Math.min(w, h) * .25; p.w = span(.09, .13); p.vrad = span(.9, 1.6); p.life = span(560, 760); break;
+        case 'implode': { const ang = i / n * TAU, rr = Math.max(w, h) * .9; p = base(i, ang + Math.PI, sp * 1.6); p.x = x + Math.cos(ang) * rr; p.y = y + Math.sin(ang) * rr; p.g = 0; p.drag = .9; p.life = 300; p.fade = .7; break; }
+        case 'bounce': p = base(i, -Math.PI / 2 + span(-.9, .9), sp * span(.7, 1.2)); p.g = .4; p.floor = y + h * .5 + 6; p.drag = .99; p.life = span(800, 1100); break;
+        case 'split': { const left = i % 2, ang = -Math.PI / 2 + (left ? -.75 : .75) + span(-.22, .22); p = base(i, ang, sp * span(.9, 1.25)); p.g = .2; break; }
+        case 'drift': p = base(i, -Math.PI / 2 + span(-1.2, 1.2), sp * span(.25, .55)); p.g = -.012; p.wob = .6; p.drag = .985; p.life = span(900, 1300); break;
+        case 'trail': { const ang = i * .55, rr = 6 + i * 3.2; p = base(i, 0, 0); p.x = x + Math.cos(ang) * rr; p.y = y + Math.sin(ang) * rr; p.delay = i * 18; p.g = 0; p.life = 520; break; }
+        case 'cross': { const ang = (i % 4) * Math.PI / 2 + Math.PI / 4 + span(-.15, .15); p = base(i, ang, sp * span(.7, 1.3)); p.rot = ang; p.vr = 0; p.g = 0; break; }
+        case 'puff': { const ang = (R() < .5 ? Math.PI : 0) + span(-.35, .35); p = base(i, ang, sp * span(.5, 1.1)); p.y = y + h * .42; p.g = -.02; p.drag = .93; break; }
+        case 'pour': { const ang = -Math.PI / 2 - .5 + span(-.25, .25); p = base(i, ang, sp * span(1, 1.4)); p.g = .3; p.delay = i * 16; break; }
+        case 'twinkle': p = base(i, 0, 0); p.x = x + span(-w * .6, w * .6); p.y = y + span(-h * .6, h * .6); p.delay = i * 40; p.g = 0; p.grow = -.5; p.life = span(420, 620); break;
+        default: { const ang = i / n * TAU + span(-.2, .2); p = base(i, ang, sp * span(.65, 1.25)); p.vy -= 1.2; }
+      }
+      add(p);
+    }
+  }
+
+  /* Each game's own way of saying "yes". Kinds, colours and a style (how they leave the piece); the
+     ghost is how the piece itself answers. No two games share both a style and a set of kinds. */
+  const SIG = {
+    odd:     { st: 'spiral',   k: ['curl', 'thread'],      pal: ['#FF8AD8', '#FFC53D', '#CDBCF7'], gh: 'halo' },
+    order:   { st: 'line',     k: ['stitch'],               pal: ['#FFC53D', '#FFF3E6'],            gh: 'stamp', n: 1.2 },
+    stroop:  { st: 'fountain', k: ['drop'],                 pal: ['#FF5B39', '#33E6C8', '#8A7CFF', '#FFC53D'], gh: 'ripple' },
+    rewire:  { st: 'radial',   k: ['thread'],               pal: ['#33E6C8', '#FF8AD8', '#FFF3E6'], gh: 'halo', sp: 5 },
+    sum:     { st: 'fountain', k: ['text'],                 pal: ['#FFC53D', '#FFF3E6'],            gh: 'stamp', text: '+', n: .6, s0: 4, s1: 6 },
+    count:   { st: 'twinkle',  k: ['dot', 'glow'],          pal: ['#33E6C8', '#FFF3E6', '#FFC53D'], gh: 'pulse', add: true },
+    mirror:  { st: 'mirror',   k: ['glint', 'star'],        pal: ['#CDBCF7', '#FFF3E6', '#33E6C8'], gh: 'halo', add: true },
+    slide:   { st: 'line',     k: ['paw'],                  pal: ['#F2B47A', '#FFF3E6'],            gh: 'stamp', n: .7, s0: 4, s1: 5.5 },
+    wheel:   { st: 'orbit',    k: ['star', 'stitch'],       pal: ['#FFC53D', '#FF8AD8', '#FFF3E6'], gh: 'halo' },
+    beat:    { st: 'drift',    k: ['text'],                 pal: ['#FF8AD8', '#33E6C8', '#FFF3E6'], gh: 'pulse', text: '♪', n: .6, s0: 5, s1: 7, ring: 'double' },
+    sort:    { st: 'rain',     k: ['crumb', 'dot'],         pal: ['#F7C089', '#FFF3E6', '#FF8AD8'], gh: 'stamp' },
+    arc:     { st: 'radial',   k: ['curl'],                 pal: ['#FF8AD8', '#FFF3E6'],            gh: 'halo', s0: 7, s1: 13 },
+    slack:   { st: 'cross',    k: ['spark'],                pal: ['#33E6C8', '#FFF3E6', '#FFC53D'], gh: 'halo', sp: 6.5, add: true },
+    tide:    { st: 'drift',    k: ['heart'],                pal: ['#FF6E9E', '#FF8AD8', '#FFF3E6'], gh: 'pulse', ring: 'triple', n: .7 },
+    plink:   { st: 'bounce',   k: ['yarnball'],             pal: ['#FF5B39', '#33E6C8', '#FFC53D', '#FF8AD8'], gh: 'stamp', n: .6, s0: 4, s1: 6 },
+    peril:   { st: 'radial',   k: ['dot', 'star'],          pal: ['#9C90C4', '#FFF3E6', '#FFC53D'], gh: 'stamp', sp: 5.4 },
+    tumble:  { st: 'orbit',    k: ['button'],               pal: ['#FFC53D', '#FF8AD8', '#33E6C8', '#CDBCF7'], gh: 'halo', s0: 4, s1: 6 },
+    skim:    { st: 'cross',    k: ['glint', 'spark'],       pal: ['#FFF3E6', '#CDBCF7'],            gh: 'halo', sp: 7, add: true },
+    bruise:  { st: 'fountain', k: ['patch', 'heart'],       pal: ['#FF8AD8', '#F7C089', '#CDBCF7'], gh: 'stamp', s0: 3.5, s1: 5.5 },
+    haunt:   { st: 'twinkle',  k: ['glint', 'star'],        pal: ['#CDBCF7', '#FFF3E6'],            gh: 'pulse', add: true },
+    tidy:    { st: 'drift',    k: ['bubble', 'glint'],      pal: ['#33E6C8', '#FFF3E6', '#CDBCF7'], gh: 'halo' },
+    glimmer: { st: 'radial',   k: ['glint'],                pal: ['#B9F27A', '#FFC53D', '#FFF3E6'], gh: 'pulse', add: true, s0: 5, s1: 10, ring: 'single' },
+    slice:   { st: 'split',    k: ['shard', 'spark'],       pal: ['#FFF3E6', '#FF8AD8', '#FFC53D'], gh: 'halo', sp: 6 },
+    ripple:  { st: 'fountain', k: ['drop', 'bubble'],       pal: ['#33E6C8', '#7AD8FF', '#FFF3E6'], gh: 'ripple', ring: 'ell', n: .8 },
+    descent: { st: 'rain',     k: ['stitch', 'curl'],       pal: ['#FF8AD8', '#FFF3E6', '#FFC53D'], gh: 'halo' },
+    siphon:  { st: 'pour',     k: ['drop'],                 pal: ['#8A7CFF', '#FF5B39', '#33E6C8', '#FFC53D'], gh: 'ripple' },
+    cairn:   { st: 'fountain', k: ['confetti'],             pal: ['#CDBCF7', '#FFF3E6', '#F7C089', '#FF8AD8'], gh: 'stamp', flip: true },
+    drift:   { st: 'drift',    k: ['curl', 'dot'],          pal: ['#CDBCF7', '#9C90C4', '#FFF3E6'], gh: 'halo' },
+    chalk:   { st: 'radial',   k: ['dot'],                  pal: ['#FFF3E6', '#F2EAD8', '#CDBCF7'], gh: 'halo', sp: 3, drag: .9, l0: 700, l1: 1100, alpha: .7, n: 1.6, s0: 1.5, s1: 3.5 },
+    gather:  { st: 'bounce',   k: ['yarnball', 'glint'],    pal: ['#FF8AD8', '#FFC53D', '#33E6C8'], gh: 'halo', n: .7 },
+    forge:   { st: 'fountain', k: ['patch'],                pal: ['#FF8AD8', '#F7C089', '#33E6C8', '#CDBCF7', '#FFC53D'], gh: 'stamp', s0: 3.5, s1: 6 },
+    heft:    { st: 'puff',     k: ['dot', 'crumb'],         pal: ['#C9B8A0', '#F7C089', '#FFF3E6'], gh: 'stamp', ring: 'ell', alpha: .85 },
+    bridge:  { st: 'cross',    k: ['stitch', 'thread'],     pal: ['#FF8AD8', '#FFF3E6', '#F7C089'], gh: 'stamp' },
+    latch:   { st: 'fountain', k: ['curl', 'button'],       pal: ['#FFC53D', '#FF8AD8', '#FFF3E6'], gh: 'halo' },
+    splice:  { st: 'implode',  k: ['glow'],                 pal: ['#33E6C8', '#FF8AD8', '#FFF3E6'], gh: 'pulse', add: true, after: 'radial' },
+    trace:   { st: 'trail',    k: ['glow'],                 pal: ['#FFC53D', '#FF8AD8'],            gh: 'halo', add: true, n: 1.4 },
+    lever:   { st: 'split',    k: ['star', 'dot'],          pal: ['#FFC53D', '#FFF3E6', '#CDBCF7'], gh: 'stamp' },
+    forage:  { st: 'fountain', k: ['fish', 'crumb', 'heart'], pal: ['#F7C089', '#FFE08A', '#FF8AD8', '#7AD8FF'], gh: 'stamp' },
+    meld:    { st: 'fountain', k: ['coin', 'leaf'],         pal: ['#FFC53D', '#FF8AD8', '#B9F27A'], gh: 'halo' },
+    volley:  { st: 'radial',   k: ['spark', 'button'],      pal: ['#FF5B39', '#FFC53D', '#FFF3E6'], gh: 'halo', sp: 6.2, ring: 'single' },
+    sift:    { st: 'rain',     k: ['dot'],                  pal: ['#F7C089', '#FF8AD8', '#33E6C8', '#FFC53D', '#CDBCF7'], gh: 'stamp', n: 2.2, s0: 1.2, s1: 2.4 },
+    halve:   { st: 'split',    k: ['yarnball'],             pal: ['#FF8AD8', '#33E6C8', '#FFC53D'], gh: 'halo', s0: 3.5, s1: 5 },
+    loaf:    { st: 'drift',    k: ['text', 'crumb'],        pal: ['#F7C089', '#FFF3E6', '#CDBCF7'], gh: 'stamp', text: 'z', s0: 3.5, s1: 5.5, n: .8 },
+    blast:   { st: 'radial',   k: ['shard', 'yarnball'],    pal: ['#FF5B39', '#FF8AD8', '#33E6C8', '#FFC53D'], gh: 'halo', sp: 6.4, ring: 'single' }
+  };
+  const FALLBACK = { st: 'radial', k: ['paw', 'curl', 'dot'], pal: ['#FFF3E6', '#FFC53D'], gh: 'halo' };
+
+  function solve(node, color, tier, id){
+    if (!on()) return false;
+    if (!mount()) return false;
+    const b = box(node), t = clamp(tier || 1, 1, 5), sig = SIG[id] || FALLBACK;
+    stats.sigs[id || '?'] = (stats.sigs[id || '?'] || 0) + 1; stats.last = id || '';
+    const pal = sig.pal.concat(color ? [color] : []);
+    const n = Math.round((12 + t * 3.5) * (sig.n || 1));
+    const o = { k: sig.k, pal, sp: (sig.sp || 4.2) * (1 + (t - 1) * .08), w: b.w, h: b.h, g: sig.g, s0: sig.s0, s1: sig.s1,
+      l0: sig.l0, l1: sig.l1, drag: sig.drag, text: sig.text, add: sig.add, alpha: sig.alpha };
+    ghost(node, color || pal[0], sig.gh);
+    spray(sig.st, b.x, b.y, n, o);
+    if (sig.after) setTimeout(() => spray(sig.after, b.x, b.y, Math.round(n * .8), o), 240);
+    /* Rings: the game's own, then one more the hotter the streak. */
+    const rc = color || pal[0];
+    if (sig.ring === 'double' || sig.ring === 'triple'){ ring(b.x, b.y, rc, { r1: 60 }); ring(b.x, b.y, rc, { r1: 60, delay: 140 }); if (sig.ring === 'triple') ring(b.x, b.y, rc, { r1: 60, delay: 280 }); }
+    else if (sig.ring === 'ell') { ring(b.x, b.y + b.h * .3, rc, { ell: true, r1: 70 }); ring(b.x, b.y + b.h * .3, rc, { ell: true, r1: 70, delay: 150 }); }
+    else if (sig.ring === 'single' || t >= 3) ring(b.x, b.y, rc, { r1: 50 + t * 10 });
+    if (t >= 4) glints(b.x, b.y, t === 5 ? 5 : 3, Math.max(b.w, b.h) * .5, '#FFF3E6', 80);
+    if (t >= 4 && big()) spray('fountain', b.x, b.y, t === 5 ? 14 : 8, { k: ['confetti'], pal: ['#FFC53D', '#FF5B39', '#33E6C8', '#FF8AD8'], sp: 5.2, g: .2, s0: 3, s1: 5, l0: 800, l1: 1200 });
+    return true;
+  }
+
+  /* A miss: the piece snags, and what the game is made of slumps off it, grey. */
+  function miss(node, id){
+    if (!on() || !mount()) return false;
+    const b = box(node), sig = SIG[id] || FALLBACK;
+    ghost(node, '#FF3D6E', 'snag');
+    const k = sig.k.filter(x => x !== 'text' && x !== 'glow' && x !== 'glint');
+    spray('radial', b.x, b.y, 7, { k: k.length ? k : ['dot'], pal: ['#6E6390', '#9C90C4', '#FF3D6E'], sp: 2.2, g: .26, s0: 2.5, s1: 4.5, l0: 420, l1: 640, drag: .93 });
+    return true;
+  }
+
+  /* The big ones (confetti, a band of light, the screen's edge glowing) answer to the Big celebrations switch as well. */
+  const big = () => on() && save.bigFx !== false;
+  /* Confetti from both lower corners, for a level, a best, a finished mastery. */
+  function cannons(n, pal){
+    if (!big() || !mount()) return;
+    pal = pal || ['#FFC53D', '#FF5B39', '#33E6C8', '#FF8AD8', '#CDBCF7', '#FFF3E6'];
+    n = n || 60;
+    for (let side = 0; side < 2; side++){
+      const x = side ? W + 6 : -6, y = H * .92;
+      for (let i = 0; i < n; i++){
+        const ang = side ? -Math.PI / 2 - span(.25, .75) : -Math.PI / 2 + span(.25, .75), v = span(11, 19);
+        add({ kind: R() < .82 ? 'confetti' : pick(['star', 'heart', 'paw']), x, y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v,
+          g: .32, drag: .962, size: span(3.5, 6.5), color: pick(pal), life: span(1700, 2500), fade: .7, flip: span(.008, .02),
+          vr: span(-.2, .2), wob: .5, delay: i * 9 });
+      }
+    }
+  }
+  /* Confetti that falls from the top edge across the screen. */
+  function rain(n, pal, kinds){
+    if (!big() || !mount()) return;
+    pal = pal || ['#FFC53D', '#FF5B39', '#33E6C8', '#FF8AD8', '#FFF3E6'];
+    for (let i = 0; i < (n || 70); i++)
+      add({ kind: pick(kinds || ['confetti', 'confetti', 'confetti', 'star']), x: span(0, W), y: span(-40, -6), vx: span(-1, 1), vy: span(1.5, 4),
+        g: .06, drag: .99, size: span(3.5, 6), color: pick(pal), life: span(2000, 3000), fade: .75, flip: span(.008, .02), vr: span(-.12, .12), wob: .7, delay: i * 18 });
+  }
+  /* Embers off a hot streak: a few at a time, rising and cooling. */
+  function embers(node, heat){
+    if (!on() || !node || heat <= 0 || !mount()) return;
+    const b = box(node), n = heat >= 1 ? 3 : heat >= .75 ? 2 : 1;
+    for (let i = 0; i < n; i++)
+      add({ kind: 'glow', x: b.x + span(-b.w * .4, b.w * .4), y: b.y + span(-4, 6), vx: span(-.4, .4), vy: span(-1.6, -.8),
+        g: -.01, drag: .98, size: span(1.3, 2.4), color: pick(heat >= 1 ? ['#FFC53D', '#FFE08A', '#FF5B39'] : ['#FF5B39', '#FF8A5C']), life: span(600, 900), wob: .4, add: true, fade: .3 });
+  }
+  /* Hearts off something you touched kindly (a cat, a gift). */
+  function hearts(node, n, pal){
+    if (!on() || !mount()) return;
+    const b = box(node);
+    for (let i = 0; i < (n || 6); i++)
+      add({ kind: R() < .8 ? 'heart' : 'glint', x: b.x + span(-b.w * .25, b.w * .25), y: b.y - b.h * .15, vx: span(-1.2, 1.2), vy: span(-3.2, -1.8),
+        g: -.02, drag: .97, size: span(4.5, 7.5), color: pick(pal || ['#FF6E9E', '#FF8AD8', '#FFF3E6']), life: span(900, 1300), wob: .5, delay: i * 50, vr: span(-.04, .04) });
+  }
+  /* A small, quick acknowledgement for a control: a ring and a few glints. */
+  function tap(node, color){
+    if (!on() || !mount()) return;
+    const b = box(node);
+    ring(b.x, b.y, color || '#FFF3E6', { r0: 4, r1: Math.max(28, Math.min(70, b.w * .45)), line: 2, life: 420 });
+    glints(b.x, b.y, 2, Math.min(24, b.w * .3), color || '#FFF3E6');
+  }
+  /* A little of a game's signature for its own small moments inside a round (a pair matched, a row cleared, a slip). */
+  function bit(x, y, id, good){
+    if (!on() || !mount()) return;
+    const sig = SIG[id] || FALLBACK;
+    stats.bits = (stats.bits || 0) + 1;
+    if (good){
+      const st = { line: 'radial', trail: 'radial', implode: 'radial', rain: 'fountain', bounce: 'fountain', orbit: 'spiral' }[sig.st] || sig.st;
+      spray(st, x, y, 7, { k: sig.k, pal: sig.pal, sp: (sig.sp || 4.2) * .65, w: 36, h: 36, s0: (sig.s0 || 3) * .8, s1: (sig.s1 || 6.5) * .8,
+        l0: 360, l1: 560, text: sig.text, add: sig.add, alpha: sig.alpha });
+      ring(x, y, sig.pal[0], { r0: 4, r1: 26, line: 2, life: 360 });
+    } else {
+      spray('radial', x, y, 4, { k: ['dot'], pal: ['#6E6390', '#FF3D6E'], sp: 1.8, g: .25, s0: 2, s1: 3, l0: 320, l1: 480 });
+    }
+  }
+  function clear(){ live.length = 0; if (g && cv){ g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cv.width, cv.height); } }
+
+  return { solve, miss, bit, ghost, veil, sweep, ring, glints, spray, cannons, rain, embers, hearts, tap, clear, box, stats, SIG,
+    live: () => live.length, on, big };
+})();
+/* Where the finger last was on the play screen, so a game's own small moment is drawn where it happened. */
+const lastPt = { x: 0, y: 0, t: 0 };
+['pointerdown', 'pointerup'].forEach(type => document.addEventListener(type, e => {
+  if (!e.target || !e.target.closest || !e.target.closest('#play')) return;
+  lastPt.x = e.clientX; lastPt.y = e.clientY; lastPt.t = performance.now();
+}, { capture: true, passive: true }));
+/* A game's chime or buzz inside a live round (never the round's own result, which resolve() plays after the round is
+   over) brings a little of its signature with it. */
+['good', 'bad'].forEach(k => {
+  const f = sfx[k];
+  sfx[k] = (...a) => {
+    const r = f(...a);
+    try {
+      if (roundLive && run && run.curMode && !motionOff()){
+        const fresh = lastPt.t && performance.now() - lastPt.t < 4000;
+        const p = fresh ? lastPt : Vfx.box(el.surface);
+        Vfx.bit(p.x, p.y, modeIdOf(run.curMode), k === 'good');
+        /* The piece under the finger answers too: a glow for a good one, a snag for a slip. */
+        if (fresh){
+          const hit = document.elementFromPoint(p.x, p.y);
+          const piece = hit && hit.closest && hit.closest('#surface button, #surface .tile, #surface .cell');
+          if (piece && piece !== el.surface) Vfx.ghost(piece, k === 'good' ? '#33E6C8' : '#FF3D6E', k === 'good' ? 'halo' : 'snag');
+        }
+      }
+    } catch(e){}
+    return r;
+  };
+});
+try { if (localStorage.getItem('dd.probe')) window.__vfx = Vfx; } catch(e){}
 
 /* ═══ Effects ═════════════════════════════════════════════════════════════ */
 /* tier: 1-5, the multiplier a solve landed at. Untiered callers (the run-
@@ -18126,8 +18957,10 @@ function show(name){
    the plain, un-escalated look these always had — tiering is additive, never
    a new default. Kept to size/colour/count/reach so it stays what it always
    was: transform, opacity and paint, nothing that costs a layout pass. */
-function burst(target, color, tier){
+function burst(target, color, tier, id){
   if (motionOff()) return;
+  /* The canvas does it now, in the game's own shapes; the spans below are only for a browser with no canvas. */
+  if (Vfx.solve(target, color, tier, id)) return;
   const host = el.surface.getBoundingClientRect();
   const r = target ? target.getBoundingClientRect() : host;
   const cx = r.left - host.left + r.width/2, cy = r.top - host.top + r.height/2;
@@ -18210,18 +19043,15 @@ function celebrateLevel(level, from, gained){
   $('luOk').focus();
   sfx.level(); buzz('win');
 
+  /* Confetti from both lower corners, then a ring off the new number once the card has landed. */
   if (!motionOff()){
-    for (let i=0;i<26;i++){
-      const s = mk('span','burst');
-      const ang = Math.random()*Math.PI*2, dist = 90 + Math.random()*150;
-      s.style.left = '50%'; s.style.top = '40%';
-      s.style.setProperty('--dx', Math.cos(ang)*dist + 'px');
-      s.style.setProperty('--dy', Math.sin(ang)*dist + 'px');
-      s.style.background = [ '#FFC53D','#FF5B39','#33E6C8' ][i % 3];
-      s.style.animationDelay = (Math.random()*160) + 'ms';
-      host.appendChild(s);
-      setTimeout(() => s.remove(), 1200);
-    }
+    Vfx.cannons(44);
+    setTimeout(() => {
+      if (host.hidden) return;
+      const b = Vfx.box($('luNum'));
+      Vfx.ring(b.x, b.y, '#FFC53D', { r0: 50, r1: 90, line: 4, life: 700 });
+      Vfx.glints(b.x, b.y, 5, 70, '#FFE08A');
+    }, 560);
   }
 }
 /* No timer: it closes when the player says so — the button, Escape, a tap outside the card,
@@ -18255,6 +19085,11 @@ function flyTo(from, color, to, delay){
     f.style.background = color; f.style.color = color;
     document.body.appendChild(f);
     flying++;
+    /* A comet's tail: a few motes left along the way, each fading where it was dropped. */
+    [.3, .48, .64, .8].forEach(u => setTimeout(() => {
+      const a1 = 1 - u, qx = a1 * a1 * x0 + 2 * a1 * u * mx + u * u * x1, qy = a1 * a1 * (y0 - 22) + 2 * a1 * u * my + u * u * y1;
+      Vfx.spray('twinkle', qx, qy, 1, { k: ['glow'], pal: [color], w: 4, h: 4, s0: 2, s1: 3, l0: 260, l1: 360, add: true });
+    }, 560 * u));
     const an = f.animate([
       { transform: `translate(${x0}px,${y0}px) scale(.5)`, opacity: 0 },
       { transform: `translate(${x0}px,${y0 - 22}px) scale(1.15)`, opacity: 1, offset: .16 },
@@ -18293,10 +19128,18 @@ const parOf = (mode, lvl) =>
    the spot; only winning moves you on. */
 /* The board fades in once, when it is new. It used to stay switched on for the whole round, so a mode that redraws its grid
    after every move (Let the Cat Out does) faded the whole board out and in again on every move. */
+/* How a board opens follows how its game says yes: an iris for the ones that burst, a wipe for the ones that run in a
+   line, a curtain for the ones where things fall, a rise for fountains, a split for the ones made of halves, a diamond for
+   the crossing ones. All of it is a clip and a fade; no square moves or changes size. */
+const REVEAL_OF = { radial: 'iris', spiral: 'iris', orbit: 'iris', line: 'wipe', trail: 'wipe', rain: 'curtain', pour: 'curtain',
+  bounce: 'curtain', fountain: 'rise', drift: 'rise', puff: 'rise', mirror: 'split', split: 'split', cross: 'diamond',
+  twinkle: 'diamond', implode: 'diamond' };
 function fadeBoard(){
   if (motionOff()) return;
+  const sig = run && run.curMode ? Vfx.SIG[modeIdOf(run.curMode)] : null;
+  el.surface.dataset.rv = (sig && REVEAL_OF[sig.st]) || 'iris';
   el.surface.classList.add('boardin');
-  setTimeout(() => el.surface.classList.remove('boardin'), 300);
+  setTimeout(() => el.surface.classList.remove('boardin'), 360);
 }
 
 function staged(mode, ctx, want){
@@ -18398,6 +19241,19 @@ const hudAttr = (node, name, v) => { if (node.getAttribute(name) !== v) node.set
 const hudHide = (node, v) => { v = !!v; if (node.hidden !== v) node.hidden = v; };
 const hudProp = (node, name, v) => { v = String(v); if (node.style.getPropertyValue(name) !== v) node.style.setProperty(name, v); };
 
+/* From x3 up the multiplier smoulders: a few embers rise off it, more the hotter it is. One timer, stopped the moment
+   the streak cools or the run is gone; nothing while paused, off screen or with motion off. */
+let emberT = 0;
+function emberLoop(heat){
+  if (heat >= .5 && !motionOff()){
+    if (!emberT) emberT = setInterval(() => {
+      if (!run || run.heat < .5 || motionOff()){ clearInterval(emberT); emberT = 0; return; }
+      if (screen !== 'play' || run.paused || document.hidden) return;
+      Vfx.embers($('hudStreak'), run.heat);
+    }, 230);
+  } else if (emberT){ clearInterval(emberT); emberT = 0; }
+}
+
 function renderHud(){
   if (!run) return;
   const k = KINDS[run.kind];
@@ -18424,7 +19280,7 @@ function renderHud(){
      write on the play screen sixty times a second is a recalculation nobody
      asked for. */
   const heat = clamp((m - 1) / 4, 0, 1);
-  if (run.heat !== heat){ run.heat = heat; el.play.style.setProperty('--heat', String(heat)); }
+  if (run.heat !== heat){ run.heat = heat; el.play.style.setProperty('--heat', String(heat)); emberLoop(heat); }
   const step = MULT_STEP[Math.min(3, Perk.lv('zeal') + Fx.zeal(run))];
   hudProp(chip, '--to', m >= 5 ? 1 : (run.streak % step) / step);
   chip.classList.toggle('maxed', m >= 5);
@@ -18470,6 +19326,16 @@ function renderHud(){
     }
     box.classList.toggle('many', max > 6);
     Array.from(box.children).forEach((sp,i) => sp.classList.toggle('out', i >= run.lives));
+    /* A life lost breaks where it was; one gained arrives with hearts. */
+    if (run.shownLives != null && run.lives !== run.shownLives && !motionOff()){
+      const sp = box.children[Math.min(run.lives, run.shownLives)];
+      if (sp){
+        const b = Vfx.box(sp);
+        if (run.lives < run.shownLives) Vfx.spray('radial', b.x, b.y, 10, { k: ['shard', 'dot'], pal: ['#FF5B39', '#FF3D6E', '#FFC53D'], sp: 3.4, g: .22, s0: 2, s1: 4, l0: 420, l1: 640 });
+        else Vfx.hearts(sp, 5);
+      }
+    }
+    run.shownLives = run.lives;
   } else {
     hudHide($('hudMeter'), true); hudHide($('hudLives'), true);
   }
@@ -19031,9 +19897,15 @@ function resolve(ok, node){
         eyebrow: t('stage.eyebrow', { n: stage }), title: t('stage.title'),
         desc: t(k.timed ? 'stage.descTimed' : 'stage.desc', { n: bonus, s: STAGE_BREATHER_MS / 1000 }) });
       sfx.combo(5);
+      /* A stage is a landmark: light crosses the board and stars go up from it. */
+      if (!motionOff()){
+        Vfx.sweep(el.surface, '#FFC53D', 860);
+        const sb = Vfx.box(el.surface);
+        Vfx.spray('fountain', sb.x, sb.y + sb.h * .3, 22, { k: ['star', 'confetti'], pal: ['#FFC53D', '#FFF3E6', '#FF8AD8'], sp: 7.5, g: .24, s0: 3.5, s1: 6, l0: 900, l1: 1300 });
+      }
     }
 
-    burst(node, cosmeticHex(), mult); flash('flash-win'); flyToScore(node, cosmeticHex());
+    burst(node, cosmeticHex(), mult, mid); flash('flash-win'); flyToScore(node, cosmeticHex());
     sfx.good(run.streak); buzz('good');
     /* streak++ above already moved this — multAfter is what the player is
        actually looking at, the tier this solve landed them on, not the one
@@ -19041,6 +19913,8 @@ function resolve(ok, node){
     const multAfter = multiplier();
     el.prompt.textContent = run.streak >= 4 ? t('p.streak', { n: multAfter }) : (Math.random() < 0.7 && quip(mode, true)) || t('p.nice');
     el.prompt.className = 'prompt won';
+    /* The line under the score springs up when it praises you... */
+    if (!motionOff() && f_ok()) el.prompt.animate([{ transform: 'translateY(7px) scale(.94)', opacity: .3 }, { transform: 'none', opacity: 1 }], { duration: 420, easing: 'cubic-bezier(.34,1.56,.64,1)' });
     /* A ×1 solve and a ×5 solve used to pop identically — the same bump, the
        same colour, however hot the streak actually was. 'big' rides the same
        pop animation both already had; it only changes how far it scales and
@@ -19056,6 +19930,12 @@ function resolve(ok, node){
       st.classList.add('pop'); st.classList.toggle('big', big);
       setTimeout(() => { st.classList.remove('pop', 'big'); }, 300);
       flyTo($('hudScore'), '#FFC53D', st, 150);
+      /* The chip rings as the token lands, louder the higher it went. */
+      if (!motionOff()){
+        const sb = Vfx.box(st);
+        Vfx.ring(sb.x, sb.y, '#FFC53D', { r0: 12, r1: 30 + multAfter * 7, line: 2.5, delay: 300 });
+        Vfx.glints(sb.x, sb.y, multAfter >= 4 ? 4 : 2, 18, '#FFE08A', 320);
+      }
       /* A tier-up is rare enough in a run to earn its own beat — the small
          prompt text already says "Streak ×N!" but reads it in passing; this
          is the same words, said louder, at the moment that's actually worth
@@ -19073,6 +19953,9 @@ function resolve(ok, node){
         if (!motionOff()){
           el.surface.classList.add('tierglow');
           setTimeout(() => el.surface.classList.remove('tierglow'), 700);
+          Vfx.sweep(el.surface, '#FFC53D', 780);
+          if (save.flashes !== false) Vfx.veil('#FFC53D', .35, 760, 'center');
+          Vfx.rain(34, ['#FFC53D', '#FF5B39', '#FFE08A', '#FFF3E6']);
         }
       }
     }
@@ -19119,6 +20002,9 @@ function resolve(ok, node){
     }
     flash('flash-bad');
     if (!motionOff()){
+      /* The piece snags and what it is made of slumps off it; the edges of the screen redden, less when the miss was forgiven. */
+      Vfx.miss(node, modeIdOf(mode));
+      if (save.flashes !== false) Vfx.veil('#FF3D6E', (free || saved) ? .3 : .55, 460);
       const shakeCls = (!saved && multWas > 1) ? 'shake-big' : 'shake';
       el.surface.classList.add(shakeCls);
       setTimeout(() => el.surface.classList.remove(shakeCls), 400);
@@ -19129,6 +20015,8 @@ function resolve(ok, node){
       : r.timedOut ? t('p.tooSlow')
       : k.timed ? (said ? said + ' · ' : '') + t('p.minusSec', { n: k.penalty/1000 }) : (said || t('p.missed'));
     el.prompt.className = 'prompt lost';
+    /* ...and shakes its head when it does not. */
+    if (!motionOff() && f_ok()) el.prompt.animate([{ transform: 'translateX(-7px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-4px)' }, { transform: 'translateX(2px)' }, { transform: 'none' }], { duration: 360, easing: 'ease-out' });
     try { if (localStorage.getItem('dd.probe')){ el.play.dataset.miss = learn ? 'learn' : free ? 'free' : 'paid'; el.play.dataset.clock = String(Math.round(run.time)); } } catch(e){}
     renderHud();
     if (k.lives && run.lives <= 0) return later(520, endRun);
@@ -19274,10 +20162,15 @@ function countIn(then){
   ['3','2','1'].forEach((n, i) => later(i*330, () => {
     b.textContent = n;
     b.style.animation = 'none'; void b.offsetWidth; b.style.animation = '';
+    if (!motionOff()){ const cb = Vfx.box(b); Vfx.ring(cb.x, cb.y, i === 2 ? '#FFC53D' : '#FF5B39', { r0: 26, r1: 34 + i * 8, line: 3, life: 360 }); }
     caption('cap.tick');
     tone(i === 2 ? 660 : 480, 0.07, 'triangle', 0.04);
   }));
-  later(3*330, () => { cd.remove(); sfx.go(); then(); });
+  later(3*330, () => {
+    /* Go: the count bursts outward as it leaves. */
+    if (!motionOff()){ const cb = Vfx.box(b); Vfx.ring(cb.x, cb.y, '#33E6C8', { r0: 20, r1: 120, line: 4, life: 460 }); Vfx.spray('radial', cb.x, cb.y, 16, { k: ['glint', 'dot'], pal: ['#33E6C8', '#FFF3E6', '#FFC53D'], sp: 6, g: 0, s0: 2.5, s1: 5, l0: 360, l1: 520, add: true }); }
+    cd.remove(); sfx.go(); then();
+  });
 }
 
 /* ═══ Pause ═══════════════════════════════════════════════════════════════
@@ -19647,6 +20540,14 @@ function endRun(){
   $('dailyStreakTxt').parentNode.hidden = r.kind !== 'daily';
   if (r.kind === 'daily') $('dailyStreakTxt').textContent = streakLine(dSt || 1);
   show('over');
+  /* The results arrive in order instead of all at once: the score lands, the lines under it follow, the buttons last.
+     Only on the way in, and only with motion on; nothing moves under a finger once it has settled. */
+  if (!motionOff()){
+    el.over.classList.remove('enter'); void el.over.offsetWidth; el.over.classList.add('enter');
+    setTimeout(() => el.over.classList.remove('enter'), 1700);
+    if (best && k.scored) setTimeout(() => { if (screen !== 'over') return; Vfx.rain(80); Vfx.ghost($('newBest'), '#FFC53D', 'stamp'); }, 420);
+    if (!$('flawlessBadge').hidden) setTimeout(() => { if (screen === 'over') Vfx.sweep($('flawlessBadge'), '#33E6C8', 900); }, 640);
+  }
 
   /* The celebration waits for the run to be over. Freezing the board mid-run
      to congratulate someone is the opposite of a reward. */
@@ -19835,7 +20736,7 @@ function setPlayView(v){
     $('playHome').hidden = v !== 'home';
     $('playMyStuff').hidden = v !== 'myStuff';
     $('playGate').hidden = v !== 'gate';
-  });
+  }, v === 'home' ? 'back' : 'fwd');
   if (v === 'myStuff' && !motionOff()){
     $('playMyStuff').querySelectorAll('.stufflist, .modegrid').forEach(grid => {
       grid.classList.remove('stagger');
@@ -19915,6 +20816,7 @@ function paintPlay(){
   const dLine = dSt ? t('daily.streakN', { n: dSt }) : dv ? t('daily.done') : t('daily.today');
   $('dailyStatusLine').textContent = dLine;
   $('dailyStatus').classList.toggle('streaking', dSt > 1);
+  $('dailyStatus').classList.toggle('done', !!dv);
   $('dailyStatus').setAttribute('aria-label', t('daily.title') + ', ' + dLine);
   paintMoods();
   $('endlessSub').textContent = save.pbEndless
@@ -19957,7 +20859,7 @@ function paintModes(){
     back.type = 'button';
     back.innerHTML = '<span></span>';
     back.querySelector('span').textContent = '\u2039 ' + t('modes.families');
-    onTap(back, () => { withTransition(() => { catFilter = 'pick'; paintModes(); }); });
+    onTap(back, () => { withTransition(() => { catFilter = 'pick'; paintModes(); }, 'back'); });
     strip.appendChild(back);
   }
   (catFilter === 'pick' ? [] : [['all', MODE_IDS.length]].concat(cats.map(c => [c, idsInCat(c).length])))
@@ -19970,7 +20872,7 @@ function paintModes(){
       b.innerHTML = (id === 'all' ? '' : '<i></i>') + '<span></span><u></u>';
       b.querySelector('span').textContent = id === 'all' ? t('cat.all') : t('cat.' + id);
       b.querySelector('u').textContent = n;
-      onTap(b, () => { withTransition(() => { catFilter = id; paintModes(); }); });
+      onTap(b, () => { withTransition(() => { catFilter = id; paintModes(); }, 'fwd'); });
       strip.appendChild(b);
     });
 
@@ -20419,6 +21321,7 @@ function paintSettings(){
   [['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swEasy','easyRead'],['swAdapt','adaptive'],['swCaps','captions']]
     .forEach(([id,key]) => $(id).setAttribute('aria-checked', String(!!save[key])));
   $('swFlashes').setAttribute('aria-checked', String(save.flashes !== false));
+  $('swBig').setAttribute('aria-checked', String(save.bigFx !== false));
   $('volRange').value = String(Math.round(volumeNow() * 100));
   Array.from($('speedRow').children).forEach(b => {
     const on = b.dataset.sp === (save.gameSpeed || 'normal');
@@ -20493,13 +21396,18 @@ function paintAll(){
 /* A cross-fade between screens where the browser offers one. Nothing depends
    on it: without the API, or with reduced motion asked for, the swap is the
    same instant swap it always was. */
-function withTransition(fn){
+function withTransition(fn, dir){
+  /* Which way the page slides: forward into something, back out of it, or a plain cross-fade. */
+  document.documentElement.dataset.vtdir = dir || 'same';
   if (motionOff() || !document.startViewTransition) return fn();
   try { document.startViewTransition(fn); } catch(e){ fn(); }
 }
 
+/* Where each screen sits along the tab bar, so a change of tab slides the way the pill does. */
+const TAB_POS = { Play: 0, Mix: 0, Modes: 1, Room: 2, Stats: 3, Settings: 3 };
 function goTab(name){
-  withTransition(() => { show(name); paintAll(); });
+  const a = TAB_POS[screen], z = TAB_POS[name];
+  withTransition(() => { show(name); paintAll(); }, a == null || z == null || a === z ? 'same' : z > a ? 'fwd' : 'back');
   const host = $('tab'+name);
   if (!host) return;
   const sc = host.querySelector('.scroll');
@@ -20507,7 +21415,7 @@ function goTab(name){
   if (motionOff()) return;
   /* Staggered entrance, re-armed per visit. Delays are capped so a long list
      never leaves the last card crawling in seconds later. */
-  host.querySelectorAll('.modegrid, .quick, .statgrid, .guidedlist').forEach(grid => {
+  host.querySelectorAll('.modegrid, .quick, .statgrid, .guidedlist, .seatrow, .palgrid, #wishList, #decorList').forEach(grid => {
     grid.classList.remove('stagger');
     void grid.offsetWidth;
     grid.classList.add('stagger');
@@ -20515,6 +21423,16 @@ function goTab(name){
       c.style.animationDelay = Math.min(i*26, 260) + 'ms');
   });
 }
+
+/* A light echo off the big buttons where they are pressed: a ring and two glints, in the button's own colour. */
+document.addEventListener('click', ev => {
+  if (motionOff() || !ev.target.closest) return;
+  const b = ev.target.closest('.cta, .justPlay, .gateBtn, .customCard, .dailyCard, .guidedBtn, .perkcall');
+  if (!b || b.closest('#surface')) return;
+  let c = '#FFF3E6';
+  try { c = getComputedStyle(b).getPropertyValue('--gk').trim() || (b.classList.contains('cta') || b.classList.contains('justPlay') ? '#FF5B39' : c); } catch(e){}
+  Vfx.tap(b, c);
+}, true);
 
 /* ═══ Update banner ═══════════════════════════════════════════════════════
    The worker installs a new build but does not take over on its own, so an
@@ -20814,7 +21732,7 @@ document.addEventListener('keydown', ev => {
 });
 
 /* ═══ Wiring ══════════════════════════════════════════════════════════════ */
-Array.from(el.tabbar.children).forEach(b =>
+el.tabbar.querySelectorAll('.tab').forEach(b =>
   b.addEventListener('click', () => { sfx.tap();
     /* Tapping the tab you are already on goes back up to that tab's root. */
     if (b.dataset.tab === 'Modes' && !$('tabModes').hidden){ catFilter = 'pick'; modeQuery = '';
@@ -21009,7 +21927,7 @@ function applyHand(){
   const h = save.oneHand === 'right' || save.oneHand === 'left' ? save.oneHand : '';
   if (h) document.documentElement.dataset.hand = h; else delete document.documentElement.dataset.hand;
 }
-function applyTextSize(){ document.documentElement.dataset.ts = ['100', '115', '130', '150'].indexOf(String(save.textSize)) >= 0 ? String(save.textSize) : '100'; }
+function applyTextSize(){ document.documentElement.dataset.ts = ['100', '115', '130', '150'].indexOf(String(save.textSize)) >= 0 ? String(save.textSize) : '100'; movePill(true); }
 
 $('homeBtn').addEventListener('click', () => goTab('Play'));
 $('roomCall').addEventListener('click', () => { sfx.tap(); goTab('Room'); });
@@ -21032,12 +21950,12 @@ $('quitBtn').addEventListener('click', () => {
   run = null; clearBoard(); goTab('Play');
 });
 
-[['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swFlashes','flashes'],['swEasy','easyRead'],['swAdapt','adaptive'],['swCaps','captions']]
+[['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swFlashes','flashes'],['swBig','bigFx'],['swEasy','easyRead'],['swAdapt','adaptive'],['swCaps','captions']]
   .forEach(([id, key]) => {
     const sw = $(id);
     const flip = () => {
       if (sw.disabled) return;
-      save[key] = key === 'flashes' ? (save.flashes === false) : !save[key];
+      save[key] = key === 'flashes' || key === 'bigFx' ? (save[key] === false) : !save[key];
       if (key === 'contrast') applyContrast();
       if (key === 'easyRead') applyEasyRead();
       persist(); paintSettings();
@@ -21156,7 +22074,7 @@ $('resetGone').addEventListener('click', () => {
    defaults" is the same machinery with every key at its default. The open or
    closed state of each panel is a view preference, not progress, so it lives
    under its own key: a reset, an export or an import never touches it. */
-const SETTING_KEYS = ['sound','volume','haptics','flashes','reduceMotion','gameSpeed','contrast','colorAssist','easyRead','textSize','adaptive','captions','oneHand'];
+const SETTING_KEYS = ['sound','volume','haptics','flashes','reduceMotion','bigFx','gameSpeed','contrast','colorAssist','easyRead','textSize','adaptive','captions','oneHand'];
 const PRESETS = {
   calm:  { sound:true, volume:0.4, haptics:false, flashes:false, reduceMotion:true, gameSpeed:'relaxed' },
   focus: { sound:true, volume:0.6, haptics:true,  flashes:false, reduceMotion:true, gameSpeed:'normal' },
@@ -21204,7 +22122,7 @@ function paintSettingsSummaries(){
   const sum = {};
   sum.presets = Object.keys(PRESETS).filter(id => settingsAre(PRESETS[id])).map(id => t(PRESET_NAMES[id]))[0]
     || (settingsAre(DEFAULT_PATCH()) ? t('set.default') : t('set.custom'));
-  sum.feedback = [t('set.sound') + ': ' + on(save.sound), t('set.vib') + ': ' + on(save.haptics && canBuzz), t('set.flashW') + ': ' + on(save.flashes !== false)].concat(save.captions ? [t('set.caps')] : []).join(' · ');
+  sum.feedback = [t('set.sound') + ': ' + on(save.sound), t('set.vib') + ': ' + on(save.haptics && canBuzz), t('set.flashW') + ': ' + on(save.flashes !== false)].concat(save.captions ? [t('set.caps')] : []).concat(save.bigFx === false && !save.reduceMotion ? [t('set.bigfx') + ': ' + on(false)] : []).join(' · ');
   const c = COSMETICS.find(x => x.id === save.cosmetic) || COSMETICS[0];
   sum.cosmetic = t('cosmetic.' + c.id);
   const acc = [];
@@ -21367,7 +22285,7 @@ function closeTopLayer(){
   if (run) return $('quitBtn').click();
   if (screen === 'over') return $('homeBtn').click();
   if (screen === 'Modes' && catFilter !== 'pick')
-    return withTransition(() => { catFilter = 'pick'; paintModes(); });
+    return withTransition(() => { catFilter = 'pick'; paintModes(); }, 'back');
   if (screen === 'Play' && (playView === 'myStuff' || playView === 'gate')) return setPlayView('home');
   if (screen !== 'Play') return goTab('Play');
   /* True floor. Nothing to close. */

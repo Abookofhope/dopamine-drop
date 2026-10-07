@@ -10,6 +10,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | [04-roadmap.md](04-roadmap.md) | What to do next: quick wins, medium term, long term, experiments, each with rationale, expected impact and effort |
 | [05-before-after.md](05-before-after.md) | Measured before and after, per release |
 | [06-qa-plan.md](06-qa-plan.md) | Device and viewport matrix, probe suite, manual checks and the release checklist |
+| [07-motion.md](07-motion.md) | How things move: the principles, the engine, every game's signature, the moments and the budget |
 
 ## Releases so far
 
@@ -25,6 +26,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.142.0 | A guided start: until three boards are solved a miss is free (three a run) and the rule comes back; the second and third solves each get a short note; the first Game Over points at the Room once |
 | v0.143.0 | Sound captions (a short word for the tick, go, chime, buzz and run over, off by default, on in Easy to see) and a one-handed layout (the exit moves to the lower corner on your side, the pause sheet builds from the bottom) |
 | v0.143.1 | A bucket picked up and let go of over the belt in Spool Belt now goes on the belt (it never did; only touching one worked) |
+| v0.144.0 | The motion overhaul: every game celebrates in its own shapes and opens its own way, a piece glows instead of moving, a miss snags; streaks smoulder, stages and levels fire light and confetti, Game Over arrives in order; the tab pill slides and pages slide with it, Room cats breathe, blink and purr hearts, yarn flies to its count, charms are dealt; Big celebrations switch; Reduce motion stops all of it |
 
 ## Ground rules the work follows
 

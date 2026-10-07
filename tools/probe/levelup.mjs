@@ -35,20 +35,33 @@ const oddIndex = page => page.evaluate(() => {
 });
 const score = page => page.evaluate(() => parseInt((document.getElementById('hudScore') || {}).textContent.replace(/\D/g, '') || '0', 10));
 
-/* Solve one board (flyers are looked for on the way), then lose on purpose. */
+/* Solve one board (flyers are looked for on the way), then lose on purpose. A round of Odd Skein can be several boards
+   long, so the first right tap often scores nothing yet: the probe waits for the board to change before it reads the
+   next one, and keeps a line per attempt so a run that never solves says why (it failed once in a full chain and not in
+   nineteen runs since, with no record of what it had clicked). */
 async function playAndLose(page, wantFlyer){
   let flyer = false, solved = false;
-  for (let k = 0; k < 8 && !solved; k++){
-    await page.waitForSelector('#surface .oddwrap .tile'); await page.waitForTimeout(500);
-    if (await score(page) > 0) break;
+  const tried = [];
+  for (let k = 0; k < 10 && !solved; k++){
+    await page.waitForSelector('#surface .oddwrap .tile:not([disabled])'); await page.waitForTimeout(500);
+    if (await score(page) > 0){ solved = true; break; }
+    const before = await page.evaluate(() => [...document.querySelectorAll('#surface .oddwrap .tile')].map(t => getComputedStyle(t).backgroundColor).join('|'));
     const at = await oddIndex(page);
+    const hit = await page.evaluate(a => { const e = document.elementFromPoint(a.x, a.y); return e ? (e.closest('.tile') ? 'tile' : String(e.className || e.tagName).slice(0, 24)) : 'none'; }, at);
     await page.mouse.click(at.x, at.y);
     if (wantFlyer !== null){
       for (let w = 0; w < 6 && !flyer; w++){ await page.waitForTimeout(60); flyer = await page.evaluate(() => !!document.querySelector('.flyer')); }
     }
-    await page.waitForTimeout(700);
+    /* Wait for the answer to land: the score moves, or the board is redrawn for the round's next stage or next round. */
+    let moved = false;
+    for (let w = 0; w < 20 && !moved; w++){
+      await page.waitForTimeout(100);
+      moved = (await score(page)) > 0 || await page.evaluate(b => [...document.querySelectorAll('#surface .oddwrap .tile')].map(t => getComputedStyle(t).backgroundColor).join('|') !== b, before);
+    }
     solved = (await score(page)) > 0;
+    tried.push(`${Math.round(at.x)},${Math.round(at.y)} on ${hit}${moved ? '' : ' (nothing changed)'}${solved ? ' scored' : ''}`);
   }
+  if (!solved) console.log('     attempts: ' + tried.join(' | '));
   const midRun = await page.evaluate(() => !document.getElementById('levelup').hidden);
   for (let k = 0; k < 16; k++){
     if (await page.evaluate(() => !document.getElementById('over').hidden)) break;

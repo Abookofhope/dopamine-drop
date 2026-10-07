@@ -16,7 +16,7 @@
 |---|---|
 | Gate | `tools/check_site.py`: four-language strings, every string used, difficulty ramp rule, manifest and worker |
 | Shell | `firstvisit`, `layoutshift`, `geometry`, `settings`, `settingsacc`, `panels`, `board`, `mix`, `home`, `meta`, `roomscroll`, `hudstates`, `captions`, `onehand` |
-| Feel and timing | `timing`, `momentum`, `fx_unit`, `framerate` |
+| Feel and timing | `timing`, `momentum`, `fx_unit`, `framerate`, `motion` |
 | Per mode | one probe per mode that matters plus `sweep` (every mode) and `alive` (every mode, at its hardest level) |
 | Long | `soak` (long run), `monkey` (random input) |
 | Visual | `shots` (per-mode screenshot baselines) |
@@ -34,6 +34,7 @@ Rules: a probe passes on the new build and fails on the old; a flaky probe is fi
 7. Airplane mode: the app opens and plays; after reconnect, an update is offered and applies on one reload.
 8. Rotate mid-run: the board and HUD recover without a reload.
 9. Back button at every layer (sheet, pause, run, drill-down, tab) steps out one layer and never leaves the app.
+10. Motion on a cheap phone: play a hot streak to ×5 and a stage beat, open the Room with three cats, switch tabs quickly; nothing stutters, nothing lingers, and with Reduce motion on nothing moves at all.
 
 ## Release checklist
 

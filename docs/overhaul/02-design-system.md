@@ -12,7 +12,7 @@ The look is a cat-and-yarn craft room on a dark violet ground. The tokens live i
 | Depth | `--lift`, `--lift-deep`, `--lift-press` (inset highlight plus shadow) |
 | Radius | `--r-sm` 9, `--r-md` 15, `--r-lg` 22, `--r-xl` 30 |
 | Type | `--f-disp` (headings), `--f-body`, `--f-data` (numerals); easy-read mode swaps display and body to a plain wide-set stack |
-| Motion | `--t-fast`, `--t-med`; every animation is cut to 1ms under `prefers-reduced-motion`, and particles and shake also obey the in-app Reduce motion switch |
+| Motion | `--t-fast`, `--t-med`; `--m-quick`/`--m-base`/`--m-slow`/`--m-stage` (140/260/520/900 ms); `--e-out`, `--e-in`, `--e-snap`, `--e-spring`, `--e-soft` (see [07-motion.md](07-motion.md)). Every animation is cut to 1ms under `prefers-reduced-motion`; `html[data-motion]` carries the in-app Reduce motion switch to CSS |
 
 ## Rules added by the overhaul
 
@@ -25,6 +25,7 @@ The look is a cat-and-yarn craft room on a dark violet ground. The tokens live i
 7. **Text scales through `--ts`.** Every font size in the stylesheets is `calc(Npx*var(--ts))` (or `calc(clamp(...)*var(--ts))`); the player's setting puts 1, 1.15, 1.3 or 1.5 on `html[data-ts]`. `#surface` resets it to 1 so boards fit. A size that must not scale (the logotype, a digit inside a ring) says `fixed` on its line, and the gate (`check_site.py`) refuses any other bare px size. The header's level text is capped at 115 percent so it stays on one line with the logo.
 8. **Sound has a word.** With Sound captions on, each chime, buzz, tick, go, level-up and run end puts one short word in `#sndCap`, a pill 14px above the bottom edge, `aria-hidden` (the polite status line already says the event), `pointer-events:none`, gone after 1.3 s, shown whether or not sound is on. It is called from wrappers around the sound functions, so a new sound is captioned by adding a key to `CAPTION_OF`, not by editing each mode.
 9. **Thumb zones.** With One-handed layout on, the exit is a 48px button fixed in the lower corner on the player's side (absolute inside the screen in portrait, fixed to the screen's edge in landscape, because the screens are a 460px column centred on the page), the board gives up the strip it needs (66px of height in portrait, only the overlap in landscape), and a sheet that can outgrow the phone is built from the bottom with an auto margin on its first child, never `justify-content:flex-end`, which would hide its top.
+10. **Motion moves nothing you can press.** A board piece answers through a ghost laid over it outside the board; particles are drawn on one canvas that takes no touch; an endless animation moves only transform or opacity; a button arrives by fading, never by sliding; every effect stops with Reduce motion and the big ones with Big celebrations. The whole vocabulary is in [07-motion.md](07-motion.md).
 
 ## Components
 
