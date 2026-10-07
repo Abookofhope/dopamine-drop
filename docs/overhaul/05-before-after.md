@@ -75,6 +75,24 @@ Other sizes (closed): 320x568 Settings 1.29 screens, You 1.41, Room 1.52; 390x84
 | Bare px font sizes in the stylesheets | 246 | 0 except the logotype and a ring digit, refused by the gate |
 | `textsize.mjs` failed checks | 33 | 0 |
 
+## v0.141.0: the game keeps up, and a different puzzle
+
+Measured on Odd Skein held as the only board (a probe-only pool), level of the board read from the build; "setting off" is the same moves with Adaptive difficulty switched off, which is also what v0.140.0 always did.
+
+| Measure | Before (v0.140.0) | After (v0.141.0) |
+|---|---|---|
+| Two misses in three rounds | next board at the same level (11) | one step easier (10), the rule shown again, a note, and a line on the pause sheet |
+| Three quick solves in a row | next board at the level the curve gave (12) | one step harder (13) and a note |
+| How far it can move | n/a | three steps either way (a step is 8 percent of the level, at least one level) |
+| Turning it off | n/a | one switch in Accessibility settings, 91px row; Reset to defaults and the presets' Undo cover it |
+| Where it is not used | n/a | Daily Drop, Marathon, Fidget Loop, Taste Test, and a boss wave |
+| A board you do not want | play it, lose it or quit | Different puzzle on the pause sheet, three a run, 46px, not a miss (difficulty unchanged) |
+| The note on a 320px phone at 150 percent text | n/a | inside the screen, clear of the mode label, HUD height unchanged (63px) |
+| Languages | n/a | the note, the pause line and the setting in en, fr, es, de |
+| `adapt.mjs` failed checks | 1 (no setting; the rest cannot run) | 0 of 33 |
+
+What this does not prove: the thresholds (three rounds, two misses, "quick" meaning inside 55 percent of par, eight percent per step) are reasoned, not tuned from play data. Roadmap Q7 and L3 are the way to tune them.
+
 ## How to reproduce
 
 ```
@@ -84,4 +102,5 @@ PORT=8400 SITE=/tmp/site node tools/probe/hudstates.mjs
 PORT=8400 SITE=/tmp/site node tools/probe/roomscroll.mjs
 PORT=8400 SITE=/tmp/site node tools/probe/settingsacc.mjs
 PORT=8400 SITE=/tmp/site node tools/probe/panels.mjs
+PORT=8400 SITE=/tmp/site node tools/probe/adapt.mjs
 ```

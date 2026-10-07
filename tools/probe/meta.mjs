@@ -140,7 +140,7 @@ const firstBoard = page => page.waitForFunction(() => document.querySelector('#s
   check(heldAfter === 1, 'pausing and coming back keeps it');
   /* end the run: the results show what it paid */
   await page.click('#quitBtn'); await page.waitForTimeout(300);
-  await page.click('.pausebox .ghost'); await page.waitForTimeout(600);
+  await page.click('.pausebox .pauseEnd'); await page.waitForTimeout(600);
   const strip = await page.evaluate(() => ({ shown: !document.getElementById('yarnStrip').hidden, gain: document.getElementById('yarnGain').textContent }));
   check(strip.shown && /\+\d+/.test(strip.gain) && strip.gain !== '+0', 'the results screen shows the yarn the run paid (' + strip.gain + ')');
   const goal = await page.evaluate(() => ({ shown: !document.getElementById('goalStrip').hidden, line: document.getElementById('goalLine').textContent }));

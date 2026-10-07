@@ -46,7 +46,8 @@ for (const [w, h] of [[320, 568], [360, 640]]){
     const ctx = await browser.newContext({ viewport: { width: w, height: h }, hasTouch: true });
     const page = await ctx.newPage();
     page.on('pageerror', e => errs.push(String(e).slice(0, 110)));
-    await openApp(page, { xp: 900, runs: 12, solved: 80, onboarded: true, sound: false, haptics: false, textSize: ts, reduceMotion: true, seen: { odd: 1 }, schema: 11 });
+    /* xp 820 is the start of level 10, so a run that happens to solve a few boards cannot cross into level 11 and put the level-up card over the very button this checks */
+    await openApp(page, { xp: 820, runs: 12, solved: 80, onboarded: true, sound: false, haptics: false, textSize: ts, reduceMotion: true, seen: { odd: 1 }, schema: 11 });
     const set = await page.evaluate(() => document.documentElement.dataset.ts);
     check(set === ts, `${tag}: a saved size is applied at boot (${set})`);
 
@@ -89,7 +90,8 @@ for (const [w, h] of [[320, 568], [360, 640]]){
     const fits = await page.evaluate(() => { const b = document.querySelector('.pausebox'); return b ? b.scrollHeight <= b.clientHeight + 1 || /auto|scroll/.test(getComputedStyle(b).overflowY) : false; });
     check(fp.sideways <= 0 && fp.list.length === 0 && fits, `${tag}: the pause sheet fits or scrolls` + (fp.list.length ? ' — ' + fp.list.join('; ') : ''));
     await page.evaluate(() => { const b = [...document.querySelectorAll('.pausebox button')].find(x => /back to it/i.test(x.textContent)); if (b) b.click(); }); await page.waitForTimeout(700);
-    for (let k = 0; k < 14; k++){
+    /* Odd Skein forgives a first wrong tap and a lucky tap can solve a board, so how many taps it takes to lose three lives varies (10 to 14 and more in eight runs); the loop stops the moment Game Over is up */
+    for (let k = 0; k < 30; k++){
       if (await page.evaluate(() => !document.getElementById('over').hidden)) break;
       await page.evaluate(() => { const t = document.querySelector('#surface .tile:not(.ruled):not([disabled])'); if (t) t.click(); }); await page.waitForTimeout(2300);
     }

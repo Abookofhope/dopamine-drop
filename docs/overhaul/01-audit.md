@@ -20,11 +20,13 @@ Method: each finding was reproduced with a script on a served build (real touch 
 | 12 | Accessibility | No text size control; the layout is built in px | read | Medium | Fixed in v0.140.0 (Text size 100 to 150 percent through one variable; boards keep their size) |
 | 13 | Accessibility | Sounds have no visual captions | read | Low to medium | Open |
 | 14 | Mobile | One-handed use: the top-left exit and the top-of-screen HUD are the reach-hardest places | read | Low to medium | Open |
+| 15 | Retention | No weekly or seasonal structure beyond the daily gift, the day's wishes and the week's wish total | read | Medium | Open (see roadmap) |
 | 16 | First run | A brand-new player's first run opens on a random board of 44, so the first solve depends on the draw (Odd Skein 0 of 5 fresh visits on v0.138.0) | `firstrun.mjs`: 14 failed checks on v0.138.0 | High | Fixed in v0.139.0 (opening on Odd Skein then Count the Stitches; first solve 3.3 s after the first tap in 5 of 5 fresh visits) |
 | 17 | Game feel | Perk and yarn lines on Game Over are static numbers | `firstrun.mjs` | Low | Fixed in v0.139.0 |
 | 18 | Reliability | Chalk Line's last-resort ramp started on the basket's side of the ball and could never be won: about 1 in 40 top-level boards (4 of 150 in one hunt, 2 of 120 in another); a further 1 to 2 percent of boards on the paw lost to pixel rounding of their own stored answer | hunts over 390 boards: 12 failures; forced fallback 0 of 50 | Medium | Fixed in v0.139.0 (0 of 150 afterwards; the fallback's fix is proven, the pixel-rounding part is encouraging not proven) |
 | 19 | Layout | On a 320px phone the third column of the achievements grid ran off the right edge at any text size (columns grew to fit their text) | `textsize.mjs`: 'off-screen' at 100% on v0.139.0, and a screenshot | Medium | Fixed in v0.140.0 |
-| 15 | Retention | No weekly or seasonal structure beyond the daily gift, the day's wishes and the week's wish total | read | Medium | Open (see roadmap) |
+| 20 | Difficulty | A player who is stuck has no way down but quitting, and a player who is cruising gets nothing between the level curve and the end of the run; the level of a board depended only on rounds solved and the player's level | read; `adapt.mjs` fails its first check on v0.140.0 (no setting) | High | Fixed in v0.141.0 (two misses in three rounds ease a step, three quick solves raise a step, visible and switchable; not in the Daily Drop, Marathon, Fidget Loop or Taste Test) |
+| 21 | Agency | A board you cannot read or do not like has to be played, lost or quit | read | Medium | Partly fixed in v0.141.0 (Different puzzle, three a run, in mixed runs; the rule comes back unasked after an ease-off). A generic on-demand rule button and per-mode hints in every mode are open; undo has no meaning for random boards |
 
 ## What the player already had
 

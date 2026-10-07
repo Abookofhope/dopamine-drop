@@ -377,6 +377,22 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .howto.gone{opacity:0;visibility:hidden;transition:opacity 320ms ease,visibility 0s 320ms}
 @keyframes howin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){ .howto.go{animation:none} }
+/* The note that says the game just changed how hard it is. It lives in the top row, in the
+   room the spacer leaves, so it takes no height from the board; it shrinks and clips before
+   it would ever push the exit or the lives. */
+.adaptnote{
+  position:relative;flex:0 1 auto;min-width:0;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;
+  background:var(--ink-3);box-shadow:inset 0 0 0 1px var(--edge);color:var(--cream);
+  font-size:calc(11px*var(--ts));font-weight:700;letter-spacing:.03em;white-space:nowrap;overflow:hidden;
+}
+.adaptnote[hidden]{display:none}
+.adaptnote b{font-weight:700;overflow:hidden;text-overflow:ellipsis}
+.adaptnote svg{flex:none;width:12px;height:12px}
+.adaptnote.down{color:var(--cool);box-shadow:inset 0 0 0 1px var(--cool)}
+.adaptnote.up{color:var(--zap);box-shadow:inset 0 0 0 1px var(--zap)}
+.adaptnote.go{animation:howin 320ms cubic-bezier(.2,.8,.3,1) 1}
+.adaptnote .hidden-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){ .adaptnote.go{animation:none} }
 .lifestrip{margin:0 0 14px;padding:11px 13px;border-radius:var(--r-md);
   background:var(--ink-2);border:1px solid var(--edge-soft)}
 .lifestrip .row{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
@@ -1864,6 +1880,7 @@ html[data-ts="130"] .achgrid,html[data-ts="150"] .achgrid{grid-template-columns:
 }
 .pauserule b{font-family:var(--f-disp);font-size:calc(14px*var(--ts));font-weight:700;color:var(--fam);letter-spacing:.01em}
 .pauserule small{font-size:calc(11.5px*var(--ts));color:var(--cream);opacity:.85;line-height:1.4;text-align:center}
+.pausebox .pausenudge{color:var(--zap)}
 .pausebox .cta{width:100%;max-width:240px;justify-content:center;padding:14px 18px;font-size:calc(15px*var(--ts))}
 .pausebox .ghost{width:100%;max-width:240px;padding:11px 18px;font-size:calc(13px*var(--ts));min-height:46px}
 .pausequick{display:flex;gap:18px;margin-top:8px}
@@ -4125,6 +4142,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
               <button class="seg" type="button" data-sp="relaxed"><span data-i18n="set.speedRelaxed">Relaxed</span></button>
               <button class="seg" type="button" data-sp="slow"><span data-i18n="set.speedSlow">Slow</span></button>
             </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.adapt">Adaptive difficulty</b><small data-i18n="set.adaptSub">Rounds ease off a little after two misses and step up after three quick solves. A note shows each change.</small></span>
+              <button class="sw" id="swAdapt" role="switch" aria-checked="true" data-i18n-aria="set.adapt" aria-label="Adaptive difficulty"></button>
+            </div>
           </div></div>
         </section>
 
@@ -4200,6 +4221,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
           <i class="famdot" aria-hidden="true"></i>
           <span class="kind" id="hudKind">Shuffle</span>
           <span class="sp" style="flex:1"></span>
+          <span class="adaptnote" id="adaptNote" role="status" aria-live="polite" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path id="adaptArrow" d="M12 5v14M6 13l6 6 6-6"/></svg><span class="hidden-label" id="adaptLabel"></span><b id="adaptText"></b></span>
           <div class="lives" id="hudLives" hidden></div>
           <div class="perkbar" id="hudPerks" aria-live="off"></div>
           <div class="charmbar" id="hudCharms" aria-live="off" hidden></div>
@@ -4474,7 +4496,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.140.0';
+const VERSION_TAG = 'v0.141.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4490,7 +4512,7 @@ const defaults = {
   pbBlitz:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, pbEndless:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
-  volume:1, contrast:false, flashes:true, easyRead:false, textSize:'100',
+  volume:1, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true,
   lifetime:0, perks:[], perkLv:{}, tokens:0,
   dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0,
   lastMode:null, onboarded:false,
@@ -5136,6 +5158,7 @@ const STRINGS = {
     'cosmetic.teal':'Teal', 'cosmetic.flare':'Flare', 'cosmetic.zap':'Gold', 'cosmetic.purple':'Violet', 'cosmetic.pink':'Pink', 'cosmetic.blue':'Sky',
     'set.access':'Accessibility', 'set.assist':'Colour assist',
     'set.assistSub':'Adds shapes and brightness so no puzzle depends on telling two colours apart',
+    'set.adapt':'Adaptive difficulty', 'set.adaptSub':'Rounds ease off a little after two misses and step up after three quick solves. A note shows each change.', 'set.adaptOff':'Fixed difficulty', 'adapt.label':'Difficulty', 'adapt.down':'A bit easier', 'adapt.up':'A bit harder', 'adapt.nowDown':'Easier than your level right now ({n} of 3)', 'adapt.nowUp':'Harder than your level right now ({n} of 3)', 'pause.skip':'Different puzzle ({n} left)', 'pause.skipNone':'Different puzzle (none left)',
     'set.speed':'Game speed', 'set.speedSub':'More time to think, same puzzles and scoring',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Relaxed', 'set.speedSlow':'Slow',
     'set.lang':'Language', 'set.data':'Data',
@@ -5648,6 +5671,7 @@ const STRINGS = {
     'cosmetic.teal':'Turquoise', 'cosmetic.flare':'Flamme', 'cosmetic.zap':'Or', 'cosmetic.purple':'Violet', 'cosmetic.pink':'Rose', 'cosmetic.blue':'Ciel',
     'set.access':'Accessibilité', 'set.assist':'Aide aux couleurs',
     'set.assistSub':'Ajoute formes et luminosité pour qu’aucun casse-tête ne repose sur la distinction de deux couleurs',
+    'set.adapt':'Difficulté adaptative', 'set.adaptSub':'Les manches s’allègent un peu après deux ratés et montent d’un cran après trois réussites rapides. Une note signale chaque changement.', 'set.adaptOff':'Difficulté fixe', 'adapt.label':'Difficulté', 'adapt.down':'Un peu plus facile', 'adapt.up':'Un peu plus difficile', 'adapt.nowDown':'Plus facile que votre niveau ({n} sur 3)', 'adapt.nowUp':'Plus difficile que votre niveau ({n} sur 3)', 'pause.skip':'Autre énigme (encore {n})', 'pause.skipNone':'Autre énigme (plus aucune)',
     'set.speed':'Vitesse de jeu', 'set.speedSub':'Plus de temps pour réfléchir, mêmes énigmes et le même score',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Détendu', 'set.speedSlow':'Lent',
     'set.lang':'Langue', 'set.data':'Données',
@@ -6162,6 +6186,7 @@ const STRINGS = {
     'cosmetic.teal':'Turquesa', 'cosmetic.flare':'Llama', 'cosmetic.zap':'Oro', 'cosmetic.purple':'Violeta', 'cosmetic.pink':'Rosa', 'cosmetic.blue':'Cielo',
     'set.access':'Accesibilidad', 'set.assist':'Ayuda de color',
     'set.assistSub':'Añade formas y brillo para que ningún reto dependa de distinguir dos colores',
+    'set.adapt':'Dificultad adaptable', 'set.adaptSub':'Las rondas se suavizan un poco tras dos fallos y suben un nivel tras tres aciertos rápidos. Una nota avisa de cada cambio.', 'set.adaptOff':'Dificultad fija', 'adapt.label':'Dificultad', 'adapt.down':'Un poco más fácil', 'adapt.up':'Un poco más difícil', 'adapt.nowDown':'Más fácil que tu nivel ({n} de 3)', 'adapt.nowUp':'Más difícil que tu nivel ({n} de 3)', 'pause.skip':'Otro puzle (restantes: {n})', 'pause.skipNone':'Otro puzle (ya no quedan)',
     'set.speed':'Velocidad de juego', 'set.speedSub':'Más tiempo para pensar, mismos puzles y puntuación',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Relajado', 'set.speedSlow':'Lento',
     'set.lang':'Idioma', 'set.data':'Datos',
@@ -6675,6 +6700,7 @@ const STRINGS = {
     'cosmetic.teal':'Türkis', 'cosmetic.flare':'Flamme', 'cosmetic.zap':'Gold', 'cosmetic.purple':'Violett', 'cosmetic.pink':'Pink', 'cosmetic.blue':'Himmel',
     'set.access':'Barrierefreiheit', 'set.assist':'Farbhilfe',
     'set.assistSub':'Ergänzt Formen und Helligkeit, damit kein Rätsel vom Unterscheiden zweier Farben abhängt',
+    'set.adapt':'Automatische Schwierigkeit', 'set.adaptSub':'Runden werden nach zwei Fehlern etwas leichter und nach drei schnellen Lösungen etwas schwerer. Jede Änderung wird angezeigt.', 'set.adaptOff':'Feste Schwierigkeit', 'adapt.label':'Schwierigkeit', 'adapt.down':'Etwas leichter', 'adapt.up':'Etwas schwerer', 'adapt.nowDown':'Leichter als dein Niveau ({n} von 3)', 'adapt.nowUp':'Schwerer als dein Niveau ({n} von 3)', 'pause.skip':'Anderes Rätsel (noch {n})', 'pause.skipNone':'Anderes Rätsel (keins mehr)',
     'set.speed':'Spielgeschwindigkeit', 'set.speedSub':'Mehr Zeit zum Nachdenken, gleiche Rätsel und Wertung',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Entspannt', 'set.speedSlow':'Langsam',
     'set.lang':'Sprache', 'set.data':'Daten',
@@ -7230,6 +7256,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.141.0', date:'2026-10-07', items:[
+    'The game keeps up with you. After two misses in three rounds the next boards get a little easier, and the rule for the board is shown again; after three quick solves in a row they get a little harder. A small note in the top row says so each time it moves, the pause sheet says where it stands, and Accessibility settings has a switch (Adaptive difficulty) to turn it off. It is not used in the Daily Drop, Marathon, Fidget Loop or Taste Test.',
+    'A different puzzle. The pause sheet has a Different puzzle button, three times a run, in the runs that mix many games. It deals a fresh board without costing a life or a miss. It is not offered on a Daily Drop, a single-game run or a boss wave.',
+  ] },
   { v:'0.140.0', date:'2026-10-07', items:[
     'Text size. Accessibility settings has a new Text size control: 100, 115, 130 or 150 percent. It makes the words in menus, prompts, the header and counters, sheets and dialogs bigger, and the Easy to see preset uses 115 percent. The puzzle boards keep their own size so tiles still fit, and the logo stays as it is.',
     'On the smallest phones (320 wide) the third column of achievements was cut off at any size. The grid now fits, and it shows two columns at the larger text sizes.',
@@ -18468,11 +18498,11 @@ function pickMode(){
    It goes the moment you touch the board, or after six seconds, and it never
    comes back for that mode. */
 let howDrop = null;
-function showHow(id, firstMeet){
+function showHow(id, firstMeet, force){
   const el2 = $('howto');
   if (!el2) return;
   const seen = save.seen || (save.seen = {});
-  if (seen[id]){ el2.hidden = true; return; }
+  if (seen[id] && !force){ el2.hidden = true; return; }
   const gesture = MODES[id] && MODES[id].input;
   /* Say that this round is the gentle one, or the shallow end looks like the
      mode simply being easy and the next round looks like a difficulty spike. */
@@ -18548,6 +18578,10 @@ function nextRound(){
   /* Captured before showHow, which is what marks a mode as met. */
   const firstMeet = !(save.seen || {})[id];
   showHow(id, firstMeet);
+  /* The game just eased off because rounds were going badly: say the rule again, unasked, on the
+     next board. Somebody who missed twice has often not read it, and asking for help is the thing
+     a player who is struggling is least likely to do. */
+  if (run.helpNext){ run.helpNext = false; if (!firstMeet) showHow(id, false, true); }
 
   /* Nothing is live yet. The round used to start right here, in the same call
      that put the plate up: the board was built, every timer the mode arms had
@@ -18566,6 +18600,58 @@ function nextRound(){
   }
   later(changed && !motionOff() ? PLATE_MS : BREATH_MS,
     () => beginRound(mode, firstMeet));
+}
+
+/* ═══ Adaptive difficulty ═══════════════════════════════════════════════════
+   The level a board is built at already climbs with every solve, and a player who is stuck
+   has no way down except to quit. This watches the last three rounds and moves a run's level
+   by a step, never more than three steps either way:
+
+     two misses in the last three          one step easier, and the rule is shown again
+     three quick solves in a row           one step harder
+
+   A step is eight percent of the level the board would have had (at least one level), so it
+   means something at level 8 and still means something at level 60. Two things keep it honest:
+   it says so every time it moves (the note in the top row, and a line on the pause sheet), and
+   Settings turns it off. It only runs where the pool is every mode and the player is not being
+   compared with anyone: not the Daily Drop, which is the same twelve boards for everybody, and
+   not Marathon, Fidget Loop or Taste Test, where the mode or the pace is the point. */
+const ADAPT_KINDS = ['shuffle','endless','mix','reflexrush','puzzlecascade','survival','chaos'];
+const ADAPT_MAX = 3, ADAPT_QUICK = 0.45;
+let adaptHide = 0;
+const adaptOn = () => save.adaptive !== false && !!run && ADAPT_KINDS.indexOf(run.kind) >= 0;
+function adaptClear(){
+  if (adaptHide){ clearTimeout(adaptHide); adaptHide = 0; }
+  const n = $('adaptNote'); if (n){ n.hidden = true; n.classList.remove('go', 'up', 'down'); }
+}
+function adaptSay(step){
+  const n = $('adaptNote'); if (!n) return;
+  if (adaptHide) clearTimeout(adaptHide);
+  n.className = 'adaptnote ' + (step < 0 ? 'down' : 'up');
+  $('adaptArrow').setAttribute('d', step < 0 ? 'M12 5v14M6 13l6 6 6-6' : 'M12 19V5M6 11l6-6 6 6');
+  $('adaptLabel').textContent = t('adapt.label') + ': ';
+  $('adaptText').textContent = t(step < 0 ? 'adapt.down' : 'adapt.up');
+  n.hidden = false;
+  if (!motionOff()){ void n.offsetWidth; n.classList.add('go'); }
+  adaptHide = setTimeout(() => { adaptHide = 0; n.hidden = true; }, 3800);
+}
+/* ok: the round was solved; speed: 0 to 1, how far inside par it was. */
+function adaptRound(ok, speed){
+  try { if (localStorage.getItem('dd.probe')){ el.play.dataset.speed = ok ? speed.toFixed(2) : 'miss'; el.play.dataset.done = String((+el.play.dataset.done || 0) + 1); } } catch(e){}
+  if (!adaptOn()) return;
+  const w = run.recent || (run.recent = []);
+  w.push(ok ? (speed > ADAPT_QUICK ? 2 : 1) : 0);
+  if (w.length > 3) w.shift();
+  let step = 0;
+  if (w.filter(v => v === 0).length >= 2) step = -1;
+  else if (w.length === 3 && w.every(v => v === 2)) step = 1;
+  if (!step) return;
+  run.recent = [];
+  const was = run.nudge | 0, next = clamp(was + step, -ADAPT_MAX, ADAPT_MAX);
+  if (next === was) return;
+  run.nudge = next;
+  if (step < 0) run.helpNext = true;
+  adaptSay(step);
 }
 
 /* The other half of nextRound: the round the player is about to play. Guarded
@@ -18594,12 +18680,17 @@ function beginRound(mode, firstMeet){
   /* Survival's boss wave: every tenth round is a harder single spike rather
      than a lasting ramp, called out the same moment it lands. */
   const bossWave = run.kind === 'survival' && run.roundIdx > 0 && run.roundIdx % 10 === 0;
-  const full = Prog.effectiveLevel(run.solved, run.playerLevel)
+  const natural = Prog.effectiveLevel(run.solved, run.playerLevel)
     + (run.kind === 'reflexrush' ? Math.floor(run.solved/3)
       : run.kind === 'puzzlecascade' ? Math.floor(run.solved/6)
       : run.kind === 'endless' ? Math.floor(run.solved/10)
       : bossWave ? 6 : 0);
+  /* The adaptive step, if there is one (see adaptRound). A boss wave is a spike on purpose and is
+     played at its natural level either way. */
+  const full = adaptOn() && !bossWave && run.nudge
+    ? Math.max(1, natural + run.nudge * Math.max(1, Math.round(natural * 0.08))) : natural;
   run.lvl = firstMeet ? Math.min(6, full) : full;
+  try { if (localStorage.getItem('dd.probe')){ el.play.dataset.lvl = String(run.lvl); el.play.dataset.nudge = String(run.nudge | 0); el.play.dataset.round = String(run.roundIdx); el.play.dataset.mode = modeIdOf(mode); } } catch(e){}
   run.thisRoundBoss = bossWave;
   if (bossWave){
     announceToast({ ink:'#FF3D6E',
@@ -18732,6 +18823,7 @@ function resolve(ok, node){
     const multBefore = multiplier();
     const elapsed = performance.now() - roundStart;
     const speed = clamp(1 - elapsed / (parOf(mode, run.lvl) * run.pressure), 0, 1);
+    adaptRound(true, speed);
     const mult = multiplier();
     /* Everything on the player's side gets a say in what this solve is worth: the
        cats riding along, the charms carried, the twist being played. One call,
@@ -18886,6 +18978,7 @@ function resolve(ok, node){
       : () => { if (run && run.draftDue) offerDraft(); else nextRound(); });
   } else {
     run.missed++;
+    adaptRound(false, 0);
     const fxm = Fx.miss(run);
     /* A spare life from a cat, or a charm's first miss of a stage: the miss
        happened, and costs nothing at all. */
@@ -19007,6 +19100,10 @@ function startRun(kind, modeId, twistId, poolIds){
       : MODE_IDS.slice(),
     rnd: kind === 'daily' ? mulberry32(hashStr(todayKey())) : Math.random
   };
+  /* Probe-only: a run can be told which modes to draw from, so a test can hold a run on one board. */
+  try { const only = localStorage.getItem('dd.probe') && localStorage.getItem('dd.pool');
+    if (only){ const ids = only.split(',').filter(id => MODES[id]); if (ids.length) run.pool = ids; } } catch(e){}
+  adaptClear();
   /* What the player has brought with them, and how the mode is being played. */
   run.charms = []; run.yarn = 0;
   Fx.start(run);
@@ -19121,7 +19218,7 @@ function pauseRun(){
   const sub = mk('small'); sub.textContent = t('pause.sub');
   const go = mk('button','cta pauseGo'); go.type = 'button';
   go.textContent = t('pause.resume');
-  const out = mk('button','ghost'); out.type = 'button';
+  const out = mk('button','ghost pauseEnd'); out.type = 'button';
   out.textContent = t('pause.end');
   /* Sound and haptics are the two things you actually want to reach for
      mid-run — you paused because a room went quiet, not because you wanted
@@ -19152,7 +19249,27 @@ function pauseRun(){
     quick.appendChild(row);
   });
   box.insertBefore(h, box.firstChild);
-  box.appendChild(sub); box.appendChild(go); box.appendChild(out); box.appendChild(quick);
+  /* Where the difficulty stands, because a thing that quietly changes how hard the game is should
+     be possible to ask about. Only when it has actually moved. */
+  if (adaptOn() && run.nudge){
+    const nl = mk('small', 'pausenudge');
+    nl.textContent = t(run.nudge < 0 ? 'adapt.nowDown' : 'adapt.nowUp', { n: Math.abs(run.nudge) });
+    box.appendChild(nl);
+  }
+  /* A different puzzle, three times a run, where the run is a shuffle of many. Not on a Daily Drop
+     (the same twelve for everybody), not in a single-mode run, not on a boss wave (which would
+     simply be dodged), and not once a round has been won and a charm is being chosen. */
+  const SKIPS = 3;
+  const canSkip = !wasDrafting && !run.mode && !run.thisRoundBoss && run.pool && run.pool.length > 1
+    && ['shuffle','endless','mix','reflexrush','puzzlecascade','survival','chaos'].indexOf(run.kind) >= 0;
+  let skip = null;
+  if (canSkip){
+    const left = Math.max(0, SKIPS - (run.skips | 0));
+    skip = mk('button', 'ghost pauseSkip'); skip.type = 'button';
+    skip.textContent = left ? t('pause.skip', { n: left }) : t('pause.skipNone');
+    skip.disabled = !left;
+  }
+  box.appendChild(sub); box.appendChild(go); if (skip) box.appendChild(skip); box.appendChild(out); box.appendChild(quick);
   /* Appended to the stage, not the surface: #surface carries contain:layout
      paint for its own animation performance, and paint containment clips a
      fixed-position descendant's rendering to the container's own box no
@@ -19160,6 +19277,12 @@ function pauseRun(){
      square board only works if it never lands inside that box at all. */
   el.stage.appendChild(box);
   go.addEventListener('click', () => { sfx.tap(); resumeRun(); });
+  if (skip) skip.addEventListener('click', () => {
+    if (!run || (run.skips | 0) >= SKIPS) return;
+    sfx.tap(); run.skips = (run.skips | 0) + 1;
+    run.forceMode = null;              /* the next board is a fresh draw, not this one again */
+    resumeRun();
+  });
   out.addEventListener('click', () => { sfx.tap(); run.paused = false; endRun(); });
   go.focus();
   renderHud();
@@ -19178,6 +19301,7 @@ function resumeRun(){
 function endRun(){
   if (!run) return;
   clearTimers();
+  adaptClear();
   if (raf){ rawCAF(raf); raf = 0; }
   roundLive = false;
   stopAmbient();
@@ -20160,7 +20284,7 @@ function paintSettings(){
      made from another tab, this screen is hidden and every width measures zero.
      Painting happens when it is on screen. */
   levelSettingButtons();
-  [['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swEasy','easyRead']]
+  [['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swEasy','easyRead'],['swAdapt','adaptive']]
     .forEach(([id,key]) => $(id).setAttribute('aria-checked', String(!!save[key])));
   $('swFlashes').setAttribute('aria-checked', String(save.flashes !== false));
   $('volRange').value = String(Math.round(volumeNow() * 100));
@@ -20764,7 +20888,7 @@ $('quitBtn').addEventListener('click', () => {
   run = null; clearBoard(); goTab('Play');
 });
 
-[['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swFlashes','flashes'],['swEasy','easyRead']]
+[['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swFlashes','flashes'],['swEasy','easyRead'],['swAdapt','adaptive']]
   .forEach(([id, key]) => {
     const sw = $(id);
     const flip = () => {
@@ -20888,7 +21012,7 @@ $('resetGone').addEventListener('click', () => {
    defaults" is the same machinery with every key at its default. The open or
    closed state of each panel is a view preference, not progress, so it lives
    under its own key: a reset, an export or an import never touches it. */
-const SETTING_KEYS = ['sound','volume','haptics','flashes','reduceMotion','gameSpeed','contrast','colorAssist','easyRead','textSize'];
+const SETTING_KEYS = ['sound','volume','haptics','flashes','reduceMotion','gameSpeed','contrast','colorAssist','easyRead','textSize','adaptive'];
 const PRESETS = {
   calm:  { sound:true, volume:0.4, haptics:false, flashes:false, reduceMotion:true, gameSpeed:'relaxed' },
   focus: { sound:true, volume:0.6, haptics:true,  flashes:false, reduceMotion:true, gameSpeed:'normal' },
@@ -20946,6 +21070,7 @@ function paintSettingsSummaries(){
   if (String(save.textSize || '100') !== '100') acc.push(t('set.text') + ' ' + save.textSize + '%');
   if (save.gameSpeed === 'relaxed') acc.push(t('set.speedRelaxed'));
   if (save.gameSpeed === 'slow') acc.push(t('set.speedSlow'));
+  if (save.adaptive === false) acc.push(t('set.adaptOff'));
   sum.access = acc.length ? acc.join(' · ') : t('set.default');
   sum.lang = $('langName').textContent;
   sum.about = VERSION_TAG;
