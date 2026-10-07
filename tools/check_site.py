@@ -31,6 +31,17 @@ if not index.is_file():
 
 html = index.read_text(encoding="utf-8")
 
+# Text size: the player can make every word in the app bigger, which only works if every font
+# size is written calc(Npx*var(--ts)). A bare px size is text that ignores the setting, so a
+# new one has to say why on the same line with the word "fixed" (the logotype, a digit drawn
+# inside a ring).
+bare = []
+for blk in re.findall(r"<style[^>]*>(.*?)</style>", html, re.S):
+    for ln in blk.split("\n"):
+        if re.search(r"font-size:\s*[\d.]+px|font-size:\s*clamp\(", ln) and "fixed" not in ln:
+            bare.append(ln.strip()[:70])
+check("every font size scales with the text size setting", not bare, f"{len(bare)} bare, e.g. {bare[:2]}")
+
 # Every inline script, checked separately. The page has more than one — the
 # game and the service-worker registration — and treating them as one blob
 # produces a syntax error from the boundary between them, not from the code.
