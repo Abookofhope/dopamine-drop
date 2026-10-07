@@ -165,6 +165,27 @@ Measured on served builds; "before" is v0.143.1. The vocabulary is in [07-motion
 
 What this does not prove: that it feels right on a slow phone. The cap and the transform-only rule are the guard, and the probe measures the cap, not the frame rate on a real device; manual check 10 in [06-qa-plan.md](06-qa-plan.md) is for that.
 
+## v0.145.0: the logo, the two HUDs, small comforts
+
+Measured on served builds; "before" is v0.144.0.
+
+| Measure | Before (v0.144.0) | After (v0.145.0) |
+|---|---|---|
+| The mark | a coral drop holding a 2x2 grid, one tile lit (from before the cats) | the drop become a cat: ears on its shoulders, one eye lit aqua, yarn wound round it, a loose thread; on the home-screen icon (192, 512, maskable), in the header and on the welcome card, with "Brain snacks" under the name there |
+| The header | the name and a level chip | logo, name ("Drop" in the drop's gradient), daily streak from two days, the yarn in the basket (a tap opens the Room), the level ring with its number on it |
+| The header at 320 wide, 150 percent text, a five-figure basket | n/a | fits: it drops the level's word, then the name's words (still read out), then the streak, then the yarn, measured, never the ring |
+| The in-run button | drawn as a cross, labelled "End run" in English in every language, and it paused | drawn as a pause, labelled Pause / Pausa / Pause in the player's language |
+| The clock in a timed run | a bar only | the bar and m:ss beside the name, red in the last ten seconds |
+| What the run is chasing | shown only on Game Over | your best beside the multiplier from the first board; once passed, "New best +N" in gold, once, with a moment |
+| The screen during a long think | could dim and lock mid-run | kept awake while a run is live (Screen Wake Lock), let go on pause and at the end |
+| The pause sheet | the game's rule, resume, end, sound and vibration | and where the run stands (points, solved, best streak) |
+| A keyboard | Escape pauses (as the back button) | and P pauses and resumes |
+| The welcome card on a 320x568 or 360x640 phone | 508 and 506 px, no scroll | the same 508 and 506 px: below 700 px tall the mark sits beside the name and the tagline steps aside (the first draft, with the mark above the name, was 663 px and hid Start below the fold; `firstrun.mjs` caught it) |
+| Seeded boards in `shots.mjs` | v0.144.0's cats drew a random animation phase, shifting the deal of all 34 seeded boards | no decoration draws from the game's random stream; the boards deal as their baselines |
+| `polish.mjs` failed checks | 17 of 25 | 0 of 25 |
+
+What this does not prove: that the cat reads as a cat at 29 px on every launcher (it is checked by eye at 192 and in the header at 30), or that every browser grants a wake lock (where it cannot, nothing changes).
+
 ## How to reproduce
 
 ```

@@ -27,6 +27,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.143.0 | Sound captions (a short word for the tick, go, chime, buzz and run over, off by default, on in Easy to see) and a one-handed layout (the exit moves to the lower corner on your side, the pause sheet builds from the bottom) |
 | v0.143.1 | A bucket picked up and let go of over the belt in Spool Belt now goes on the belt (it never did; only touching one worked) |
 | v0.144.0 | The motion overhaul: every game celebrates in its own shapes and opens its own way, a piece glows instead of moving, a miss snags; streaks smoulder, stages and levels fire light and confetti, Game Over arrives in order; the tab pill slides and pages slide with it, Room cats breathe, blink and purr hearts, yarn flies to its count, charms are dealt; Big celebrations switch; Reduce motion stops all of it |
+| v0.145.0 | A new logo (the drop become a cat, one eye lit) on the icon, the header and the welcome card; the header is a HUD (streak, yarn that opens the Room, level ring with its number) that fits any width by dropping words first; in a run the button is drawn as the pause it is, timed runs show m:ss, the best you are chasing sits beside the multiplier and turns gold when passed; the screen stays awake in a run, the pause sheet says where the run stands, P pauses |
 
 ## Ground rules the work follows
 

@@ -14,6 +14,10 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 | Q6 | Section jump on Stats and Room via an optional sticky chip row | Only worth doing if analytics show people open many panels per visit | Low | S |
 | Q10 | Caption the sounds v0.143.0 left out: Chalk Line's ball bounces (direct tone calls) and the tap click | Captions that cover most but not all sounds can mislead a player who relies on them | Low | S |
 | Q11 | Mirror the score and streak in the one-handed strip (or let the strip carry the next hint) | The strip is dead space beside the exit button | Low | S |
+| Q12 | Measure frames, not only caps: a probe that plays a hot streak to x5 with embers, a stage beat and a level-up's confetti at 4x CPU and records the frame times | `motion.mjs` checks the particle cap and the transform-only rule; it does not prove the big moments stay smooth on a slow phone | Medium (prevention) | S |
+| Q13 | Check the new icon at launcher sizes (29, 40, 48 px, circle and squircle masks) and drop the whiskers from a small-size variant if they blur | The mark was judged at 192 px and in the 30 px header only | Low to medium | S |
+| Q14 | Toasts: tap to dismiss, and during a run sit below the score instead of over it | A toast at the top covers the score for two seconds at the moment the player looks at it | Low to medium | S |
+| Q15 | An Effects preview in Settings: a button that plays a solve, a miss and a level-up at the current motion settings | Players choosing between Full, Big celebrations off and Reduce motion cannot see the difference without playing | Low | S |
 
 ## Medium term (one to three days each)
 
@@ -24,6 +28,8 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 | M7 | Session shapes: pick 2, 5 or 10 minutes on Play and get a fitting playlist and a clear end | Matches the player's real time; clean stopping points are kind to attention | Medium | M |
 | M8 | Command palette (search across modes, settings, tabs) reachable from the search icon | Fast route to anything | Low to medium | M |
 | M9 | Keyboard play for tap-only boards | WCAG 2.1.1 on boards | Medium for keyboard users | M to L |
+| M10 | A second motion pass inside each game: what happens on a pick, a drag-over and a near miss, per game (the solve, miss and in-round chime already have signatures) | The in-board feedback is still each game's original, uneven from game to game | Medium | M to L |
+| M11 | Haptic patterns that match the signatures (a short double tap for a pair, a long one for a line clear), where vibration exists | Touch carries the same moment the eye does; today every good is the same pulse | Low to medium | M |
 
 ## Long term (a week or more)
 
@@ -45,10 +51,12 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 | E4 | Calm preset offered once after a lost run | Self-regulation helps ADHD players stay | Preset adoption; session length after |
 | E5 | Cat reactions on the level-up card (the riding cat celebrates) | Ties the new celebration to the Room's characters | Qualitative |
 | E6 | Offer the One-handed layout once, after the player has opened the pause sheet from the top-left exit several times on a tall phone | Players who struggle to reach it may not know the setting exists | Adoption rate; exits per run |
+| E7 | A sound per family that matches its visual signature (soft wood for Calm, a pluck for Quick, a chime for Full) | Sound and sight saying the same thing lifts the feel of a solve | Session length; sound opt-out rate |
+| E8 | The best chip shows the distance still to go ("340 to beat") instead of the best itself | A gap reads as reachable; a number reads as a record | Next-run start rate; share of runs that beat the best |
 
 ## Done in this overhaul so far
 
-See [05-before-after.md](05-before-after.md). Brief items now complete: sound captions and a one-handed layout (v0.143.0); a guided start, with free misses until three boards are solved, a note on the second and third solves and a pointer to the Room on the first Game Over (v0.142.0); adaptive difficulty with a visible note and a switch, and a Different puzzle on the pause sheet (v0.141.0); the first run opens on the two plainest boards, with a first solve in seconds, and the Game Over pay-out and the streak token are done (v0.139.0); a level-up card that stays until closed and a reward token on every solve (v0.137.0); mobile HUD and Game Over never hide the way out; Room, Settings and Games scroll without pressing items; Settings, You and the Room as panels; settings search, presets, reset to defaults, undo; easy-read text; 44px targets across the shell; axe clean on the shell screens.
+See [05-before-after.md](05-before-after.md). Brief items now complete: a new logo, a header HUD and an in-game HUD with a clock and the best to beat, a wake lock, a pause summary and a keyboard pause (v0.145.0); the motion overhaul, a signature per game, living menus and Room, Big celebrations (v0.144.0); sound captions and a one-handed layout (v0.143.0); a guided start, with free misses until three boards are solved, a note on the second and third solves and a pointer to the Room on the first Game Over (v0.142.0); adaptive difficulty with a visible note and a switch, and a Different puzzle on the pause sheet (v0.141.0); the first run opens on the two plainest boards, with a first solve in seconds, and the Game Over pay-out and the streak token are done (v0.139.0); a level-up card that stays until closed and a reward token on every solve (v0.137.0); mobile HUD and Game Over never hide the way out; Room, Settings and Games scroll without pressing items; Settings, You and the Room as panels; settings search, presets, reset to defaults, undo; easy-read text; 44px targets across the shell; axe clean on the shell screens.
 
 ## Principles for choosing
 
