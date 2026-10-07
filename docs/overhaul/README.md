@@ -22,6 +22,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.139.0 | First run opens on the two plainest boards (first solve in seconds); streak steps send a second token; Game Over's perk and yarn lines pay out in view; Chalk Line's unwinnable fallback fixed |
 | v0.140.0 | Text size (100, 115, 130, 150 percent) for menus, prompts, HUD and sheets, with the boards unchanged; the achievements grid fits a 320px phone |
 | v0.141.0 | The game keeps up: two misses ease the next boards a step (and show the rule again), three quick solves raise them a step, a note says so and a switch turns it off; the pause sheet deals a different puzzle three times a run |
+| v0.142.0 | A guided start: until three boards are solved a miss is free (three a run) and the rule comes back; the second and third solves each get a short note; the first Game Over points at the Room once |
 
 ## Ground rules the work follows
 

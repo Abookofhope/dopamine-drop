@@ -93,6 +93,24 @@ Measured on Odd Skein held as the only board (a probe-only pool), level of the b
 
 What this does not prove: the thresholds (three rounds, two misses, "quick" meaning inside 55 percent of par, eight percent per step) are reasoned, not tuned from play data. Roadmap Q7 and L3 are the way to tune them.
 
+## v0.142.0: a guided start
+
+Measured with a brand-new player (nothing in storage) held on Odd Skein by a probe-only pool; the cost of a miss is read from the run's clock at the start of the round and just after the miss, so it is a number and not a label.
+
+| Measure | Before (v0.141.0) | After (v0.142.0) |
+|---|---|---|
+| The first miss of a new player | 4 s off the clock, "Wrong skein, minus 4 seconds" | no time lost (about 1 s of ordinary time passed; the penalty is 4 s), "Free while you learn" |
+| After a free miss | the next board, rule hidden | the rule is shown again |
+| How many are free | n/a | three a run, until three boards have been solved in all; the fourth costs 4 s |
+| The second and third solves | silence | one note each: what a streak does, and that early misses were free and from here they cost a little; each told once |
+| The notes on a 320px phone at 150 percent text | the first-solve note was cut off at the edge (measured) | the three notes wrap and sit inside the screen (13 to 307 of 320) |
+| The first Game Over | yarn and a goal line, nowhere to go | a 328x78 button that names Biscuit and the daily gift and opens the Room; shown once, never again, and not to someone who has already seen the Room |
+| A returning player (80 solved) | n/a | a miss costs 4.8 s as before; no notes; no pointer |
+| Languages | n/a | the free-miss line, both notes and the Room pointer in en, fr, es, de |
+| `guided.mjs` failed checks | 27 of 33 | 0 of 33 |
+
+What this does not prove: that a guided start keeps more people. The three-solve and three-miss numbers are reasoned, not tuned; roadmap Q9 and L3 are how to tune them.
+
 ## How to reproduce
 
 ```
@@ -103,4 +121,5 @@ PORT=8400 SITE=/tmp/site node tools/probe/roomscroll.mjs
 PORT=8400 SITE=/tmp/site node tools/probe/settingsacc.mjs
 PORT=8400 SITE=/tmp/site node tools/probe/panels.mjs
 PORT=8400 SITE=/tmp/site node tools/probe/adapt.mjs
+PORT=8400 SITE=/tmp/site node tools/probe/guided.mjs
 ```

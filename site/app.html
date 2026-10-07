@@ -2013,6 +2013,8 @@ html[data-ts="130"] .achgrid,html[data-ts="150"] .achgrid{grid-template-columns:
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .achtoast small{font-size:calc(10.5px*var(--ts));color:var(--haze);margin-top:1px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* A note that teaches has to be read whole: it wraps instead of being cut at the edge of a narrow phone. */
+.achtoast.wrap b,.achtoast.wrap small{white-space:normal;overflow:visible;text-overflow:clip}
 
 /* ── Game over ───────────────────────────────────────────────────────────── */
 /* The payoff screen was the flattest in the app: a small number floating in
@@ -4286,6 +4288,14 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
       </div>
       <div class="recap" id="recap" hidden></div>
       <div class="goalstrip" id="goalStrip" hidden><small data-i18n="goal.label">Next up</small><b id="goalLine"></b></div>
+      <button class="perkcall over" id="roomCall" type="button" style="--cink:#FF8AD8" hidden>
+        <span class="g" id="roomCallGlyph" aria-hidden="true"></span>
+        <span class="txt">
+          <span class="eyebrow" data-i18n="roomcall.eyebrow">Your room</span>
+          <b id="roomCallLine"></b>
+        </span>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+      </button>
       <button class="perkcall over" id="perkCallOver" type="button" hidden>
         <span class="g" id="perkCallOverGlyph" aria-hidden="true"></span>
         <span class="txt">
@@ -4496,7 +4506,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.141.0';
+const VERSION_TAG = 'v0.142.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4548,7 +4558,7 @@ const defaults = {
   /* Wishes granted, and which achievements have already paid their yarn. */
   wishTotal:0, achPaid:{},
   /* The daily gift: the last day it was collected and how many days in a row. */
-  gift:{ last:'', streak:0 }, introRoom:false,
+  gift:{ last:'', streak:0 }, introRoom:false, roomCall:false,
   /* Solves per day (a month of it) and per family, for the Stats tab. */
   hist:{}, fams:{},
   /* Bests on a mode's other four boards, keyed 'mode:twist'. The Classic board
@@ -5346,7 +5356,7 @@ const STRINGS = {
     'fx.snack':'Snack time', 'fx.soft':'Soft landing', 'fx.big':'Big game',
     'fx.moon':'Moon round!', 'fx.catnip':'Catnip!', 'fx.back':'Comeback',
     'fx.hairball':'Hairball luck!', 'fx.milk':'Moon milk', 'fx.vary':'Variety',
-    'fx.pounce':'Pounce!', 'p.free':'No harm done', 'draft.title':'Choose a charm',
+    'fx.pounce':'Pounce!', 'p.free':'No harm done', 'p.learn':'Free while you learn', 'coach.streakEyebrow':'Streak', 'coach.streakTitle':'Two in a row', 'coach.streakDesc':'Keep going and the multiplier climbs.', 'coach.liveEyebrow':'Third solve', 'coach.liveTitle':'Now it counts', 'coach.liveDesc':'Early misses were free. From here they cost a little.', 'roomcall.eyebrow':'Your room', 'roomcall.gift':'Biscuit and the daily gift are waiting', 'roomcall.yarn':'Spend your yarn on cats and decor', 'draft.title':'Choose a charm',
     'draft.sub':'One rides along for the rest of this run.', 'draft.skip':'Take a nap instead (+{n} yarn)', 'draft.taken':'Charm taken',
     'draft.spicy':'Bargain', 'charm.longwhiskers':'Long Whiskers', 'charm.longwhiskers.d':'+1s on every solve in a timed run; +6% points in any other.',
     'charm.yarnball':'Ball of Yarn', 'charm.yarnball.d':'+1 yarn on every solve.', 'charm.tunatin':'Tuna Tin',
@@ -5861,7 +5871,7 @@ const STRINGS = {
     'fx.snack':'Pause goûter', 'fx.soft':'Atterrissage doux', 'fx.big':'Gros gibier',
     'fx.moon':'Manche lunaire !', 'fx.catnip':'Herbe à chat !', 'fx.back':'Retour en force',
     'fx.hairball':'Veine de boule de poils !', 'fx.milk':'Lait de lune', 'fx.vary':'Variété',
-    'fx.pounce':'À l’attaque !', 'p.free':'Aucun mal', 'draft.title':'Choisissez un charme',
+    'fx.pounce':'À l’attaque !', 'p.free':'Aucun mal', 'p.learn':'Gratuit pendant l’apprentissage', 'coach.streakEyebrow':'Série', 'coach.streakTitle':'Deux d’affilée', 'coach.streakDesc':'Continuez : le multiplicateur monte.', 'coach.liveEyebrow':'Troisième réussite', 'coach.liveTitle':'Maintenant, ça compte', 'coach.liveDesc':'Les premiers ratés étaient gratuits. Désormais, ils coûtent un peu.', 'roomcall.eyebrow':'Votre atelier', 'roomcall.gift':'Biscuit et le cadeau du jour vous attendent', 'roomcall.yarn':'Dépensez votre laine en chats et en décor', 'draft.title':'Choisissez un charme',
     'draft.sub':'Il vous accompagne jusqu’à la fin de la partie.', 'draft.skip':'Faire une sieste à la place (+{n} de laine)', 'draft.taken':'Charme choisi',
     'draft.spicy':'Marché', 'charm.longwhiskers':'Longues moustaches', 'charm.longwhiskers.d':'+1 s à chaque réussite en partie chronométrée ; +6 % de points sinon.',
     'charm.yarnball':'Pelote de laine', 'charm.yarnball.d':'+1 de laine à chaque réussite.', 'charm.tunatin':'Boîte de thon',
@@ -6375,7 +6385,7 @@ const STRINGS = {
     'fx.snack':'Hora del tentempié', 'fx.soft':'Aterrizaje suave', 'fx.big':'Gran presa',
     'fx.moon':'¡Ronda lunar!', 'fx.catnip':'¡Hierba gatera!', 'fx.back':'Remontada',
     'fx.hairball':'¡Suerte de bola de pelo!', 'fx.milk':'Leche de luna', 'fx.vary':'Variedad',
-    'fx.pounce':'¡Salto!', 'p.free':'Sin consecuencias', 'draft.title':'Elige un amuleto',
+    'fx.pounce':'¡Salto!', 'p.free':'Sin consecuencias', 'p.learn':'Gratis mientras aprendes', 'coach.streakEyebrow':'Racha', 'coach.streakTitle':'Dos seguidos', 'coach.streakDesc':'Sigue así y el multiplicador sube.', 'coach.liveEyebrow':'Tercer acierto', 'coach.liveTitle':'Ahora cuenta', 'coach.liveDesc':'Los primeros fallos eran gratis. Desde ahora cuestan un poco.', 'roomcall.eyebrow':'Tu taller', 'roomcall.gift':'Biscuit y el regalo diario te esperan', 'roomcall.yarn':'Gasta tu lana en gatos y decoración', 'draft.title':'Elige un amuleto',
     'draft.sub':'Te acompaña el resto de la partida.', 'draft.skip':'Echar una siesta (+{n} de lana)', 'draft.taken':'Amuleto elegido',
     'draft.spicy':'Trato', 'charm.longwhiskers':'Bigotes largos', 'charm.longwhiskers.d':'+1 s por acierto con tiempo; +6 % de puntos en el resto.',
     'charm.yarnball':'Ovillo de lana', 'charm.yarnball.d':'+1 de lana por acierto.', 'charm.tunatin':'Lata de atún',
@@ -6889,7 +6899,7 @@ const STRINGS = {
     'fx.snack':'Snackzeit', 'fx.soft':'Weiche Landung', 'fx.big':'Große Beute',
     'fx.moon':'Mondrunde!', 'fx.catnip':'Katzenminze!', 'fx.back':'Comeback',
     'fx.hairball':'Fellknäuel-Glück!', 'fx.milk':'Mondmilch', 'fx.vary':'Abwechslung',
-    'fx.pounce':'Sprung!', 'p.free':'Kein Schaden', 'draft.title':'Wähle einen Glücksbringer',
+    'fx.pounce':'Sprung!', 'p.free':'Kein Schaden', 'p.learn':'Gratis beim Lernen', 'coach.streakEyebrow':'Serie', 'coach.streakTitle':'Zwei am Stück', 'coach.streakDesc':'Weiter so, der Multiplikator steigt.', 'coach.liveEyebrow':'Dritte Lösung', 'coach.liveTitle':'Jetzt zählt es', 'coach.liveDesc':'Die ersten Fehler waren gratis. Ab jetzt kosten sie etwas.', 'roomcall.eyebrow':'Deine Werkstatt', 'roomcall.gift':'Biscuit und das Tagesgeschenk warten', 'roomcall.yarn':'Gib deine Wolle für Katzen und Deko aus', 'draft.title':'Wähle einen Glücksbringer',
     'draft.sub':'Er begleitet dich für den Rest dieses Laufs.', 'draft.skip':'Lieber ein Nickerchen (+{n} Wolle)', 'draft.taken':'Glücksbringer gewählt',
     'draft.spicy':'Handel', 'charm.longwhiskers':'Lange Schnurrhaare', 'charm.longwhiskers.d':'+1 s pro Treffer in Läufen mit Zeit; sonst +6 % Punkte.',
     'charm.yarnball':'Wollknäuel', 'charm.yarnball.d':'+1 Wolle pro Treffer.', 'charm.tunatin':'Thunfischdose',
@@ -7256,6 +7266,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.142.0', date:'2026-10-07', items:[
+    'A gentler start. Until you have solved three boards, a miss in Just Play or Endless costs nothing (up to three a run): no time, no life, and the streak stays. The rule for the board is shown again after each one, and a line says the miss was free.',
+    'Two short notes. Your second solve says what a streak does, and your third says that early misses were free and from here they cost a little. Each is told once. The first-solve note and the two new ones wrap onto a second line instead of being cut off on a narrow phone.',
+    'A place for the yarn. The first time a run that solved something ends, Game Over points at your Room, once, so the yarn, Biscuit and the daily gift have somewhere to go.',
+  ] },
   { v:'0.141.0', date:'2026-10-07', items:[
     'The game keeps up with you. After two misses in three rounds the next boards get a little easier, and the rule for the board is shown again; after three quick solves in a row they get a little harder. A small note in the top row says so each time it moves, the pause sheet says where it stands, and Accessibility settings has a switch (Adaptive difficulty) to turn it off. It is not used in the Daily Drop, Marathon, Fidget Loop or Taste Test.',
     'A different puzzle. The pause sheet has a Different puzzle button, three times a run, in the runs that mix many games. It deals a fresh board without costing a life or a miss. It is not offered on a Daily Drop, a single-game run or a boss wave.',
@@ -16678,6 +16693,7 @@ function drainToast(){
   host.querySelector('em').textContent = x.eyebrow;
   host.querySelector('b').textContent = x.title;
   host.querySelector('small').textContent = x.desc;
+  host.classList.toggle('wrap', !!x.wrap);
   host.hidden = false;
   void host.offsetWidth;
   host.classList.add('in');
@@ -18618,6 +18634,14 @@ function nextRound(){
    not Marathon, Fidget Loop or Taste Test, where the mode or the pace is the point. */
 const ADAPT_KINDS = ['shuffle','endless','mix','reflexrush','puzzlecascade','survival','chaos'];
 const ADAPT_MAX = 3, ADAPT_QUICK = 0.45;
+/* A new player's first boards are free to get wrong. Until three boards have been solved (ever), up to three misses
+   in a run cost nothing at all: no time, no life, and the streak stays. The rule comes back after each one. */
+const GUIDED_SOLVES = 3, GUIDED_FREE = 3;
+function guidedFree(){
+  if (!run || !run.guided || run.learnFree <= 0 || (save.solved || 0) >= GUIDED_SOLVES) return false;
+  run.learnFree--;
+  return true;
+}
 let adaptHide = 0;
 const adaptOn = () => save.adaptive !== false && !!run && ADAPT_KINDS.indexOf(run.kind) >= 0;
 function adaptClear(){
@@ -18690,7 +18714,7 @@ function beginRound(mode, firstMeet){
   const full = adaptOn() && !bossWave && run.nudge
     ? Math.max(1, natural + run.nudge * Math.max(1, Math.round(natural * 0.08))) : natural;
   run.lvl = firstMeet ? Math.min(6, full) : full;
-  try { if (localStorage.getItem('dd.probe')){ el.play.dataset.lvl = String(run.lvl); el.play.dataset.nudge = String(run.nudge | 0); el.play.dataset.round = String(run.roundIdx); el.play.dataset.mode = modeIdOf(mode); } } catch(e){}
+  try { if (localStorage.getItem('dd.probe')){ el.play.dataset.lvl = String(run.lvl); el.play.dataset.nudge = String(run.nudge | 0); el.play.dataset.round = String(run.roundIdx); el.play.dataset.mode = modeIdOf(mode); el.play.dataset.clock = String(Math.round(run.time)); } } catch(e){}
   run.thisRoundBoss = bossWave;
   if (bossWave){
     announceToast({ ink:'#FF3D6E',
@@ -18898,7 +18922,19 @@ function resolve(ok, node){
     /* The first solve a player ever makes is the moment the game has been explaining. */
     if (save.solved === 1) announceToast({ ink:'#33E6C8',
       glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg>',
-      eyebrow: t('first.eyebrow'), title: t('first.title'), desc: t('first.desc') });
+      eyebrow: t('first.eyebrow'), title: t('first.title'), desc: t('first.desc'), wrap: true });
+    /* The second and third solves of a new player each get one short note: what a streak does, and that the free
+       misses are over. Told once, because the count it hangs on is the save's, not the run's. */
+    if (run.guided && (save.solved === 2 || save.solved === 3)){
+      const second = save.solved === 2;
+      announceToast({ ink: second ? '#FFC53D' : '#33E6C8', wrap: true,
+        glyph: second
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9 6.8 19.7l1-5.9L3.5 9.7l5.9-.8z"/></svg>',
+        eyebrow: t(second ? 'coach.streakEyebrow' : 'coach.liveEyebrow'),
+        title: t(second ? 'coach.streakTitle' : 'coach.liveTitle'),
+        desc: t(second ? 'coach.streakDesc' : 'coach.liveDesc') });
+    }
     const after = Prog.levelForXp(save.xp);
     if (after > before) pendingLevel = after;
 
@@ -18982,7 +19018,9 @@ function resolve(ok, node){
     const fxm = Fx.miss(run);
     /* A spare life from a cat, or a charm's first miss of a stage: the miss
        happened, and costs nothing at all. */
-    const free = Fx.freeMiss(run);
+    const learn = guidedFree();
+    const free = learn || Fx.freeMiss(run);
+    if (learn) run.helpNext = true;         /* and the rule comes back on the next board */
     run.fxs.back = true;                    /* the next solve is a comeback */
     /* A shield keeps the streak, not the round. The miss still costs a life or
        the clock — it buys back momentum, never the mistake. */
@@ -19009,10 +19047,11 @@ function resolve(ok, node){
     }
     sfx.bad(); buzz('bad');
     const said = !free && !saved && !r.timedOut ? quip(mode, false) : '';
-    el.prompt.textContent = free ? t('p.free') : saved ? t('p.saved')
+    el.prompt.textContent = learn ? t('p.learn') : free ? t('p.free') : saved ? t('p.saved')
       : r.timedOut ? t('p.tooSlow')
       : k.timed ? (said ? said + ' · ' : '') + t('p.minusSec', { n: k.penalty/1000 }) : (said || t('p.missed'));
     el.prompt.className = 'prompt lost';
+    try { if (localStorage.getItem('dd.probe')){ el.play.dataset.miss = learn ? 'learn' : free ? 'free' : 'paid'; el.play.dataset.clock = String(Math.round(run.time)); } } catch(e){}
     renderHud();
     if (k.lives && run.lives <= 0) return later(520, endRun);
     if (k.timed && run.time <= 0) return later(340, endRun);
@@ -19104,6 +19143,9 @@ function startRun(kind, modeId, twistId, poolIds){
   try { const only = localStorage.getItem('dd.probe') && localStorage.getItem('dd.pool');
     if (only){ const ids = only.split(',').filter(id => MODES[id]); if (ids.length) run.pool = ids; } } catch(e){}
   adaptClear();
+  /* A player who has not yet solved three boards is still being shown how it works (see guidedFree). */
+  run.guided = (save.solved || 0) < GUIDED_SOLVES && (kind === 'shuffle' || kind === 'endless');
+  run.learnFree = run.guided ? GUIDED_FREE : 0;
   /* What the player has brought with them, and how the mode is being played. */
   run.charms = []; run.yarn = 0;
   Fx.start(run);
@@ -19459,6 +19501,17 @@ function endRun(){
     const g = nextGoal();
     $('goalStrip').hidden = !g;
     if (g) $('goalLine').textContent = t(g.key, g.args);
+  }
+  /* The first time a run that solved something ends, say where the yarn went. Once ever, and never to someone who
+     has already opened the Room's own welcome card. */
+  {
+    const show = !save.introRoom && !save.roomCall && (r.solved || 0) >= 1;
+    $('roomCall').hidden = !show;
+    if (show){
+      save.roomCall = true; persist();
+      $('roomCallGlyph').innerHTML = YARN_GLYPH;
+      $('roomCallLine').textContent = t(Gift.ready() ? 'roomcall.gift' : 'roomcall.yarn');
+    }
   }
   /* And what it paid in yarn, which is the part that has somewhere to go. */
   {
@@ -20869,6 +20922,7 @@ function applyEasyRead(){ document.documentElement.classList.toggle('easyread', 
 function applyTextSize(){ document.documentElement.dataset.ts = ['100', '115', '130', '150'].indexOf(String(save.textSize)) >= 0 ? String(save.textSize) : '100'; }
 
 $('homeBtn').addEventListener('click', () => goTab('Play'));
+$('roomCall').addEventListener('click', () => { sfx.tap(); goTab('Room'); });
 $('againBtn').addEventListener('click', () =>
   startRun(el.over.dataset.kind || 'shuffle', el.over.dataset.mode || null, el.over.dataset.twist || null));
 $('quitBtn').addEventListener('click', () => {

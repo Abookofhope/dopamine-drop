@@ -15,7 +15,7 @@ Target: WCAG 2.2 level AA. "Evidence" names the check that backs the status; "Op
 | 1.4.12 Text spacing | Pass in Easy-read | Easy-read widens letter and word spacing and the layout holds (no sideways scroll at 320) |
 | 1.4.13 Content on hover or focus | Pass | No hover-only content |
 | 2.1.1 Keyboard | Pass for shell screens | Enter and Space open panels; every control is a button or input. Boards: keyboard play is **Open** (many modes are drag or tap only) |
-| 2.2.1 Timing adjustable | Partial | Game speed Relaxed and Slow stretch every clock, and an untimed Endless mode exists; adaptive difficulty (v0.141.0) eases boards after two misses and can be turned off; the Daily and timed modes cannot be switched to untimed |
+| 2.2.1 Timing adjustable | Partial | Game speed Relaxed and Slow stretch every clock, and an untimed Endless mode exists; adaptive difficulty (v0.141.0) eases boards after two misses and can be turned off; a new player's first three misses a run cost no time at all (v0.142.0); the Daily and timed modes cannot be switched to untimed |
 | 2.2.2 Pause, stop, hide | Pass | Pause on every run; Reduce motion stops particles and shake |
 | 2.3.1 Three flashes | Control provided; not independently audited | The Screen flashes switch turns the colour wash off, and the Calm, Focus and Easy to see presets set it off. A solve or miss is one 200 to 260 ms wash, but a frame-by-frame photosensitivity audit is **Open** |
 | 2.1.2 No keyboard trap | Pass | The level-up card is modal and keeps Tab on its one button on purpose; Escape, Enter or a tap closes it and focus returns to where it was |
@@ -44,6 +44,7 @@ Target: WCAG 2.2 level AA. "Evidence" names the check that backs the status; "Op
 | Dyslexia-friendly option | Easy-read text done (plain wide-set stack; not a claim of a clinical benefit) |
 | Adjustable text size | Done for menus, prompts, HUD and sheets; boards keep their size |
 | Adaptive difficulty and a different puzzle | Done (v0.141.0): visible, switchable, announced to screen readers through a status line |
+| Plain help for a new player | Done (v0.142.0): free misses while learning, the rule shown again, two short notes in the polite live region (so a screen reader says them), words that wrap rather than being cut off on a 320px phone |
 | Captions for sound | Open |
 | Haptics toggle | Done |
 | One-handed mode | Open |
