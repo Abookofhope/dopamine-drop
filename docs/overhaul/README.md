@@ -20,6 +20,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.137.0 | The level-up card stays until you close it and says what the run was worth, what the level unlocked and what is next; every solve sends a token to the score |
 | v0.138.0 | Game Over: the run's XP counts up and fills the level bar (wrapping on a new level), and the level-up card waits for it |
 | v0.139.0 | First run opens on the two plainest boards (first solve in seconds); streak steps send a second token; Game Over's perk and yarn lines pay out in view; Chalk Line's unwinnable fallback fixed |
+| v0.140.0 | Text size (100, 115, 130, 150 percent) for menus, prompts, HUD and sheets, with the boards unchanged; the achievements grid fits a 320px phone |
 
 ## Ground rules the work follows
 

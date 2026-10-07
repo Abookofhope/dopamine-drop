@@ -17,12 +17,13 @@ Method: each finding was reproduced with a script on a served build (real touch 
 | 9 | Game feel | The level-up celebration disappears by itself after 1.9 s, so a player who looked away misses it; its text and the Game Over level line are English-only | read; `levelup.mjs` 35 failed checks on v0.136.0 | High | Fixed in v0.137.0 |
 | 10 | Game feel | A solve bursts and flashes at the tile; nothing travels to the score, so the reward does not "arrive" | read | Medium | Fixed in v0.137.0 (a token flies from the solved piece to the score) |
 | 11 | Game feel | Game Over shows the run's XP, perk and yarn lines as static numbers: nothing counts or fills, so the pay-out is read rather than felt | read; `runend.mjs` 5 failed checks on v0.137.0 | Medium | Fixed for XP in v0.138.0 (counts up, fills the level bar, wraps on a new level); the perk and yarn lines are still static |
-| 12 | Accessibility | No text size control; the layout is built in px | read | Medium | Open (needs a rem migration) |
+| 12 | Accessibility | No text size control; the layout is built in px | read | Medium | Fixed in v0.140.0 (Text size 100 to 150 percent through one variable; boards keep their size) |
 | 13 | Accessibility | Sounds have no visual captions | read | Low to medium | Open |
 | 14 | Mobile | One-handed use: the top-left exit and the top-of-screen HUD are the reach-hardest places | read | Low to medium | Open |
 | 16 | First run | A brand-new player's first run opens on a random board of 44, so the first solve depends on the draw (Odd Skein 0 of 5 fresh visits on v0.138.0) | `firstrun.mjs`: 14 failed checks on v0.138.0 | High | Fixed in v0.139.0 (opening on Odd Skein then Count the Stitches; first solve 3.3 s after the first tap in 5 of 5 fresh visits) |
 | 17 | Game feel | Perk and yarn lines on Game Over are static numbers | `firstrun.mjs` | Low | Fixed in v0.139.0 |
 | 18 | Reliability | Chalk Line's last-resort ramp started on the basket's side of the ball and could never be won: about 1 in 40 top-level boards (4 of 150 in one hunt, 2 of 120 in another); a further 1 to 2 percent of boards on the paw lost to pixel rounding of their own stored answer | hunts over 390 boards: 12 failures; forced fallback 0 of 50 | Medium | Fixed in v0.139.0 (0 of 150 afterwards; the fallback's fix is proven, the pixel-rounding part is encouraging not proven) |
+| 19 | Layout | On a 320px phone the third column of the achievements grid ran off the right edge at any text size (columns grew to fit their text) | `textsize.mjs`: 'off-screen' at 100% on v0.139.0, and a screenshot | Medium | Fixed in v0.140.0 |
 | 15 | Retention | No weekly or seasonal structure beyond the daily gift, the day's wishes and the week's wish total | read | Medium | Open (see roadmap) |
 
 ## What the player already had

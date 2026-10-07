@@ -9,7 +9,7 @@ Target: WCAG 2.2 level AA. "Evidence" names the check that backs the status; "Op
 | 1.3.4 Orientation | Pass | Both orientations probed (`hudstates.mjs`) |
 | 1.4.1 Use of colour | Pass with Colour assist on | Colour assist adds a shape to every ink; `board.mjs` checks the hand-built boards with it on |
 | 1.4.3 Contrast (minimum) | Pass by axe | axe's colour-contrast rule passes on every shell screen and board probed; High contrast raises contrast further. A hand measurement of every token pair is **Open** |
-| 1.4.4 Resize text | **Open** | The layout is in px. Plan: move type and spacing to rem, then a Text size setting (100, 115, 130, 150 percent) and a probe at each |
+| 1.4.4 Resize text | Pass for the app's own text; boards partial | Text size 100, 115, 130, 150 percent (v0.140.0): every font size is calc(Npx*var(--ts)), a gate check refuses a bare px size, and `textsize.mjs` finds no sideways scroll and no clipped or off-screen line on the shell, HUD, pause sheet, Game Over and welcome screen at 320x568 and 360x640. Puzzle boards keep their tile text at a fixed size (they are drawn to fit): scaling those is **Open** |
 | 1.4.10 Reflow | Pass at 320 CSS px | No horizontal scroll at 320x568 on any shell screen (`hudstates.mjs`, `settingsacc.mjs`, `panels.mjs`) |
 | 1.4.11 Non-text contrast | Not measured | Switch, focus ring and panel chevrons have not been measured by hand; **Open** |
 | 1.4.12 Text spacing | Pass in Easy-read | Easy-read widens letter and word spacing and the layout holds (no sideways scroll at 320) |
@@ -42,7 +42,7 @@ Target: WCAG 2.2 level AA. "Evidence" names the check that backs the status; "Op
 | Reduced motion | Done (OS setting and in-app switch) |
 | Flash reduction / photosensitivity | Switch and presets done; audit open |
 | Dyslexia-friendly option | Easy-read text done (plain wide-set stack; not a claim of a clinical benefit) |
-| Adjustable text size | Open |
+| Adjustable text size | Done for menus, prompts, HUD and sheets; boards keep their size |
 | Captions for sound | Open |
 | Haptics toggle | Done |
 | One-handed mode | Open |
@@ -50,7 +50,7 @@ Target: WCAG 2.2 level AA. "Evidence" names the check that backs the status; "Op
 
 ## Remediation order
 
-1. Text size (rem migration, setting, probe at four sizes).
+1. Scale board text where a board can grow to hold it (needs per-mode work).
 2. Sound captions (a short text strip for streak chimes and warnings, off by default, on in the Accessible preset).
 3. One-handed layout (bottom-anchored controls and the exit on the right, a setting).
 4. Keyboard play for board modes, starting with the tap-only ones.

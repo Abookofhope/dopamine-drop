@@ -14,7 +14,6 @@ Effort: **S** about half a day, **M** one to three days, **L** a week or more. I
 
 | # | Item | Why | Expected impact | Effort |
 |---|---|---|---|---|
-| M1 | Text size setting (100, 115, 130, 150 percent) after a px to rem migration of type and spacing | WCAG 1.4.4; the one AA criterion known to fail | High for low-vision players | M |
 | M2 | Sound captions: a brief text strip for chimes, warnings and the level-up, off by default, on in the Easy to see preset | Hearing-impaired and sound-off play | Medium | M |
 | M3 | One-handed mode: exit and the HUD actions move to the lower right, the pause sheet anchors to the bottom | The exit is top-left, the hardest place for a right thumb | Medium | M |
 | M4 | First 30 seconds, part two: v0.139.0 gives a first solve in about 3 s; still to do is a guided second and third round, a quicker path past the welcome screen for a reinstall, and measuring drop-off with the opt-in analytics (L3) | Hook and retention at the point of highest drop-off | Medium to high | M |

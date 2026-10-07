@@ -63,6 +63,18 @@ Other sizes (closed): 320x568 Settings 1.29 screens, You 1.41, Room 1.52; 390x84
 | Chalk Line fallback ramp, forced on 50 boards | 0 won | 36 won (10 of 10 on empty fields) |
 | Chalk Line boards that lose to their own answer, natural play | 12 of 390 (3.1%) | 0 of 150 |
 
+## v0.140.0: Text size
+
+| Measure | Before (v0.139.0) | After (v0.140.0) |
+|---|---|---|
+| Making the app's words bigger | not possible (sizes in px, no setting) | Text size 100, 115, 130, 150 percent; the Easy to see preset uses 115 |
+| Menu, prompt and sheet text at 150 percent | n/a | 1.5 times the size (measured by computed style, within 2 percent) |
+| Board text at 150 percent | n/a | unchanged (tiles are drawn to fit) |
+| Sideways scroll or clipped line on 11 screens at 4 sizes, 2 phones | n/a | none |
+| Achievements grid on a 320px phone | third column off the edge at 100 percent | fits; two columns at 130 and 150 percent |
+| Bare px font sizes in the stylesheets | 246 | 0 except the logotype and a ring digit, refused by the gate |
+| `textsize.mjs` failed checks | 33 | 0 |
+
 ## How to reproduce
 
 ```

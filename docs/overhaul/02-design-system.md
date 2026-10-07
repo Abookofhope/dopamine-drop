@@ -22,6 +22,7 @@ The look is a cat-and-yarn craft room on a dark violet ground. The tokens live i
 4. **Panels.** A long section is a `.setcard.acc`: header button (`.acchead`, 54px) with title and a live summary (`.acct small`), body that unfolds with a grid-rows transition, `visibility:hidden` when closed. Open state is stored under `dd.acc` by `data-acc` key, outside the save. A panel may default open with `data-open="1"`. A gold dot (`.hot`) says something inside is waiting.
 5. **Undo over confirm.** A change that touches several settings (presets, reset) applies at once and offers Undo for 12 seconds in a status line that is a live region. Erasing progress keeps its explicit two-step.
 6. **Status in the page, not in a dialog.** No native `alert` or `confirm`.
+7. **Text scales through `--ts`.** Every font size in the stylesheets is `calc(Npx*var(--ts))` (or `calc(clamp(...)*var(--ts))`); the player's setting puts 1, 1.15, 1.3 or 1.5 on `html[data-ts]`. `#surface` resets it to 1 so boards fit. A size that must not scale (the logotype, a digit inside a ring) says `fixed` on its line, and the gate (`check_site.py`) refuses any other bare px size. The header's level text is capped at 115 percent so it stays on one line with the logo.
 
 ## Components
 
