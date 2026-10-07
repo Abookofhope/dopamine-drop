@@ -4561,7 +4561,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.143.0';
+const VERSION_TAG = 'v0.143.1';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -7335,6 +7335,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.143.1', date:'2026-10-07', items:[
+    'Sandbox of Softness: a bucket you pick up and let go of over the belt now goes on the belt. Until now only touching a bucket worked, and a drag ended with nothing happening.',
+  ] },
   { v:'0.143.0', date:'2026-10-07', items:[
     'Sound captions. A new switch in Sound settings shows a short word at the bottom of the screen for the sounds that carry information: a solve, a rising streak, a miss, the count-in, a level-up and the end of a run. It is off by default, on in the Easy to see preset, and shows whether or not the sound itself is on.',
     'One-handed layout. Accessibility settings has a Right hand and Left hand choice. In a run the exit button moves from the top corner to the lower corner on your side, the board gives up a strip for it (a column at the side when the phone is held sideways), and the pause sheet sits at the bottom, so a thumb reaches everything.',
@@ -15546,9 +15549,11 @@ const MODES = {
       };
 
       slots.forEach((b, x) => onTap(b, () => { if (x === 0) knock(); }));
-      /* A bucket goes on the belt when it is touched and let go, or when it is picked up and let go of over the belt. */
+      /* A bucket goes on the belt when it is touched and let go, or when it is picked up and let go of over the belt. The drag is
+         watched from the whole board, not the tray: the belt is the tray's sibling, and a drop only lands on a target inside the
+         element that watches (it was the tray, so letting go over the belt never put anything on it, only a tap did). */
       btns.forEach((b, ci) => { b._put = () => put(ci); });
-      carry(tray, { grab: '.bkt', over: '.belt', host: box, tap: el => el._put && el._put(), land: from => from._put && from._put() });
+      carry(box, { grab: '.bkt', over: '.belt', host: box, tap: el => el._put && el._put(), land: from => from._put && from._put() });
 
       paint();
       /* A beat of grace before the first grain, so the belt can be read. */

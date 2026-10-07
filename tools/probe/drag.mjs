@@ -310,14 +310,17 @@ if (!only || only.includes('sift')){
   const page = await open('sift', '.bkt', 2000);
   const slots = await page.evaluate(() => document.querySelectorAll('.bslot').length);
   check(slots >= 4, `the belt has at least four places (${slots})`);
-  const before = await page.evaluate(() => document.querySelectorAll('.bslot.full').length);
+  /* The belt moves on its own timer, so a count of full slots before and after the drop drifts with how long the drag took (a slow
+     stretch let it use up two slots against the one put, and the check failed for no reason in the game). Ask the bucket instead:
+     letting go over the belt must run its put, once. */
+  await page.evaluate(() => { window.__puts = 0; document.querySelectorAll('.bkt').forEach(k => { const f = k._put; k._put = (...x) => { window.__puts++; return f && f(...x); }; }); });
   await page.waitForTimeout(300);
   const a = await centre(page, '.bkt', 0), b = await centre(page, '.belt', 0);
   const r = await drag(page, a, b);
   check(r.mid.ghost && r.mid.lifted, 'the bucket lifts a copy under the finger');
   await page.waitForTimeout(120);
-  const after = await page.evaluate(() => { const s = [...document.querySelectorAll('.bslot')]; return s[s.length - 1].classList.contains('full') || s.filter(x => x.classList.contains('full')).length; });
-  check(after === true || after >= before, 'letting go over the belt puts it on');
+  const puts = await page.evaluate(() => window.__puts);
+  check(puts === 1, `letting go over the belt puts it on (the bucket's put ran ${puts} time${puts === 1 ? '' : 's'})`);
   await page.close();
 }
 

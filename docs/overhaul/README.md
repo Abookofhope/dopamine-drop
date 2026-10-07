@@ -24,6 +24,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.141.0 | The game keeps up: two misses ease the next boards a step (and show the rule again), three quick solves raise them a step, a note says so and a switch turns it off; the pause sheet deals a different puzzle three times a run |
 | v0.142.0 | A guided start: until three boards are solved a miss is free (three a run) and the rule comes back; the second and third solves each get a short note; the first Game Over points at the Room once |
 | v0.143.0 | Sound captions (a short word for the tick, go, chime, buzz and run over, off by default, on in Easy to see) and a one-handed layout (the exit moves to the lower corner on your side, the pause sheet builds from the bottom) |
+| v0.143.1 | A bucket picked up and let go of over the belt in Spool Belt now goes on the belt (it never did; only touching one worked) |
 
 ## Ground rules the work follows
 

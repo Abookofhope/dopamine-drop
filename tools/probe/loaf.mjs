@@ -203,8 +203,11 @@ for (const xp of XPS){
   await page.close();
 }
 
-/* ── Smooth on a slow phone: measured at 4x CPU slowdown ── */
-{
+/* ── Smooth on a slow phone: measured at 4x CPU slowdown ──
+   One measurement on a shared machine swings by about 30 percent (the same build read 8.0 to 15.3 ms per move over twenty runs), so
+   a limit near the usual value failed one run in ten for no reason in the game. Three drags on three fresh pages, judged on the
+   median, keep the limits where they were and ignore a single slow stretch; a build that is really slower is slower in all three. */
+const measure = async () => {
   const page = await open(12000, { width: 400, height: 820 }, false);
   const cdp = await page.context().newCDPSession(page);
   await cdp.send('Performance.enable'); await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
@@ -217,11 +220,15 @@ for (const xp of XPS){
   await page.mouse.move(gx.x, gx.y, { steps: 80 }); await page.waitForTimeout(120);
   const m1 = await metrics(), frames = await page.evaluate(f => window.__frames.slice(f), f0);
   await page.mouse.up();
-  const layouts = m1.LayoutCount - m0.LayoutCount, per = (m1.TaskDuration - m0.TaskDuration) * 1000 / 80, worst = Math.max(...frames);
-  check(layouts <= 4, `no layout while a finger drags a loaf (${layouts} over 80 moves)`);
-  check(per < 14, `a move of the finger costs ${per.toFixed(1)}ms on a phone four times slower than this machine (under 14)`);
-  check(worst < 34, `no frame took longer than 34ms (worst ${worst.toFixed(1)}ms)`);
   await page.close();
+  return { layouts: m1.LayoutCount - m0.LayoutCount, per: (m1.TaskDuration - m0.TaskDuration) * 1000 / 80, worst: Math.max(...frames) };
+};
+{
+  const runs = []; for (let k = 0; k < 3; k++) runs.push(await measure());
+  const med = key => runs.map(r => r[key]).sort((x, y) => x - y)[1], list = key => runs.map(r => r[key].toFixed(1)).join(', ');
+  check(Math.max(...runs.map(r => r.layouts)) <= 4, `no layout while a finger drags a loaf (${runs.map(r => r.layouts).join(', ')} over 80 moves, three drags)`);
+  check(med('per') < 14, `a move of the finger costs ${med('per').toFixed(1)}ms (median of ${list('per')}) on a phone four times slower than this machine (under 14)`);
+  check(med('worst') < 34, `no frame took longer than 34ms (median worst ${med('worst').toFixed(1)}ms of ${list('worst')})`);
 }
 
 check(errs.length === 0, 'no script errors' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));

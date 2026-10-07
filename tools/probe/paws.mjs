@@ -120,7 +120,7 @@ const modes = {
   arc: { name: "Cat's Cradle", sel: '#surface .arcdot', ruled: null, boards: false,
     /* a board with at least one peg outside the circle of reach (a wide reach can cover them all) */
     usable: page => page.evaluate(() => { const h = document.querySelector('.arcreach').getBoundingClientRect(), cx = h.left + h.width / 2, cy = h.top + h.height / 2, R = h.width / 2;
-      return [...document.querySelectorAll('.arcdot')].filter(e => { const r = e.getBoundingClientRect(); return Math.hypot(r.left + r.width / 2 - cx, r.top + r.height / 2 - cy) > R * 1.15; }).length >= 3; }),
+      return [...document.querySelectorAll('.arcdot')].filter(e => { const r = e.getBoundingClientRect(); return Math.hypot(r.left + r.width / 2 - cx, r.top + r.height / 2 - cy) > R * 1.15; }).length >= 1; }),
     /* a peg outside the circle of reach is tapped (wrong); a peg inside it is taken (right) */
     acts: async page => {
       const f = await page.evaluate(() => { const h = document.querySelector('.arcreach').getBoundingClientRect(), cx = h.left + h.width / 2, cy = h.top + h.height / 2, R = h.width / 2;
@@ -142,7 +142,11 @@ for (const [id, m] of Object.entries(modes)){
   {
     let page = await open(id, m.sel, 0);
     if (m.ready) await m.ready(page);
-    for (let tries = 0; m.usable && !(await m.usable(page)) && tries < 8; tries++){ await page.close(); page = await open(id, m.sel, 0); }
+    /* One peg out of reach is all the wrong choices need (a wrong tap shakes the peg, it does not remove it, and each choice is
+       measured afresh). Asking for three, as this once did, qualified about one fresh board in ten and so crashed about half the runs
+       once the retries ran out, on every build back to v0.139.0. */
+    for (let tries = 0; m.usable && !(await m.usable(page)) && tries < 40; tries++){ await page.close(); page = await open(id, m.sel, 0); }
+    if (m.usable && !(await m.usable(page))){ check(false, `${m.name}: no board with a peg out of reach in 40 fresh tries`); await page.close(); continue; }
     let s = await paws(page);
     check(s.shown === 3 && s.left === 3 && /3/.test(s.aria), `${m.name}: three paws are shown above the board ("${s.aria}")`);
     let a = await m.acts(page); await a.wrong(); await page.waitForTimeout(200);

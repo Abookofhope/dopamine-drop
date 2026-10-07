@@ -130,6 +130,18 @@ Measured on served builds; "before" is v0.142.0.
 
 What this does not prove: that the lower corner is the best place for every hand (a left-handed player on a tall phone may prefer the middle; the setting is a first answer, not a measured one), or that captions are enough for a deaf player: they cover the seven moments above and nothing else. An on-demand rule button is still open (roadmap M6).
 
+## v0.143.1: a bucket let go of over the belt
+
+Measured on served builds; "before" is v0.143.0.
+
+| Measure | Before (v0.143.0) | After (v0.143.1) |
+|---|---|---|
+| Pick a bucket up and let go of it over the belt (Spool Belt) | the bucket's put ran 0 times in 3 of 3 runs, so nothing went on the belt | it ran once, and the bucket is on the belt |
+| Touch a bucket and let go | worked | unchanged |
+| `drag.mjs` check that found it | counted belt places and passed when nothing happened | counts calls to the bucket's put, so a drag that does nothing fails |
+
+What this does not prove: that the other drag modes are free of the same kind of fault. Each of them has a check that a drop lands, and this one passed for about 47 releases because of how it counted. The same check is worth reading in every mode that has one.
+
 ## How to reproduce
 
 ```

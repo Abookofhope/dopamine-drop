@@ -42,11 +42,14 @@ const open = async (id, sel, xp = 60000) => {
   check(await page.evaluate(() => document.querySelectorAll('.wave').length) === 1, 'a tap is one ripple');
   await page.waitForTimeout(700);
   /* a stroke, several */
+  /* Counted as they are made, not as they are still on the water at the end: a ripple fades after a moment, so on a slow stretch the
+     first ones were gone before the count and a good stroke read as three. */
+  await page.evaluate(() => { window.__waves = 0; new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if (n.classList && n.classList.contains('wave')) window.__waves++; }))).observe(document.body, { childList: true, subtree: true }); });
   await page.mouse.move(pool.x + pool.w * 0.15, pool.y + pool.h * 0.25); await page.mouse.down();
   await page.mouse.move(pool.x + pool.w * 0.85, pool.y + pool.h * 0.25, { steps: 24 });
-  const during = await page.evaluate(() => document.querySelectorAll('.wave').length);
+  const during = await page.evaluate(() => window.__waves);
   await page.mouse.up();
-  check(during >= 4, `a finger dragged through the water makes a ripple every few steps (${during} on the water)`);
+  check(during >= 4, `a finger dragged through the water makes a ripple every few steps (${during} made along the stroke)`);
   await page.close();
 }
 
