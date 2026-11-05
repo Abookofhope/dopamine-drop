@@ -24,6 +24,20 @@ nothing ships on a red probe.
 | **v0.153.0** | The living room | seasons and the Archive; the Weekly Pattern; the lucky skein; the Daily ghost link | `seasons.mjs` | 04, 05, 06 |
 | **v0.154.0** | Finish | icons checked at launcher sizes; the undo audit (Q14); the first-run probe extended to 90 s; the kinds' subtitles (pending the owner's decision, B9) | `firstrun.mjs` (extended) | 08, 12 |
 
+### Where the build stands (2026-11-05)
+
+| Release | Shipped | Where it differs from the plan above |
+|---|---|---|
+| v0.146.0 | 7edbbea | — |
+| v0.147.0 | efb3943 | — |
+| v0.148.0 | 87d1c88 | — |
+| v0.149.0 | 20eea4c | — |
+| v0.150.0 | 7224e9e | — |
+| v0.151.0 | 3bf90f4 | the patch card offers Marathon and Practise |
+| v0.152.0 | a635825 | no Kit screen of its own: the three kits sit under Riding along in the Room, so the Room stays under two screens (`panels.mjs`) |
+| v0.153.0 | 74d0780 | seasons sit under The room for the same reason; the week's board is chosen from all boards by the date (Classic for a player who has not opened it); the week card shows from the third run; a friend's link is read when the app opens and when it arrives while open |
+| v0.154.0 | docs and probes only (no app change while B9 waits) | icons checked at 48, 40 and 29 px, circle and squircle masks, light and dark wallpapers: the mark stays inside the safe zone and keeps its contrast, no change; the undo audit is written ([../overhaul/08-undo-audit.md](../overhaul/08-undo-audit.md)), with five games left for review; `firstrun.mjs` checks that nothing opens over the first board and that a grade is shown on an early solve (not yet a full 90 s of play); B9 waits on the owner |
+
 ### Cut lists (what each release drops first if it runs long)
 
 - v0.147: the Variety stitch, the frame kick.

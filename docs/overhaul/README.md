@@ -11,6 +11,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | [05-before-after.md](05-before-after.md) | Measured before and after, per release |
 | [06-qa-plan.md](06-qa-plan.md) | Device and viewport matrix, probe suite, manual checks and the release checklist |
 | [07-motion.md](07-motion.md) | How things move: the principles, the engine, every game's signature, the moments and the budget |
+| [08-undo-audit.md](08-undo-audit.md) | Which games have Undo, which need none, and the five with a move budget and no Undo left for review (bible Q14) |
 | [../bible/](../bible/README.md) | The overhaul bible: the design for where the game goes next, and the nine-release roadmap that builds it |
 
 ## Releases so far

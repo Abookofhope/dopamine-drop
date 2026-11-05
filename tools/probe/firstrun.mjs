@@ -66,10 +66,18 @@ for (const [w, h, label] of [[320, 568, 'small phone'], [360, 640, 'phone'], [39
 const times = [];
 for (let visit = 0; visit < 5; visit++){
   const { page, ctx } = await fresh({ width: 360, height: 640 });
+  /* every line the prompt shows, for the check that grades are taught by showing */
+  await page.evaluate(() => { window.__prompts = []; const p = document.getElementById('prompt');
+    new MutationObserver(() => window.__prompts.push(p.textContent)).observe(p, { childList: true, characterData: true, subtree: true }); });
   await page.click('#wcStart');
   const t0 = Date.now();
   const first = await page.waitForSelector('#surface .oddwrap .tile, #surface .orderbox, #surface .tile', { timeout: 9000 }).then(() => page.evaluate(() => !!document.querySelector('#surface .oddwrap .tile')), () => null);
   check(first === true, `visit ${visit + 1}: the first board is Odd Skein`);
+  /* Taught in play (bible 08): nothing to read before the first board, no dialog or sheet open over it. */
+  if (visit === 0){
+    const dlg = await page.evaluate(() => [...document.querySelectorAll('[role="dialog"], .sheet')].filter(e => { const r = e.getBoundingClientRect(); return !e.hidden && r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden'; }).map(e => e.id || e.className).slice(0, 3));
+    check(!dlg.length, `visit 1: nothing opens over the first board (${dlg.join(', ') || 'none'})`);
+  }
   let solvedAt = 0;
   for (let k = 0; k < 8 && !solvedAt; k++){
     await page.waitForTimeout(450);
@@ -88,6 +96,9 @@ for (let visit = 0; visit < 5; visit++){
     let order = false;
     for (let k = 0; k < 14 && !order; k++){ await page.waitForTimeout(250); order = await page.evaluate(() => !!document.querySelector('#surface .orderbox')); }
     check(order, 'and the next board is Count the Stitches');
+    /* The grades are taught by showing: the first run's solves name how they were made, under the score. */
+    const graded = await page.evaluate(() => (window.__prompts || []).filter(x => /Purrfect|Swift|Clean/.test(x)));
+    check(graded.length > 0, `and a style grade is shown under the score on an early solve (${graded.slice(0, 2).join(', ') || 'none'})`);
   }
   await ctx.close();
 }

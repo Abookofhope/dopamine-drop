@@ -91,7 +91,7 @@ settings search, reset with undo, save export and import, wake lock, P to pause.
 
 ## Found while taking stock (fixed in the MVP, see [13-roadmap.md](13-roadmap.md))
 
-B1–B5 and B8 were fixed in **v0.146.0** (`honest.mjs`, `toasts.mjs`). B6, B7, B9 and B10 are scheduled in the roadmap.
+B1–B5 and B8 were fixed in **v0.146.0** (`honest.mjs`, `toasts.mjs`), B10 in **v0.147.0** (`peakend.mjs`), B6 in **v0.150.0** (`resume.mjs`), and B7 in **v0.152.0–v0.153.0** (`kit.mjs`, `seasons.mjs`). B9 waits on the owner's decision.
 
 | # | Finding | Why it matters |
 |---|---|---|
@@ -99,9 +99,9 @@ B1–B5 and B8 were fixed in **v0.146.0** (`honest.mjs`, `toasts.mjs`). B6, B7, 
 | B2 | **Window Seat does nothing**, and Sunbeam's "round clocks 20% longer" never applies. Charms are only offered in runs without round clocks ✓ | a rare card that is a blank breaks trust in every card |
 | B3 | **Sharp Claws' cost never applies** (it slows round clocks, which those runs don't have), and Ghost Cat and Tangle cost nothing in Endless, where a miss costs no time ✓ | a "bargain" with no price is a dominant pick |
 | B4 | **The daily gift ladder restarts at day 1 after one missed day** ✓ | punishes a day off; against E4 |
-| B5 | Toasts (first solve, coach notes, stage beats, achievements) appear **during a run, over the HUD** | breaks flow; against E5 |
-| B6 | A run is lost if the app is closed or killed mid-run (progress is banked, but the run is gone) | a phone call shouldn't cost a run |
-| B7 | **Yarn runs out of things to buy** (27,370 in all) | a currency with nothing to buy is noise, and the most loyal players reach that point first |
-| B8 | Small text faults: Reflex Rush says 7 reflex games (there are 8); the Room says comfort gives "a fifth" more yarn (it is up to 24%); "N solved" on the HUD and the colour-helper preview caption are English in every language | correctness and localization |
+| B5 | Toasts (first solve, coach notes, stage beats, achievements) appear **during a run, over the HUD** ✓ | breaks flow; against E5 |
+| B6 | A run is lost if the app is closed or killed mid-run (progress is banked, but the run is gone) ✓ v0.150.0: offered back for a day | a phone call shouldn't cost a run |
+| B7 | **Yarn runs out of things to buy** (27,370 in all) ✓ v0.152–v0.153 add 36,200 of fixed sinks (Sparkle kits 4,200, stations 2,000, something to wear 1,050 for each of 20 cats, seasons 9,000) and one open-ended sink (treats, 25 each) | a currency with nothing to buy is noise, and the most loyal players reach that point first |
+| B8 | ✓ Small text faults: Reflex Rush says 7 reflex games (there are 8); the Room says comfort gives "a fifth" more yarn (it is up to 24%); "N solved" on the HUD and the colour-helper preview caption are English in every language | correctness and localization |
 | B9 | The three kinds are subtitled with **clinical ADHD subtype names** ("Predominantly Inattentive", ...) | a health-claim risk on app stores and a label on the player; see [12-risks.md](12-risks.md) R3. **Needs the owner's decision** |
-| B10 | A Game Over with no solves leads with a giant **0** | a five-minute player who had a bad run leaves on a low; against the Peak-End rule |
+| B10 | A Game Over with no solves leads with a giant **0** ✓ v0.147.0: peak first | a five-minute player who had a bad run leaves on a low; against the Peak-End rule |
