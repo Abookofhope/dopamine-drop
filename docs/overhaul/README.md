@@ -38,6 +38,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.151.0 | The Quilt (bible release 6): one patch per game in the Room, knitted as it is played, with stars, rank and the Gold Thread; milestones add things to the Room for good |
 | v0.152.0 | Make it yours (bible release 7): Sparkle kits, radio stations, something for a cat to wear, treats, a name of your own, three saved kits, your style on You |
 | v0.153.0 | The living room (bible release 8): seasons in the window and on the sill, with every season in the Archive; this week's pattern; the lucky skein; a friend's Daily to race |
+| v0.154.0 | What the full chain found: Patchwork's quilt and the You rows restored (two borrowed class names), the Lucky paw note restored and duplicate string keys refused by the gate, the lucky skein named under the score, the Play menu on one screen again, the week's pattern beside Marathon, a label-in-name fix, three probes repaired |
 
 ## Ground rules the work follows
 

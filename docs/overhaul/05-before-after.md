@@ -301,6 +301,21 @@ environments instead of reporting every board changed.
 | Sharing a Daily | a link to the game | the link carries the score after each round; a friend who opens it the same day races it, with a Friend chip beside the multiplier; a link from another day is ignored; the link is tidied out of the address bar; read on opening the app and when it arrives while the app is open |
 | `seasons.mjs` failed checks | stops at its first check on v0.152.0 (no seasons) | 0 of 14 |
 
+## v0.154.0: what the full chain found
+
+The full chain on v0.153.0 passed 78 of 86 steps. Everything it found is fixed here, and the gate and probes now hold it.
+
+| What | Before | After |
+|---|---|---|
+| Patchwork's quilt | since v0.151.0 collapsed into a column, its tray over Undo (the Room's quilt took the class name `.quilt`) | as it was; the Room's grid is `.rquilt` (`forge.mjs`, `clear.mjs`, 34 of 34 screenshots unchanged) |
+| The rows of numbers on You | since v0.152.0 laid out by the style card's rules (`.srow`) | as they were; the style card's rows are `.stylerow` |
+| The Lucky paw perk's note | since v0.153.0 "A lucky skein! ×2 yarn" (a second `fx.lucky` key won) | "Lucky paw!"; the skein has its own key, and the gate refuses a key written twice in one language (it found three more, `over.*`, older than this work) |
+| A lucky skein with reduced motion | a sound only (its words were a float, which reduced motion turns off) | "Lucky skein ×2" under the score, after the grade |
+| The Play menu at 400×820 | 37 px past one screen since v0.149.0's doors | fits: one line under each door, a little less padding (`gate.mjs`) |
+| This week's pattern | a card on the Play menu | in More ways to play, beside Marathon; the menu stays three kinds, Custom and the Daily |
+| The Yarn Shop's More yarn button | named "Buy … for 12 Coins of Gratitude" while it shows "More yarn · 12" (axe 4.14, WCAG 2.5.3) | named by what it shows first, then the details (`board.mjs`) |
+| `fx_unit.mjs`, `style.mjs`, `tumble.mjs` | red since v0.146.0 (old charm rules); one run in two; crashed on a one-colour drum | updated to the v0.146.0 rules; 6 of 6 runs; picks a two-colour drum |
+
 ## How to reproduce
 
 ```

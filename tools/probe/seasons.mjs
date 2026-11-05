@@ -9,7 +9,7 @@
  *   PORT=8502 SITE=/path/to/built node tools/probe/seasons.mjs
  */
 import { chromium } from 'playwright';
-import { openApp, goTab } from './harness.mjs';
+import { openApp, goTab, openMyStuff } from './harness.mjs';
 
 let bad = 0;
 /* On a build without these features the page has none of their elements: say so as a failure rather than a stack trace. */
@@ -53,8 +53,10 @@ async function open(state, hash = ''){
 /* ── 2. the week's pattern ── */
 {
   const { page, ctx } = await open({});
-  const wk = await page.evaluate(() => ({ shown: !!document.getElementById('weekPat') && !document.getElementById('weekPat').hidden, line: (document.getElementById('weekLine') || {}).textContent || '' }));
-  check(wk.shown && wk.line.length > 2, `the Play tab shows this week's pattern ("${wk.line}")`);
+  await openMyStuff(page);
+  const wk = await page.evaluate(() => { const b = document.getElementById('weekPat'); const r = b ? b.getBoundingClientRect() : { width: 0, height: 0 };
+    return { shown: !!b && !!b.closest('#playMyStuff') && r.width > 0 && r.height >= 44, home: !!(b && b.closest('#playHome')), line: (document.getElementById('weekLine') || {}).textContent || '' }; });
+  check(wk.shown && !wk.home && wk.line.length > 2, `More ways to play shows this week's pattern, beside Marathon, not the Play menu ("${wk.line}")`);
   await page.evaluate(() => document.getElementById('weekPat').click());
   await page.waitForTimeout(800);
   const run = await page.evaluate(() => ({ play: !document.getElementById('play').hidden, kind: document.getElementById('hudKind').textContent }));
@@ -121,11 +123,14 @@ async function open(state, hash = ''){
   };
   const caps = [];
   await page.exposeFunction('__cap', x => caps.push(x));
-  await page.evaluate(() => { const b = document.getElementById('sndCapTxt'); new MutationObserver(() => window.__cap(b.textContent)).observe(b, { childList: true, characterData: true, subtree: true }); });
+  await page.evaluate(() => { const b = document.getElementById('sndCapTxt'); new MutationObserver(() => window.__cap(b.textContent)).observe(b, { childList: true, characterData: true, subtree: true });
+    window.__lines = []; const p = document.getElementById('prompt'); new MutationObserver(() => window.__lines.push(p.textContent)).observe(p, { childList: true, characterData: true, subtree: true }); });
   await page.evaluate(() => window.__luck.force());
   const ok1 = await solve(); await page.waitForTimeout(400);
   const n1 = await page.evaluate(() => window.__luck.count());
   check(ok1 && n1 === 1, `a lucky solve is counted (${n1})`);
+  const lines = await page.evaluate(() => window.__lines.filter(x => /lucky skein/i.test(x)));
+  check(lines.length > 0, `and says so under the score, with reduced motion on ("${lines[0] || ''}")`);
   check(caps.some(c => /lucky/i.test(c)), `and has a sound of its own, captioned ("${caps.filter(c => /lucky/i.test(c))[0] || caps.slice(-2).join(' | ')}")`);
   await page.evaluate(() => window.__luck.force());
   await solve(); await page.waitForTimeout(400);

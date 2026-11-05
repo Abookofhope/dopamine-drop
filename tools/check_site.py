@@ -96,12 +96,20 @@ check("registry has a full roster", len(modes) >= 12, f"found {len(modes)}")
 si = html.find("const STRINGS")
 if si >= 0:
     block = html[si:html.find("const WORD_BANKS", si)]
-    tables = {}
+    tables, dups = {}, {}
     for lang in re.findall(r"\n  (\w+): \{", block):
         m = re.search(r"\n  %s: \{(.*?)\n  \}" % lang, block, re.S)
         if m:
-            tables[lang] = set(re.findall(r"'([\w.]+)'\s*:", m.group(1)))
+            keys = re.findall(r"'([\w.]+)'\s*:", m.group(1))
+            tables[lang] = set(keys)
+            seen = set()
+            dups[lang] = sorted({k for k in keys if k in seen or seen.add(k)})
     check("string tables found", len(tables) >= 2, f"{sorted(tables)}")
+    # A key written twice in one table is not an error to JavaScript: the later copy silently wins. In 0.153.0 a
+    # new 'fx.lucky' replaced the Lucky paw perk's note this way, and three Game Over keys had carried two
+    # copies, with different wording in three languages, for releases.
+    check("no string is written twice in one language", not any(dups.values()),
+          "; ".join(f"{l}: {d[:4]}" for l, d in dups.items() if d))
     if len(tables) >= 2:
         base = tables.get("en") or next(iter(tables.values()))
         gaps = []

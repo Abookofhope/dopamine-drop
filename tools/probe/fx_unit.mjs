@@ -38,7 +38,9 @@ function world(over = {}){
     ${core}
     return { SYNERGIES, PALS, PAL_BY_ID, PAL_FX, CHARMS, CHARM_FX, CHARM_BY_ID, TWISTS, MASTERY_AT, Room, Yarn, Pals, Fx, Day, Wish, Charm, Twist, BOND_AT, WISH_T, WEEK_GOAL, ensureMeta, newAcc, ROOM_COST, SEAT_AT, weekKey };
   })`;
-  const fn = vm.runInNewContext(src, { Math, Date, Object, Array, JSON, Set, Map, Number, String, Boolean, parseInt, isFinite });
+  /* The offer reads whether a run has a clock (v0.146.0: a charm that only works against a clock is only dealt there). */
+  const KINDS = { shuffle: { timed: true }, mix: { timed: true }, endless: { timed: false }, marathon: { timed: false, roundClock: true } };
+  const fn = vm.runInNewContext(src, { Math, Date, Object, Array, JSON, Set, Map, Number, String, Boolean, parseInt, isFinite, KINDS });
   const mul = new Function('return ' + pick('mulberry32'))();
   const hs = new Function('return ' + pick('hashStr'))();
   const stub = { clamp: (v, a, b) => v < a ? a : v > b ? b : v };
@@ -185,7 +187,15 @@ const info = (o = {}) => Object.assign({ mult: 1, speed: 0.5, saved: 1000, id: '
   w.api.Fx.stage(s);
   check(w.api.Fx.freeMiss(s), 'and is ready again at the next stage');
   check(w.api.Fx.penaltyK(run({ charms: ['ghostcat'] })) === 2 && w.api.Fx.penaltyK(run()) === 1, 'Hungry Ghost doubles what a miss costs');
-  check(near(w.api.Fx.clockK(run({ charms: ['sharpclaws'] })), 0.8) && near(w.api.Fx.clockK(run({ charms: ['sunbeam'] })), 1.2), 'round clocks: Sharp Claws 0.8, Sunbeam 1.2');
+  /* v0.146.0: Sharp Claws' price and Window Seat's gift are on the run's own clock (round clocks never ran where they were dealt);
+     Sunbeam gives half a second on every timed solve and leaves round clocks alone. */
+  check(near(w.api.Fx.drainK(run({ charms: ['sharpclaws'] })), 1.25) && near(w.api.Fx.drainK(run({ charms: ['windowseat'] })), 0.87)
+    && near(w.api.Fx.drainK(run()), 1), 'the run clock: Sharp Claws drains it 25% faster, Window Seat 13% slower');
+  { /* measured against the same run without it: the cat riding along adds time of its own */
+    const sb = run({ charms: ['sunbeam'] }), bare = run(); w.api.Fx.start(sb); w.api.Fx.start(bare);
+    const dt = o => w.api.Fx.solve(sb, info(o)).time - w.api.Fx.solve(bare, info(o)).time;
+    check(near(w.api.Fx.clockK(sb), 1) && dt() === 500 && dt({ timed: false }) === 0,
+      `Sunbeam: +0.5 s on a timed solve, nothing on an untimed one, round clocks unchanged (${dt()}, ${dt({ timed: false })})`); }
   check(w.api.Fx.zeal(run({ charms: ['bellcollar'] })) === 1 && w.api.Fx.zeal(run()) === 0, 'Bell Collar shifts the streak rungs by one');
   check(near(w.api.Yarn.mult(run({ charms: ['silverspool'] })), 1.5), 'Silver Spool makes yarn 50% more');
   const sf = run({ charms: ['tunatin'], livesMax: 3, lives: 3 }); w.api.Fx.start(sf);
@@ -201,6 +211,11 @@ const info = (o = {}) => Object.assign({ mult: 1, speed: 0.5, saved: 1000, id: '
   }
   check(seen.size >= w.api.CHARMS.length - 3, 'over many offers nearly every charm shows up (' + seen.size + ' of ' + w.api.CHARMS.length + ')');
   check(rare / total > 0.05 && rare / total < 0.3, 'rares are offered a sensible share of the time (' + (rare / total * 100).toFixed(1) + '%)');
+  /* honest offers: a charm that only works against a clock is never dealt in a run without one */
+  const clockOnly = w.api.CHARMS.filter(c => w.api.CHARM_FX[c.id].timedOnly).map(c => c.id);
+  let dealt = 0;
+  for (let i = 0; i < 600; i++) w.api.Charm.offer(run({ kind: 'endless', charms: [], stage: 2 })).forEach(c => { if (clockOnly.includes(c.id)) dealt++; });
+  check(clockOnly.length >= 3 && dealt === 0, `Endless is never dealt a clock-only charm (${clockOnly.join(', ')}: ${dealt} in 1,800 cards)`);
 }
 
 /* ── the second litter and the second drawer ─────────────────────────────── */
@@ -241,7 +256,7 @@ const info = (o = {}) => Object.assign({ mult: 1, speed: 0.5, saved: 1000, id: '
   { const { api, r } = c('knit'); check(near(api.Fx.solve(r, info({ streak: 10 })).pts, 1.2) && near(api.Fx.solve(r, info({ streak: 40 })).pts, 1.4), 'Knitting: 2% a rung of the streak, capped at +40%'); }
   { const { api, r } = c('boa'); check(near(api.Fx.solve(r, info({ streak: 9 })).pts, 1) && near(api.Fx.solve(r, info({ streak: 10 })).pts, 1.3), 'Feather Boa: x1.3 from a streak of ten'); }
   { const { api, r } = c('bowl'); check(api.Fx.miss(r).timeBack === 1500, 'Water Bowl: a miss gives back 1.5s'); }
-  { const { api, r } = c('windowseat'); check(near(api.Fx.clockK(r), 1.15), 'Window Seat: round clocks 15% longer'); }
+  { const { api, r } = c('windowseat'); check(near(api.Fx.drainK(r), 0.87) && near(api.Fx.clockK(r), 1), 'Window Seat: the run clock runs 13% slower (since v0.146.0; round clocks never ran where it was dealt)'); }
   { const { api, r } = c('crown'); check(near(api.Fx.solve(r, info({ mult: 3 })).pts, 1.25) && near(api.Fx.solve(r, info({ mult: 2 })).pts, 1), 'Little Crown: x1.25 from x3'); }
   { const { api, r } = c('treasure'); check(api.Fx.stage(r).yarn === 6, 'Buried Treasure: 6 yarn at every stage'); }
   { const { api, r } = c('tangle'); check(near(api.Yarn.mult(r), 1.5) && api.Fx.penaltyK(r) === 2, 'Tangled Knot: +50% yarn and a miss costs double'); }

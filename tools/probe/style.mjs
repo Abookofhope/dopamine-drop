@@ -17,10 +17,17 @@ const check = (ok, msg) => { if (!ok) bad++; console.log((ok ? 'ok   ' : 'FAIL '
 const browser = await chromium.launch();
 const errs = [];
 
+/* The question is remembered per board, as it was dealt: a sniff or a wrong tap replaces the prompt (a "lightest" or "darkest"
+   board would then be read as "the one that differs"), and the tiles they rule out are disabled, so they are left out. A round
+   of Odd Skein is three boards, each with its own question, so the memory is keyed on the board's first tile. */
 const tiles = page => page.evaluate(() => {
-  const ts = [...document.querySelectorAll('#surface .oddwrap .tile')];
+  const all = [...document.querySelectorAll('#surface .oddwrap .tile')];
+  if (!all.length) return null;
+  const pr = document.getElementById('prompt');
+  if (window.__oddFirst !== all[0] && pr.className === 'prompt'){ window.__oddFirst = all[0]; window.__oddAsk = pr.textContent.trim(); }
+  const prompt = window.__oddFirst === all[0] ? window.__oddAsk : pr.textContent.trim();
+  const ts = all.filter(e => !e.disabled && !e.classList.contains('ruled'));
   if (!ts.length) return null;
-  const prompt = document.getElementById('prompt').textContent.trim();
   const rgb = e => getComputedStyle(e).backgroundColor.match(/[\d.]+/g).slice(0, 3).map(Number);
   const lum = c => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
   const cols = ts.map(rgb), key = c => c.join(',');
@@ -45,6 +52,7 @@ async function solve(page, { wait = 0, sniff = false } = {}){
   const s0 = (await saveNow(page)).solved | 0;
   if (wait) await page.waitForTimeout(wait);
   if (sniff){
+    await tiles(page);   /* note the board's question before the sniff replaces it */
     await page.evaluate(() => { const b = document.querySelector('#surface .aid'); if (b && !b.disabled) b.click(); });
     await page.waitForTimeout(200);
   }

@@ -39,10 +39,18 @@ for (const [xp, label, vp] of [[0, 'a new player', { width: 400, height: 820 }],
   await page.close();
 }
 {
-  const page = await open(0); let s = await read(page);
-  const full0 = s.socks.filter(c => c.full).length;
-  await click(page, s.tools[1]); await page.waitForTimeout(120); s = await read(page);
-  const lit = s.socks.filter(c => c.hint);
+  /* The checks below need, after the lit pair is cleared, two socks of different colours left for a wrong pair. Not every drum
+     has them, so a drum is chosen first (it used to assume one and crashed on a drum of one colour). */
+  let page = null, s = null, full0 = 0, lit = [];
+  for (let tries = 0; tries < 12 && !page; tries++){
+    const p = await open(0); s = await read(p);
+    full0 = s.socks.filter(c => c.full).length;
+    await click(p, s.tools[1]); await p.waitForTimeout(120); s = await read(p);
+    lit = s.socks.filter(c => c.hint);
+    const rest = s.socks.filter(c => c.full && !c.hint);
+    if (lit.length === 2 && new Set(rest.map(c => c.hex)).size >= 2) page = p; else await p.close();
+  }
+  if (!page){ check(false, 'found a drum with two colours left after the lit pair (12 tries)'); await browser.close(); console.log(`\n${bad} failed`); process.exit(1); }
   check(lit.length === 2 && lit[0].hex === lit[1].hex && /1/.test(s.tools[1].text), `Pair lights two socks of one colour and uses one of two (${lit.map(c => c.hex).join(' = ')}; ${s.tools[1].text})`);
   const s0 = await score(page);
   await click(page, lit[0]); await click(page, lit[1]); await page.waitForTimeout(150);
