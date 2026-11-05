@@ -8,6 +8,11 @@ every round, so novelty never runs out.
 Installs to the home screen from Chrome, runs full screen, works fully offline,
 and keeps everything on the device.
 
+**Where it is going:** the overhaul bible, [docs/bible/](docs/bible/README.md):
+the vision, the core loop, the feedback ladder, progression and economy, the
+two doors (Cozy and Challenge), the HUD, quality of life, AV standards, the
+ethics rules, walkthroughs, risks and the release roadmap.
+
 The three names each do a different job:
 
 | Name | Where it lives |
