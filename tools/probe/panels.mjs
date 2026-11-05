@@ -79,7 +79,9 @@ for (const [w, h, lang] of [[360, 640, 'en'], [320, 568, 'de'], [390, 844, 'fr']
   /* ── the Room ── */
   await goTab(page, 'Room'); await settle(page);
   ps = await panels(page); len = await tall(page);
-  check('the Room has four panels', ps.length === 4, ps.map(p => p.id).join(','));
+  /* The four lists it was folded from, plus the quilt (v0.151.0). Kits and seasons live inside these, so the Room stays short. */
+  const roomIds = ['r-seats', 'r-wishes', 'r-cats', 'r-decor'], later = ['r-quilt'];
+  check('the Room has its panels', roomIds.every(id => ps.some(p => p.id === id)) && ps.every(p => roomIds.includes(p.id) || later.includes(p.id)), ps.map(p => p.id).join(','));
   check('all start shut', ps.every(p => !p.open && !p.shown));
   check('each header says what is inside', ps.every(p => p.summary.length > 1), ps.map(p => p.summary).join(' | '));
   check('the Room is under two screens (was 5.3)', len.screens <= 2.0, len.screens + ' screens');

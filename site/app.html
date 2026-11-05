@@ -1737,6 +1737,29 @@ html[data-ts="130"] .achgrid,html[data-ts="150"] .achgrid{grid-template-columns:
 .thread.unravel i{transition:background 600ms linear,border-color 600ms linear}
 html[data-motion="on"] .thread i.pop{animation:knotPop 420ms var(--e-spring)}
 @keyframes knotPop{from{transform:scale(.3)}}
+/* The quilt. */
+.quiltlead{margin:0 0 10px;font-size:calc(12px*var(--ts));color:var(--haze);line-height:1.4}
+.quilt{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:5px}
+.qpatch{position:relative;aspect-ratio:1;min-height:44px;border-radius:7px;padding:0;cursor:pointer;
+  background:transparent;border:1.5px dashed color-mix(in srgb, var(--fam) 45%, transparent);color:color-mix(in srgb, var(--fam) 55%, transparent)}
+.qpatch.tried{border:2px solid var(--rk, transparent);color:#1A1230;
+  background:var(--fam) repeating-linear-gradient(0deg, #ffffff14 0 2px, transparent 2px 5px)}
+.qpatch.tried.r0{border-color:color-mix(in srgb, var(--fam) 70%, #000)}
+.qpatch .qg{position:absolute;inset:22%;display:block}
+.qpatch .qg svg{width:100%;height:100%;display:block}
+.qpatch .qs{position:absolute;left:4px;right:4px;bottom:3px;display:flex;flex-direction:column;gap:1.5px}
+.qpatch .qs i{display:block;height:1.6px;background:repeating-linear-gradient(90deg,#FFF3E6 0 3px,transparent 3px 5px);opacity:.9}
+.qpatch.gold{box-shadow:0 0 0 1.5px #FFC53D, 0 0 10px #FFC53D66}
+.qpatch.gold .qg{color:#7A5200}
+html[data-motion="on"] .qpatch.stitched{animation:stitchIn 900ms var(--e-spring)}
+@keyframes stitchIn{0%{transform:scale(.6);opacity:.3}60%{transform:scale(1.08);opacity:1}100%{transform:none}}
+.patchtop{display:flex;align-items:center;gap:12px;margin:4px 0 10px}
+.patchtop .qg{width:40px;height:40px;padding:8px;border-radius:12px;background:var(--fam);color:#1A1230;flex:none}
+.patchtop .qg svg{width:100%;height:100%;display:block}
+.patchtop h3{margin:0;font-size:calc(19px*var(--ts))}
+.patchline{margin:4px 0;font-size:calc(13px*var(--ts));color:var(--haze)}
+.patchacts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.patchacts button{min-height:46px}
 /* A run the app was closed on, offered back. */
 .resumeCard{display:grid;grid-template-columns:1fr auto;grid-template-areas:"t go" "t drop";gap:6px 10px;align-items:center;
   padding:12px 14px;margin:0 0 12px;border-radius:var(--r-lg);border:1px solid color-mix(in srgb, #FF8A5C 50%, transparent);
@@ -4414,6 +4437,16 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
              scrolling with the thing you came for (today's wishes) in the middle.
              Each is a panel now whose header carries its count, and a gold dot
              when something in it is waiting to be collected. -->
+        <section class="setcard acc" data-acc="r-quilt">
+          <h3 class="acch"><button type="button" class="acchead" id="accH_r-quilt" aria-expanded="false" aria-controls="accB_r-quilt">
+            <span class="acct"><b data-i18n="room.quilt">Your quilt</b><small><u id="quiltCount"></u></small></span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button></h3>
+          <div class="accbody" id="accB_r-quilt" role="region" aria-labelledby="accH_r-quilt"><div class="accin">
+            <p class="quiltlead" data-i18n="quilt.lead">One patch for every game. Play one to knit it in; its stars are stitched across it, its rank is its border, and a Lion solved Purrfect half the time gets the Gold Thread.</p>
+            <div class="quilt" id="quiltGrid"></div>
+          </div></div>
+        </section>
         <section class="setcard acc" data-acc="r-seats">
           <h3 class="acch"><button type="button" class="acchead" id="accH_r-seats" aria-expanded="false" aria-controls="accB_r-seats">
             <span class="acct"><b data-i18n="room.seats">Riding along</b><small><u id="seatCount"></u></small></span>
@@ -5024,7 +5057,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.150.0';
+const VERSION_TAG = 'v0.151.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -5042,7 +5075,7 @@ const defaults = {
   lang:null, seenVersion:null,
   volume:1, music:true, musicVol:0.5, door:'challenge', hud:'standard', curves:{}, backupAt:0, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
   lifetime:0, perks:[], perkLv:{}, tokens:0,
-  dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0, purrfects:0, bows:0,
+  dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0, purrfects:0, bows:0, slog:{}, glog:'', quiltSeen:{}, miles:{}, bestPurrRun:0,
   lastMode:null, onboarded:false,
   tapes:[], tapeId:null,
   /* Which modes the player has ever met, so a first look can be taught
@@ -6298,6 +6331,7 @@ const STRINGS = {
     'grade.purr':'Purrfect!', 'grade.clean':'Clean', 'grade.swift':'Swift', 'bow.float':'A Bow! +{n}', 'bow.floatYarn':'A Bow! +{y} yarn', 'fx.variety':'All three kinds! +1 yarn', 'cap.purr':'Three rising notes: Purrfect', 'cap.bow':'A bright chord: the Thread tied a Bow', 'peak.best':'A new best: {n}', 'peak.firstBow':'Your first Bow: five Purrfects in a row', 'peak.bow':'The Thread tied a Bow', 'peak.bows':'The Thread tied {n} Bows', 'peak.firstPurr':'Your first Purrfect, on {m}', 'peak.purr':'Fastest Purrfect: {m}, {s} s', 'peak.five':'You reached ×5', 'peak.streak':'{n} in a row', 'peak.fast':'Quickest solve: {m}, {s} s', 'peak.met':'You met {m}. {rule}',
     'cozy.title':'Cozy', 'door.label':'How to play', 'door.cozy':'Cozy', 'door.cozySub':'No clock, nothing to lose', 'door.challenge':'Challenge', 'door.challengeSub':'The clock, and your best to beat', 'stage.descCozy':'A gift of 10 yarn, and the music lifts.', 'hud.pace':'Pace', 'hud.paceLine':'{n}/min · {p}% Purrfect', 'set.hud':'During a run', 'set.hudSub':'How much the screen shows around the board', 'set.hudMin':'Minimal', 'set.hudStd':'Standard', 'set.hudMax':'Detailed', 'set.install':'Install the app', 'set.installSub':'Put Dopamine Drop on your home screen. It works offline.', 'set.installBtn':'Install',
     'resume.title':'Your run is waiting', 'resume.go':'Resume', 'resume.drop':'Let it go', 'resume.pts':'{n} points', 'resume.left':'{t} left', 'resume.lives':'{n} lives', 'tuck.eyebrow':'Tuck in', 'tuck.call':'End here, gently: the cats curl up and the lights go down', 'tuck.night':'Goodnight.', 'tuck.line':'You solved {n} puzzles this time. The cats are asleep.', 'tuck.lineNone':'The cats are asleep. Come back whenever you like.', 'tuck.hint':'Tap anywhere to go back', 'room.petAll':'Pet everyone', 'room.petAllGot':'{n} cats petted · +{y} yarn', 'wish.all':'Collect all', 'wish.allGot':'{n} wishes · +{y} yarn', 'set.weekly':'Weekly copy', 'set.weeklySub':'Kept on this device on {d} (level {lvl})', 'btn.restoreCopy':'Restore', 'dlg.restoreCopy':'Go back to the copy from {d} (level {lvl})? What is on this device now is replaced.',
+    'room.quilt':'Your quilt', 'quilt.lead':'One patch for every game. Play one to knit it in; its stars are stitched across it, its rank is its border, and a Lion solved Purrfect half the time gets the Gold Thread.', 'quilt.empty':'not played yet', 'quilt.state':'{s} stars, {r}', 'quilt.stars':'{s} of 3 stars in Marathon', 'quilt.rank':'Rank: {r}', 'quilt.rate':'Purrfect {p}% of the last {n} solves', 'quilt.rateNone':'No solves counted yet', 'quilt.gold':'Gold Thread', 'quilt.goldHow':'Solve it Purrfect half the time over twenty solves for the Gold Thread.', 'quilt.rankHow':'Stars on its five Marathon boards raise its rank.', 'quilt.play':'Marathon', 'quilt.practise':'Practise', 'mile.eyebrow':'New in your room', 'mile.s100':'A pom-pom garland', 'mile.s100.d':'100 puzzles solved. It hangs across the window.', 'mile.s500':'A music box', 'mile.s500.d':'500 solved. It sits on the window sill.', 'mile.s1000':'A warm glow', 'mile.s1000.d':'1,000 solved. The floor is warm in the evenings.', 'mile.s2500':'Something in the window', 'mile.s2500.d':'2,500 solved. A rainbow by day, a shooting star by night.', 'mile.s5000':'A yarn mobile', 'mile.s5000.d':'5,000 solved. It hangs from the ceiling.', 'mile.s10000':'A cat in the stars', 'mile.s10000.d':'10,000 solved. Look high on the wall.', 'mile.p10':'A gold frame', 'mile.p10.d':'Ten Purrfects in one run. Your quilt is framed in gold.', 'mile.tried':'A rod for the quilt', 'mile.tried.d':'Every game played. Your quilt hangs properly now.', 'mile.lions':'A lamp on the quilt', 'mile.lions.d':'Every game a Lion. The quilt has a light of its own.',
     'hud.solved':'{n} solved', 'set.assistPrev':'Every colour also carries a shape', 'over.whilePlayed':'While you played', 'hud.pause':'Pause', 'hud.best':'Best', 'hud.newBest':'New best', 'pause.sofar':'{s}\u00a0points · {n}\u00a0solved · best\u00a0streak\u00a0{b}', 'brand.tag':'Brain snacks',
     'you.switch':'Progress or settings', 'you.progress':'Progress',
     'modes.ways':'More ways to play', 'modes.waysSub':'Endless, Mixtape, Marathon and more', 'gate.fourAll':'All four games',
@@ -6819,6 +6853,7 @@ const STRINGS = {
     'grade.purr':'Ronronfait !', 'grade.clean':'Net', 'grade.swift':'Vif', 'bow.float':'Un nœud ! +{n}', 'bow.floatYarn':'Un nœud ! +{y} de laine', 'fx.variety':'Les trois sortes ! +1 laine', 'cap.purr':'Trois notes montantes : Ronronfait', 'cap.bow':'Un accord clair : le fil fait un nœud', 'peak.best':'Nouveau record : {n}', 'peak.firstBow':'Ton premier nœud : cinq Ronronfaits d’affilée', 'peak.bow':'Le fil a fait un nœud', 'peak.bows':'Le fil a fait {n} nœuds', 'peak.firstPurr':'Ton premier Ronronfait, sur {m}', 'peak.purr':'Ronronfait le plus rapide : {m}, {s} s', 'peak.five':'Tu as atteint ×5', 'peak.streak':'{n} d’affilée', 'peak.fast':'Réussite la plus rapide : {m}, {s} s', 'peak.met':'Tu as découvert {m}. {rule}',
     'cozy.title':'Douillet', 'door.label':'Comment jouer', 'door.cozy':'Douillet', 'door.cozySub':'Sans chrono, rien à perdre', 'door.challenge':'Défi', 'door.challengeSub':'Le chrono, et ton record à battre', 'stage.descCozy':'Un cadeau de 10 laines, et la musique monte.', 'hud.pace':'Allure', 'hud.paceLine':'{n}/min · {p} % Ronronfait', 'set.hud':'Pendant une partie', 'set.hudSub':'Ce que l’écran montre autour du plateau', 'set.hudMin':'Minimal', 'set.hudStd':'Standard', 'set.hudMax':'Détaillé', 'set.install':'Installer l’app', 'set.installSub':'Mets Dopamine Drop sur ton écran d’accueil. Elle marche hors ligne.', 'set.installBtn':'Installer',
     'resume.title':'Ta partie t’attend', 'resume.go':'Reprendre', 'resume.drop':'Laisser filer', 'resume.pts':'{n} points', 'resume.left':'encore {t}', 'resume.lives':'{n} vies', 'tuck.eyebrow':'Bonne nuit', 'tuck.call':'Finir en douceur : les chats se pelotonnent et la lumière baisse', 'tuck.night':'Bonne nuit.', 'tuck.line':'Tu as résolu {n} énigmes cette fois. Les chats dorment.', 'tuck.lineNone':'Les chats dorment. Reviens quand tu veux.', 'tuck.hint':'Touche n’importe où pour revenir', 'room.petAll':'Caresser tout le monde', 'room.petAllGot':'{n} chats caressés · +{y} laine', 'wish.all':'Tout récolter', 'wish.allGot':'{n} vœux · +{y} laine', 'set.weekly':'Copie de la semaine', 'set.weeklySub':'Gardée sur cet appareil le {d} (niveau {lvl})', 'btn.restoreCopy':'Restaurer', 'dlg.restoreCopy':'Revenir à la copie du {d} (niveau {lvl}) ? Ce qui est sur cet appareil sera remplacé.',
+    'room.quilt':'Ton patchwork', 'quilt.lead':'Un carré pour chaque jeu. Joue-le pour le tricoter ; ses étoiles sont cousues dessus, son rang en fait la bordure, et un Lion résolu en Ronronfait la moitié du temps reçoit le fil d’or.', 'quilt.empty':'pas encore joué', 'quilt.state':'{s} étoiles, {r}', 'quilt.stars':'{s} étoiles sur 3 en Marathon', 'quilt.rank':'Rang : {r}', 'quilt.rate':'Ronronfait à {p} % sur les {n} dernières réussites', 'quilt.rateNone':'Aucune réussite comptée', 'quilt.gold':'Fil d’or', 'quilt.goldHow':'Résous-le en Ronronfait la moitié du temps sur vingt réussites pour le fil d’or.', 'quilt.rankHow':'Les étoiles sur ses cinq plateaux Marathon montent son rang.', 'quilt.play':'Marathon', 'quilt.practise':'S’entraîner', 'mile.eyebrow':'Nouveau dans ta pièce', 'mile.s100':'Une guirlande de pompons', 'mile.s100.d':'100 énigmes résolues. Elle pend devant la fenêtre.', 'mile.s500':'Une boîte à musique', 'mile.s500.d':'500 résolues. Elle est sur le rebord de la fenêtre.', 'mile.s1000':'Une lueur chaude', 'mile.s1000.d':'1 000 résolues. Le sol est chaud le soir.', 'mile.s2500':'Quelque chose à la fenêtre', 'mile.s2500.d':'2 500 résolues. Un arc-en-ciel le jour, une étoile filante la nuit.', 'mile.s5000':'Un mobile en laine', 'mile.s5000.d':'5 000 résolues. Il pend du plafond.', 'mile.s10000':'Un chat dans les étoiles', 'mile.s10000.d':'10 000 résolues. Regarde en haut du mur.', 'mile.p10':'Un cadre doré', 'mile.p10.d':'Dix Ronronfaits dans une partie. Ton patchwork a un cadre doré.', 'mile.tried':'Une tringle pour le patchwork', 'mile.tried.d':'Tous les jeux joués. Ton patchwork est bien accroché.', 'mile.lions':'Une lampe sur le patchwork', 'mile.lions.d':'Tous les jeux en Lion. Le patchwork a sa propre lumière.',
     'hud.solved':'{n} réussis', 'set.assistPrev':'Chaque couleur porte aussi une forme', 'over.whilePlayed':'Pendant la partie', 'hud.pause':'Pause', 'hud.best':'Record', 'hud.newBest':'Nouveau record', 'pause.sofar':'{s}\u00a0points · {n}\u00a0réussis · meilleure\u00a0série\u00a0{b}', 'brand.tag':'Douceurs pour cerveaux',
     'you.switch':'Progression ou réglages', 'you.progress':'Progression',
     'modes.ways':'Autres façons de jouer', 'modes.waysSub':'Sans fin, Mixtape, Marathon et plus', 'gate.fourAll':'Les quatre jeux',
@@ -7339,6 +7374,7 @@ const STRINGS = {
     'grade.purr':'¡Ronronfecto!', 'grade.clean':'Limpio', 'grade.swift':'Veloz', 'bow.float':'¡Un lazo! +{n}', 'bow.floatYarn':'¡Un lazo! +{y} de lana', 'fx.variety':'¡Las tres clases! +1 lana', 'cap.purr':'Tres notas ascendentes: Ronronfecto', 'cap.bow':'Un acorde brillante: el hilo hace un lazo', 'peak.best':'Nuevo récord: {n}', 'peak.firstBow':'Tu primer lazo: cinco Ronronfectos seguidos', 'peak.bow':'El hilo hizo un lazo', 'peak.bows':'El hilo hizo {n} lazos', 'peak.firstPurr':'Tu primer Ronronfecto, en {m}', 'peak.purr':'Ronronfecto más rápido: {m}, {s} s', 'peak.five':'Llegaste a ×5', 'peak.streak':'{n} seguidos', 'peak.fast':'Acierto más rápido: {m}, {s} s', 'peak.met':'Conociste {m}. {rule}',
     'cozy.title':'Acogedor', 'door.label':'Cómo jugar', 'door.cozy':'Acogedor', 'door.cozySub':'Sin reloj, nada que perder', 'door.challenge':'Desafío', 'door.challengeSub':'El reloj, y tu récord por batir', 'stage.descCozy':'Un regalo de 10 lanas, y la música sube.', 'hud.pace':'Ritmo', 'hud.paceLine':'{n}/min · {p} % Ronronfecto', 'set.hud':'Durante la partida', 'set.hudSub':'Cuánto muestra la pantalla alrededor del tablero', 'set.hudMin':'Mínimo', 'set.hudStd':'Estándar', 'set.hudMax':'Detallado', 'set.install':'Instalar la app', 'set.installSub':'Pon Dopamine Drop en tu pantalla de inicio. Funciona sin conexión.', 'set.installBtn':'Instalar',
     'resume.title':'Tu partida te espera', 'resume.go':'Seguir', 'resume.drop':'Dejarla', 'resume.pts':'{n} puntos', 'resume.left':'quedan {t}', 'resume.lives':'{n} vidas', 'tuck.eyebrow':'A dormir', 'tuck.call':'Termina con calma: los gatos se acurrucan y baja la luz', 'tuck.night':'Buenas noches.', 'tuck.line':'Esta vez resolviste {n} acertijos. Los gatos duermen.', 'tuck.lineNone':'Los gatos duermen. Vuelve cuando quieras.', 'tuck.hint':'Toca en cualquier sitio para volver', 'room.petAll':'Acariciar a todos', 'room.petAllGot':'{n} gatos acariciados · +{y} lana', 'wish.all':'Recoger todo', 'wish.allGot':'{n} deseos · +{y} lana', 'set.weekly':'Copia semanal', 'set.weeklySub':'Guardada en este dispositivo el {d} (nivel {lvl})', 'btn.restoreCopy':'Restaurar', 'dlg.restoreCopy':'¿Volver a la copia del {d} (nivel {lvl})? Se sustituirá lo que hay en este dispositivo.',
+    'room.quilt':'Tu colcha', 'quilt.lead':'Un cuadro por cada juego. Juega uno para tejerlo; sus estrellas se cosen encima, su rango es el borde y un León resuelto Ronronfecto la mitad de las veces recibe el hilo de oro.', 'quilt.empty':'aún sin jugar', 'quilt.state':'{s} estrellas, {r}', 'quilt.stars':'{s} de 3 estrellas en Maratón', 'quilt.rank':'Rango: {r}', 'quilt.rate':'Ronronfecto el {p} % de los últimos {n} aciertos', 'quilt.rateNone':'Aún no hay aciertos contados', 'quilt.gold':'Hilo de oro', 'quilt.goldHow':'Resuélvelo Ronronfecto la mitad de las veces en veinte aciertos para el hilo de oro.', 'quilt.rankHow':'Las estrellas en sus cinco tableros de Maratón suben su rango.', 'quilt.play':'Maratón', 'quilt.practise':'Practicar', 'mile.eyebrow':'Nuevo en tu cuarto', 'mile.s100':'Una guirnalda de pompones', 'mile.s100.d':'100 acertijos resueltos. Cuelga ante la ventana.', 'mile.s500':'Una caja de música', 'mile.s500.d':'500 resueltos. Está en el alféizar.', 'mile.s1000':'Un brillo cálido', 'mile.s1000.d':'1.000 resueltos. El suelo está cálido por la tarde.', 'mile.s2500':'Algo en la ventana', 'mile.s2500.d':'2.500 resueltos. Un arcoíris de día, una estrella fugaz de noche.', 'mile.s5000':'Un móvil de lana', 'mile.s5000.d':'5.000 resueltos. Cuelga del techo.', 'mile.s10000':'Un gato en las estrellas', 'mile.s10000.d':'10.000 resueltos. Mira arriba en la pared.', 'mile.p10':'Un marco dorado', 'mile.p10.d':'Diez Ronronfectos en una partida. Tu colcha tiene marco dorado.', 'mile.tried':'Una barra para la colcha', 'mile.tried.d':'Todos los juegos jugados. Tu colcha ya cuelga bien.', 'mile.lions':'Una lámpara en la colcha', 'mile.lions.d':'Todos los juegos en León. La colcha tiene su propia luz.',
     'hud.solved':'{n} resueltos', 'set.assistPrev':'Cada color lleva también una forma', 'over.whilePlayed':'Mientras jugabas', 'hud.pause':'Pausa', 'hud.best':'Récord', 'hud.newBest':'Nuevo récord', 'pause.sofar':'{s}\u00a0puntos · {n}\u00a0resueltos · mejor\u00a0racha\u00a0{b}', 'brand.tag':'Bocaditos para el cerebro',
     'you.switch':'Progreso o ajustes', 'you.progress':'Progreso',
     'modes.ways':'Más formas de jugar', 'modes.waysSub':'Sin fin, Mixtape, Maratón y más', 'gate.fourAll':'Los cuatro juegos',
@@ -7859,6 +7895,7 @@ const STRINGS = {
     'grade.purr':'Schnurrfekt!', 'grade.clean':'Sauber', 'grade.swift':'Flink', 'bow.float':'Eine Schleife! +{n}', 'bow.floatYarn':'Eine Schleife! +{y} Wolle', 'fx.variety':'Alle drei Sorten! +1 Wolle', 'cap.purr':'Drei steigende Töne: Schnurrfekt', 'cap.bow':'Ein heller Akkord: der Faden bindet eine Schleife', 'peak.best':'Neuer Bestwert: {n}', 'peak.firstBow':'Deine erste Schleife: fünf Schnurrfekte in Folge', 'peak.bow':'Der Faden hat eine Schleife gebunden', 'peak.bows':'Der Faden hat {n} Schleifen gebunden', 'peak.firstPurr':'Dein erstes Schnurrfekt, bei {m}', 'peak.purr':'Schnellstes Schnurrfekt: {m}, {s} s', 'peak.five':'Du hast ×5 erreicht', 'peak.streak':'{n} in Folge', 'peak.fast':'Schnellste Lösung: {m}, {s} s', 'peak.met':'Du hast {m} kennengelernt. {rule}',
     'cozy.title':'Gemütlich', 'door.label':'Wie spielen', 'door.cozy':'Gemütlich', 'door.cozySub':'Keine Uhr, nichts zu verlieren', 'door.challenge':'Herausforderung', 'door.challengeSub':'Die Uhr und dein Bestwert', 'stage.descCozy':'Ein Geschenk von 10 Wolle, und die Musik steigt.', 'hud.pace':'Tempo', 'hud.paceLine':'{n}/min · {p} % Schnurrfekt', 'set.hud':'Während eines Laufs', 'set.hudSub':'Wie viel der Bildschirm um das Brett zeigt', 'set.hudMin':'Minimal', 'set.hudStd':'Standard', 'set.hudMax':'Ausführlich', 'set.install':'App installieren', 'set.installSub':'Leg Dopamine Drop auf deinen Startbildschirm. Sie läuft offline.', 'set.installBtn':'Installieren',
     'resume.title':'Dein Lauf wartet', 'resume.go':'Weiter', 'resume.drop':'Loslassen', 'resume.pts':'{n} Punkte', 'resume.left':'noch {t}', 'resume.lives':'{n} Leben', 'tuck.eyebrow':'Gute Nacht', 'tuck.call':'Sanft aufhören: die Katzen rollen sich ein und das Licht geht aus', 'tuck.night':'Gute Nacht.', 'tuck.line':'Du hast diesmal {n} Rätsel gelöst. Die Katzen schlafen.', 'tuck.lineNone':'Die Katzen schlafen. Komm wieder, wann du magst.', 'tuck.hint':'Tippe irgendwo, um zurückzugehen', 'room.petAll':'Alle streicheln', 'room.petAllGot':'{n} Katzen gestreichelt · +{y} Wolle', 'wish.all':'Alle einsammeln', 'wish.allGot':'{n} Wünsche · +{y} Wolle', 'set.weekly':'Wochenkopie', 'set.weeklySub':'Auf diesem Gerät gespeichert am {d} (Level {lvl})', 'btn.restoreCopy':'Wiederherstellen', 'dlg.restoreCopy':'Zur Kopie vom {d} (Level {lvl}) zurück? Was jetzt auf diesem Gerät ist, wird ersetzt.',
+    'room.quilt':'Deine Decke', 'quilt.lead':'Ein Flicken für jedes Spiel. Spiel es, um ihn einzustricken; seine Sterne werden darüber genäht, sein Rang ist der Rand, und ein Löwe, der die Hälfte der Male schnurrfekt gelöst wird, bekommt den Goldfaden.', 'quilt.empty':'noch nicht gespielt', 'quilt.state':'{s} Sterne, {r}', 'quilt.stars':'{s} von 3 Sternen im Marathon', 'quilt.rank':'Rang: {r}', 'quilt.rate':'Schnurrfekt bei {p} % der letzten {n} Lösungen', 'quilt.rateNone':'Noch keine Lösungen gezählt', 'quilt.gold':'Goldfaden', 'quilt.goldHow':'Löse es bei der Hälfte von zwanzig Lösungen schnurrfekt für den Goldfaden.', 'quilt.rankHow':'Sterne auf seinen fünf Marathon-Brettern heben seinen Rang.', 'quilt.play':'Marathon', 'quilt.practise':'Üben', 'mile.eyebrow':'Neu in deinem Zimmer', 'mile.s100':'Eine Pompon-Girlande', 'mile.s100.d':'100 Rätsel gelöst. Sie hängt vor dem Fenster.', 'mile.s500':'Eine Spieluhr', 'mile.s500.d':'500 gelöst. Sie steht auf dem Fensterbrett.', 'mile.s1000':'Ein warmes Leuchten', 'mile.s1000.d':'1.000 gelöst. Abends ist der Boden warm.', 'mile.s2500':'Etwas im Fenster', 'mile.s2500.d':'2.500 gelöst. Tagsüber ein Regenbogen, nachts eine Sternschnuppe.', 'mile.s5000':'Ein Woll-Mobile', 'mile.s5000.d':'5.000 gelöst. Es hängt von der Decke.', 'mile.s10000':'Eine Katze in den Sternen', 'mile.s10000.d':'10.000 gelöst. Schau hoch an die Wand.', 'mile.p10':'Ein goldener Rahmen', 'mile.p10.d':'Zehn Schnurrfekte in einem Lauf. Deine Decke hat einen goldenen Rahmen.', 'mile.tried':'Eine Stange für die Decke', 'mile.tried.d':'Jedes Spiel gespielt. Deine Decke hängt jetzt richtig.', 'mile.lions':'Eine Lampe für die Decke', 'mile.lions.d':'Jedes Spiel ein Löwe. Die Decke hat ihr eigenes Licht.',
     'hud.solved':'{n} gelöst', 'set.assistPrev':'Jede Farbe trägt auch eine Form', 'over.whilePlayed':'Während du gespielt hast', 'hud.pause':'Pause', 'hud.best':'Bestwert', 'hud.newBest':'Neuer Bestwert', 'pause.sofar':'{s}\u00a0Punkte · {n}\u00a0gelöst · beste\u00a0Serie\u00a0{b}', 'brand.tag':'Snacks fürs Gehirn',
     'you.switch':'Fortschritt oder Optionen', 'you.progress':'Fortschritt',
     'modes.ways':'Weitere Spielarten', 'modes.waysSub':'Endlos, Mixtape, Marathon und mehr', 'gate.fourAll':'Alle vier Spiele',
@@ -7977,6 +8014,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.151.0', date:'2026-11-05', items:[
+    'Your quilt: one patch for every game, in the Room and hanging on its wall. A game you have not played is an outline; once played it is knitted in its family\u2019s colour, its stars are stitched across it, its rank is its border, and a Lion you solve Purrfect half the time gets the Gold Thread. Tap a patch for that game\u2019s card, with Marathon and Practise. A change is stitched in the next time you look.',
+    'Milestones change the room for good: a pom-pom garland at 100 solves, a music box at 500, a warm glow at 1,000, a rainbow or a shooting star at 2,500, a yarn mobile at 5,000 and a cat in the stars at 10,000; a gold frame for ten Purrfects in one run, a rod when every game has been played, and a lamp when every game is a Lion.',
+  ] },
   { v:'0.150.0', date:'2026-11-05', items:[
     'A run outlives the app. If a call comes in, the tab is closed or the phone reclaims it mid-run, the Play tab offers the run back for a day: Resume brings back the score, the clock, the streak, the Thread and the charms, and deals the round that was in play again. Let it go forgets it. (Not the Daily Drop.)',
     'Tuck in: Game Over offers a gentle end. The room goes dark, the cats riding along curl up asleep, a music box plays, and one line says what the session held. After half an hour of play it is offered first, once.',
@@ -18274,6 +18315,7 @@ function roomSvg(){
   if (L('lamp') === 1) s += '<ellipse cx="238" cy="170" rx="40" ry="34" fill="url(#rmg)"/><rect x="235" y="128" width="3.500" height="58" fill="#8B6B45"/><path d="M224 128l7-16h14l7 16z" fill="#F6D88B"/><ellipse cx="238" cy="188" rx="9" ry="2.500" fill="#6B4F30"/>';
   if (L('lamp') === 2) s += '<path d="M200 0v34" stroke="#3B2C60" stroke-width="1.500"/><ellipse cx="200" cy="52" rx="34" ry="30" fill="url(#rmg)"/><ellipse cx="200" cy="46" rx="15" ry="13" fill="#FF8A5B"/><path d="M186 46h28M200 33v26" stroke="#C9542B" stroke-width="1.200"/><rect x="194" y="32" width="12" height="4" fill="#3B2C60"/>';
 
+  s += milesSvg(night);
   /* the floor: rug, then bed and tree, then the cats on top of all of it */
   const rug = L('rug');
   if (rug){
@@ -18697,7 +18739,7 @@ function paintRoom(){
     scene.appendChild(m);
   }
   { const hr = new Date().getHours(); scene.querySelector('.roommotes').classList.toggle('night', hr < 5 || hr >= 20); }
-  paintRoomIntro(); paintGift(); paintSeats(); paintWishes(); paintPals(); paintDecor();
+  paintRoomIntro(); paintGift(); paintSeats(); paintWishes(); paintPals(); paintDecor(); paintQuilt();
   paintRoomDot();
 }
 function paintRoomDot(){
@@ -19556,6 +19598,143 @@ function flash(cls){
   el.surface.classList.add(cls);
   setTimeout(() => el.surface.classList.remove(cls), cls === 'flash-win' ? 200 : 260);
 }
+
+/* ═══ The Quilt ══════════════════════════════════════════════════════════
+   One patch for each game, hanging on the Room's back wall and growing over a lifetime (docs/bible/04-progression.md).
+   A game never played is a dashed outline; played, it is knitted in its family's colour with its glyph stitched on;
+   its Classic stars are rows of running stitch; its mastery rank is the border (cotton to gold for Lion); and a Lion
+   that is solved Purrfect at least half the time over its last twenty solves gets the Gold Thread. Every change is
+   stitched in the next time the quilt is looked at. Nobody else's quilt looks the same. */
+function logStyle(mid, grade){
+  const sl = save.slog || (save.slog = {});
+  sl[mid] = ((sl[mid] || '') + (grade === 'purr' ? '1' : '0')).slice(-20);
+  save.glog = ((save.glog || '') + (grade ? grade[0] : 'n')).slice(-100);
+}
+function patchOf(id){
+  const lg = (save.slog || {})[id] || '', n = lg.length, p = n ? lg.split('').filter(c => c === '1').length / n : 0;
+  const rank = Twist.rank(id);
+  return { id, tried: !!(save.seen || {})[id], stars: starsFor(id), rank, n, rate: p, gold: rank === 5 && n >= 10 && p >= 0.5 };
+}
+const patchSig = q => (q.tried ? 1 : 0) + '' + q.stars + q.rank + (q.gold ? 1 : 0);
+const RANK_INK = ['transparent', '#E9DCC4', '#C9A8FF', '#7CC8FF', '#FF8AD8', '#FFC53D'];
+function paintQuilt(){
+  const host = $('quiltGrid'); if (!host) return;
+  const seen = save.quiltSeen || (save.quiltSeen = {});
+  const open = !!host.closest('.accbody') && host.closest('section').querySelector('.acchead').getAttribute('aria-expanded') === 'true'
+    && screen === 'Room';
+  host.innerHTML = '';
+  let tried = 0; const fresh = [];
+  MODE_IDS.forEach(id => {
+    const q = patchOf(id), m = MODES[id];
+    if (q.tried) tried++;
+    const b = mk('button', 'qpatch' + (q.tried ? ' tried' : '') + (q.gold ? ' gold' : '') + ' r' + q.rank);
+    b.type = 'button'; b.dataset.id = id;
+    b.style.setProperty('--fam', CAT_INK[catOf(id)] || '#FF5B39');
+    b.style.setProperty('--rk', RANK_INK[q.rank]);
+    b.innerHTML = '<span class="qg" aria-hidden="true">' + m.glyph + '</span><span class="qs" aria-hidden="true">'
+      + '<i></i>'.repeat(q.stars) + '</span>';
+    b.setAttribute('aria-label', modeName(id) + ': ' + (q.tried ? t('quilt.state', { s: q.stars, r: t('twist.rank.' + q.rank) }) + (q.gold ? ', ' + t('quilt.gold') : '') : t('quilt.empty')));
+    onTap(b, () => openPatch(id));
+    host.appendChild(b);
+    if (seen[id] !== undefined && seen[id] !== patchSig(q)) fresh.push(b);
+    if (open || seen[id] === undefined) seen[id] = patchSig(q);
+  });
+  $('quiltCount').textContent = tried + '/' + MODE_IDS.length;
+  /* The stitch moment: only when the quilt is actually being looked at, so a change waits for its audience. */
+  if (open && fresh.length){
+    fresh.forEach((b, i) => setTimeout(() => {
+      b.classList.add('stitched');
+      if (!motionOff()){ const bx = Vfx.box(b); Vfx.spray('radial', bx.x, bx.y, 12, { k: ['thread', 'stitch'], pal: [b.style.getPropertyValue('--fam') || '#FFC53D', '#FFF3E6'] }); }
+      sfx.combo(3);
+    }, 300 + i * 260));
+    persist();
+  }
+}
+function openPatch(id){
+  closeMetaSheet();
+  const q = patchOf(id), m = MODES[id];
+  const sh = mk('div', 'sheet metasheet'); sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true'); sh.setAttribute('aria-label', modeName(id));
+  const panel = mk('div', 'panel');
+  panel.appendChild(mk('div', 'grab'));
+  const top = mk('div', 'patchtop'); top.style.setProperty('--fam', CAT_INK[catOf(id)] || '#FF5B39');
+  top.innerHTML = '<span class="qg" aria-hidden="true">' + m.glyph + '</span>';
+  const h = mk('h3'); h.textContent = modeName(id); top.appendChild(h);
+  panel.appendChild(top);
+  const lines = [
+    q.tried ? t('quilt.stars', { s: q.stars }) : t('quilt.empty'),
+    t('quilt.rank', { r: t('twist.rank.' + q.rank) }),
+    q.n ? t('quilt.rate', { p: Math.round(q.rate * 100), n: q.n }) : t('quilt.rateNone'),
+    q.gold ? t('quilt.gold') : q.rank === 5 ? t('quilt.goldHow') : t('quilt.rankHow')
+  ];
+  lines.forEach(x => { const pEl = mk('p', 'patchline'); pEl.textContent = x; panel.appendChild(pEl); });
+  const row = mk('div', 'patchacts');
+  const play = mk('button', 'cta'); play.type = 'button'; play.textContent = t('quilt.play');
+  const prac = mk('button', 'ghost'); prac.type = 'button'; prac.textContent = t('quilt.practise');
+  play.addEventListener('click', () => { closeMetaSheet(); startRun('marathon', id); });
+  prac.addEventListener('click', () => { closeMetaSheet(); startRun('zen', id); });
+  row.appendChild(play); row.appendChild(prac); panel.appendChild(row);
+  sh.appendChild(panel);
+  sh.addEventListener('click', e => { if (e.target === sh) closeMetaSheet(); });
+  document.body.appendChild(sh); metaSheet = sh;
+}
+/* ── Milestones: lifetime numbers that change the room for good ── */
+const MILES = [
+  { id: 's100',   at: () => (save.solved | 0) >= 100 },
+  { id: 's500',   at: () => (save.solved | 0) >= 500 },
+  { id: 's1000',  at: () => (save.solved | 0) >= 1000 },
+  { id: 's2500',  at: () => (save.solved | 0) >= 2500 },
+  { id: 's5000',  at: () => (save.solved | 0) >= 5000 },
+  { id: 's10000', at: () => (save.solved | 0) >= 10000 },
+  { id: 'p10',    at: () => (save.bestPurrRun | 0) >= 10 },
+  { id: 'tried',  at: () => MODE_IDS.every(id => (save.seen || {})[id]) },
+  { id: 'lions',  at: () => MODE_IDS.every(id => Twist.rank(id) === 5) }
+];
+const hasMile = id => !!(save.miles || {})[id];
+function checkMiles(quiet){
+  const got = save.miles || (save.miles = {});
+  MILES.forEach(m => {
+    if (got[m.id] || !m.at()) return;
+    got[m.id] = Date.now();
+    if (!quiet) announceToast({ later: true, ink: '#FFC53D', glyph: YARN_GLYPH, eyebrow: t('mile.eyebrow'), title: t('mile.' + m.id), desc: t('mile.' + m.id + '.d') });
+  });
+}
+/* The room's share of them, drawn into the Room's own picture. */
+function milesSvg(night){
+  let s = '';
+  /* the quilt itself, small, on the back wall above the shelf */
+  const x0 = 262, y0 = 14, cw = 9, ch = 7;
+  if (hasMile('tried')) s += '<path d="M' + (x0 - 4) + ' ' + (y0 - 3) + 'H' + (x0 + 8 * (cw + 1) + 3) + '" stroke="#8B6B45" stroke-width="2.4" stroke-linecap="round"/>';
+  if (hasMile('lions')) s += '<path d="M' + (x0 + 36) + ' 0L' + (x0 - 8) + ' ' + (y0 + 50) + 'H' + (x0 + 88) + 'Z" fill="#FFE9A8" opacity=".14"/>';
+  MODE_IDS.forEach((id, i) => {
+    const q = patchOf(id), x = x0 + (i % 8) * (cw + 1), y = y0 + Math.floor(i / 8) * (ch + 1);
+    s += q.tried
+      ? '<rect x="' + x + '" y="' + y + '" width="' + cw + '" height="' + ch + '" rx="1.5" fill="' + (CAT_INK[catOf(id)] || '#FF5B39') + '"'
+        + (q.rank ? ' stroke="' + RANK_INK[q.rank] + '" stroke-width="1"' : '') + ' opacity=".92"/>'
+      : '<rect x="' + (x + .5) + '" y="' + (y + .5) + '" width="' + (cw - 1) + '" height="' + (ch - 1) + '" rx="1.5" fill="none" stroke="#7A68B0" stroke-width=".8" stroke-dasharray="1.6 1.2"/>';
+  });
+  if (hasMile('p10')) s += '<rect x="' + (x0 - 3) + '" y="' + (y0 - 2) + '" width="' + (8 * (cw + 1) + 5) + '" height="' + (6 * (ch + 1) + 3) + '" rx="3" fill="none" stroke="#FFC53D" stroke-width="1.6"/>';
+  /* 100 solves: pom-poms along the top of the window */
+  if (hasMile('s100')) ['#FF5B8A', '#FFC53D', '#33E6C8', '#9C7BFF', '#FF9A3D', '#7CC8FF', '#FF5B8A', '#FFC53D'].forEach((c, i) => {
+    const x = 50 + i * 13.5; s += '<path d="M' + x + ' 30v4" stroke="#CDB892" stroke-width="1"/><circle cx="' + x + '" cy="37" r="3.4" fill="' + c + '"/>'; });
+  /* 500: a music box on the sill */
+  if (hasMile('s500')) s += '<rect x="56" y="108" width="20" height="11" rx="2" fill="#B5543F"/><rect x="55" y="105" width="22" height="4" rx="1.5" fill="#D36F55"/><path d="M78 112h4v-3" stroke="#E9D9B8" stroke-width="1.4" fill="none"/><circle cx="66" cy="113" r="2" fill="#FFC53D"/>';
+  /* 1,000: a warm glow over the floor, evenings and nights */
+  if (hasMile('s1000') && (night || new Date().getHours() >= 17)) s += '<ellipse cx="180" cy="222" rx="140" ry="26" fill="url(#rmg)" opacity=".55"/>';
+  /* 2,500: a shooting star in the window at night, a rainbow by day */
+  if (hasMile('s2500')) s += night ? '<path d="M70 40l24 10" stroke="#FFF7D6" stroke-width="1.6" stroke-linecap="round" opacity=".85"/><circle cx="94" cy="50" r="1.8" fill="#FFF7D6"/>'
+    : '<path d="M52 104a44 40 0 0 1 88 0" fill="none" stroke="#FF8AD8" stroke-width="2.4" opacity=".55"/><path d="M58 104a38 34 0 0 1 76 0" fill="none" stroke="#FFC53D" stroke-width="2.4" opacity=".55"/><path d="M64 104a32 28 0 0 1 64 0" fill="none" stroke="#7CC8FF" stroke-width="2.4" opacity=".55"/>';
+  /* 5,000: a yarn mobile from the ceiling */
+  if (hasMile('s5000')) s += '<path d="M248 0v18M236 18h24M236 18v8M248 18v12M260 18v6" stroke="#E9D9B8" stroke-width="1" fill="none"/>'
+    + '<circle cx="236" cy="29" r="4" fill="#FF5B8A"/><circle cx="248" cy="34" r="4.5" fill="#33E6C8"/><circle cx="260" cy="27" r="3.6" fill="#FFC53D"/>';
+  /* 10,000: a cat in the stars, high on the wall */
+  if (hasMile('s10000')) [[300, 6], [306, 3], [312, 6], [318, 4], [326, 7], [334, 5], [312, 10]].forEach(([x, y]) => { s += '<circle cx="' + x + '" cy="' + y + '" r="1.3" fill="#FFE9A8"/>'; });
+  return s;
+}
+
+document.addEventListener('click', e => {
+  const h = e.target && e.target.closest && e.target.closest('#accH_r-quilt');
+  if (h) setTimeout(() => { if (h.getAttribute('aria-expanded') === 'true') paintQuilt(); }, 60);
+});
 
 /* ═══ A run that outlives the app ═════════════════════════════════════════
    Progress has always been banked per solve, but the run itself lived only in memory: a phone call, a closed tab or
@@ -20767,6 +20946,7 @@ function resolve(ok, node){
     burst(node, cosmeticHex(), mult, mid); flash('flash-win'); flyToScore(node, cosmeticHex());
     sfx.good(run.streak);
     if (grade) styleMoment(grade, node, mid, performance.now() - roundStart, k); else buzz('good');
+    logStyle(mid, grade);
     variety(node, mid);
     /* streak++ above already moved this — multAfter is what the player is
        actually looking at, the tier this solve landed them on, not the one
@@ -21265,6 +21445,8 @@ function endRun(){
     }
   }
   if (r.bestStreak > save.pbStreak) save.pbStreak = r.bestStreak;
+  if ((r.purrs | 0) > (save.bestPurrRun | 0)) save.bestPurrRun = r.purrs;
+  checkMiles(false);
   /* A new best keeps its curve, for the ghost next time (about 60 numbers for a ten-minute run). */
   if (best && k.scored && curveKey(r) && r.curve){
     save.curves = Object.assign({}, save.curves, { [curveKey(r)]: r.curve.concat(r.score).slice(0, 120) });
@@ -23357,6 +23539,7 @@ function boot(){
   persist();
   show('Play');
   paintAll();
+  checkMiles(true);
   paintResume();
   weeklyBackup();
   watchForUpdates();

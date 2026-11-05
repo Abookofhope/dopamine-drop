@@ -34,6 +34,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.148.0 | Room Radio (bible release 3): music made as you play, in the games' own key, with layers that rise with your streak; a miss muffles it, a stage lifts it, a Bow brings the bells; its own switch and volume; Preview effects in Settings |
 | v0.149.0 | Two doors (bible release 4): Cozy (no clock, nothing to lose, the same yarn) and Challenge (the clock, and your best run's pace beside the multiplier); HUD density; the HUD steps back during a round; an install row |
 | v0.150.0 | Never lose a run (bible release 5): a run closed mid-way is offered back for a day; Tuck in ends a session gently; Pet everyone and Collect all; a weekly copy of progress on the device |
+| v0.151.0 | The Quilt (bible release 6): one patch per game in the Room, knitted as it is played, with stars, rank and the Gold Thread; milestones add things to the Room for good |
 
 ## Ground rules the work follows
 

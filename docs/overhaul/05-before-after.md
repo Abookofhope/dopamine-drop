@@ -268,6 +268,16 @@ environments instead of reporting every board changed.
 | A bad change to the save | only an exported file could undo it | a copy kept on the device each week (the last two), offered back in Settings |
 | `resume.mjs` failed checks | stops at its first check on v0.149.0 (no Resume card) | 0 of 20 |
 
+## v0.151.0: the Quilt (bible release 6)
+
+| What | Before | After |
+|---|---|---|
+| Seeing everything you have played | a list of 44 games and a stars count | Your quilt in the Room: one patch per game, an outline until played, then knitted in its family colour, its stars stitched across it, its rank as its border, and the Gold Thread for a Lion solved Purrfect in at least half of its last twenty solves |
+| A patch | — | a full-size button that opens the game's card with Marathon and Practise |
+| A change since the last look | nothing marked it | the patch is stitched in when the quilt is next opened, then remembered as seen |
+| The Room's picture | furniture you bought | also a small copy of the quilt on its wall, and things milestones add for good: a pom-pom garland (100 solves), a music box (500), a warm glow (1,000), a rainbow or a shooting star (2,500), a yarn mobile (5,000), a cat in the stars (10,000), a gold frame (ten Purrfects in one run), a rod (every game played), a lamp (every game a Lion) |
+| `quilt.mjs` failed checks | stops at its first check on v0.150.0 (no quilt panel) | 0 of 16 |
+
 ## How to reproduce
 
 ```
