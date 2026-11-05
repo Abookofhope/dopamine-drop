@@ -257,6 +257,17 @@ environments instead of reporting every board changed.
 | Installing | only from the browser's menu | a quiet row in Settings when the browser offers it |
 | `dualmode.mjs` failed checks | 14 of 19 on v0.148.0 | 0 of 19 |
 
+## v0.150.0: never lose a run (bible release 5)
+
+| What | Before | After |
+|---|---|---|
+| A run when the app is closed or reclaimed mid-way | gone (its XP and yarn were banked, the run was not) | written down when it pauses and after every round; the Play tab offers it back for a day ("Calm & Collect · 841 points · 10:00 left"); Resume restores the score, clock, streak, Thread, charms and lives and deals the round again; Let it go forgets it; never the Daily Drop |
+| Ending a session | Back to menu | Tuck in: the room goes dark, the cats riding along asleep, a music box, one line about the session; first on Game Over after 30 minutes of play, once |
+| Petting three cats | three taps | Pet everyone (2 yarn each, unchanged) |
+| Collecting ready wishes | one by one | Collect all |
+| A bad change to the save | only an exported file could undo it | a copy kept on the device each week (the last two), offered back in Settings |
+| `resume.mjs` failed checks | stops at its first check on v0.149.0 (no Resume card) | 0 of 20 |
+
 ## How to reproduce
 
 ```

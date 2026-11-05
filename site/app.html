@@ -1737,6 +1737,35 @@ html[data-ts="130"] .achgrid,html[data-ts="150"] .achgrid{grid-template-columns:
 .thread.unravel i{transition:background 600ms linear,border-color 600ms linear}
 html[data-motion="on"] .thread i.pop{animation:knotPop 420ms var(--e-spring)}
 @keyframes knotPop{from{transform:scale(.3)}}
+/* A run the app was closed on, offered back. */
+.resumeCard{display:grid;grid-template-columns:1fr auto;grid-template-areas:"t go" "t drop";gap:6px 10px;align-items:center;
+  padding:12px 14px;margin:0 0 12px;border-radius:var(--r-lg);border:1px solid color-mix(in srgb, #FF8A5C 50%, transparent);
+  background:color-mix(in srgb, #FF8A5C 10%, var(--ink-2))}
+.resumeCard[hidden]{display:none}
+.resumeCard .rt{grid-area:t;display:flex;flex-direction:column;gap:2px;min-width:0}
+.resumeCard .rt b{font-size:calc(15px*var(--ts));font-weight:800}
+.resumeCard .rt small{font-size:calc(12px*var(--ts));color:var(--haze)}
+.resumeCard .resumeGo{grid-area:go;min-height:44px;padding:0 16px}
+.resumeCard .resumeDrop{grid-area:drop;min-height:44px;padding:0 12px;font-size:calc(12px*var(--ts))}
+/* Tuck in: the room at night. */
+.tuck{position:fixed;inset:0;z-index:96;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  padding:24px 16px;text-align:center;cursor:pointer;
+  background:radial-gradient(120% 80% at 50% 20%, #1D1840 0%, #0B0A18 70%)}
+.tuck[hidden]{display:none}
+.tuckmoon{width:64px;height:64px;border-radius:50%;box-shadow:inset -14px -6px 0 0 #FFE9B0;transform:rotate(-20deg);opacity:.9}
+.tuckcats{display:flex;gap:6px;justify-content:center}
+.tuckcats .tc{width:84px;height:84px;display:block}
+.tuckcats .tc svg{width:100%;height:100%}
+.tuckhead{font-family:var(--f-disp);font-weight:800;font-size:calc(28px*var(--ts));margin:6px 0 0;color:#FFF3E6}
+.tuckline{margin:0;font-size:calc(14px*var(--ts));color:var(--haze);max-width:30ch;text-wrap:balance}
+.tuckhint{font-size:calc(11px*var(--ts));color:#ffffff66;margin-top:18px}
+.tuckcall.first{border-color:#CDBCF7;box-shadow:0 0 0 2px #CDBCF755}
+/* One tap for many. */
+.roomacts{display:flex;justify-content:flex-end;margin:-4px 0 10px}
+.roomacts[hidden]{display:none}
+.roomacts .ghost,.collectall{min-height:44px;padding:0 14px}
+.collectall{width:100%;margin:0 0 10px}
+.collectall[hidden]{display:none}
 /* The doors: Cozy or Challenge, under the gate's question. */
 .doors{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 12px;padding:4px;border-radius:var(--r-lg);
   background:#ffffff08;border:1px solid var(--edge-soft)}
@@ -4060,6 +4089,11 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
         <!-- Home: exactly three choices, ever, on this screen. Each leads to
              its own focused sub-screen instead of showing everything at once. -->
         <div id="playHome">
+          <div class="resumeCard" id="resumeCard" hidden>
+            <span class="rt"><b data-i18n="resume.title">Your run is waiting</b><small id="resumeLine"></small></span>
+            <button class="cta resumeGo" id="resumeGo" type="button" data-i18n="resume.go">Resume</button>
+            <button class="ghost resumeDrop" id="resumeDrop" type="button" data-i18n="resume.drop">Let it go</button>
+          </div>
           <button class="dailyCard" id="dailyStatus" type="button">
             <span class="di" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C12 3 6 10 6 14a6 6 0 0 0 12 0C18 10 12 3 12 3z"/></svg></span>
             <span class="dt"><b data-i18n="daily.title">Daily Drop</b><small id="dailyStatusLine"></small></span>
@@ -4374,6 +4408,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
         </div>
         <div class="introcard" id="roomIntro" hidden></div>
         <div class="roomscene" id="roomScene"></div>
+        <div class="roomacts" id="roomActs" hidden><button class="ghost" id="petAll" type="button" data-i18n="room.petAll">Pet everyone</button></div>
         <div class="giftcard" id="giftCard"></div>
         <!-- Four long lists, one after another, made the Room five screens of
              scrolling with the thing you came for (today's wishes) in the middle.
@@ -4395,6 +4430,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
             <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </button></h3>
           <div class="accbody" id="accB_r-wishes" role="region" aria-labelledby="accH_r-wishes"><div class="accin">
+            <button class="ghost collectall" id="wishAll" type="button" data-i18n="wish.all" hidden>Collect all</button>
             <div id="wishList"></div>
           </div></div>
         </section>
@@ -4651,6 +4687,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
               <button class="ghost" id="importBtn" type="button" data-i18n="btn.import">Import</button>
               <input type="file" id="importFile" accept="application/json,.json" hidden>
             </div>
+            <div class="setrow" id="weeklyRow" hidden>
+              <span class="txt"><b data-i18n="set.weekly">Weekly copy</b><small id="weeklySub"></small></span>
+              <button class="ghost" id="weeklyBtn" type="button" data-i18n="btn.restoreCopy">Restore</button>
+            </div>
             <div class="setrow danger" id="resetRow">
               <span class="txt"><b data-i18n="set.reset">Reset progress</b><small data-i18n="set.resetSub">Level, XP and every best score. Settings are kept.</small></span>
               <button class="ghost" id="resetBtn" type="button" data-i18n="btn.reset">Reset</button>
@@ -4748,6 +4788,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
       <div class="recap" id="recap" hidden></div>
       <div class="goalstrip" id="goalStrip" hidden><small data-i18n="goal.label">Next up</small><b id="goalLine"></b></div>
       <div class="heldlist" id="overHeld" hidden></div>
+      <button class="perkcall over tuckcall" id="tuckBtn" type="button" style="--cink:#CDBCF7">
+        <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></span>
+        <span class="t"><small data-i18n="tuck.eyebrow">Tuck in</small><b data-i18n="tuck.call">End here, gently: the cats curl up and the lights go down</b></span>
+      </button>
       <button class="perkcall over" id="roomCall" type="button" style="--cink:#FF8AD8" hidden>
         <span class="g" id="roomCallGlyph" aria-hidden="true"></span>
         <span class="txt">
@@ -4919,6 +4963,13 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
   <span id="sndCapTxt"></span>
 </div>
 
+<div class="tuck" id="tuck" hidden role="dialog" aria-modal="true" data-i18n-aria="tuck.eyebrow" aria-label="Tuck in">
+  <div class="tuckmoon" aria-hidden="true"></div>
+  <div class="tuckcats" id="tuckCats" aria-hidden="true"></div>
+  <p class="tuckhead" data-i18n="tuck.night">Goodnight.</p>
+  <p class="tuckline" id="tuckLine"></p>
+  <small class="tuckhint" data-i18n="tuck.hint">Tap anywhere to go back</small>
+</div>
 <div class="achtoast" id="achToast" hidden role="status" aria-live="polite">
   <span class="g"></span>
   <span class="txt">
@@ -4973,7 +5024,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.149.0';
+const VERSION_TAG = 'v0.150.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4989,7 +5040,7 @@ const defaults = {
   pbBlitz:0, pbGate:{}, pbMix:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, pbEndless:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, bigFx:true, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
-  volume:1, music:true, musicVol:0.5, door:'challenge', hud:'standard', curves:{}, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
+  volume:1, music:true, musicVol:0.5, door:'challenge', hud:'standard', curves:{}, backupAt:0, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
   lifetime:0, perks:[], perkLv:{}, tokens:0,
   dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0, purrfects:0, bows:0,
   lastMode:null, onboarded:false,
@@ -6246,6 +6297,7 @@ const STRINGS = {
     'me.open':'Your progress', 'me.level':'Level {n}',
     'grade.purr':'Purrfect!', 'grade.clean':'Clean', 'grade.swift':'Swift', 'bow.float':'A Bow! +{n}', 'bow.floatYarn':'A Bow! +{y} yarn', 'fx.variety':'All three kinds! +1 yarn', 'cap.purr':'Three rising notes: Purrfect', 'cap.bow':'A bright chord: the Thread tied a Bow', 'peak.best':'A new best: {n}', 'peak.firstBow':'Your first Bow: five Purrfects in a row', 'peak.bow':'The Thread tied a Bow', 'peak.bows':'The Thread tied {n} Bows', 'peak.firstPurr':'Your first Purrfect, on {m}', 'peak.purr':'Fastest Purrfect: {m}, {s} s', 'peak.five':'You reached ×5', 'peak.streak':'{n} in a row', 'peak.fast':'Quickest solve: {m}, {s} s', 'peak.met':'You met {m}. {rule}',
     'cozy.title':'Cozy', 'door.label':'How to play', 'door.cozy':'Cozy', 'door.cozySub':'No clock, nothing to lose', 'door.challenge':'Challenge', 'door.challengeSub':'The clock, and your best to beat', 'stage.descCozy':'A gift of 10 yarn, and the music lifts.', 'hud.pace':'Pace', 'hud.paceLine':'{n}/min · {p}% Purrfect', 'set.hud':'During a run', 'set.hudSub':'How much the screen shows around the board', 'set.hudMin':'Minimal', 'set.hudStd':'Standard', 'set.hudMax':'Detailed', 'set.install':'Install the app', 'set.installSub':'Put Dopamine Drop on your home screen. It works offline.', 'set.installBtn':'Install',
+    'resume.title':'Your run is waiting', 'resume.go':'Resume', 'resume.drop':'Let it go', 'resume.pts':'{n} points', 'resume.left':'{t} left', 'resume.lives':'{n} lives', 'tuck.eyebrow':'Tuck in', 'tuck.call':'End here, gently: the cats curl up and the lights go down', 'tuck.night':'Goodnight.', 'tuck.line':'You solved {n} puzzles this time. The cats are asleep.', 'tuck.lineNone':'The cats are asleep. Come back whenever you like.', 'tuck.hint':'Tap anywhere to go back', 'room.petAll':'Pet everyone', 'room.petAllGot':'{n} cats petted · +{y} yarn', 'wish.all':'Collect all', 'wish.allGot':'{n} wishes · +{y} yarn', 'set.weekly':'Weekly copy', 'set.weeklySub':'Kept on this device on {d} (level {lvl})', 'btn.restoreCopy':'Restore', 'dlg.restoreCopy':'Go back to the copy from {d} (level {lvl})? What is on this device now is replaced.',
     'hud.solved':'{n} solved', 'set.assistPrev':'Every colour also carries a shape', 'over.whilePlayed':'While you played', 'hud.pause':'Pause', 'hud.best':'Best', 'hud.newBest':'New best', 'pause.sofar':'{s}\u00a0points · {n}\u00a0solved · best\u00a0streak\u00a0{b}', 'brand.tag':'Brain snacks',
     'you.switch':'Progress or settings', 'you.progress':'Progress',
     'modes.ways':'More ways to play', 'modes.waysSub':'Endless, Mixtape, Marathon and more', 'gate.fourAll':'All four games',
@@ -6766,6 +6818,7 @@ const STRINGS = {
     'me.open':'Votre progression', 'me.level':'Niveau {n}',
     'grade.purr':'Ronronfait !', 'grade.clean':'Net', 'grade.swift':'Vif', 'bow.float':'Un nœud ! +{n}', 'bow.floatYarn':'Un nœud ! +{y} de laine', 'fx.variety':'Les trois sortes ! +1 laine', 'cap.purr':'Trois notes montantes : Ronronfait', 'cap.bow':'Un accord clair : le fil fait un nœud', 'peak.best':'Nouveau record : {n}', 'peak.firstBow':'Ton premier nœud : cinq Ronronfaits d’affilée', 'peak.bow':'Le fil a fait un nœud', 'peak.bows':'Le fil a fait {n} nœuds', 'peak.firstPurr':'Ton premier Ronronfait, sur {m}', 'peak.purr':'Ronronfait le plus rapide : {m}, {s} s', 'peak.five':'Tu as atteint ×5', 'peak.streak':'{n} d’affilée', 'peak.fast':'Réussite la plus rapide : {m}, {s} s', 'peak.met':'Tu as découvert {m}. {rule}',
     'cozy.title':'Douillet', 'door.label':'Comment jouer', 'door.cozy':'Douillet', 'door.cozySub':'Sans chrono, rien à perdre', 'door.challenge':'Défi', 'door.challengeSub':'Le chrono, et ton record à battre', 'stage.descCozy':'Un cadeau de 10 laines, et la musique monte.', 'hud.pace':'Allure', 'hud.paceLine':'{n}/min · {p} % Ronronfait', 'set.hud':'Pendant une partie', 'set.hudSub':'Ce que l’écran montre autour du plateau', 'set.hudMin':'Minimal', 'set.hudStd':'Standard', 'set.hudMax':'Détaillé', 'set.install':'Installer l’app', 'set.installSub':'Mets Dopamine Drop sur ton écran d’accueil. Elle marche hors ligne.', 'set.installBtn':'Installer',
+    'resume.title':'Ta partie t’attend', 'resume.go':'Reprendre', 'resume.drop':'Laisser filer', 'resume.pts':'{n} points', 'resume.left':'encore {t}', 'resume.lives':'{n} vies', 'tuck.eyebrow':'Bonne nuit', 'tuck.call':'Finir en douceur : les chats se pelotonnent et la lumière baisse', 'tuck.night':'Bonne nuit.', 'tuck.line':'Tu as résolu {n} énigmes cette fois. Les chats dorment.', 'tuck.lineNone':'Les chats dorment. Reviens quand tu veux.', 'tuck.hint':'Touche n’importe où pour revenir', 'room.petAll':'Caresser tout le monde', 'room.petAllGot':'{n} chats caressés · +{y} laine', 'wish.all':'Tout récolter', 'wish.allGot':'{n} vœux · +{y} laine', 'set.weekly':'Copie de la semaine', 'set.weeklySub':'Gardée sur cet appareil le {d} (niveau {lvl})', 'btn.restoreCopy':'Restaurer', 'dlg.restoreCopy':'Revenir à la copie du {d} (niveau {lvl}) ? Ce qui est sur cet appareil sera remplacé.',
     'hud.solved':'{n} réussis', 'set.assistPrev':'Chaque couleur porte aussi une forme', 'over.whilePlayed':'Pendant la partie', 'hud.pause':'Pause', 'hud.best':'Record', 'hud.newBest':'Nouveau record', 'pause.sofar':'{s}\u00a0points · {n}\u00a0réussis · meilleure\u00a0série\u00a0{b}', 'brand.tag':'Douceurs pour cerveaux',
     'you.switch':'Progression ou réglages', 'you.progress':'Progression',
     'modes.ways':'Autres façons de jouer', 'modes.waysSub':'Sans fin, Mixtape, Marathon et plus', 'gate.fourAll':'Les quatre jeux',
@@ -7285,6 +7338,7 @@ const STRINGS = {
     'me.open':'Tu progreso', 'me.level':'Nivel {n}',
     'grade.purr':'¡Ronronfecto!', 'grade.clean':'Limpio', 'grade.swift':'Veloz', 'bow.float':'¡Un lazo! +{n}', 'bow.floatYarn':'¡Un lazo! +{y} de lana', 'fx.variety':'¡Las tres clases! +1 lana', 'cap.purr':'Tres notas ascendentes: Ronronfecto', 'cap.bow':'Un acorde brillante: el hilo hace un lazo', 'peak.best':'Nuevo récord: {n}', 'peak.firstBow':'Tu primer lazo: cinco Ronronfectos seguidos', 'peak.bow':'El hilo hizo un lazo', 'peak.bows':'El hilo hizo {n} lazos', 'peak.firstPurr':'Tu primer Ronronfecto, en {m}', 'peak.purr':'Ronronfecto más rápido: {m}, {s} s', 'peak.five':'Llegaste a ×5', 'peak.streak':'{n} seguidos', 'peak.fast':'Acierto más rápido: {m}, {s} s', 'peak.met':'Conociste {m}. {rule}',
     'cozy.title':'Acogedor', 'door.label':'Cómo jugar', 'door.cozy':'Acogedor', 'door.cozySub':'Sin reloj, nada que perder', 'door.challenge':'Desafío', 'door.challengeSub':'El reloj, y tu récord por batir', 'stage.descCozy':'Un regalo de 10 lanas, y la música sube.', 'hud.pace':'Ritmo', 'hud.paceLine':'{n}/min · {p} % Ronronfecto', 'set.hud':'Durante la partida', 'set.hudSub':'Cuánto muestra la pantalla alrededor del tablero', 'set.hudMin':'Mínimo', 'set.hudStd':'Estándar', 'set.hudMax':'Detallado', 'set.install':'Instalar la app', 'set.installSub':'Pon Dopamine Drop en tu pantalla de inicio. Funciona sin conexión.', 'set.installBtn':'Instalar',
+    'resume.title':'Tu partida te espera', 'resume.go':'Seguir', 'resume.drop':'Dejarla', 'resume.pts':'{n} puntos', 'resume.left':'quedan {t}', 'resume.lives':'{n} vidas', 'tuck.eyebrow':'A dormir', 'tuck.call':'Termina con calma: los gatos se acurrucan y baja la luz', 'tuck.night':'Buenas noches.', 'tuck.line':'Esta vez resolviste {n} acertijos. Los gatos duermen.', 'tuck.lineNone':'Los gatos duermen. Vuelve cuando quieras.', 'tuck.hint':'Toca en cualquier sitio para volver', 'room.petAll':'Acariciar a todos', 'room.petAllGot':'{n} gatos acariciados · +{y} lana', 'wish.all':'Recoger todo', 'wish.allGot':'{n} deseos · +{y} lana', 'set.weekly':'Copia semanal', 'set.weeklySub':'Guardada en este dispositivo el {d} (nivel {lvl})', 'btn.restoreCopy':'Restaurar', 'dlg.restoreCopy':'¿Volver a la copia del {d} (nivel {lvl})? Se sustituirá lo que hay en este dispositivo.',
     'hud.solved':'{n} resueltos', 'set.assistPrev':'Cada color lleva también una forma', 'over.whilePlayed':'Mientras jugabas', 'hud.pause':'Pausa', 'hud.best':'Récord', 'hud.newBest':'Nuevo récord', 'pause.sofar':'{s}\u00a0puntos · {n}\u00a0resueltos · mejor\u00a0racha\u00a0{b}', 'brand.tag':'Bocaditos para el cerebro',
     'you.switch':'Progreso o ajustes', 'you.progress':'Progreso',
     'modes.ways':'Más formas de jugar', 'modes.waysSub':'Sin fin, Mixtape, Maratón y más', 'gate.fourAll':'Los cuatro juegos',
@@ -7804,6 +7858,7 @@ const STRINGS = {
     'me.open':'Dein Fortschritt', 'me.level':'Stufe {n}',
     'grade.purr':'Schnurrfekt!', 'grade.clean':'Sauber', 'grade.swift':'Flink', 'bow.float':'Eine Schleife! +{n}', 'bow.floatYarn':'Eine Schleife! +{y} Wolle', 'fx.variety':'Alle drei Sorten! +1 Wolle', 'cap.purr':'Drei steigende Töne: Schnurrfekt', 'cap.bow':'Ein heller Akkord: der Faden bindet eine Schleife', 'peak.best':'Neuer Bestwert: {n}', 'peak.firstBow':'Deine erste Schleife: fünf Schnurrfekte in Folge', 'peak.bow':'Der Faden hat eine Schleife gebunden', 'peak.bows':'Der Faden hat {n} Schleifen gebunden', 'peak.firstPurr':'Dein erstes Schnurrfekt, bei {m}', 'peak.purr':'Schnellstes Schnurrfekt: {m}, {s} s', 'peak.five':'Du hast ×5 erreicht', 'peak.streak':'{n} in Folge', 'peak.fast':'Schnellste Lösung: {m}, {s} s', 'peak.met':'Du hast {m} kennengelernt. {rule}',
     'cozy.title':'Gemütlich', 'door.label':'Wie spielen', 'door.cozy':'Gemütlich', 'door.cozySub':'Keine Uhr, nichts zu verlieren', 'door.challenge':'Herausforderung', 'door.challengeSub':'Die Uhr und dein Bestwert', 'stage.descCozy':'Ein Geschenk von 10 Wolle, und die Musik steigt.', 'hud.pace':'Tempo', 'hud.paceLine':'{n}/min · {p} % Schnurrfekt', 'set.hud':'Während eines Laufs', 'set.hudSub':'Wie viel der Bildschirm um das Brett zeigt', 'set.hudMin':'Minimal', 'set.hudStd':'Standard', 'set.hudMax':'Ausführlich', 'set.install':'App installieren', 'set.installSub':'Leg Dopamine Drop auf deinen Startbildschirm. Sie läuft offline.', 'set.installBtn':'Installieren',
+    'resume.title':'Dein Lauf wartet', 'resume.go':'Weiter', 'resume.drop':'Loslassen', 'resume.pts':'{n} Punkte', 'resume.left':'noch {t}', 'resume.lives':'{n} Leben', 'tuck.eyebrow':'Gute Nacht', 'tuck.call':'Sanft aufhören: die Katzen rollen sich ein und das Licht geht aus', 'tuck.night':'Gute Nacht.', 'tuck.line':'Du hast diesmal {n} Rätsel gelöst. Die Katzen schlafen.', 'tuck.lineNone':'Die Katzen schlafen. Komm wieder, wann du magst.', 'tuck.hint':'Tippe irgendwo, um zurückzugehen', 'room.petAll':'Alle streicheln', 'room.petAllGot':'{n} Katzen gestreichelt · +{y} Wolle', 'wish.all':'Alle einsammeln', 'wish.allGot':'{n} Wünsche · +{y} Wolle', 'set.weekly':'Wochenkopie', 'set.weeklySub':'Auf diesem Gerät gespeichert am {d} (Level {lvl})', 'btn.restoreCopy':'Wiederherstellen', 'dlg.restoreCopy':'Zur Kopie vom {d} (Level {lvl}) zurück? Was jetzt auf diesem Gerät ist, wird ersetzt.',
     'hud.solved':'{n} gelöst', 'set.assistPrev':'Jede Farbe trägt auch eine Form', 'over.whilePlayed':'Während du gespielt hast', 'hud.pause':'Pause', 'hud.best':'Bestwert', 'hud.newBest':'Neuer Bestwert', 'pause.sofar':'{s}\u00a0Punkte · {n}\u00a0gelöst · beste\u00a0Serie\u00a0{b}', 'brand.tag':'Snacks fürs Gehirn',
     'you.switch':'Fortschritt oder Optionen', 'you.progress':'Fortschritt',
     'modes.ways':'Weitere Spielarten', 'modes.waysSub':'Endlos, Mixtape, Marathon und mehr', 'gate.fourAll':'Alle vier Spiele',
@@ -7922,6 +7977,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.150.0', date:'2026-11-05', items:[
+    'A run outlives the app. If a call comes in, the tab is closed or the phone reclaims it mid-run, the Play tab offers the run back for a day: Resume brings back the score, the clock, the streak, the Thread and the charms, and deals the round that was in play again. Let it go forgets it. (Not the Daily Drop.)',
+    'Tuck in: Game Over offers a gentle end. The room goes dark, the cats riding along curl up asleep, a music box plays, and one line says what the session held. After half an hour of play it is offered first, once.',
+    'One tap for many: Pet everyone in the Room, and Collect all for wishes that are ready.',
+    'A copy of your progress is kept on the device once a week, and Settings offers it back.',
+  ] },
   { v:'0.149.0', date:'2026-11-05', items:[
     'Two doors under "How is your brain today?": Cozy and Challenge. Cozy has no clock and nothing to lose: a miss cools your streak a step instead of breaking it, the Thread holds, every tenth solve brings a gift of yarn instead of a decision, and it pays as much per solve as Challenge, plus a little for every solve at the end. Challenge is the run you know.',
     'In Challenge, the chip beside the multiplier now shows where your best run stood at this moment, ahead or behind and by how much, once you have a best run to race.',
@@ -18575,8 +18636,15 @@ function yarnFx(from, big){
   for (let i = 0; i < (big ? 4 : 3); i++) flyTo(at, '#FF8AD8', $('yarnChip'), 120 + i * 110);
   if (big) Vfx.cannons(30, ['#FF8AD8', '#FFC53D', '#FFF3E6', '#CDBCF7']);
 }
+function paintBatch(){
+  const pets = Object.keys(save.pals || {}).filter(id => Pals.own(id) && Pals.canPet(id)).length;
+  $('roomActs').hidden = pets < 2;
+  const ready = (Wish.ensure().list || []).filter(Wish.ready).length;
+  $('wishAll').hidden = ready < 2;
+}
 function paintGift(){
   const host = $('giftCard'); host.innerHTML = '';
+  try { paintBatch(); } catch(e){}
   const ready = Gift.ready(), day = Gift.day();
   host.classList.toggle('ready', ready);
   const top = mk('div', 'gtop');
@@ -19487,6 +19555,85 @@ function flash(cls){
   if (save.flashes === false) return;
   el.surface.classList.add(cls);
   setTimeout(() => el.surface.classList.remove(cls), cls === 'flash-win' ? 200 : 260);
+}
+
+/* ═══ A run that outlives the app ═════════════════════════════════════════
+   Progress has always been banked per solve, but the run itself lived only in memory: a phone call, a closed tab or
+   the system reclaiming the page cost the score, the clock, the streak and the charms. Now the run is written down
+   whenever it pauses or a round ends, and the Play tab offers it back for a day. The round that was in play is dealt
+   again at the same level, as the pause sheet has always promised. Not the Daily Drop (its twelve boards are dealt
+   from the date) and not Taste Test. */
+const RUN_KEY = 'dd.run', RUN_TTL = 24 * 3600 * 1000;
+const RUN_FIELDS = ['score', 'solved', 'missed', 'streak', 'bestStreak', 'maxTier', 'time', 'lives', 'livesMax', 'shields',
+  'stage', 'charms', 'yarn', 'knots', 'bows', 'purrs', 'bestPurr', 'trail', 'playMs', 'curve', 'beatBest', 'roundIdx', 'skips', 'nudge'];
+function snapRun(){
+  try {
+    if (!run || !run.started || run.kind === 'daily' || run.kind === 'discover') return;
+    const o = { v: 1, at: Date.now(), kind: run.kind, mode: run.mode, twist: run.twist, gate: run.gate, pool: run.pool };
+    RUN_FIELDS.forEach(f => { o[f] = run[f]; });
+    localStorage.setItem(RUN_KEY, JSON.stringify(o));
+  } catch(e){}
+}
+function dropRun(){ try { localStorage.removeItem(RUN_KEY); } catch(e){} }
+function waitingRun(){
+  try {
+    const o = JSON.parse(localStorage.getItem(RUN_KEY) || 'null');
+    if (!o || o.v !== 1 || !KINDS[o.kind] || Date.now() - o.at > RUN_TTL){ if (o) dropRun(); return null; }
+    return o;
+  } catch(e){ dropRun(); return null; }
+}
+function paintResume(){
+  const card = $('resumeCard'); if (!card) return;
+  const o = run ? null : waitingRun();
+  card.hidden = !o;
+  if (!o) return;
+  const k = KINDS[o.kind];
+  const what = o.mode ? modeName(o.mode) : (o.gate && o.gate !== 'full' ? t('gate.' + o.gate) : kindName(o.kind));
+  const bits = [what, k.scored ? t('resume.pts', { n: fmt(o.score || 0) }) : t('hud.solved', { n: fmt(o.solved || 0) })];
+  if (k.timed) bits.push(t('resume.left', { t: Math.floor((o.time || 0) / 60000) + ':' + String(Math.floor((o.time || 0) / 1000) % 60).padStart(2, '0') }));
+  if (k.lives) bits.push(t('resume.lives', { n: o.lives | 0 }));
+  $('resumeLine').textContent = bits.join(' · ');
+}
+
+/* ═══ A weekly copy ═══════════════════════════════════════════════════════
+   Export is there for moving phones; this is for bad days. Once a week, at boot, the save is copied beside itself
+   (the last two copies are kept), and Settings offers the newer one back. It lives in the same storage as the save,
+   so it guards against a bad change, not against clearing the browser. */
+const BACKUP_KEYS = ['dd.backup.1', 'dd.backup.2'];
+function weeklyBackup(){
+  try {
+    if (save.backupAt && Date.now() - save.backupAt < 7 * 24 * 3600 * 1000) return;
+    const a = localStorage.getItem(BACKUP_KEYS[0]);
+    if (a) localStorage.setItem(BACKUP_KEYS[1], a);
+    save.backupAt = Date.now();
+    localStorage.setItem(BACKUP_KEYS[0], JSON.stringify({ at: save.backupAt, save }));
+    persist();
+  } catch(e){}
+}
+function backupInfo(){ try { const o = JSON.parse(localStorage.getItem(BACKUP_KEYS[0]) || 'null'); return o && o.save && o.at ? o : null; } catch(e){ return null; } }
+
+/* ═══ Tuck in ══════════════════════════════════════════════════════════════
+   A session can end with a ritual instead of a cliff (docs/bible/10-ethics.md, the five-minute test). The room goes
+   dark, the cats riding along curl up asleep, a music box plays the home chord, and one line says what the session
+   held. No offer, no countdown, nothing to collect. After half an hour of play in one sitting it is the first thing
+   Game Over offers, once. */
+let session = { ms: 0, solved: 0, tucked: false };
+function tuckIn(){
+  const box = $('tuck'); if (!box) return;
+  const cats = $('tuckCats'); cats.innerHTML = '';
+  Pals.on().forEach(p => { const c = mk('span', 'tc'); c.innerHTML = catSvg(p.coat, { pose: 'sleep' }); cats.appendChild(c); });
+  $('tuckLine').textContent = t(session.solved ? 'tuck.line' : 'tuck.lineNone', { n: fmt(session.solved) });
+  box.hidden = false;
+  if (!motionOff()) box.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 900, easing: 'ease-out' });
+  if (save.sound) [523, 659, 784, 1047, 784].forEach((f, i) => setTimeout(() => tone(f, 0.9, 'sine', 0.028), 300 + i * 420));
+  session.tucked = true;
+  const close = () => {
+    if (box.hidden) return;
+    clearTimeout(box._t); box.onclick = null;
+    box.hidden = true; goTab('Play'); paintResume();
+  };
+  box.onclick = close;
+  box._t = setTimeout(close, 9000);
 }
 
 /* ═══ Style: grades, the Thread, the Bow ════════════════════════════════════
@@ -20685,6 +20832,7 @@ function resolve(ok, node){
         eyebrow: t('survival.wave', { n: run.solved }), title: t('survival.extraLife'), desc: t('survival.extraLifeDesc') });
     }
     renderHud();
+    snapRun();
     later(400, run.kind === 'discover' ? showRateStep
       : () => { if (run && run.draftDue) offerDraft(); else nextRound(); });
   } else {
@@ -20787,7 +20935,7 @@ function showRateStep(){
 }
 
 /* ═══ Runs ════════════════════════════════════════════════════════════════ */
-function startRun(kind, modeId, twistId, poolIds, gate){
+function startRun(kind, modeId, twistId, poolIds, gate, resume){
   const k = KINDS[kind];
   const lvl = playerLevel();
   /* Nothing left to try. pickMode()'s bag would shuffle an empty pool and
@@ -20841,14 +20989,20 @@ function startRun(kind, modeId, twistId, poolIds, gate){
   /* Which of the three kinds dealt this Shuffle, so Go again deals from it again and its best is its own. */
   run.gate = (kind === 'shuffle' || kind === 'cozy') && GATES[gate] ? gate : null;
   run.target = runTarget(run);
+  /* Coming back to a run the app was closed on: everything it had, and the round in play is dealt again. */
+  if (resume){
+    RUN_FIELDS.forEach(f => { if (resume[f] !== undefined) run[f] = resume[f]; });
+    run.resumed = true;
+  }
   paintThread(false);
-  Day.note('run', 1);
+  if (!resume) Day.note('run', 1);
   /* pickMode only reshuffles when the bag is empty, so a bag handed over here
      is played in the order it was built. */
   if (kind === 'daily') run.bag = dailyBag(run.rnd);
   if (!save.runs && (kind === 'shuffle' || kind === 'endless'))
     run.opening = OPENING_MODES.filter(id => run.pool.indexOf(id) >= 0);
-  save.runs++; persist();
+  if (!resume) save.runs++;
+  persist();
   pendingLevel = 0;
 
   $('hudLives').innerHTML = '';
@@ -20937,6 +21091,7 @@ function pauseRun(){
   run.roundIdx = wasDrafting ? run.roundIdx : Math.max(0, run.roundIdx - 1);
   run.timedOut = false;
   clearBoard();
+  snapRun();
   /* The sheet says "Paused" in 32px type a centimetre below; the status line
      saying it too is just the same word twice. */
   el.prompt.textContent = '';
@@ -21051,6 +21206,7 @@ function endRun(){
   if (raf){ rawCAF(raf); raf = 0; }
   roundLive = false;
   el.play.classList.remove('live');
+  dropRun();
   stopAmbient();
   Radio.end();
   el.surface.classList.remove('zenflow');
@@ -21221,6 +21377,11 @@ function endRun(){
     $('goalStrip').hidden = !g;
     if (g) $('goalLine').textContent = t(g.key, g.args);
     paintHeld();
+    session.ms += r.playMs || 0; session.solved += r.solved || 0;
+    const tb = $('tuckBtn');
+    tb.classList.toggle('first', session.ms >= 30 * 60000 && !session.tucked);
+    if (tb.classList.contains('first')) tb.parentNode.insertBefore(tb, tb.parentNode.firstChild.nextSibling);
+    else { const held = $('overHeld'); held.parentNode.insertBefore(tb, held.nextSibling); }
   }
   /* The first time a run that solved something ends, say where the yarn went. Once ever, and never to someone who
      has already opened the Room's own welcome card. */
@@ -22110,6 +22271,8 @@ function paintSettings(){
   $('swBig').setAttribute('aria-checked', String(save.bigFx !== false));
   $('volRange').value = String(Math.round(volumeNow() * 100));
   $('swMusic').setAttribute('aria-checked', String(save.music !== false));
+  { const o = backupInfo(); $('weeklyRow').hidden = !o;
+    if (o) $('weeklySub').textContent = t('set.weeklySub', { d: new Date(o.at).toLocaleDateString(save.lang || undefined), lvl: Prog.levelForXp(o.save.xp || 0) }); }
   $('musicRange').value = String(Math.round((typeof save.musicVol === 'number' ? save.musicVol : 0.5) * 100));
   Array.from($('hudRow').children).forEach(b => {
     const on = b.dataset.hd === (save.hud || 'standard');
@@ -22571,6 +22734,30 @@ $('survivalBtn').addEventListener('click', () => startRun('survival'));
 $('chaosBtn').addEventListener('click', () => startRun('chaos'));
 $('discoverBtn').addEventListener('click', () => startRun('discover'));
 $('dailyStatus').addEventListener('click', () => startRun('daily'));
+$('resumeGo').addEventListener('click', () => {
+  const o = waitingRun(); if (!o){ paintResume(); return; }
+  sfx.tap(); dropRun();
+  startRun(o.kind, o.mode || null, o.twist || null, o.pool || null, o.gate || null, o);
+});
+/* One tap for the things you would otherwise tap one by one: every cat that can be petted today, every wish ready. */
+$('petAll').addEventListener('click', () => {
+  let y = 0, n = 0;
+  Object.keys(save.pals || {}).forEach(id => { if (Pals.own(id) && Pals.canPet(id)){ const r = Pals.pet(id); if (r){ y += r.yarn; n++; if (r.crossed) bondMoment(PAL_BY_ID[id], r.crossed); } } });
+  if (!n) return;
+  sfx.tap(); buzz('good'); purr();
+  if (!motionOff()) heartsAt($('roomScene'), null);
+  announceToast({ ink: '#FF8AD8', glyph: YARN_GLYPH, eyebrow: t('room.petAll'), title: t('room.petAllGot', { n, y: fmt(y) }), desc: t('pal.petSub') });
+  paintRoom(); paintChrome();
+});
+$('wishAll').addEventListener('click', () => {
+  let y = 0, n = 0;
+  for (let i = 0; i < 12; i++){ const r = Wish.claim(i); if (r){ y += r.yarn; n++; } }
+  if (!n) return;
+  sfx.combo(4); buzz('good'); yarnFx($('wishAll'), n > 2);
+  announceToast({ ink: '#FF8AD8', glyph: YARN_GLYPH, eyebrow: t('wish.title'), title: t('wish.allGot', { n, y: fmt(y) }), desc: t('wish.treat') });
+  paintRoom(); paintChrome();
+});
+$('resumeDrop').addEventListener('click', () => { sfx.tap(); dropRun(); paintResume(); });
 $('mixBtn').addEventListener('click', () => {
   /* First tap opens the editor, because a Mixtape nobody has built is just
      Shuffle with a different name. */
@@ -22767,8 +22954,9 @@ function applyHand(){
 }
 function applyTextSize(){ document.documentElement.dataset.ts = ['100', '115', '130', '150'].indexOf(String(save.textSize)) >= 0 ? String(save.textSize) : '100'; movePill(true); fitChrome(); }
 
-$('homeBtn').addEventListener('click', () => goTab('Play'));
+$('homeBtn').addEventListener('click', () => { goTab('Play'); paintResume(); });
 $('roomCall').addEventListener('click', () => { sfx.tap(); goTab('Room'); });
+$('tuckBtn').addEventListener('click', () => { sfx.tap(); tuckIn(); });
 /* Again means the same again: a Calm mix deals Calm games, not all forty-four. It used to drop the kind and
    start a Shuffle over everything, because the button only carried the run type. */
 $('againBtn').addEventListener('click', () => {
@@ -22792,6 +22980,7 @@ $('quitBtn').addEventListener('click', () => {
   if (run && (run.solved || run.missed)) return endRun();
   wakeOff();
   Radio.stop();
+  dropRun();
   run = null; clearBoard(); goTab('Play');
 });
 
@@ -22854,6 +23043,16 @@ $('exportBtn').addEventListener('click', () => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 $('importBtn').addEventListener('click', () => $('importFile').click());
+$('weeklyBtn').addEventListener('click', () => {
+  const o = backupInfo(); if (!o) return;
+  const lvl = Prog.levelForXp(o.save.xp || 0);
+  if (!window.confirm(t('dlg.restoreCopy', { lvl, d: new Date(o.at).toLocaleDateString(save.lang || undefined) }))) return;
+  const keep = save.backupAt;
+  save = Object.assign({}, defaults, migrate(JSON.parse(JSON.stringify(o.save))));
+  save.backupAt = keep;
+  persist(); paintAll();
+  window.alert(t('dlg.restored', { lvl: Prog.levelForXp(save.xp) }));
+});
 $('importFile').addEventListener('change', ev => {
   const file = ev.target.files && ev.target.files[0];
   ev.target.value = '';
@@ -23158,6 +23357,8 @@ function boot(){
   persist();
   show('Play');
   paintAll();
+  paintResume();
+  weeklyBackup();
   watchForUpdates();
   armBackGuard();
 
