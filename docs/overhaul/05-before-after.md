@@ -290,6 +290,17 @@ environments instead of reporting every board changed.
 | How you solve | — | You shows the share of your last hundred solves that were Purrfect, Swift and Clean |
 | `kit.mjs` failed checks | stops at its first check on v0.151.0 (no kit for sale) | 0 of 14 |
 
+## v0.153.0: the living room (bible release 8)
+
+| What | Before | After |
+|---|---|---|
+| The window | the same all year | the season: snow, blossom, sun, falling leaves |
+| Seasonal things | — | four small things for the sill each season (300 to 900 yarn), under The room in the Room; every other season's are in the Archive at the same price, so nothing is ever gone (bible E4) |
+| A reason to try a game this week | — | This week's pattern on the Play tab (from the third run): one game and one of its boards, chosen from the date alone so it is the same for everyone (Classic for a player who has not opened that board), paying yarn ×1.5 in Marathon all week |
+| A surprise in a run | — | a lucky skein: about one solve in forty pays double yarn, with a gold thread and a chime and a caption of its own; never two within ten solves; rolled on its own generator so the boards are not shifted |
+| Sharing a Daily | a link to the game | the link carries the score after each round; a friend who opens it the same day races it, with a Friend chip beside the multiplier; a link from another day is ignored; the link is tidied out of the address bar; read on opening the app and when it arrives while the app is open |
+| `seasons.mjs` failed checks | stops at its first check on v0.152.0 (no seasons) | 0 of 14 |
+
 ## How to reproduce
 
 ```

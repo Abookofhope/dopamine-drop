@@ -1737,6 +1737,18 @@ html[data-ts="130"] .achgrid,html[data-ts="150"] .achgrid{grid-template-columns:
 .thread.unravel i{transition:background 600ms linear,border-color 600ms linear}
 html[data-motion="on"] .thread i.pop{animation:knotPop 420ms var(--e-spring)}
 @keyframes knotPop{from{transform:scale(.3)}}
+/* Seasons and the week's pattern. */
+.seasonbox{margin-top:14px;padding-top:12px;border-top:1px solid var(--edge-soft)}
+/* Columns sized by the text, so 150% text or a narrow phone takes fewer columns instead of clipping names. */
+.seasongrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(68px*var(--ts)),1fr));gap:6px;margin:4px 0 12px}
+.seasongrid .accbtn svg{width:30px;height:28px}
+.weekcard{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:52px;padding:10px 14px;margin:0 0 10px;
+  border-radius:var(--r-lg);border:1px dashed color-mix(in srgb, #FFC53D 55%, transparent);background:#FFC53D0d;color:inherit;cursor:pointer;text-align:left}
+.weekcard .wk{display:flex;flex-direction:column;min-width:0}
+.weekcard .wk small{font-size:calc(10px*var(--ts));font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#FFC53D}
+.weekcard .wk b{font-size:calc(14px*var(--ts))}
+.weekcard[hidden]{display:none}
+.weekcard .wy{font-size:calc(11px*var(--ts));color:var(--haze);text-align:right}
 /* Make it yours: accessories, the treat jar, a name, kits, stations, the style card. */
 .palextras{margin-top:14px;padding-top:12px;border-top:1px solid var(--edge-soft);display:flex;flex-direction:column;gap:10px}
 .pxh{font-size:calc(10px*var(--ts));font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--haze)}
@@ -4152,6 +4164,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
             <button class="cta resumeGo" id="resumeGo" type="button" data-i18n="resume.go">Resume</button>
             <button class="ghost resumeDrop" id="resumeDrop" type="button" data-i18n="resume.drop">Let it go</button>
           </div>
+          <button class="weekcard" id="weekPat" type="button">
+            <span class="wk"><small data-i18n="week.title">This week's pattern</small><b id="weekLine"></b></span>
+            <span class="wy" data-i18n="week.bonus">Yarn ×1.5 in Marathon</span>
+          </button>
           <button class="dailyCard" id="dailyStatus" type="button">
             <span class="di" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C12 3 6 10 6 14a6 6 0 0 0 12 0C18 10 12 3 12 3z"/></svg></span>
             <span class="dt"><b data-i18n="daily.title">Daily Drop</b><small id="dailyStatusLine"></small></span>
@@ -4528,6 +4544,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
           </button></h3>
           <div class="accbody" id="accB_r-decor" role="region" aria-labelledby="accH_r-decor"><div class="accin">
             <div id="decorList"></div>
+            <div class="seasonbox">
+              <p class="quiltlead" data-i18n="season.lead">Small things for the window sill. Every season's things stay in the Archive at the same price, so there is never a rush.</p>
+              <div id="seasonList"></div>
+            </div>
           </div></div>
         </section>
       </div>
@@ -5111,7 +5131,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.152.0';
+const VERSION_TAG = 'v0.153.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -5127,7 +5147,7 @@ const defaults = {
   pbBlitz:0, pbGate:{}, pbMix:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, pbEndless:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, bigFx:true, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
-  volume:1, music:true, musicVol:0.5, door:'challenge', hud:'standard', curves:{}, backupAt:0, station:'hearth', owned:{}, kits:[], contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
+  volume:1, music:true, musicVol:0.5, door:'challenge', hud:'standard', curves:{}, backupAt:0, station:'hearth', owned:{}, kits:[], vs:null, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
   lifetime:0, perks:[], perkLv:{}, tokens:0,
   dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0, purrfects:0, bows:0, slog:{}, glog:'', quiltSeen:{}, miles:{}, bestPurrRun:0,
   lastMode:null, onboarded:false,
@@ -5489,6 +5509,7 @@ const sfx = {
   swift: () => tone(880 * toneShift, 0.12, 'sine', 0.03, 1.6),
   purr: () => { const ch = Radio.chord(); (ch || [659, 784, 1047].map(f => f * toneShift * 2))
     .forEach((f, i) => setTimeout(() => tone(f, 0.12, 'triangle', 0.04), 90 + i * 75)); },
+  lucky: () => [988, 1319, 1568, 1976].forEach((f, i) => setTimeout(() => tone(f, 0.09, 'sine', 0.03), i * 55)),
   bow:  () => { [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => tone(f * toneShift, 0.42, 'triangle', 0.04), i * 45));
                 setTimeout(() => tone(2093 * toneShift, 0.5, 'sine', 0.025), 260); },
   /* A toast: two soft notes, a sixth apart, quieter than a solve. */
@@ -5506,7 +5527,7 @@ const sfx = {
 /* Sound captions: a short word on screen for each sound that carries information (a tap does not: there are far too many,
    and the finger already knows). Shown whether or not the sound is on, because the player who needs them may have it on and
    not be able to hear it. Replaced, not stacked, and gone after about a second. */
-const CAPTION_OF = { good:'cap.good', bad:'cap.bad', over:'cap.over', level:'cap.level', go:'cap.go', combo:'cap.combo', purr:'cap.purr', bow:'cap.bow' };
+const CAPTION_OF = { good:'cap.good', bad:'cap.bad', over:'cap.over', level:'cap.level', go:'cap.go', combo:'cap.combo', purr:'cap.purr', bow:'cap.bow', lucky:'cap.lucky' };
 let capTimer = 0;
 function caption(key){
   if (!save.captions) return;
@@ -6395,6 +6416,7 @@ const STRINGS = {
     'resume.title':'Your run is waiting', 'resume.go':'Resume', 'resume.drop':'Let it go', 'resume.pts':'{n} points', 'resume.left':'{t} left', 'resume.lives':'{n} lives', 'tuck.eyebrow':'Tuck in', 'tuck.call':'End here, gently: the cats curl up and the lights go down', 'tuck.night':'Goodnight.', 'tuck.line':'You solved {n} puzzles this time. The cats are asleep.', 'tuck.lineNone':'The cats are asleep. Come back whenever you like.', 'tuck.hint':'Tap anywhere to go back', 'room.petAll':'Pet everyone', 'room.petAllGot':'{n} cats petted · +{y} yarn', 'wish.all':'Collect all', 'wish.allGot':'{n} wishes · +{y} yarn', 'set.weekly':'Weekly copy', 'set.weeklySub':'Kept on this device on {d} (level {lvl})', 'btn.restoreCopy':'Restore', 'dlg.restoreCopy':'Go back to the copy from {d} (level {lvl})? What is on this device now is replaced.',
     'room.quilt':'Your quilt', 'quilt.lead':'One patch for every game. Play one to knit it in; its stars are stitched across it, its rank is its border, and a Lion solved Purrfect half the time gets the Gold Thread.', 'quilt.empty':'not played yet', 'quilt.state':'{s} stars, {r}', 'quilt.stars':'{s} of 3 stars in Marathon', 'quilt.rank':'Rank: {r}', 'quilt.rate':'Purrfect {p}% of the last {n} solves', 'quilt.rateNone':'No solves counted yet', 'quilt.gold':'Gold Thread', 'quilt.goldHow':'Solve it Purrfect half the time over twenty solves for the Gold Thread.', 'quilt.rankHow':'Stars on its five Marathon boards raise its rank.', 'quilt.play':'Marathon', 'quilt.practise':'Practise', 'mile.eyebrow':'New in your room', 'mile.s100':'A pom-pom garland', 'mile.s100.d':'100 puzzles solved. It hangs across the window.', 'mile.s500':'A music box', 'mile.s500.d':'500 solved. It sits on the window sill.', 'mile.s1000':'A warm glow', 'mile.s1000.d':'1,000 solved. The floor is warm in the evenings.', 'mile.s2500':'Something in the window', 'mile.s2500.d':'2,500 solved. A rainbow by day, a shooting star by night.', 'mile.s5000':'A yarn mobile', 'mile.s5000.d':'5,000 solved. It hangs from the ceiling.', 'mile.s10000':'A cat in the stars', 'mile.s10000.d':'10,000 solved. Look high on the wall.', 'mile.p10':'A gold frame', 'mile.p10.d':'Ten Purrfects in one run. Your quilt is framed in gold.', 'mile.tried':'A rod for the quilt', 'mile.tried.d':'Every game played. Your quilt hangs properly now.', 'mile.lions':'A lamp on the quilt', 'mile.lions.d':'Every game a Lion. The quilt has a light of its own.',
     'cosmetic.sakura':'Sakura', 'cosmetic.fishbone':'Fishbone', 'cosmetic.starlight':'Starlight', 'cosmetic.buttons':'Button box', 'set.kitBuy':'{k}, {n} yarn', 'set.kitAsk':'{k}: tap again to buy for {n} yarn', 'set.kitGot':'{k} is yours', 'set.station':'Station', 'set.stationSub':'How the room sounds', 'st.hearth':'Hearth', 'st.paws':'Busy Paws', 'st.rain':'Rainy Window', 'st.box':'Music Box', 'st.boxHow':'Comes with your 500th solve', 'acc.title':'Something to wear', 'acc.collar':'Collar', 'acc.bowtie':'Bow', 'acc.scarf':'Scarf', 'acc.wear':'Wear', 'acc.wearing':'Wearing', 'acc.ask':'Tap again: {n}', 'treat.give':'Give a treat: {n} yarn, +{b} bond', 'pal.nameLabel':'A name of your own', 'pal.nameSave':'Name', 'pal.nameHow':'At {n} bond you can give this cat a name of your own.', 'style.title':'Your style', 'style.note':'Over your last {n} solves.', 'kit.title':'Your kits', 'kit.lead':'A kit is the cats riding along, your perks, your sparkle and your station, kept together. Save what you have now, and put it back with one tap.', 'kit.n':'Kit {n}', 'kit.empty':'Empty', 'kit.use':'Use', 'kit.save':'Save here',
+    'season.lead':'Small things for the window sill. Every season\'s things stay in the Archive at the same price, so there is never a rush.', 'season.now':'This season: {s}', 'season.archive':'The Archive', 'season.winter':'Winter', 'season.spring':'Spring', 'season.summer':'Summer', 'season.autumn':'Autumn', 'si.owned':'On the sill', 'si.stocking':'Stocking', 'si.globe':'Snow globe', 'si.star':'Star', 'si.mittens':'Mittens', 'si.pot':'Flower pot', 'si.kite':'Kite', 'si.bunting':'Bunting', 'si.boots':'Rain boots', 'si.fan':'Paper fan', 'si.hat':'Sun hat', 'si.melon':'Melon slice', 'si.boat':'Paper boat', 'si.lantern':'Lantern', 'si.leaves':'Leaves', 'si.pumpkin':'Pumpkin', 'si.throw':'Knitted throw', 'week.title':'This week\'s pattern', 'week.bonus':'Yarn ×1.5 in Marathon', 'fx.lucky':'A lucky skein! ×2 yarn', 'cap.lucky':'Four bright notes: a lucky skein', 'hud.friend':'Friend',
     'hud.solved':'{n} solved', 'set.assistPrev':'Every colour also carries a shape', 'over.whilePlayed':'While you played', 'hud.pause':'Pause', 'hud.best':'Best', 'hud.newBest':'New best', 'pause.sofar':'{s}\u00a0points · {n}\u00a0solved · best\u00a0streak\u00a0{b}', 'brand.tag':'Brain snacks',
     'you.switch':'Progress or settings', 'you.progress':'Progress',
     'modes.ways':'More ways to play', 'modes.waysSub':'Endless, Mixtape, Marathon and more', 'gate.fourAll':'All four games',
@@ -6918,6 +6940,7 @@ const STRINGS = {
     'resume.title':'Ta partie t’attend', 'resume.go':'Reprendre', 'resume.drop':'Laisser filer', 'resume.pts':'{n} points', 'resume.left':'encore {t}', 'resume.lives':'{n} vies', 'tuck.eyebrow':'Bonne nuit', 'tuck.call':'Finir en douceur : les chats se pelotonnent et la lumière baisse', 'tuck.night':'Bonne nuit.', 'tuck.line':'Tu as résolu {n} énigmes cette fois. Les chats dorment.', 'tuck.lineNone':'Les chats dorment. Reviens quand tu veux.', 'tuck.hint':'Touche n’importe où pour revenir', 'room.petAll':'Caresser tout le monde', 'room.petAllGot':'{n} chats caressés · +{y} laine', 'wish.all':'Tout récolter', 'wish.allGot':'{n} vœux · +{y} laine', 'set.weekly':'Copie de la semaine', 'set.weeklySub':'Gardée sur cet appareil le {d} (niveau {lvl})', 'btn.restoreCopy':'Restaurer', 'dlg.restoreCopy':'Revenir à la copie du {d} (niveau {lvl}) ? Ce qui est sur cet appareil sera remplacé.',
     'room.quilt':'Ton patchwork', 'quilt.lead':'Un carré pour chaque jeu. Joue-le pour le tricoter ; ses étoiles sont cousues dessus, son rang en fait la bordure, et un Lion résolu en Ronronfait la moitié du temps reçoit le fil d’or.', 'quilt.empty':'pas encore joué', 'quilt.state':'{s} étoiles, {r}', 'quilt.stars':'{s} étoiles sur 3 en Marathon', 'quilt.rank':'Rang : {r}', 'quilt.rate':'Ronronfait à {p} % sur les {n} dernières réussites', 'quilt.rateNone':'Aucune réussite comptée', 'quilt.gold':'Fil d’or', 'quilt.goldHow':'Résous-le en Ronronfait la moitié du temps sur vingt réussites pour le fil d’or.', 'quilt.rankHow':'Les étoiles sur ses cinq plateaux Marathon montent son rang.', 'quilt.play':'Marathon', 'quilt.practise':'S’entraîner', 'mile.eyebrow':'Nouveau dans ta pièce', 'mile.s100':'Une guirlande de pompons', 'mile.s100.d':'100 énigmes résolues. Elle pend devant la fenêtre.', 'mile.s500':'Une boîte à musique', 'mile.s500.d':'500 résolues. Elle est sur le rebord de la fenêtre.', 'mile.s1000':'Une lueur chaude', 'mile.s1000.d':'1 000 résolues. Le sol est chaud le soir.', 'mile.s2500':'Quelque chose à la fenêtre', 'mile.s2500.d':'2 500 résolues. Un arc-en-ciel le jour, une étoile filante la nuit.', 'mile.s5000':'Un mobile en laine', 'mile.s5000.d':'5 000 résolues. Il pend du plafond.', 'mile.s10000':'Un chat dans les étoiles', 'mile.s10000.d':'10 000 résolues. Regarde en haut du mur.', 'mile.p10':'Un cadre doré', 'mile.p10.d':'Dix Ronronfaits dans une partie. Ton patchwork a un cadre doré.', 'mile.tried':'Une tringle pour le patchwork', 'mile.tried.d':'Tous les jeux joués. Ton patchwork est bien accroché.', 'mile.lions':'Une lampe sur le patchwork', 'mile.lions.d':'Tous les jeux en Lion. Le patchwork a sa propre lumière.',
     'cosmetic.sakura':'Sakura', 'cosmetic.fishbone':'Arête', 'cosmetic.starlight':'Lueur d’étoile', 'cosmetic.buttons':'Boîte à boutons', 'set.kitBuy':'{k}, {n} laines', 'set.kitAsk':'{k} : touche encore pour l’acheter {n} laines', 'set.kitGot':'{k} est à toi', 'set.station':'Station', 'set.stationSub':'Le son de la pièce', 'st.hearth':'Coin du feu', 'st.paws':'Pattes vives', 'st.rain':'Fenêtre de pluie', 'st.box':'Boîte à musique', 'st.boxHow':'Vient avec ta 500ᵉ réussite', 'acc.title':'De quoi s’habiller', 'acc.collar':'Collier', 'acc.bowtie':'Nœud', 'acc.scarf':'Écharpe', 'acc.wear':'Porter', 'acc.wearing':'Porté', 'acc.ask':'Touche encore : {n}', 'treat.give':'Donner une friandise : {n} laines, +{b} lien', 'pal.nameLabel':'Un nom à toi', 'pal.nameSave':'Nommer', 'pal.nameHow':'À {n} de lien, tu pourras donner à ce chat un nom à toi.', 'style.title':'Ton style', 'style.note':'Sur tes {n} dernières réussites.', 'kit.title':'Tes ensembles', 'kit.lead':'Un ensemble, ce sont les chats du voyage, tes atouts, ton éclat et ta station, gardés ensemble. Enregistre ce que tu as, et remets-le d’un geste.', 'kit.n':'Ensemble {n}', 'kit.empty':'Vide', 'kit.use':'Utiliser', 'kit.save':'Enregistrer ici',
+    'season.lead':'De petites choses pour le rebord de la fenêtre. Les choses de chaque saison restent aux Archives au même prix : rien ne presse.', 'season.now':'Cette saison : {s}', 'season.archive':'Les Archives', 'season.winter':'Hiver', 'season.spring':'Printemps', 'season.summer':'Été', 'season.autumn':'Automne', 'si.owned':'Sur le rebord', 'si.stocking':'Chaussette', 'si.globe':'Boule à neige', 'si.star':'Étoile', 'si.mittens':'Moufles', 'si.pot':'Pot de fleurs', 'si.kite':'Cerf-volant', 'si.bunting':'Fanions', 'si.boots':'Bottes de pluie', 'si.fan':'Éventail', 'si.hat':'Chapeau de soleil', 'si.melon':'Tranche de melon', 'si.boat':'Bateau en papier', 'si.lantern':'Lanterne', 'si.leaves':'Feuilles', 'si.pumpkin':'Citrouille', 'si.throw':'Plaid tricoté', 'week.title':'Le motif de la semaine', 'week.bonus':'Laine ×1,5 en Marathon', 'fx.lucky':'Une pelote porte-bonheur ! ×2 laine', 'cap.lucky':'Quatre notes claires : pelote porte-bonheur', 'hud.friend':'Ami',
     'hud.solved':'{n} réussis', 'set.assistPrev':'Chaque couleur porte aussi une forme', 'over.whilePlayed':'Pendant la partie', 'hud.pause':'Pause', 'hud.best':'Record', 'hud.newBest':'Nouveau record', 'pause.sofar':'{s}\u00a0points · {n}\u00a0réussis · meilleure\u00a0série\u00a0{b}', 'brand.tag':'Douceurs pour cerveaux',
     'you.switch':'Progression ou réglages', 'you.progress':'Progression',
     'modes.ways':'Autres façons de jouer', 'modes.waysSub':'Sans fin, Mixtape, Marathon et plus', 'gate.fourAll':'Les quatre jeux',
@@ -7440,6 +7463,7 @@ const STRINGS = {
     'resume.title':'Tu partida te espera', 'resume.go':'Seguir', 'resume.drop':'Dejarla', 'resume.pts':'{n} puntos', 'resume.left':'quedan {t}', 'resume.lives':'{n} vidas', 'tuck.eyebrow':'A dormir', 'tuck.call':'Termina con calma: los gatos se acurrucan y baja la luz', 'tuck.night':'Buenas noches.', 'tuck.line':'Esta vez resolviste {n} acertijos. Los gatos duermen.', 'tuck.lineNone':'Los gatos duermen. Vuelve cuando quieras.', 'tuck.hint':'Toca en cualquier sitio para volver', 'room.petAll':'Acariciar a todos', 'room.petAllGot':'{n} gatos acariciados · +{y} lana', 'wish.all':'Recoger todo', 'wish.allGot':'{n} deseos · +{y} lana', 'set.weekly':'Copia semanal', 'set.weeklySub':'Guardada en este dispositivo el {d} (nivel {lvl})', 'btn.restoreCopy':'Restaurar', 'dlg.restoreCopy':'¿Volver a la copia del {d} (nivel {lvl})? Se sustituirá lo que hay en este dispositivo.',
     'room.quilt':'Tu colcha', 'quilt.lead':'Un cuadro por cada juego. Juega uno para tejerlo; sus estrellas se cosen encima, su rango es el borde y un León resuelto Ronronfecto la mitad de las veces recibe el hilo de oro.', 'quilt.empty':'aún sin jugar', 'quilt.state':'{s} estrellas, {r}', 'quilt.stars':'{s} de 3 estrellas en Maratón', 'quilt.rank':'Rango: {r}', 'quilt.rate':'Ronronfecto el {p} % de los últimos {n} aciertos', 'quilt.rateNone':'Aún no hay aciertos contados', 'quilt.gold':'Hilo de oro', 'quilt.goldHow':'Resuélvelo Ronronfecto la mitad de las veces en veinte aciertos para el hilo de oro.', 'quilt.rankHow':'Las estrellas en sus cinco tableros de Maratón suben su rango.', 'quilt.play':'Maratón', 'quilt.practise':'Practicar', 'mile.eyebrow':'Nuevo en tu cuarto', 'mile.s100':'Una guirnalda de pompones', 'mile.s100.d':'100 acertijos resueltos. Cuelga ante la ventana.', 'mile.s500':'Una caja de música', 'mile.s500.d':'500 resueltos. Está en el alféizar.', 'mile.s1000':'Un brillo cálido', 'mile.s1000.d':'1.000 resueltos. El suelo está cálido por la tarde.', 'mile.s2500':'Algo en la ventana', 'mile.s2500.d':'2.500 resueltos. Un arcoíris de día, una estrella fugaz de noche.', 'mile.s5000':'Un móvil de lana', 'mile.s5000.d':'5.000 resueltos. Cuelga del techo.', 'mile.s10000':'Un gato en las estrellas', 'mile.s10000.d':'10.000 resueltos. Mira arriba en la pared.', 'mile.p10':'Un marco dorado', 'mile.p10.d':'Diez Ronronfectos en una partida. Tu colcha tiene marco dorado.', 'mile.tried':'Una barra para la colcha', 'mile.tried.d':'Todos los juegos jugados. Tu colcha ya cuelga bien.', 'mile.lions':'Una lámpara en la colcha', 'mile.lions.d':'Todos los juegos en León. La colcha tiene su propia luz.',
     'cosmetic.sakura':'Sakura', 'cosmetic.fishbone':'Espina', 'cosmetic.starlight':'Luz de estrella', 'cosmetic.buttons':'Caja de botones', 'set.kitBuy':'{k}, {n} lanas', 'set.kitAsk':'{k}: toca otra vez para comprarlo por {n} lanas', 'set.kitGot':'{k} es tuyo', 'set.station':'Emisora', 'set.stationSub':'Cómo suena el cuarto', 'st.hearth':'Hogar', 'st.paws':'Patas inquietas', 'st.rain':'Ventana con lluvia', 'st.box':'Caja de música', 'st.boxHow':'Llega con tu acierto 500', 'acc.title':'Algo que ponerse', 'acc.collar':'Collar', 'acc.bowtie':'Lazo', 'acc.scarf':'Bufanda', 'acc.wear':'Poner', 'acc.wearing':'Puesto', 'acc.ask':'Toca otra vez: {n}', 'treat.give':'Dar un premio: {n} lanas, +{b} vínculo', 'pal.nameLabel':'Un nombre tuyo', 'pal.nameSave':'Nombrar', 'pal.nameHow':'Con {n} de vínculo podrás darle a este gato un nombre tuyo.', 'style.title':'Tu estilo', 'style.note':'En tus últimos {n} aciertos.', 'kit.title':'Tus equipos', 'kit.lead':'Un equipo son los gatos de viaje, tus ventajas, tu brillo y tu emisora, guardados juntos. Guarda lo que tienes y recupéralo con un toque.', 'kit.n':'Equipo {n}', 'kit.empty':'Vacío', 'kit.use':'Usar', 'kit.save':'Guardar aquí',
+    'season.lead':'Cositas para el alféizar. Las cosas de cada estación se quedan en el Archivo al mismo precio, así que nunca hay prisa.', 'season.now':'Esta estación: {s}', 'season.archive':'El Archivo', 'season.winter':'Invierno', 'season.spring':'Primavera', 'season.summer':'Verano', 'season.autumn':'Otoño', 'si.owned':'En el alféizar', 'si.stocking':'Calcetín', 'si.globe':'Bola de nieve', 'si.star':'Estrella', 'si.mittens':'Manoplas', 'si.pot':'Maceta', 'si.kite':'Cometa', 'si.bunting':'Banderines', 'si.boots':'Botas de lluvia', 'si.fan':'Abanico', 'si.hat':'Sombrero', 'si.melon':'Tajada de melón', 'si.boat':'Barco de papel', 'si.lantern':'Farol', 'si.leaves':'Hojas', 'si.pumpkin':'Calabaza', 'si.throw':'Manta de punto', 'week.title':'El patrón de la semana', 'week.bonus':'Lana ×1,5 en Maratón', 'fx.lucky':'¡Un ovillo de la suerte! ×2 lana', 'cap.lucky':'Cuatro notas claras: ovillo de la suerte', 'hud.friend':'Amigo',
     'hud.solved':'{n} resueltos', 'set.assistPrev':'Cada color lleva también una forma', 'over.whilePlayed':'Mientras jugabas', 'hud.pause':'Pausa', 'hud.best':'Récord', 'hud.newBest':'Nuevo récord', 'pause.sofar':'{s}\u00a0puntos · {n}\u00a0resueltos · mejor\u00a0racha\u00a0{b}', 'brand.tag':'Bocaditos para el cerebro',
     'you.switch':'Progreso o ajustes', 'you.progress':'Progreso',
     'modes.ways':'Más formas de jugar', 'modes.waysSub':'Sin fin, Mixtape, Maratón y más', 'gate.fourAll':'Los cuatro juegos',
@@ -7962,6 +7986,7 @@ const STRINGS = {
     'resume.title':'Dein Lauf wartet', 'resume.go':'Weiter', 'resume.drop':'Loslassen', 'resume.pts':'{n} Punkte', 'resume.left':'noch {t}', 'resume.lives':'{n} Leben', 'tuck.eyebrow':'Gute Nacht', 'tuck.call':'Sanft aufhören: die Katzen rollen sich ein und das Licht geht aus', 'tuck.night':'Gute Nacht.', 'tuck.line':'Du hast diesmal {n} Rätsel gelöst. Die Katzen schlafen.', 'tuck.lineNone':'Die Katzen schlafen. Komm wieder, wann du magst.', 'tuck.hint':'Tippe irgendwo, um zurückzugehen', 'room.petAll':'Alle streicheln', 'room.petAllGot':'{n} Katzen gestreichelt · +{y} Wolle', 'wish.all':'Alle einsammeln', 'wish.allGot':'{n} Wünsche · +{y} Wolle', 'set.weekly':'Wochenkopie', 'set.weeklySub':'Auf diesem Gerät gespeichert am {d} (Level {lvl})', 'btn.restoreCopy':'Wiederherstellen', 'dlg.restoreCopy':'Zur Kopie vom {d} (Level {lvl}) zurück? Was jetzt auf diesem Gerät ist, wird ersetzt.',
     'room.quilt':'Deine Decke', 'quilt.lead':'Ein Flicken für jedes Spiel. Spiel es, um ihn einzustricken; seine Sterne werden darüber genäht, sein Rang ist der Rand, und ein Löwe, der die Hälfte der Male schnurrfekt gelöst wird, bekommt den Goldfaden.', 'quilt.empty':'noch nicht gespielt', 'quilt.state':'{s} Sterne, {r}', 'quilt.stars':'{s} von 3 Sternen im Marathon', 'quilt.rank':'Rang: {r}', 'quilt.rate':'Schnurrfekt bei {p} % der letzten {n} Lösungen', 'quilt.rateNone':'Noch keine Lösungen gezählt', 'quilt.gold':'Goldfaden', 'quilt.goldHow':'Löse es bei der Hälfte von zwanzig Lösungen schnurrfekt für den Goldfaden.', 'quilt.rankHow':'Sterne auf seinen fünf Marathon-Brettern heben seinen Rang.', 'quilt.play':'Marathon', 'quilt.practise':'Üben', 'mile.eyebrow':'Neu in deinem Zimmer', 'mile.s100':'Eine Pompon-Girlande', 'mile.s100.d':'100 Rätsel gelöst. Sie hängt vor dem Fenster.', 'mile.s500':'Eine Spieluhr', 'mile.s500.d':'500 gelöst. Sie steht auf dem Fensterbrett.', 'mile.s1000':'Ein warmes Leuchten', 'mile.s1000.d':'1.000 gelöst. Abends ist der Boden warm.', 'mile.s2500':'Etwas im Fenster', 'mile.s2500.d':'2.500 gelöst. Tagsüber ein Regenbogen, nachts eine Sternschnuppe.', 'mile.s5000':'Ein Woll-Mobile', 'mile.s5000.d':'5.000 gelöst. Es hängt von der Decke.', 'mile.s10000':'Eine Katze in den Sternen', 'mile.s10000.d':'10.000 gelöst. Schau hoch an die Wand.', 'mile.p10':'Ein goldener Rahmen', 'mile.p10.d':'Zehn Schnurrfekte in einem Lauf. Deine Decke hat einen goldenen Rahmen.', 'mile.tried':'Eine Stange für die Decke', 'mile.tried.d':'Jedes Spiel gespielt. Deine Decke hängt jetzt richtig.', 'mile.lions':'Eine Lampe für die Decke', 'mile.lions.d':'Jedes Spiel ein Löwe. Die Decke hat ihr eigenes Licht.',
     'cosmetic.sakura':'Sakura', 'cosmetic.fishbone':'Gräte', 'cosmetic.starlight':'Sternenlicht', 'cosmetic.buttons':'Knopfdose', 'set.kitBuy':'{k}, {n} Wolle', 'set.kitAsk':'{k}: noch einmal tippen, um es für {n} Wolle zu kaufen', 'set.kitGot':'{k} gehört dir', 'set.station':'Sender', 'set.stationSub':'Wie das Zimmer klingt', 'st.hearth':'Kamin', 'st.paws':'Flinke Pfoten', 'st.rain':'Regenfenster', 'st.box':'Spieluhr', 'st.boxHow':'Kommt mit deiner 500. Lösung', 'acc.title':'Etwas zum Anziehen', 'acc.collar':'Halsband', 'acc.bowtie':'Schleife', 'acc.scarf':'Schal', 'acc.wear':'Anziehen', 'acc.wearing':'Angezogen', 'acc.ask':'Noch einmal: {n}', 'treat.give':'Ein Leckerli geben: {n} Wolle, +{b} Bindung', 'pal.nameLabel':'Ein eigener Name', 'pal.nameSave':'Benennen', 'pal.nameHow':'Ab {n} Bindung kannst du dieser Katze einen eigenen Namen geben.', 'style.title':'Dein Stil', 'style.note':'Über deine letzten {n} Lösungen.', 'kit.title':'Deine Sets', 'kit.lead':'Ein Set sind die mitreisenden Katzen, deine Vorteile, dein Funkeln und dein Sender, zusammen aufbewahrt. Speichere, was du jetzt hast, und hol es mit einem Tipp zurück.', 'kit.n':'Set {n}', 'kit.empty':'Leer', 'kit.use':'Nutzen', 'kit.save':'Hier speichern',
+    'season.lead':'Kleinigkeiten fürs Fensterbrett. Die Sachen jeder Jahreszeit bleiben zum selben Preis im Archiv, also gibt es keine Eile.', 'season.now':'Diese Jahreszeit: {s}', 'season.archive':'Das Archiv', 'season.winter':'Winter', 'season.spring':'Frühling', 'season.summer':'Sommer', 'season.autumn':'Herbst', 'si.owned':'Auf dem Fensterbrett', 'si.stocking':'Strumpf', 'si.globe':'Schneekugel', 'si.star':'Stern', 'si.mittens':'Fäustlinge', 'si.pot':'Blumentopf', 'si.kite':'Drachen', 'si.bunting':'Wimpel', 'si.boots':'Gummistiefel', 'si.fan':'Fächer', 'si.hat':'Sonnenhut', 'si.melon':'Melonenstück', 'si.boat':'Papierboot', 'si.lantern':'Laterne', 'si.leaves':'Blätter', 'si.pumpkin':'Kürbis', 'si.throw':'Strickdecke', 'week.title':'Das Muster der Woche', 'week.bonus':'Wolle ×1,5 im Marathon', 'fx.lucky':'Ein Glücksknäuel! ×2 Wolle', 'cap.lucky':'Vier helle Töne: ein Glücksknäuel', 'hud.friend':'Freund',
     'hud.solved':'{n} gelöst', 'set.assistPrev':'Jede Farbe trägt auch eine Form', 'over.whilePlayed':'Während du gespielt hast', 'hud.pause':'Pause', 'hud.best':'Bestwert', 'hud.newBest':'Neuer Bestwert', 'pause.sofar':'{s}\u00a0Punkte · {n}\u00a0gelöst · beste\u00a0Serie\u00a0{b}', 'brand.tag':'Snacks fürs Gehirn',
     'you.switch':'Fortschritt oder Optionen', 'you.progress':'Fortschritt',
     'modes.ways':'Weitere Spielarten', 'modes.waysSub':'Endlos, Mixtape, Marathon und mehr', 'gate.fourAll':'Alle vier Spiele',
@@ -8080,6 +8105,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.153.0', date:'2026-11-05', items:[
+    'The room keeps the seasons: the window shows the time of year, and each season brings four small things for the sill. Nothing leaves when its season does: every season\u2019s things stay in the Archive at the same price.',
+    'This week\u2019s pattern, on the Play tab: one game and one of its boards, the same for everyone (Classic until you open that board), paying yarn \u00d71.5 in Marathon all week. A bonus, never something to miss.',
+    'Now and then a solve is a lucky skein: double yarn, a gold thread and a chime of its own (about one in forty, never two close together).',
+    'Share your Daily and the link carries your score round by round: a friend who opens it the same day races you, with a Friend chip beside the multiplier.',
+  ] },
   { v:'0.152.0', date:'2026-11-05', items:[
     'Make it yours. Four Sparkle kits to buy with yarn in Settings (Sakura, Fishbone, Starlight, Button box): each adds its own little shapes to every solve. Tap once to see the price, again to buy.',
     'Stations for the Room Radio: Hearth as before, Busy Paws (quicker) and Rainy Window (slower, with rain) to buy, and a Music Box that comes with your 500th solve.',
@@ -17961,6 +17992,7 @@ const Yarn = {
     let m = 1 + Room.comfort() / 100;
     Pals.on().forEach(p => { const h = PAL_FX[p.id]; if (h.yarn) m *= h.yarn(h.v[Pals.tier(p.id)]); });
     ((r && r.charms) || []).forEach(id => { const h = CHARM_FX[id]; if (h && h.yarn) m *= h.yarn(); });
+    if (r && r.kind === 'marathon'){ const wp = weekPattern(); if (r.mode === wp.id && (r.twist || 'classic') === wp.tw) m *= 1.5; }
     return m;
   },
   /* Banked a solve at a time, like XP: closing the app mid-run costs the run,
@@ -18404,6 +18436,7 @@ function roomSvg(){
   if (L('lamp') === 1) s += '<ellipse cx="238" cy="170" rx="40" ry="34" fill="url(#rmg)"/><rect x="235" y="128" width="3.500" height="58" fill="#8B6B45"/><path d="M224 128l7-16h14l7 16z" fill="#F6D88B"/><ellipse cx="238" cy="188" rx="9" ry="2.500" fill="#6B4F30"/>';
   if (L('lamp') === 2) s += '<path d="M200 0v34" stroke="#3B2C60" stroke-width="1.500"/><ellipse cx="200" cy="52" rx="34" ry="30" fill="url(#rmg)"/><ellipse cx="200" cy="46" rx="15" ry="13" fill="#FF8A5B"/><path d="M186 46h28M200 33v26" stroke="#C9542B" stroke-width="1.200"/><rect x="194" y="32" width="12" height="4" fill="#3B2C60"/>';
 
+  s += seasonWindow(night) + seasonSill();
   s += milesSvg(night);
   /* the floor: rug, then bed and tree, then the cats on top of all of it */
   const rug = L('rug');
@@ -18905,7 +18938,7 @@ function paintRoom(){
     scene.appendChild(m);
   }
   { const hr = new Date().getHours(); scene.querySelector('.roommotes').classList.toggle('night', hr < 5 || hr >= 20); }
-  paintRoomIntro(); paintGift(); paintSeats(); paintWishes(); paintPals(); paintDecor(); paintQuilt(); paintKits();
+  paintRoomIntro(); paintGift(); paintSeats(); paintWishes(); paintPals(); paintDecor(); paintQuilt(); paintKits(); paintSeasons();
   paintRoomDot();
 }
 function paintRoomDot(){
@@ -19904,6 +19937,122 @@ document.addEventListener('click', e => {
   if (h) setTimeout(() => { if (h.getAttribute('aria-expanded') === 'true') paintQuilt(); }, 60);
 });
 
+/* ═══ Seasons ═════════════════════════════════════════════════════════════
+   The room keeps the time of year: the window shows it, and each season brings four small things to buy for the
+   sill. Nothing leaves when its season does. Every season's things stay in the Archive at the same price, so a
+   season is something to enjoy, never something to miss (docs/bible/10-ethics.md, E4). */
+const SEASONS = ['winter', 'spring', 'summer', 'autumn'];
+const seasonNow = () => { const m = new Date().getMonth(); return m === 11 || m < 2 ? 'winter' : m < 5 ? 'spring' : m < 8 ? 'summer' : 'autumn'; };
+const SEASON_ITEMS = {
+  winter: [['stocking', 450, '#E8618C'], ['globe', 900, '#9EB3FF'], ['star', 300, '#FFC53D'], ['mittens', 600, '#33E6C8']],
+  spring: [['pot', 300, '#7BE38A'], ['kite', 600, '#FF8AD8'], ['bunting', 450, '#FFC53D'], ['boots', 900, '#FF9A3D']],
+  summer: [['fan', 300, '#7CC8FF'], ['hat', 450, '#FFE08A'], ['melon', 600, '#FF5B8A'], ['boat', 900, '#E9D9B8']],
+  autumn: [['lantern', 600, '#FF9A3D'], ['leaves', 300, '#E8618C'], ['pumpkin', 450, '#FF8A3D'], ['throw', 900, '#9C7BFF']]
+};
+const seasonItem = id => { for (const se of SEASONS) for (const it of SEASON_ITEMS[se]) if (it[0] === id) return { id, cost: it[1], ink: it[2], season: se }; return null; };
+/* A small drawing for each, sized for the window sill (about 12 px). */
+function seasonIcon(id, x, y){
+  const it = seasonItem(id); if (!it) return '';
+  const c = it.ink, g = (inner) => '<g transform="translate(' + x + ' ' + y + ')">' + inner + '</g>';
+  const shapes = {
+    stocking: '<path d="M2-12h6v8l4 3-2 3-7-4z" fill="' + c + '"/><rect x="1" y="-13" width="8" height="3" fill="#fff"/>',
+    globe: '<circle cy="-6" r="6" fill="' + c + '" opacity=".75"/><rect x="-5" y="-1" width="10" height="3" rx="1" fill="#8B6B45"/><circle cx="-2" cy="-7" r="1" fill="#fff"/>',
+    star: '<path d="M0-12l2.4 5 5.4.6-4 3.7 1.1 5.3L0-.1-4.9 2.5-3.8-2.8-7.8-6.4l5.4-.6z" fill="' + c + '"/>',
+    mittens: '<path d="M-7-9a3 3 0 0 1 6 0v8h-6z" fill="' + c + '"/><path d="M1-9a3 3 0 0 1 6 0v8H1z" fill="' + c + '"/><rect x="-7" y="-2" width="14" height="2" fill="#fff"/>',
+    pot: '<path d="M-5-4h10l-1.500 4h-7z" fill="#C0703F"/><circle cx="-2" cy="-8" r="2.400" fill="' + c + '"/><circle cx="2.400" cy="-9" r="2.400" fill="#FF8AD8"/>',
+    kite: '<path d="M0-13l5 6-5 6-5-6z" fill="' + c + '"/><path d="M0-1q2 3-1 6" stroke="#fff" stroke-width=".8" fill="none"/>',
+    bunting: '<path d="M-8-11h16" stroke="#E9D9B8" stroke-width=".8"/><path d="M-8-11l2.500 5 2.500-5zM-2.500-11l2.500 5 2.500-5zM3-11l2.500 5 2.500-5z" fill="' + c + '"/>',
+    boots: '<path d="M-6-10h4v7h3v3h-7z" fill="' + c + '"/><path d="M1-10h4v7h3v3H1z" fill="' + c + '" opacity=".85"/>',
+    fan: '<path d="M0 0L-6-9a8 8 0 0 1 12 0z" fill="' + c + '"/><path d="M0 0v-9M0 0l-3-8.400M0 0l3-8.400" stroke="#fff" stroke-width=".6"/>',
+    hat: '<ellipse cy="-2" rx="8" ry="2" fill="' + c + '"/><path d="M-4-2a4 4 0 0 1 8 0z" fill="' + c + '"/><rect x="-4" y="-4" width="8" height="1.400" fill="#FF8AD8"/>',
+    melon: '<path d="M-7-6a7 7 0 0 0 14 0z" fill="#7BE38A"/><path d="M-6-6a6 6 0 0 0 12 0z" fill="' + c + '"/><circle cx="-2" cy="-4" r=".7" fill="#1A1230"/><circle cx="2" cy="-3.500" r=".7" fill="#1A1230"/>',
+    boat: '<path d="M-7-4h14l-3 4h-8z" fill="' + c + '"/><path d="M0-4V-12l5 7z" fill="#fff"/>',
+    lantern: '<rect x="-4" y="-11" width="8" height="10" rx="3" fill="' + c + '"/><path d="M-2-13h4M0-13v2" stroke="#8B6B45" stroke-width="1"/><ellipse cy="-6" rx="2" ry="3" fill="#FFE9A8" opacity=".8"/>',
+    leaves: '<ellipse cx="-4" cy="-5" rx="3.400" ry="1.800" transform="rotate(-30 -4 -5)" fill="' + c + '"/><ellipse cx="2" cy="-8" rx="3.400" ry="1.800" transform="rotate(20 2 -8)" fill="#FFC53D"/><ellipse cx="4" cy="-3" rx="3" ry="1.600" fill="#FF9A3D"/>',
+    pumpkin: '<ellipse cy="-5" rx="7" ry="5" fill="' + c + '"/><path d="M0-10v-3" stroke="#3E7A3A" stroke-width="1.600"/><path d="M-3-9.500v9M3-9.500v9" stroke="#C25E22" stroke-width=".7"/>',
+    throw: '<rect x="-8" y="-7" width="16" height="7" rx="1.500" fill="' + c + '"/><path d="M-8-4h16" stroke="#FFF3E6" stroke-width=".8" stroke-dasharray="2 1.500"/>'
+  };
+  return g(shapes[id] || '');
+}
+/* The window, by season (everyone's, nothing to buy). */
+function seasonWindow(night){
+  const se = seasonNow();
+  if (se === 'winter') return [[54, 40], [70, 70], [90, 52], [112, 84], [132, 44], [60, 96], [140, 100], [100, 34]].map(([x, y]) => '<circle cx="' + x + '" cy="' + y + '" r="1.600" fill="#fff" opacity=".9"/>').join('');
+  if (se === 'autumn') return [[60, 50, '#FF9A3D', -30], [98, 76, '#E8618C', 20], [130, 58, '#FFC53D', -10], [80, 96, '#FF8A3D', 40]].map(([x, y, c, r]) => '<ellipse cx="' + x + '" cy="' + y + '" rx="3.400" ry="1.700" transform="rotate(' + r + ' ' + x + ' ' + y + ')" fill="' + c + '" opacity=".9"/>').join('');
+  if (se === 'spring') return '<path d="M148 34q-26 6-40 22" stroke="#6B4F30" stroke-width="1.600" fill="none"/>' + [[136, 38], [124, 44], [114, 52], [128, 36]].map(([x, y]) => '<circle cx="' + x + '" cy="' + y + '" r="2.400" fill="#FFB6D1"/>').join('');
+  return night ? '' : '<path d="M122 36v-6M122 76v6M102 56h-6M142 56h6M108 42l-4-4M136 42l4-4M108 70l-4 4M136 70l4 4" stroke="#FFE28A" stroke-width="1.600" stroke-linecap="round" opacity=".8"/>';
+}
+function seasonSill(){
+  const owned = Object.keys(((save.owned || {}).season) || {});
+  const now = SEASON_ITEMS[seasonNow()].map(x => x[0]);
+  const pick = owned.filter(id => now.indexOf(id) >= 0).concat(owned.filter(id => now.indexOf(id) < 0)).slice(0, 4);
+  return pick.map((id, i) => seasonIcon(id, 92 + i * 16, 119)).join('');
+}
+function paintSeasons(){
+  const host = $('seasonList'); if (!host) return;
+  const se = seasonNow();
+  host.innerHTML = '';
+  const block = (title, list) => {
+    const h = mk('small', 'pxh'); h.textContent = title; host.appendChild(h);
+    const grid = mk('div', 'seasongrid');
+    list.forEach(([id, cost]) => {
+      const own = owns('season', id);
+      const b = mk('button', 'accbtn' + (own ? ' on' : ' locked')); b.type = 'button';
+      b.innerHTML = '<svg viewBox="-10 -15 20 18" aria-hidden="true">' + seasonIcon(id, 0, 0) + '</svg><span>' + t('si.' + id) + '</span><small>' + (own ? t('si.owned') : fmt(cost)) + '</small>';
+      if (!own) b.addEventListener('click', () => {
+        if (!b.classList.contains('arm')){ b.classList.add('arm'); b.querySelector('small').textContent = t('acc.ask', { n: fmt(cost) }); setTimeout(() => b.classList.remove('arm'), 4000); return; }
+        if (!buyOwn('season', id, cost)){ b.querySelector('small').textContent = t('room.need', { n: fmt(cost - Yarn.have()) }); return; }
+        sfx.combo(4); buzz('good'); yarnFx(b, false); paintRoom(); paintChrome();
+      });
+      grid.appendChild(b);
+    });
+    host.appendChild(grid);
+  };
+  block(t('season.now', { s: t('season.' + se) }), SEASON_ITEMS[se]);
+  block(t('season.archive'), SEASONS.filter(x => x !== se).reduce((a, x) => a.concat(SEASON_ITEMS[x]), []));
+}
+
+/* ═══ This week's pattern ═══════════════════════════════════════════════════
+   One game and one of its boards is the week's pattern: the same for everyone, from the date. Played in Marathon
+   this week it pays half as much yarn again. A bonus, never an exclusive: nothing is lost when the week turns. */
+function weekPattern(){
+  const h = hashStr('wp' + weekKey());
+  const id = MODE_IDS[h % MODE_IDS.length];
+  /* The board is chosen from all of them by the date alone, so it is the same for everyone; a player who has not
+     opened it yet plays the game's Classic board for the same bonus. */
+  /* >>> not >>: the hash is unsigned, and >> would make it negative half the time, and an index of undefined. */
+  const tw = TWISTS[(h >>> 8) % TWISTS.length].id;
+  return { id, tw: tw === 'classic' || Twist.open(id, tw) ? tw : 'classic' };
+}
+function paintWeek(){
+  const b = $('weekPat'); if (!b) return;
+  /* Not before the third run: a new player's first screen is the game, not a list of offers. */
+  b.hidden = (save.runs | 0) < 3;
+  const wp = weekPattern();
+  $('weekLine').textContent = modeName(wp.id) + (wp.tw !== 'classic' ? ' · ' + t('twist.' + wp.tw) : '');
+}
+
+/* ═══ The lucky skein, and a friend's Daily to race ═══════════════════════════
+   One solve in about forty (never two within ten) is a lucky skein: double yarn on that solve, a gold thread and a
+   chime of its own. Rolled on its own little generator, so it cannot shift the boards the game deals. */
+let luckSeed = (Date.now() & 0xffff) | 3;
+const luckRoll = () => { luckSeed = (Math.imul(luckSeed, 1103515245) + 12345) & 0x7fffffff; return luckSeed / 0x80000000; };
+let luckForced = false;   /* probe only: the next solve that may be lucky, is */
+const luckyNow = r => (r.solved | 0) - (r.lastLucky == null ? -99 : r.lastLucky) >= 10 && (luckForced ? (luckForced = false, true) : luckRoll() < 1 / 40);
+try { if (localStorage.getItem('dd.probe')) window.__luck = { force: () => { luckForced = true; }, armed: () => luckForced, count: () => ((run && run.luckies) | 0) }; } catch(e){}
+/* A Daily shared with a link carries its score after each round; the friend who opens it on the same day races it. */
+function readVs(){
+  try {
+    const m = /#vs=(\d{4}-\d{2}-\d{2})\.([0-9a-z-]+)/.exec(location.hash || '');
+    if (!m) return;
+    if (m[1] === todayKey()) { save.vs = { date: m[1], c: m[2].split('-').map(x => parseInt(x, 36) || 0).slice(0, 12) }; persist(); }
+    history.replaceState(null, '', location.pathname + location.search);
+  } catch(e){}
+}
+const vsToday = () => save.vs && save.vs.date === todayKey() && Array.isArray(save.vs.c) ? save.vs.c : null;
+/* A link tapped while the app is already open in this tab changes only the hash: read it then too. */
+window.addEventListener('hashchange', readVs);
+
 /* ═══ A run that outlives the app ═════════════════════════════════════════
    Progress has always been banked per solve, but the run itself lived only in memory: a phone call, a closed tab or
    the system reclaiming the page cost the score, the clock, the streak and the charms. Now the run is written down
@@ -20465,16 +20614,17 @@ function renderHud(){
   /* What this run is chasing: your best for it, and once you are past it, by how much. */
   {
     const bt = $('hudBest');
-    if (k.scored && run.target > 0){
+    if (k.scored && (run.target > 0 || (run.kind === 'daily' && vsToday()))){
       const beat = run.score > run.target;
       if (beat && !run.beatBest){ run.beatBest = true; beatBestMoment(); }
       if (bt.classList.contains('beat') !== beat) bt.classList.toggle('beat', beat);
       /* Ahead of or behind your best run at this same moment, once there is a best run to compare with. */
-      const g = beat ? null : ghostAt(run);
-      if (g != null && run.playMs > 3000){
+      const fr = run.kind === 'daily' ? vsToday() : null;
+      const g = beat ? null : fr ? (fr[Math.max(0, (run.log || []).length - 1)] | 0) : ghostAt(run);
+      if (g != null && (fr ? (run.log || []).length > 0 : run.playMs > 3000)){
         const d = run.score - g;
         bt.classList.toggle('ahead', d >= 0); bt.classList.toggle('behind', d < 0);
-        hudText($('hudBestL'), t('hud.pace'));
+        hudText($('hudBestL'), t(fr ? 'hud.friend' : 'hud.pace'));
         hudText($('hudBestN'), (d >= 0 ? '+' : '\u2212') + fmt(Math.abs(d)));
       } else {
         bt.classList.remove('ahead', 'behind');
@@ -21029,7 +21179,14 @@ function resolve(ok, node){
        little closer with it. A ×1 solve is worth under a ball of wool, a ×5 solve
        three, so a streak pays in more than points. */
     {
-      const got = Yarn.give(((0.8 + 0.4 * (mult - 1)) + fx.yarn + (STYLE.yarn[grade] || 0)) * fx.yarnK * Yarn.mult(run));
+      const lucky = luckyNow(run);
+      if (lucky) run.lastLucky = run.solved;
+      const got = Yarn.give(((0.8 + 0.4 * (mult - 1)) + fx.yarn + (STYLE.yarn[grade] || 0)) * fx.yarnK * Yarn.mult(run) * (lucky ? 2 : 1));
+      if (lucky){
+        run.luckies = (run.luckies | 0) + 1;
+        later(180, () => { sfx.lucky(); floatPts(node, t('fx.lucky'), 4);
+          if (!motionOff()){ const b = Vfx.box(node); Vfx.spray('spiral', b.x, b.y, 18, { k: ['thread', 'glint'], pal: ['#FFC53D', '#FFE08A', '#FFF3E6'] }); } });
+      }
       run.yarn = (run.yarn || 0) + got;
       Pals.on().forEach(p => { const crossed = Pals.addBond(p.id, 1); if (crossed) bondMoment(p, crossed); });
       Day.note('solve', 1, { fam, id: mid });
@@ -21179,6 +21336,7 @@ function resolve(ok, node){
         glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 20S4 14.5 4 9.4A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8 2.4C20 14.5 12 20 12 20z" fill="currentColor"/></svg>',
         eyebrow: t('survival.wave', { n: run.solved }), title: t('survival.extraLife'), desc: t('survival.extraLifeDesc') });
     }
+    if (run.kind === 'daily') (run.dcurve || (run.dcurve = [])).push(run.score);
     renderHud();
     snapRun();
     later(400, run.kind === 'discover' ? showRateStep
@@ -21788,6 +21946,7 @@ function endRun(){
     $('nearBest').textContent = t('over.yourBest', { n: fmt(target) });
   }
   el.over.dataset.kind = r.kind;
+  el.over.dataset.vs = r.kind === 'daily' ? (r.dcurve || []).map(x => Math.max(0, x | 0).toString(36)).join('-') : '';
   el.over.dataset.gate = r.gate || '';
   el.over.dataset.mode = r.mode || '';
   el.over.dataset.twist = r.twist || '';
@@ -22719,7 +22878,7 @@ function paintStyle(){
 }
 function paintAll(){
   paintChrome();
-  if (screen === 'Play') paintPlay();
+  if (screen === 'Play'){ paintPlay(); paintWeek(); }
   else if (screen === 'Modes') paintModes();
   else if (screen === 'Mix') paintMix();
   else if (screen === 'Room') paintRoom();
@@ -23113,6 +23272,7 @@ $('survivalBtn').addEventListener('click', () => startRun('survival'));
 $('chaosBtn').addEventListener('click', () => startRun('chaos'));
 $('discoverBtn').addEventListener('click', () => startRun('discover'));
 $('dailyStatus').addEventListener('click', () => startRun('daily'));
+$('weekPat').addEventListener('click', () => { const wp = weekPattern(); sfx.tap(); startRun('marathon', wp.id, wp.tw); });
 $('resumeGo').addEventListener('click', () => {
   const o = waitingRun(); if (!o){ paintResume(); return; }
   sfx.tap(); dropRun();
@@ -23263,7 +23423,8 @@ $('shareBtn').addEventListener('click', () => {
     solved: Number(el.over.dataset.solved || 0),
     streak: $('stStreak').textContent
   }) + (ribbon ? '\n' + ribbon : '');
-  const url = location.origin + location.pathname;
+  /* A Daily's link carries its round-by-round score, so a friend opening it today can race it. */
+  const url = location.origin + location.pathname + (daily && el.over.dataset.vs ? '#vs=' + todayKey() + '.' + el.over.dataset.vs : '');
   const flash = key => {
     btn.querySelector('b').textContent = t(key);
     btn.classList.add('done');
@@ -23748,6 +23909,7 @@ function boot(){
   show('Play');
   paintAll();
   checkMiles(true);
+  readVs();
   paintResume();
   weeklyBackup();
   watchForUpdates();
