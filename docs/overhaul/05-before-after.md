@@ -278,6 +278,18 @@ environments instead of reporting every board changed.
 | The Room's picture | furniture you bought | also a small copy of the quilt on its wall, and things milestones add for good: a pom-pom garland (100 solves), a music box (500), a warm glow (1,000), a rainbow or a shooting star (2,500), a yarn mobile (5,000), a cat in the stars (10,000), a gold frame (ten Purrfects in one run), a rod (every game played), a lamp (every game a Lion) |
 | `quilt.mjs` failed checks | stops at its first check on v0.150.0 (no quilt panel) | 0 of 16 |
 
+## v0.152.0: make it yours (bible release 7)
+
+| What | Before | After |
+|---|---|---|
+| What yarn buys | the Room's furniture and the cats | also four Sparkle kits in Settings (900 to 1,200 yarn), each adding its own shapes to every solve; two Room Radio stations (800 and 1,200); something for each cat to wear (150 to 600); treats (25 yarn for 10 bond, any time) |
+| Buying | — | two taps: the first shows the price, the second buys; nothing needs a dialog |
+| The Room Radio | one station | Hearth, Busy Paws (quicker, keys from the first heat), Rainy Window (slower, with rain), Music Box (from the 500th solve, not for sale) |
+| A cat at the deepest bond | its own name only | a name of your own (12 letters), shown on its card and wherever it is named |
+| Changing what you take into a run | cats, perks, sparkle and station one by one | Your kits, under Riding along in the Room: three slots; Save here keeps all four together, Use puts them back (only what you still own) |
+| How you solve | — | You shows the share of your last hundred solves that were Purrfect, Swift and Clean |
+| `kit.mjs` failed checks | stops at its first check on v0.151.0 (no kit for sale) | 0 of 14 |
+
 ## How to reproduce
 
 ```

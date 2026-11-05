@@ -35,6 +35,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.149.0 | Two doors (bible release 4): Cozy (no clock, nothing to lose, the same yarn) and Challenge (the clock, and your best run's pace beside the multiplier); HUD density; the HUD steps back during a round; an install row |
 | v0.150.0 | Never lose a run (bible release 5): a run closed mid-way is offered back for a day; Tuck in ends a session gently; Pet everyone and Collect all; a weekly copy of progress on the device |
 | v0.151.0 | The Quilt (bible release 6): one patch per game in the Room, knitted as it is played, with stars, rank and the Gold Thread; milestones add things to the Room for good |
+| v0.152.0 | Make it yours (bible release 7): Sparkle kits, radio stations, something for a cat to wear, treats, a name of your own, three saved kits, your style on You |
 
 ## Ground rules the work follows
 
