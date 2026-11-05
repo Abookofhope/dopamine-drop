@@ -56,15 +56,14 @@ on Calm & Collect. No clock. The music station is Hearth: slower, warmer.
 *(Autonomy, Bliss.)*
 
 **Minutes 1–8.** Patchwork, Latch Hook, Follow the Thread, and so on. A miss
-on Latch Hook just cools the heat a step, and the Thread holds. Two Cat's
-Cradles: the strand loops into a cradle across the room, the pad swells and +5
-yarn each time. *(Flow without pressure.)*
+on Latch Hook just cools the heat a step, and the Thread holds. Two Bows: the
+strand loops into a bow over the board, the pad swells and +5 yarn each time. *(Flow without pressure.)*
 
 **Minute 9.** Ten solves: a stage gift instead of a draft, 10 yarn, a soft
 sweep. *(Landmarks without decisions.)*
 
 **Minute 12.** Sam taps Pause, then **End the run**. The recap leads with
-"Two Cat's Cradles". Then: 38 solves, 74 yarn, a quilt stitch on Latch Hook
+"Two Bows". Then: 38 solves, 74 yarn, a quilt stitch on Latch Hook
 (first Swift), Sesame's bond reaches 2 ("Sesame's passive steps up"), and the
 wish ticked. *(Progress you can see.)*
 
@@ -90,7 +89,7 @@ score shows last week's best: Sam is 340 behind at 2:00. *(Mastery against
 oneself.)*
 
 **Minute 6.** A hot streak: ×5 (the room's bells come in), and a Thread closing
-into a Cat's Cradle *during* a stage beat. The biggest moment the game
+into a Bow *during* a stage beat. The biggest moment the game
 makes: cradle, sweep, swell and the charm draft deals a rare card. The ghost
 flips to gold: "+120". *(T5 stacked into T6. Earned spectacle.)*
 

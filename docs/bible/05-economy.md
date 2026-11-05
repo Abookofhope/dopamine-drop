@@ -24,8 +24,8 @@
 |---|---|---|---|
 | Each solve | 0.8 (×1) to 2.4 (×5) | + style: Clean +0.2, Swift +0.2, Purrfect +1 | competence pays visibly |
 | End of a scored run | `score / 500` | Cozy runs (unscored) pay `solves × 0.6` | Cozy must not earn less per minute of play than an average Challenge run |
-| Cat's Cradle | — | +5 | the run's peak pays |
-| Patchwork stitch | — | +1 | variety pays everyone, not only kitten owners |
+| a Bow | — | +5 | the run's peak pays |
+| Variety stitch | — | +1 | variety pays everyone, not only kitten owners |
 | Stage beat | charm draft or a 12-yarn nap | Cozy: a 10-yarn stage gift instead of a draft | Cozy has no point charms to draft |
 | Wishes | 30 / 45 / 65; 250 a week for 9 | unchanged | already generous |
 | Daily gift | 20 … 120 over 7 days | **a missed day rests the ladder** (you resume on the day you reached) | E4: nothing is lost by taking a day off |
@@ -90,13 +90,13 @@ anything to make.
 Game Over is where the economy is felt. It pays out in this order (Peak-End):
 
 1. **The peak**: the run's best moment, as a line and a replayed stinger
-   ("Purrfect on Patchwork, 2.1 s", "Cat's Cradle at 4:12", "New best", "First
+   ("Purrfect on Patchwork, 2.1 s", "a Bow at 4:12", "New best", "First
    ×5"). A run with no solves leads with something true and kind: "You met
    Latch Hook. The rule: turn rows until every hook lines up", with Practise in
    Cozy offered.
 2. **The score** counts up (Challenge), or the solves (Cozy).
 3. **XP** fills the level bar (live).
-4. **Yarn** flies to the basket with the breakdown: solves, style, Cradle,
+4. **Yarn** flies to the basket with the breakdown: solves, style, Bows,
    stage gifts (live, extended).
 5. **What moved**: quilt stitches, bond steps, wishes ticked, milestones near.
 6. **Next up** (live): one concrete next goal.

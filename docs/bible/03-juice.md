@@ -41,8 +41,8 @@ everything and nothing stands out. This chapter fixes the proportions.
 | **T2 Solve** | a board solved | every 2–15 s | the game's signature spray (44, 16 styles); a token flies to the score | `good(n)`: two notes in key, pitch rises with streak | `good` 16 ms | score count-up; floating `+pts` | — |
 | **T3 Clean / Swift** | a graded solve | 1 in 3 solves for a practised player | T2 + glints along the board edge (Clean) or a speed streak across the score (Swift) | `good` + a third voice; Swift adds a short whoosh | `[12,30,16]` | grade word under the score, 600 ms | frame kick 1 px |
 | **T4 Purrfect** | Clean and Swift | 1 in 6 solves for a practised player | T3 + a stamp ghost on the board, a gold ring, a Thread knot pops | three rising notes in the music's key (Room Radio), panned to the board | `[14,40,14,40,22]` | "Purrfect" stamped in gold; knot count | frame kick 2 px, vignette breathes warm |
-| **T5 Milestone** | ×3–×5 tier-up, stage beat, new best passed, Cat's Cradle, level-up | 3–8 a run | sweep across the surface, fountain or rain, ring; a veil at ×5 and the Cradle | `combo(tier)` fanfare; the music adds its next layer or plays its stinger | `win` | chip pops; toast **queued** to the round end | frame kick 3 px; background parallax swells |
-| **T6 Peak** | the run's best moment replayed on Game Over; a first-ever (first Purrfect, first Cradle, first ×5, a game mastered) | 0–2 a session | full choreography: cannons, the Room lights up behind the card | the music resolves to its home chord; a purr | `done` | the recap leads with it | slow push-in on the recap card (scale 1.00 to 1.02 over 900 ms, the card only) |
+| **T5 Milestone** | ×3–×5 tier-up, stage beat, new best passed, a Bow, level-up | 3–8 a run | sweep across the surface, fountain or rain, ring; a veil at ×5 and the Cradle | `combo(tier)` fanfare; the music adds its next layer or plays its stinger | `win` | chip pops; toast **queued** to the round end | frame kick 3 px; background parallax swells |
+| **T6 Peak** | the run's best moment replayed on Game Over; a first-ever (first Purrfect, first Bow, first ×5, a game mastered) | 0–2 a session | full choreography: cannons, the Room lights up behind the card | the music resolves to its home chord; a purr | `done` | the recap leads with it | slow push-in on the recap card (scale 1.00 to 1.02 over 900 ms, the card only) |
 
 Notes:
 - **Misses** sit outside the ladder on purpose. A miss is a clear, short
@@ -65,7 +65,7 @@ Notes:
 | Run | clock under 8 s | — | the clock warms to amber, a soft tick each second (no alarm) |
 | Run | Thread knot | T4 | knot pop on the strand |
 | Run | Thread unravels | miss | the strand slackens and fades over 500 ms (never a snap) |
-| Run | Cat's Cradle | T5 | cradle figure on the canvas, the music peaks |
+| Run | a Bow | T5 | the bow drawn over the board (an overlay), the music peaks |
 | Run | stage beat | T5 | sweep and stars (live), then the charm draft |
 | Run | charm dealt and picked | T3 | cards dealt with a flip; the picked charm flies to the HUD (live) |
 | Run | Game Over | T6 | peak first, then the count-ups (live), then the Today card |
@@ -107,7 +107,7 @@ A run is a crescendo, so the same event feels bigger late in a hot run:
 | Item | Limit | Checked by |
 |---|---|---|
 | live particles | 260, lowered by 10 per frame over 26 ms, floor 70 (live) | `motion.mjs` |
-| busiest moment (×5 + Purrfect + Cradle + level confetti) | p95 frame under 33 ms at 4× CPU slowdown | `framebudget.mjs` (new) |
+| busiest moment (×5 + Purrfect + Bow + level confetti) | p95 frame under 33 ms at 4× CPU slowdown | `framebudget.mjs` (new) |
 | animated properties | transform and opacity only for anything endless; nothing endless inside an SVG drawing | `motion.mjs`, `loaf.mjs` |
 | layout during a drag | 0 layouts per frame | `loaf.mjs`, `drag.mjs` |
 | flashes | never more than 3 per second; no full-screen luminance flip above 20% contrast | `framebudget.mjs` |

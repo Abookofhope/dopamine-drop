@@ -56,7 +56,7 @@ Games tab.
 | Stage beats | charm draft (live) | Autonomy: builds |
 | Mastery | Marathon stars, twists, ranks, the Gold Thread | long-term mastery |
 | Assists | allowed and noted on the record ("relaxed speed"), never blocked | dignity |
-| Yarn | as live, plus style and Cradle | — |
+| Yarn | as live, plus style and Bows | — |
 
 ## The ghost (new, Challenge only)
 

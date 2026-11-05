@@ -15,7 +15,7 @@ nothing ships on a red probe.
 | Release | Name | Contents | New probe | Bible refs |
 |---|---|---|---|---|
 | **v0.146.0** | Honest and uninterrupted | Go again keeps the kind (B1); honest charms, each offered only where it works (B2, B3); the gift rests (B4); text faults (B8); toasts wait during rounds, sit below the score, tap to dismiss, and the recap lists them (B5); the frame budget probe; Meld's board on whole pixels | `honest.mjs`, `toasts.mjs`, `framebudget.mjs` | 00, 08 Q1–Q5, 10 E4–E5 |
-| **v0.147.0** | Purrfect | style grades (Solved, Clean, Swift, Purrfect); the Thread and the Cat's Cradle; the Patchwork stitch; the frame kick; grade captions; haptic tiers; **peak-first Game Over** (B10) | `style.mjs`, `peakend.mjs` | 02, 03, 05 |
+| **v0.147.0** | Purrfect | style grades (Solved, Clean, Swift, Purrfect); the Thread and the Bow; the Variety stitch; the frame kick; grade captions; haptic tiers; **peak-first Game Over** (B10) | `style.mjs`, `peakend.mjs` | 02, 03, 05 |
 | **v0.148.0** | Room Radio | generated music with five layers that follow heat; stingers in key; Hearth station; music settings; an Effects preview in Settings | `radio.mjs` | 09 |
 | **v0.149.0** | Two doors | the Cozy and Challenge switch; Cozy runs; the ghost pace line; HUD density; the install row | `dualmode.mjs` | 06, 07 |
 | **v0.150.0** | Never lose a run | instant resume; Tuck in; Pet everyone and Collect all; a weekly automatic backup on the device | `resume.mjs` | 08 Q6, Q8, Q13, Q15 |
@@ -26,7 +26,7 @@ nothing ships on a red probe.
 
 ### Cut lists (what each release drops first if it runs long)
 
-- v0.147: the Patchwork stitch, the frame kick.
+- v0.147: the Variety stitch, the frame kick.
 - v0.148: the Effects preview, the clock-under-8-s hats.
 - v0.149: the install row, the Detailed density level.
 - v0.150: the weekly backup.

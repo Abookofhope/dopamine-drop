@@ -9,7 +9,7 @@ serves and what makes it permanent.
 
 | Scale | Live today | Added by the overhaul | Pillars |
 |---|---|---|---|
-| **Session** (one run, minutes) | score, streak heat, stage beats, charm draft, new best | style grades, the Thread and Cat's Cradle, Patchwork, the run's peak on Game Over, the Today card | Flow, Competence, Peak-End |
+| **Session** (one run, minutes) | score, streak heat, stage beats, charm draft, new best | style grades, the Thread and its Bows, the Variety stitch, the run's peak on Game Over, the Today card | Flow, Competence, Peak-End |
 | **Day / week** | Daily Drop, 3 wishes a day, 9 a week, the daily gift | a gift that rests instead of resetting, a **Weekly Pattern** (one featured twist and one featured game, with a quilt stitch as the reward and no deadline on keeping it), the Daily **ghost link** | Progress, Autonomy, Relatedness |
 | **Lifetime** (weeks to months) | level, perks, stars and mastery ranks, cats and bonds, the Room, achievements | **the Quilt**, **Milestones** that permanently change the room, the **Gold Thread**, Sparkle kits, Room Radio stations, Seasons and the Archive | Ownership, Mastery |
 

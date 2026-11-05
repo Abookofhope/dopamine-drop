@@ -38,7 +38,7 @@ none of them.
 
 | Layer | Today (v0.145.0) | The overhauled game | Pillars served |
 |---|---|---|---|
-| The solve | A signature burst per game, a token to the score | **Style**: every solve is graded Solved, Clean, Swift or Purrfect, and each grade has its own sound, light and pay. Purrfects in a row weave a **Thread** that closes into a **Cat's Cradle** spectacle | Flow, Competence, Sensory |
+| The solve | A signature burst per game, a token to the score | **Style**: every solve is graded Solved, Clean, Swift or Purrfect, and each grade has its own sound, light and pay. Purrfects in a row weave a **Thread** that ties into a **Bow** | Flow, Competence, Sensory |
 | Rhythm | Streak heat ×1 to ×5, embers | **Room Radio**: generated music whose layers rise with your heat; solve chimes play in the music's key, so a good run sounds like a song you are playing | Sensory, Flow |
 | Moods | Kinds, Fidget Loop, Marathon, timed runs | **Two doors**: Cozy (no clock, no cost, full beauty, full yarn) and Challenge (clock, style multipliers, your own ghost to beat, mastery) | Autonomy, Safety, Mastery |
 | Ownership | Room decor, cats with bonds, perks | **The Quilt**: one patch per game, stitched up by mastery, hung in your Room; **Sparkle kits**, a music station and the cat riding along make up *your* loadout | Ownership, Relatedness |

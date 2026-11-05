@@ -83,7 +83,7 @@ Standards:
 - **Layered by tier.** T2 is two notes, T3 adds a third voice, T4 a rising
   three-note figure, T5 a fanfare plus the music's stinger.
 - **Captions for everything that carries information** (live for good, bad,
-  go, combo, level, over, tick). New: Clean, Swift, Purrfect, Thread, Cradle,
+  go, combo, level, over, tick). New: Clean, Swift, Purrfect, Thread, Bow,
   and the music's peak ("♪ the room swells").
 - **Mixing.** Master gain 0.9 × volume (live). Room Radio sits on its own bus
   at 0.5 × the music volume, ducking −6 dB for 300 ms under every T3+ effect.
@@ -120,7 +120,7 @@ repeats exactly and follows the run.
 |---|---|
 | a miss | low-pass sweeps down to 900 Hz for 1.5 s, then back (muffled, not stopped) |
 | Purrfect | a three-note figure from the current chord, quantized to the next 16th |
-| Cat's Cradle | the next downbeat plays a full chord swell; L4 enters for 4 bars even below ×5 |
+| a Bow | the next downbeat plays a full chord swell; L4 enters for 4 bars even below ×5 |
 | stage beat | the progression steps up a tone (C to D) until the next stage, then home |
 | clock under 8 s | L3 doubles to 16th hats (urgency without an alarm) |
 | pause | music fades to L0 over 600 ms |

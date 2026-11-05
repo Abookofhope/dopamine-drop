@@ -1721,6 +1721,26 @@ html[data-ts="130"] .achgrid,html[data-ts="150"] .achgrid{grid-template-columns:
   font-size:calc(12px*var(--ts));letter-spacing:.07em;text-transform:uppercase;font-weight:600;color:var(--haze);
 }
 .prompt.won{color:var(--cool)}
+/* A graded solve says its grade under the score, in its own colour. */
+.prompt.grade{font-weight:800;letter-spacing:.04em}
+.prompt.g-purr{color:#FFC53D}
+.prompt.g-swift{color:#FF8A5C}
+.prompt.g-clean{color:#33E6C8}
+/* The Thread: five knots on a strand beside the multiplier. Inline, so it never moves the board. */
+.thread{display:inline-flex;align-items:center;gap:3px;position:relative;margin-left:6px;height:14px;flex:none}
+.thread[hidden]{display:none}
+.thread::before{content:"";position:absolute;left:-3px;right:-3px;top:50%;height:1.5px;border-radius:2px;
+  background:color-mix(in srgb, var(--zap) 35%, transparent);transform:translateY(-50%)}
+.thread i{position:relative;width:8px;height:8px;border-radius:50%;background:var(--ink-2);
+  border:1.5px solid color-mix(in srgb, var(--zap) 45%, transparent);transition:background 200ms linear,border-color 200ms linear}
+.thread i.on{background:#FFC53D;border-color:#FFE08A;box-shadow:0 0 6px #FFC53D88}
+.thread.unravel i{transition:background 600ms linear,border-color 600ms linear}
+html[data-motion="on"] .thread i.pop{animation:knotPop 420ms var(--e-spring)}
+@keyframes knotPop{from{transform:scale(.3)}}
+/* The Bow: an overlay above the board, never part of it. */
+.bowfx{position:fixed;pointer-events:none;z-index:74}
+.bowfx svg{width:100%;height:100%;display:block;overflow:visible}
+.bowfx path{fill:none;stroke:#FFC53D;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 5px #FFC53Daa)}
 .prompt.lost{color:var(--bad)}
 /* Every mode's board is a direct child of #surface, and --fam is already set
    on #play per mode — so tinting the frame itself, once, gives all 66 a
@@ -2155,6 +2175,11 @@ html[data-motion="on"] .streak{transition:transform var(--t-med),color var(--t-f
 #over.enter .overscroll > :nth-child(9){animation-delay:360ms}
 #over.enter .overscroll > :nth-child(n+10){animation-delay:400ms}
 #over.enter .overhead .big{animation:scoreLand 820ms var(--e-spring) 80ms both}
+/* What Game Over leads with: the run's best true moment, above everything else. */
+#over .peak{display:block;font-weight:800;font-size:calc(14px*var(--ts));color:#FFC53D;max-width:92%;margin:0 auto 6px;
+  text-wrap:balance;line-height:1.3;text-align:center}
+#over .peak[hidden]{display:none}
+#over .peak.met{color:var(--haze);font-weight:600}
 #over.enter .overhead .eyebrow{animation:overIn 480ms var(--e-out) both}
 #over.enter #newBest:not([hidden]){animation:bestStamp 700ms var(--e-snap) 360ms both}
 #over.enter .statgrid .stat{animation:overIn 520ms var(--e-out) both}
@@ -4616,6 +4641,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
           <span class="mascot" id="hudCat" aria-hidden="true"></span>
           <span class="streak" id="hudStreak">&times;1</span>
           <span class="tobeat" id="hudBest" hidden><small id="hudBestL">Best</small><b id="hudBestN">0</b></span>
+          <span class="thread" id="hudThread" aria-hidden="true" hidden><i></i><i></i><i></i><i></i><i></i></span>
         </span>
       </div>
       <div class="roundbar" id="roundBar" hidden><i id="roundFill"></i></div>
@@ -4628,6 +4654,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
     <section class="screen" id="over" hidden>
       <div class="overscroll" id="overScroll">
       <div class="overhead">
+        <span class="peak" id="overPeak" hidden></span>
         <span class="eyebrow" id="overKind">Shuffle</span>
         <span class="big" id="overScore">0</span>
       </div>
@@ -4894,7 +4921,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.146.0';
+const VERSION_TAG = 'v0.147.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4912,7 +4939,7 @@ const defaults = {
   lang:null, seenVersion:null,
   volume:1, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
   lifetime:0, perks:[], perkLv:{}, tokens:0,
-  dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0,
+  dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0, purrfects:0, bows:0,
   lastMode:null, onboarded:false,
   tapes:[], tapeId:null,
   /* Which modes the player has ever met, so a first look can be taught
@@ -5266,6 +5293,13 @@ const sfx = {
   over: () => { [420,340,260].forEach((f,i)=>setTimeout(()=>tone(f,0.22,'triangle',0.045,0.92), i*130)); },
   level:() => { [520,660,880].forEach((f,i)=>setTimeout(()=>tone(f,0.26,'triangle',0.05), i*110)); },
   go:   () => tone(760 * toneShift, 0.14, 'triangle', 0.05),
+  /* Grades. Clean adds a bright third voice; Swift a quick upward slide; Purrfect three rising notes of C major's
+     tonic chord, in the family's key, so it always agrees with the chime under it. The Bow is that chord whole. */
+  clean: () => setTimeout(() => tone(1319 * toneShift, 0.09, 'triangle', 0.03), 110),
+  swift: () => tone(880 * toneShift, 0.12, 'sine', 0.03, 1.6),
+  purr: () => [659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f * toneShift * 2, 0.12, 'triangle', 0.04), 90 + i * 75)),
+  bow:  () => { [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => tone(f * toneShift, 0.42, 'triangle', 0.04), i * 45));
+                setTimeout(() => tone(2093 * toneShift, 0.5, 'sine', 0.025), 260); },
   /* A toast: two soft notes, a sixth apart, quieter than a solve. */
   note: () => { tone(1046, 0.09, 'sine', 0.03); setTimeout(() => tone(1568, 0.11, 'sine', 0.022), 70); },
   /* good() plays on every solve and has to stay small — this plays only on
@@ -5281,7 +5315,7 @@ const sfx = {
 /* Sound captions: a short word on screen for each sound that carries information (a tap does not: there are far too many,
    and the finger already knows). Shown whether or not the sound is on, because the player who needs them may have it on and
    not be able to hear it. Replaced, not stacked, and gone after about a second. */
-const CAPTION_OF = { good:'cap.good', bad:'cap.bad', over:'cap.over', level:'cap.level', go:'cap.go', combo:'cap.combo' };
+const CAPTION_OF = { good:'cap.good', bad:'cap.bad', over:'cap.over', level:'cap.level', go:'cap.go', combo:'cap.combo', purr:'cap.purr', bow:'cap.bow' };
 let capTimer = 0;
 function caption(key){
   if (!save.captions) return;
@@ -5337,6 +5371,8 @@ function stopAmbient(){
    mode you were in. These five are the whole vocabulary; the numbers behind
    them are one decision in one place. */
 const HAPTIC = { tap:7, step:11, good:16, bad:[22,34,22],
+                 /* the style ladder: a graded solve says so in the hand as well */
+                 clean:[12,30,16], purr:[14,40,14,40,22], bow:[30,50,30,50,80],
                  win:[30,50,30,50,80], done:[30,60,30,60,60],
                  /* Two modes clear several things in one tap and want the pulse
                     to say how many. That is a real distinction, so it lives in
@@ -5654,7 +5690,7 @@ const STRINGS = {
     'p.sum':'Tap two that add to {n}', 'p.sumDiff':'Tap two that differ by {n}', 'p.count':'How many {x}?',
     'mirror.hint':'Hint', 'p.mirror':'Mirror it to the right', 
 
-    'p.tooSlow':'Too slow',
+    'p.tooSlow':'Time ran out on this one',
     'modes.families':'Families', 'modes.played':'{n} of {m} played', 'modes.allCard':'All {n} modes', 'modes.allSub':'One long list, every family', 'modes.hold':'Hold a card to read what a mode is before you start it.', 'mpv.best':'Your best', 'mpv.mastery':'Mastery', 'mpv.play':'Play', 'mpv.mastered':'Mastered — all three stars', 'mpv.toNext':'{n} more points for the next star',
     'daily.streak':'{n}-day streak', 'daily.streak1':'Streak started today', 'daily.share':'Dopamine Drop — Daily Drop {d}: {a}/{b} solved for {n} points, day {s} of my streak.', 'btn.share':'Share', 'daily.copied':'Copied',
     'stats.filter':'Filter the mode list', 'stats.fAll':'All', 'stats.fPlayed':'Played', 'stats.fNew':'Not tried', 'stats.allPlayed':'You have played every mode at least once.', 'stats.noneYet':'Nothing here yet — play a Marathon and a score appears.',
@@ -6030,6 +6066,7 @@ const STRINGS = {
     'gate.custom':'Custom', 'gate.customSub':'Build your own playlist', 'gate.count':'{n} games', 'gate.playMix':'Play a mix',
     /* The menu */
     'me.open':'Your progress', 'me.level':'Level {n}',
+    'grade.purr':'Purrfect!', 'grade.clean':'Clean', 'grade.swift':'Swift', 'bow.float':'A Bow! +{n}', 'bow.floatYarn':'A Bow! +{y} yarn', 'fx.variety':'All three kinds! +1 yarn', 'cap.purr':'Three rising notes: Purrfect', 'cap.bow':'A bright chord: the Thread tied a Bow', 'peak.best':'A new best: {n}', 'peak.firstBow':'Your first Bow: five Purrfects in a row', 'peak.bow':'The Thread tied a Bow', 'peak.bows':'The Thread tied {n} Bows', 'peak.firstPurr':'Your first Purrfect, on {m}', 'peak.purr':'Fastest Purrfect: {m}, {s} s', 'peak.five':'You reached ×5', 'peak.streak':'{n} in a row', 'peak.fast':'Quickest solve: {m}, {s} s', 'peak.met':'You met {m}. {rule}',
     'hud.solved':'{n} solved', 'set.assistPrev':'Every colour also carries a shape', 'over.whilePlayed':'While you played', 'hud.pause':'Pause', 'hud.best':'Best', 'hud.newBest':'New best', 'pause.sofar':'{s}\u00a0points · {n}\u00a0solved · best\u00a0streak\u00a0{b}', 'brand.tag':'Brain snacks',
     'you.switch':'Progress or settings', 'you.progress':'Progress',
     'modes.ways':'More ways to play', 'modes.waysSub':'Endless, Mixtape, Marathon and more', 'gate.fourAll':'All four games',
@@ -6171,7 +6208,7 @@ const STRINGS = {
     'p.sum':'Touchez deux nombres faisant {n}', 'p.sumDiff':'Touchez deux nombres dont la différence fait {n}', 'p.count':'Combien de {x} ?',
     'mirror.hint':'Indice', 'p.mirror':'Reflétez vers la droite', 
 
-    'p.tooSlow':'Trop lent',
+    'p.tooSlow':'Le temps est écoulé pour celle-ci',
     'modes.families':'Familles', 'modes.played':'{n} sur {m} joués', 'modes.allCard':'Les {n} modes', 'modes.allSub':'Une seule longue liste, toutes familles', 'modes.hold':'Maintenez une carte pour lire ce qu’est un mode avant de le lancer.', 'mpv.best':'Votre record', 'mpv.mastery':'Maîtrise', 'mpv.play':'Jouer', 'mpv.mastered':'Maîtrisé — les trois étoiles', 'mpv.toNext':'Encore {n} points pour la prochaine étoile',
     'daily.streak':'Série de {n} jours', 'daily.streak1':'Série commencée aujourd’hui', 'daily.share':'Dopamine Drop — Tirage du jour {d} : {a}/{b} réussis pour {n} points, {s}ᵉ jour de ma série.', 'btn.share':'Partager', 'daily.copied':'Copié',
     'stats.filter':'Filtrer la liste des modes', 'stats.fAll':'Tout', 'stats.fPlayed':'Joués', 'stats.fNew':'Jamais essayés', 'stats.allPlayed':'Vous avez joué à tous les modes au moins une fois.', 'stats.noneYet':'Rien ici — jouez un Marathon et un score apparaîtra.',
@@ -6547,6 +6584,7 @@ const STRINGS = {
     'gate.custom':'Sur mesure', 'gate.customSub':'Compose ta propre playlist', 'gate.count':'{n} jeux', 'gate.playMix':'Lancer un mélange',
     /* The menu */
     'me.open':'Votre progression', 'me.level':'Niveau {n}',
+    'grade.purr':'Ronronfait !', 'grade.clean':'Net', 'grade.swift':'Vif', 'bow.float':'Un nœud ! +{n}', 'bow.floatYarn':'Un nœud ! +{y} de laine', 'fx.variety':'Les trois sortes ! +1 laine', 'cap.purr':'Trois notes montantes : Ronronfait', 'cap.bow':'Un accord clair : le fil fait un nœud', 'peak.best':'Nouveau record : {n}', 'peak.firstBow':'Ton premier nœud : cinq Ronronfaits d’affilée', 'peak.bow':'Le fil a fait un nœud', 'peak.bows':'Le fil a fait {n} nœuds', 'peak.firstPurr':'Ton premier Ronronfait, sur {m}', 'peak.purr':'Ronronfait le plus rapide : {m}, {s} s', 'peak.five':'Tu as atteint ×5', 'peak.streak':'{n} d’affilée', 'peak.fast':'Réussite la plus rapide : {m}, {s} s', 'peak.met':'Tu as découvert {m}. {rule}',
     'hud.solved':'{n} réussis', 'set.assistPrev':'Chaque couleur porte aussi une forme', 'over.whilePlayed':'Pendant la partie', 'hud.pause':'Pause', 'hud.best':'Record', 'hud.newBest':'Nouveau record', 'pause.sofar':'{s}\u00a0points · {n}\u00a0réussis · meilleure\u00a0série\u00a0{b}', 'brand.tag':'Douceurs pour cerveaux',
     'you.switch':'Progression ou réglages', 'you.progress':'Progression',
     'modes.ways':'Autres façons de jouer', 'modes.waysSub':'Sans fin, Mixtape, Marathon et plus', 'gate.fourAll':'Les quatre jeux',
@@ -6687,7 +6725,7 @@ const STRINGS = {
     'p.sum':'Toca dos que sumen {n}', 'p.sumDiff':'Toca dos que difieran en {n}', 'p.count':'¿Cuántos {x}?',
     'mirror.hint':'Pista', 'p.mirror':'Refléjalo a la derecha', 
 
-    'p.tooSlow':'Demasiado lento',
+    'p.tooSlow':'Se acabó el tiempo de esta',
     'modes.families':'Familias', 'modes.played':'{n} de {m} jugados', 'modes.allCard':'Los {n} modos', 'modes.allSub':'Una sola lista, todas las familias', 'modes.hold':'Mantén pulsada una tarjeta para leer qué es un modo antes de empezar.', 'mpv.best':'Tu récord', 'mpv.mastery':'Dominio', 'mpv.play':'Jugar', 'mpv.mastered':'Dominado — las tres estrellas', 'mpv.toNext':'{n} puntos más para la siguiente estrella',
     'daily.streak':'Racha de {n} días', 'daily.streak1':'Racha empezada hoy', 'daily.share':'Dopamine Drop — Reto diario {d}: {a}/{b} resueltos por {n} puntos, día {s} de mi racha.', 'btn.share':'Compartir', 'daily.copied':'Copiado',
     'stats.filter':'Filtrar la lista de modos', 'stats.fAll':'Todos', 'stats.fPlayed':'Jugados', 'stats.fNew':'Sin probar', 'stats.allPlayed':'Has jugado todos los modos al menos una vez.', 'stats.noneYet':'Aquí no hay nada — juega un Maratón y aparecerá una puntuación.',
@@ -7063,6 +7101,7 @@ const STRINGS = {
     'gate.custom':'A tu medida', 'gate.customSub':'Crea tu propia lista', 'gate.count':'{n} juegos', 'gate.playMix':'Jugar una mezcla',
     /* The menu */
     'me.open':'Tu progreso', 'me.level':'Nivel {n}',
+    'grade.purr':'¡Ronronfecto!', 'grade.clean':'Limpio', 'grade.swift':'Veloz', 'bow.float':'¡Un lazo! +{n}', 'bow.floatYarn':'¡Un lazo! +{y} de lana', 'fx.variety':'¡Las tres clases! +1 lana', 'cap.purr':'Tres notas ascendentes: Ronronfecto', 'cap.bow':'Un acorde brillante: el hilo hace un lazo', 'peak.best':'Nuevo récord: {n}', 'peak.firstBow':'Tu primer lazo: cinco Ronronfectos seguidos', 'peak.bow':'El hilo hizo un lazo', 'peak.bows':'El hilo hizo {n} lazos', 'peak.firstPurr':'Tu primer Ronronfecto, en {m}', 'peak.purr':'Ronronfecto más rápido: {m}, {s} s', 'peak.five':'Llegaste a ×5', 'peak.streak':'{n} seguidos', 'peak.fast':'Acierto más rápido: {m}, {s} s', 'peak.met':'Conociste {m}. {rule}',
     'hud.solved':'{n} resueltos', 'set.assistPrev':'Cada color lleva también una forma', 'over.whilePlayed':'Mientras jugabas', 'hud.pause':'Pausa', 'hud.best':'Récord', 'hud.newBest':'Nuevo récord', 'pause.sofar':'{s}\u00a0puntos · {n}\u00a0resueltos · mejor\u00a0racha\u00a0{b}', 'brand.tag':'Bocaditos para el cerebro',
     'you.switch':'Progreso o ajustes', 'you.progress':'Progreso',
     'modes.ways':'Más formas de jugar', 'modes.waysSub':'Sin fin, Mixtape, Maratón y más', 'gate.fourAll':'Los cuatro juegos',
@@ -7203,7 +7242,7 @@ const STRINGS = {
     'p.sum':'Tippe zwei, die {n} ergeben', 'p.sumDiff':'Tippe zwei, deren Differenz {n} ist', 'p.count':'Wie viele {x}?',
     'mirror.hint':'Tipp', 'p.mirror':'Spiegle es nach rechts', 
 
-    'p.tooSlow':'Zu langsam',
+    'p.tooSlow':'Die Zeit für diese ist um',
     'modes.families':'Familien', 'modes.played':'{n} von {m} gespielt', 'modes.allCard':'Alle {n} Modi', 'modes.allSub':'Eine lange Liste, alle Familien', 'modes.hold':'Halte eine Karte gedrückt, um vor dem Start zu lesen, was ein Modus ist.', 'mpv.best':'Dein Bestwert', 'mpv.mastery':'Meisterschaft', 'mpv.play':'Spielen', 'mpv.mastered':'Gemeistert — alle drei Sterne', 'mpv.toNext':'Noch {n} Punkte bis zum nächsten Stern',
     'daily.streak':'{n} Tage in Folge', 'daily.streak1':'Serie heute begonnen', 'daily.share':'Dopamine Drop — Tagesrunde {d}: {a}/{b} gelöst für {n} Punkte, Tag {s} meiner Serie.', 'btn.share':'Teilen', 'daily.copied':'Kopiert',
     'stats.filter':'Modusliste filtern', 'stats.fAll':'Alle', 'stats.fPlayed':'Gespielt', 'stats.fNew':'Ungespielt', 'stats.allPlayed':'Du hast jeden Modus mindestens einmal gespielt.', 'stats.noneYet':'Hier ist noch nichts — spiel einen Marathon und ein Wert erscheint.',
@@ -7579,6 +7618,7 @@ const STRINGS = {
     'gate.custom':'Eigene Mischung', 'gate.customSub':'Stell deine eigene Playlist zusammen', 'gate.count':'{n} Spiele', 'gate.playMix':'Mix spielen',
     /* The menu */
     'me.open':'Dein Fortschritt', 'me.level':'Stufe {n}',
+    'grade.purr':'Schnurrfekt!', 'grade.clean':'Sauber', 'grade.swift':'Flink', 'bow.float':'Eine Schleife! +{n}', 'bow.floatYarn':'Eine Schleife! +{y} Wolle', 'fx.variety':'Alle drei Sorten! +1 Wolle', 'cap.purr':'Drei steigende Töne: Schnurrfekt', 'cap.bow':'Ein heller Akkord: der Faden bindet eine Schleife', 'peak.best':'Neuer Bestwert: {n}', 'peak.firstBow':'Deine erste Schleife: fünf Schnurrfekte in Folge', 'peak.bow':'Der Faden hat eine Schleife gebunden', 'peak.bows':'Der Faden hat {n} Schleifen gebunden', 'peak.firstPurr':'Dein erstes Schnurrfekt, bei {m}', 'peak.purr':'Schnellstes Schnurrfekt: {m}, {s} s', 'peak.five':'Du hast ×5 erreicht', 'peak.streak':'{n} in Folge', 'peak.fast':'Schnellste Lösung: {m}, {s} s', 'peak.met':'Du hast {m} kennengelernt. {rule}',
     'hud.solved':'{n} gelöst', 'set.assistPrev':'Jede Farbe trägt auch eine Form', 'over.whilePlayed':'Während du gespielt hast', 'hud.pause':'Pause', 'hud.best':'Bestwert', 'hud.newBest':'Neuer Bestwert', 'pause.sofar':'{s}\u00a0Punkte · {n}\u00a0gelöst · beste\u00a0Serie\u00a0{b}', 'brand.tag':'Snacks fürs Gehirn',
     'you.switch':'Fortschritt oder Optionen', 'you.progress':'Fortschritt',
     'modes.ways':'Weitere Spielarten', 'modes.waysSub':'Endlos, Mixtape, Marathon und mehr', 'gate.fourAll':'Alle vier Spiele',
@@ -7697,6 +7737,13 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.147.0', date:'2026-11-05', items:[
+    'Every solve is graded by how you made it. Quick and with no slip or hint is a Purrfect: gold words under the score, three rising notes, a double pulse and a ring of light. Quick is Swift, and a board of several steps with no slip is Clean. Each pays a little more; a plain solve pays what it always did.',
+    'Purrfects tie knots in a Thread beside the multiplier. Five tie a Bow: it is drawn over the board in gold with a bright chord, and pays 500 points a stage and 5 yarn. A miss that costs you something unravels the Thread; a forgiven one holds it.',
+    'Three solves in a row from all three kinds of game pay an extra ball of yarn.',
+    'Game Over leads with the best thing that happened (a new best, a Bow, your fastest Purrfect, a long streak), and a run with no solves tells you the rule of the game you met.',
+    'Kinder misses: the board no longer shakes, and a round whose clock ran out says so instead of \u201cToo slow\u201d.',
+  ] },
   { v:'0.146.0', date:'2026-11-05', items:[
     'Go again keeps your kind: after a Calm & Collect or Quick Paws mix it deals that kind again, not all forty-four games. Each kind now keeps its own best score, and Custom keeps its own, so the score you are chasing is one the run can actually reach.',
     'Every charm does what it says, where it is offered. Window Seat had been doing nothing (it stretched round clocks, and no run that deals charms has one); it now slows the run\u2019s clock, and Sharp Claws\u2019 price is a faster clock. Charms that pay or cost time are only dealt in runs that have a clock.',
@@ -9352,12 +9399,13 @@ const MODES = {
           if (i === odd){ done = true; paintSniff(); return ctx.win(b); }
           tries--; paintPips();
           if (tries0 && tries <= 0){ done = true; paintSniff(); return ctx.miss(b); }
+          ctx.slip();
           b.disabled = true; b.classList.add('ruled'); sfx.tap(); buzz('tap');
           ctx.prompt(tries0 ? t('odd.again', { n: tries }) : t(ask === 'light' ? 'p.oddLight' : ask === 'dark' ? 'p.oddDark' : 'p.odd'));
         });
         g.appendChild(b);
       }
-      onTap(sniff, () => {
+      sniff.classList.add('aid'); onTap(sniff, () => {
         if (done || sniffs <= 0) return;
         sniffs--; paintSniff();
         const pool = tiles.map((_, i) => i).filter(i => i !== odd && !tiles[i].disabled);
@@ -9662,11 +9710,11 @@ const MODES = {
       /* Undo turns the last knot back and gives the move back. A hint lights the first knot on the thread, from the source, that
          is not yet where it belongs; two a round. */
       undo.textContent = t('chalk.undo');
-      onTap(undo, () => { const c = history.pop(); if (!c || solvedNow) return; c.turn--; c.svg.style.transform = 'rotate(' + (c.turn*90) + 'deg)'; sfx.tap(); budget.refund(); paint(); undo.disabled = !history.length; });
+      undo.classList.add('aid'); onTap(undo, () => { const c = history.pop(); if (!c || solvedNow) return; c.turn--; c.svg.style.transform = 'rotate(' + (c.turn*90) + 'deg)'; sfx.tap(); budget.refund(); paint(); undo.disabled = !history.length; });
       let hints = 2, solvedNow = false;
       const paintHint = () => { hint.textContent = t('slack.hint') + ' ' + hints; hint.disabled = hints <= 0; };
       paintHint();
-      onTap(hint, () => {
+      hint.classList.add('aid'); onTap(hint, () => {
         if (hints <= 0) return;
         const wrong = path.map(p => cells.get(key(p))).find(c => ((c.turn % 4) + 4) % 4 !== 0 && rot(c.base, c.turn) !== c.base);
         const off = wrong || path.map(p => cells.get(key(p))).find(c => rot(c.base, c.turn) !== c.base);
@@ -9924,7 +9972,7 @@ const MODES = {
       tools.appendChild(hint); col.appendChild(tools);
       const paintHint = () => { hint.textContent = t('mirror.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
       paintHint();
-      onTap(hint, () => {
+      hint.classList.add('aid'); onTap(hint, () => {
         if (done || hints <= 0) return;
         const missing = Array.from(wanted).filter(i => !placed.has(i)), extra = Array.from(placed).filter(i => !wanted.has(i));
         const pool = missing.length ? missing : extra; if (!pool.length) return;
@@ -10154,11 +10202,11 @@ const MODES = {
         const tools = mk('div','sumtools'), undo = mk('button','sumtool'), hint = mk('button','sumtool'); undo.type = 'button'; hint.type = 'button';
         undo.textContent = t('chalk.undo'); undo.disabled = !history.length || solved;
         hint.textContent = t('slide.hint') + ' ' + hints; hint.disabled = hints <= 0 || solved; hint.style.marginLeft = '10px';
-        onTap(undo, () => { const h = history.pop(); if (!h || solved) return;
+        undo.classList.add('aid'); onTap(undo, () => { const h = history.pop(); if (!h || solved) return;
           if (h.bar.o === 'v') h.bar.r -= h.steps; else h.bar.c -= h.steps;
           sfx.tap(); budget.refund(); render(); });
         /* A hint shows which bar to move, and which end to tap, for a moment: the first step of a shortest way out from here. */
-        onTap(hint, () => {
+        hint.classList.add('aid'); onTap(hint, () => {
           if (solved || hints <= 0) return;
           const st = firstStep(bars); if (!st) return;
           hints--; sfx.tap();
@@ -10291,7 +10339,7 @@ const MODES = {
         keys.appendChild(b);
       });
 
-      onTap(hintBtn, () => {
+      hintBtn.classList.add('aid'); onTap(hintBtn, () => {
         if (hints <= 0) return;
         const open = Array.from(letters).filter(c => !found.has(c));
         if (!open.length) return;
@@ -10700,7 +10748,7 @@ const MODES = {
       let hints = 2;
       const tools = mk('div','sumtools'), hintBtn = mk('button','sumtool'); hintBtn.type = 'button';
       const paintHint = () => { hintBtn.textContent = t('slack.hint') + ' ' + hints; hintBtn.disabled = hints <= 0 || done; };
-      onTap(hintBtn, () => {
+      hintBtn.classList.add('aid'); onTap(hintBtn, () => {
         if (hints <= 0 || done) return;
         for (let i=0;i<edges.length;i++) for (let j=i+1;j<edges.length;j++){
           const [a1,b1] = edges[i], [c1,d1] = edges[j];
@@ -11170,7 +11218,7 @@ const MODES = {
         hintB.textContent = t('tumble.pair') + ' ' + hints; hintB.disabled = hints <= 0 || done; };
       paintHold();
       /* A hint lights two socks that go together. */
-      onTap(hintB, () => {
+      hintB.classList.add('aid'); onTap(hintB, () => {
         if (hints <= 0 || done) return;
         const by = new Map();
         slots.forEach((v, i) => { if (v && !els[i].classList.contains('tangled')){ if (!by.has(v.ink)) by.set(v.ink, []); by.get(v.ink).push(i); } });
@@ -11500,7 +11548,7 @@ const MODES = {
         ctx.after(260, step);
       });
 
-      onTap(peek, () => {
+      peek.classList.add('aid'); onTap(peek, () => {
         if (phase !== 'pick' || peek.disabled) return;
         peek.disabled = true; peek.textContent = t('chalk.peek') + ' 0'; sfx.tap();
         els.forEach((e, i) => { if (where.includes(i) && !picked.has(i)) e.classList.add('open'); });
@@ -12937,8 +12985,8 @@ const MODES = {
       });
       const lenAt = st => { const a = aspect(); let L = 0; for (let i = 1; i < st.length; i++) L += Math.hypot(st[i].x - st[i-1].x, (st[i].y - st[i-1].y)*a); return L; };
 
-      onTap(undoBtn, () => { if (done || launched || !strokes.length) return; strokes.pop(); used = strokes.reduce((n, st) => n + lenAt(st), 0); if (dry){ dry = false; say(); } peekEl.setAttribute('points',''); box.classList.remove('peekwin','peeklose'); redraw(); sfx.tap(); });
-      onTap(peekBtn, () => {
+      undoBtn.classList.add('aid'); onTap(undoBtn, () => { if (done || launched || !strokes.length) return; strokes.pop(); used = strokes.reduce((n, st) => n + lenAt(st), 0); if (dry){ dry = false; say(); } peekEl.setAttribute('points',''); box.classList.remove('peekwin','peeklose'); redraw(); sfx.tap(); });
+      peekBtn.classList.add('aid'); onTap(peekBtn, () => {
         if (done || launched || !peeks || !strokes.length) return;
         peeks--;
         const r = runAll(world(aspect()), strokes, 10);
@@ -13782,8 +13830,8 @@ const MODES = {
         if (paid.delete(p.part)) budget.refund();
         redraw(); say(); sfx.tap();
       };
-      onTap(undoBtn, goal === 'clear' ? swap : undo);
-      onTap(hintBtn, () => {
+      undoBtn.classList.add('aid'); onTap(undoBtn, goal === 'clear' ? swap : undo);
+      hintBtn.classList.add('aid'); onTap(hintBtn, () => {
         if (done || held || hints <= 0) return;
         const s = goal === 'clear' ? { sol: [bestPlacement()].filter(Boolean) } : solve();
         if (!s.sol || !s.sol.length){ say(goal === 'clear' ? 'forge.jam' : 'forge.dead'); undoBtn.classList.add('nudge'); ctx.after(1600, () => undoBtn.classList.remove('nudge')); return; }
@@ -14138,7 +14186,7 @@ const MODES = {
       tools.appendChild(hint); col.appendChild(tools);
       const paintHint = () => { hint.textContent = t('bridge.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
       paintHint();
-      onTap(hint, () => {
+      hint.classList.add('aid'); onTap(hint, () => {
         if (done || hints <= 0) return;
         const dist = new Array(g*g).fill(1e9), from = new Array(g*g).fill(-1), open = new Set([start]);
         dist[start] = 0;
@@ -14288,12 +14336,12 @@ const MODES = {
         undo.textContent = t('latch.undo'); undo.disabled = done || !history.length;
         hint.textContent = t('latch.hint') + ' ' + hints; hint.disabled = done || hints <= 0;
       };
-      onTap(undo, () => {
+      undo.classList.add('aid'); onTap(undo, () => {
         const h = history.pop(); if (done || !h) return;
         at[h.r] = h.prev; sfx.tap(); buzz('tap'); budget.refund(); paint(); paintTools();
       });
       /* A hint marks the column that is cheapest to meet in, for a moment. */
-      onTap(hint, () => {
+      hint.classList.add('aid'); onTap(hint, () => {
         if (done || hints <= 0) return;
         hints--; sfx.tap(); paintTools();
         rowEls.forEach(re => re.cells[meetAt].classList.add('meet'));
@@ -14437,7 +14485,7 @@ const MODES = {
       tools.appendChild(hint); col.appendChild(tools);
       const paintHint = () => { hint.textContent = t('splice.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
       paintHint();
-      onTap(hint, () => {
+      hint.classList.add('aid'); onTap(hint, () => {
         if (done || hints <= 0) return;
         const i = headEls.findIndex(e => !e.classList.contains('locked')); if (i < 0) return;
         const tail = tailEls.find(e => Number(e.dataset.src) === i);
@@ -14700,7 +14748,7 @@ const MODES = {
       tools.appendChild(hint); col.appendChild(tools);
       const paintHint = () => { hint.textContent = t('lever.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
       paintHint();
-      onTap(hint, () => {
+      hint.classList.add('aid'); onTap(hint, () => {
         if (done || hints <= 0) return;
         hints--; paintHint(); sfx.tap();
         const span = Math.max(14, tol * 5);
@@ -15046,7 +15094,7 @@ const MODES = {
         });
       };
 
-      onTap(hintBtn, () => {
+      hintBtn.classList.add('aid'); onTap(hintBtn, () => {
         if (done || busy || hints <= 0) return;
         let best = null, top = -1e9;
         for (const c of new Set(g.filter(BERRY))){
@@ -15710,7 +15758,7 @@ const MODES = {
       tools.appendChild(hint); col.appendChild(tools);
       const paintHint = () => { hint.textContent = t('volley.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
       paintHint();
-      onTap(hint, () => {
+      hint.classList.add('aid'); onTap(hint, () => {
         if (done || busy || hints <= 0) return;
         const gi = firstShot();
         hints--; paintHint(); sfx.tap();
@@ -16048,12 +16096,12 @@ const MODES = {
         land: (from, to) => { const w = trays.findIndex(tr => tr.tray === to); if (w >= 0 && side[from._i] !== w) flip(from._i, from); } });
       const tools = mk('div','sumtools'), undo = mk('button','sumtool'); undo.type = 'button';
       undo.textContent = t('chalk.undo'); undo.disabled = true;
-      onTap(undo, () => { const i = history.pop(); if (i === undefined || done) return; side[i] ^= 1; sfx.tap(); budget.refund(); paint(); undo.disabled = !history.length; });
+      undo.classList.add('aid'); onTap(undo, () => { const i = history.pop(); if (i === undefined || done) return; side[i] ^= 1; sfx.tap(); budget.refund(); paint(); undo.disabled = !history.length; });
       /* A hint points at one skein to move: the first step of the shortest way from where the baskets are now to a split that balances. */
       let hints = 2;
       const hint = mk('button','sumtool'); hint.type = 'button'; hint.style.marginLeft = '10px';
       const paintHint = () => { hint.textContent = t('halve.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
-      onTap(hint, () => {
+      hint.classList.add('aid'); onTap(hint, () => {
         if (done || hints <= 0) return;
         let bestMask = -1, bestCost = 1e9;
         for (let mask = 0; mask < (1 << n); mask++){
@@ -16458,8 +16506,8 @@ const MODES = {
         sel = null; lastSig.fill(''); paintAll(); tray.forEach((_, s) => drawSlot(s, false));
         paintTools(); say(); sfx.tap();
       };
-      onTap(undoBtn, undo);
-      onTap(hintBtn, () => {
+      undoBtn.classList.add('aid'); onTap(undoBtn, undo);
+      hintBtn.classList.add('aid'); onTap(hintBtn, () => {
         if (done || held || hints <= 0) return;
         let top = null;
         tray.forEach((p, s) => { if (!p) return; const b = bestFor(p.sh); if (b && (!top || b.sc > top.sc)) top = { ...b, s, p }; });
@@ -19107,8 +19155,17 @@ const Vfx = (() => {
   return { solve, miss, bit, ghost, veil, sweep, ring, glints, spray, cannons, rain, embers, hearts, tap, clear, box, stats, SIG,
     live: () => live.length, on, big };
 })();
+/* A hint, an undo, a sniff or a peek inside a live round: the round can still be Swift, never Clean or Purrfect. */
+['click', 'pointerup'].forEach(type => document.addEventListener(type, e => {
+  const a = e.target && e.target.closest && e.target.closest('#surface .aid');
+  if (a && !a.disabled && roundLive && run) run.aided = true;
+}, { capture: true, passive: true }));
 /* Where the finger last was on the play screen, so a game's own small moment is drawn where it happened. */
 const lastPt = { x: 0, y: 0, t: 0 };
+/* Every touch on a live board is a step: Clean is a board of two or more touches solved without a slip. */
+document.addEventListener('pointerdown', e => {
+  if (roundLive && run && e.target && e.target.closest && e.target.closest('#surface')) run.steps = (run.steps | 0) + 1;
+}, { capture: true, passive: true });
 ['pointerdown', 'pointerup'].forEach(type => document.addEventListener(type, e => {
   if (!e.target || !e.target.closest || !e.target.closest('#play')) return;
   lastPt.x = e.clientX; lastPt.y = e.clientY; lastPt.t = performance.now();
@@ -19119,6 +19176,8 @@ const lastPt = { x: 0, y: 0, t: 0 };
   const f = sfx[k];
   sfx[k] = (...a) => {
     const r = f(...a);
+    /* A game's own buzz inside a live round is a slip: what Clean and Purrfect are judged on. */
+    if (roundLive && run && k === 'bad') run.slips = (run.slips | 0) + 1;
     try {
       if (roundLive && run && run.curMode && !motionOff()){
         const fresh = lastPt.t && performance.now() - lastPt.t < 4000;
@@ -19226,6 +19285,115 @@ function flash(cls){
   if (save.flashes === false) return;
   el.surface.classList.add(cls);
   setTimeout(() => el.surface.classList.remove(cls), cls === 'flash-win' ? 200 : 260);
+}
+
+/* ═══ Style: grades, the Thread, the Bow ════════════════════════════════════
+   The solve is the game's best moment, so how it was made is told on every channel: words under the score, a sound,
+   a pulse in the hand, light on the board and a small kick of the frame round it (never the board). Purrfects tie
+   knots in a Thread beside the multiplier; five tie a Bow, the biggest thing a run can make short of a stage. */
+const KIND_OF = id => GATES.calm.ids.indexOf(id) >= 0 ? 'calm' : GATES.quick.ids.indexOf(id) >= 0 ? 'quick' : 'full';
+/* The frame round the board (the HUD and the score band) kicks a pixel or three; the board itself stays put. */
+function kick(px){
+  if (motionOff() || save.bigFx === false) return;
+  el.play.querySelectorAll('.hud, .scoreband').forEach(n => n.animate(
+    [{ transform: 'none' }, { transform: 'translateY(' + px + 'px)' }, { transform: 'none' }],
+    { duration: 240, easing: 'cubic-bezier(.34,1.56,.64,1)' }));
+}
+function paintThread(pop, unravel){
+  const th = $('hudThread'); if (!th) return;
+  th.hidden = !run || run.kind === 'discover';
+  if (th.hidden) return;
+  const n = run.knots | 0;
+  th.classList.toggle('unravel', !!unravel);
+  [...th.children].forEach((k, i) => {
+    k.classList.toggle('on', i < n);
+    if (pop && i === n - 1){ k.classList.remove('pop'); void k.offsetWidth; k.classList.add('pop'); }
+  });
+  th.setAttribute('data-knots', String(n));
+}
+function styleMoment(grade, node, mid, ms, k){
+  if (grade === 'purr'){
+    sfx.purr(); buzz('purr'); kick(2);
+    run.purrs++; save.purrfects = (save.purrfects | 0) + 1; persist();
+    if (save.purrfects === 1) run.firstPurr = mid;
+    if (!run.bestPurr || ms < run.bestPurr.ms) run.bestPurr = { ms, id: mid };
+    if (!motionOff()){
+      Vfx.ghost(node, '#FFC53D', 'stamp');
+      const b = Vfx.box(node); Vfx.ring(b.x, b.y, '#FFC53D', { r0: 10, r1: 64, line: 3 });
+      Vfx.glints(b.x, b.y, 5, 36, '#FFE08A');
+    }
+    run.knots = (run.knots | 0) + 1;
+    paintThread(true);
+    if (run.knots >= STYLE.knots) later(260, () => tieBow(k));
+  } else {
+    if (grade === 'clean'){ sfx.clean(); buzz('clean'); }
+    else { sfx.swift(); buzz('clean'); }
+    kick(1);
+    if (!motionOff()){ const b = Vfx.box(node); Vfx.glints(b.x, b.y, 3, 28, grade === 'clean' ? '#33E6C8' : '#FF8A5C'); }
+  }
+}
+/* Five Purrfects: the Thread ties itself into a Bow over the board (an overlay; the board is not touched). */
+function tieBow(k){
+  if (!run) return;
+  run.knots = 0; run.bows++;
+  save.bows = (save.bows | 0) + 1;
+  if (save.bows === 1) run.firstBow = true;
+  persist();
+  const pts = STYLE.bowPts * Math.max(1, run.stage | 0);
+  if (k && k.scored){ run.score += pts; save.lifetime = (save.lifetime || 0) + pts; }
+  run.yarn = (run.yarn || 0) + Yarn.give(STYLE.bowYarn * Yarn.mult(run));
+  sfx.bow(); buzz('bow'); kick(3);
+  floatPts($('hudScore'), t(k && k.scored ? 'bow.float' : 'bow.floatYarn', { n: fmt(pts), y: STYLE.bowYarn }), 5);
+  if (!motionOff()){
+    const r = el.surface.getBoundingClientRect();
+    const fx = mk('div', 'bowfx'); fx.setAttribute('aria-hidden', 'true');
+    const w = Math.min(r.width * 0.7, 280), h = w * 0.62;
+    fx.style.left = (r.left + r.width / 2 - w / 2) + 'px'; fx.style.top = (r.top + r.height / 2 - h / 2) + 'px';
+    fx.style.width = w + 'px'; fx.style.height = h + 'px';
+    fx.innerHTML = '<svg viewBox="0 0 100 62"><path pathLength="1" d="M50 31C38 14 14 6 9 18s10 24 41 13"/>'
+      + '<path pathLength="1" d="M50 31c12-17 36-25 41-13S81 42 50 31"/>'
+      + '<path pathLength="1" d="M50 31l-15 27M50 31l15 27"/><circle cx="50" cy="31" r="4.2" fill="#FFC53D"/></svg>';
+    document.body.appendChild(fx);
+    fx.querySelectorAll('path').forEach((pth, i) => {
+      pth.style.strokeDasharray = '1'; pth.style.strokeDashoffset = '1';
+      pth.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 420, delay: i * 120, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'forwards' });
+    });
+    fx.animate([{ opacity: 0, transform: 'scale(.7)' }, { opacity: 1, transform: 'scale(1)', offset: .25 }, { opacity: 1, transform: 'scale(1.04)', offset: .75 }, { opacity: 0, transform: 'scale(1.1)' }],
+      { duration: 1500, easing: 'ease-out' }).onfinish = () => fx.remove();
+    if (save.bigFx !== false){
+      Vfx.sweep(el.surface, '#FFC53D', 820);
+      const b = Vfx.box(el.surface);
+      Vfx.spray('fountain', b.x, b.y + b.h * .45, 26, { k: ['star', 'thread'], pal: ['#FFC53D', '#FFE08A', '#FFF3E6', '#FF8AD8'], sp: 7, g: .22, s0: 3, s1: 6, l0: 900, l1: 1300 });
+    }
+  }
+  later(700, () => paintThread(false));
+  paintThread(false);
+}
+/* Three solves in a row from all three kinds: a little extra for ranging wide. */
+function variety(node, mid){
+  if (!run) return;
+  run.trail = (run.trail || []).concat(KIND_OF(mid)).slice(-3);
+  if (run.trail.length === 3 && new Set(run.trail).size === 3){
+    run.trail = [];
+    run.yarn = (run.yarn || 0) + Yarn.give(STYLE.varietyYarn * Yarn.mult(run));
+    run.varieties = (run.varieties | 0) + 1;
+    floatPts(node, t('fx.variety'), 2);
+  }
+}
+/* What Game Over leads with: the best true thing about the run (docs/bible/05-economy.md, the recap). */
+function peakOf(r, best, k){
+  const nm = id => modeName(id), sec = ms => (ms / 1000).toFixed(1);
+  if (best && k.scored && r.score > 0) return { kind: 'best', text: t('peak.best', { n: fmt(r.score) }) };
+  if (r.firstBow) return { kind: 'bow', text: t('peak.firstBow') };
+  if (r.bows) return { kind: 'bow', text: r.bows > 1 ? t('peak.bows', { n: r.bows }) : t('peak.bow') };
+  if (r.firstPurr) return { kind: 'purr', text: t('peak.firstPurr', { m: nm(r.firstPurr) }) };
+  if (r.bestPurr) return { kind: 'purr', text: t('peak.purr', { m: nm(r.bestPurr.id), s: sec(r.bestPurr.ms) }) };
+  if (r.maxTier >= 5) return { kind: 'five', text: t('peak.five') };
+  if (r.bestStreak >= 4) return { kind: 'streak', text: t('peak.streak', { n: r.bestStreak }) };
+  if (r.solved && r.fast) return { kind: 'fast', text: t('peak.fast', { m: nm(r.fast.id), s: sec(r.fast.ms) }) };
+  const id = r.curMode ? modeIdOf(r.curMode) : r.mode;
+  if (id && MODES[id]) return { kind: 'met', text: t('peak.met', { m: nm(id), rule: modeBlurb(id) }) };
+  return null;
 }
 
 /* ═══ Level up ════════════════════════════════════════════════════════════
@@ -19917,6 +20085,7 @@ function beginRound(mode, firstMeet){
   const k = KINDS[run.kind];
   roundLive = true;
   roundStart = performance.now();
+  run.slips = 0; run.steps = 0; run.aided = false;          /* how this round is being solved, for its grade */
   /* Settled once per round, because the round clock, the mode's own difficulty
      and the speed the solve is judged at all have to agree on it.
 
@@ -20028,7 +20197,9 @@ function beginRound(mode, firstMeet){
        clock: a timed run shares one clock between all its rounds. */
     grace: ms => { if (run && run.roundLimit && run.roundLeft > 0){ run.roundLimit += ms; run.roundLeft += ms; } },
     win: node => resolve(true, node),
-    miss: node => resolve(false, node)
+    miss: node => resolve(false, node),
+    /* A mistake that does not end the round (a wrong tile with tries left): no Clean, no Purrfect. */
+    slip: () => { if (roundLive && run) run.slips = (run.slips | 0) + 1; }
   };
   const want = mode.stages ? Math.max(1, mode.stages(run.lvl)) : 1;
   if (want > 1) staged(mode, ctx, want); else mode.build(ctx);
@@ -20049,6 +20220,19 @@ function beginRound(mode, firstMeet){
    Only the run types with no natural length of their own: Marathon has lives,
    the Daily has twelve rounds, Survival has waves and a boss. */
 const STAGE_EVERY = 10;
+/* Style (see docs/bible/02-core-loop.md). A solve is graded by how it was made, never by what was dealt: Swift is
+   inside 55% of par (the same "quick" adaptive difficulty uses), Purrfect is Swift with no slip and no hint or undo,
+   Clean is a board of several steps solved without a slip. A plain solve is graded nothing and pays exactly what it
+   always did; every grade is extra. Five Purrfects tie the Thread into a Bow. One block, so tuning never means hunting. */
+const STYLE = {
+  swiftSpeed: 0.45,
+  pts: { purr: 1.25, clean: 1.10 },
+  yarn: { purr: 1, clean: 0.2, swift: 0.2 },
+  knots: 5,                 /* Purrfects to a Bow */
+  bowPts: 500,              /* × stage, at least 1 */
+  bowYarn: 5,
+  varietyYarn: 1            /* three solves in a row from all three kinds */
+};
 const STAGED_KINDS = new Set(['shuffle', 'mix', 'chaos', 'endless', 'reflexrush', 'puzzlecascade']);
 const STAGE_BREATHER_MS = 6000;
 
@@ -20079,6 +20263,9 @@ function resolve(ok, node){
     const speed = clamp(1 - elapsed / (parOf(mode, run.lvl) * run.pressure), 0, 1);
     adaptRound(true, speed);
     const mult = multiplier();
+    const slipped = (run.slips | 0) > 0 || !!run.aided;
+    const quick = speed >= STYLE.swiftSpeed;
+    const grade = quick && !slipped ? 'purr' : quick ? 'swift' : !slipped && (run.steps | 0) >= 2 ? 'clean' : '';
     /* Everything on the player's side gets a say in what this solve is worth: the
        cats riding along, the charms carried, the twist being played. One call,
        one answer, and what follows is the only place it is used. */
@@ -20095,7 +20282,8 @@ function resolve(ok, node){
       streak: run.streak + 1, n: run.solved + 1, boss: !!run.thisRoundBoss, modifier: !!run.modifier, back: run.fxs.back });
     run.fxs.seen[mid] = 1; run.fxs.lastFam = fam; run.fxs.back = false;
     const tw = run.twist ? TWIST_BY_ID[run.twist] : null;
-    const pts = Math.round((100 + 130*speed*fx.speedK) * mult * fx.pts * (tw ? tw.k : 1) * (run.modifier === 'x2' ? 2 : 1));
+    const pts = Math.round((100 + 130*speed*fx.speedK) * mult * fx.pts * (tw ? tw.k : 1) * (run.modifier === 'x2' ? 2 : 1)
+      * (STYLE.pts[grade] || 1));
     if (run.modifier) run.everModifier = true;
     if (run.thisRoundBoss) run.everBoss = true;
     run.solved++; run.streak++;
@@ -20110,7 +20298,7 @@ function resolve(ok, node){
        little closer with it. A ×1 solve is worth under a ball of wool, a ×5 solve
        three, so a streak pays in more than points. */
     {
-      const got = Yarn.give(((0.8 + 0.4 * (mult - 1)) + fx.yarn) * fx.yarnK * Yarn.mult(run));
+      const got = Yarn.give(((0.8 + 0.4 * (mult - 1)) + fx.yarn + (STYLE.yarn[grade] || 0)) * fx.yarnK * Yarn.mult(run));
       run.yarn = (run.yarn || 0) + got;
       Pals.on().forEach(p => { const crossed = Pals.addBond(p.id, 1); if (crossed) bondMoment(p, crossed); });
       Day.note('solve', 1, { fam, id: mid });
@@ -20192,13 +20380,15 @@ function resolve(ok, node){
     }
 
     burst(node, cosmeticHex(), mult, mid); flash('flash-win'); flyToScore(node, cosmeticHex());
-    sfx.good(run.streak); buzz('good');
+    sfx.good(run.streak);
+    if (grade) styleMoment(grade, node, mid, performance.now() - roundStart, k); else buzz('good');
+    variety(node, mid);
     /* streak++ above already moved this — multAfter is what the player is
        actually looking at, the tier this solve landed them on, not the one
        pts was paid out at a moment ago. */
     const multAfter = multiplier();
-    el.prompt.textContent = run.streak >= 4 ? t('p.streak', { n: multAfter }) : (Math.random() < 0.7 && quip(mode, true)) || t('p.nice');
-    el.prompt.className = 'prompt won';
+    el.prompt.textContent = grade ? t('grade.' + grade) : run.streak >= 4 ? t('p.streak', { n: multAfter }) : (Math.random() < 0.7 && quip(mode, true)) || t('p.nice');
+    el.prompt.className = 'prompt won' + (grade ? ' grade g-' + grade : '');
     /* The line under the score springs up when it praises you... */
     if (!motionOff() && f_ok()) el.prompt.animate([{ transform: 'translateY(7px) scale(.94)', opacity: .3 }, { transform: 'none', opacity: 1 }], { duration: 420, easing: 'cubic-bezier(.34,1.56,.64,1)' });
     /* A ×1 solve and a ×5 solve used to pop identically — the same bump, the
@@ -20274,6 +20464,8 @@ function resolve(ok, node){
     const multWas = multiplier();
     if (free){ saved = true; }
     else if (run.shields > 0){ run.shields--; saved = true; } else { run.streak = 0; }
+    /* A miss that costs something unravels the Thread; a forgiven one holds it. */
+    if (!free && !saved && run.knots){ run.knots = 0; paintThread(false, true); }
     /* Losing a ×4 should feel like losing something. Reward gets a pop; this
        gets a snap, because loss aversion does more work than reward. */
     if (!saved && multWas > 1){
@@ -20291,9 +20483,8 @@ function resolve(ok, node){
       /* The piece snags and what it is made of slumps off it; the edges of the screen redden, less when the miss was forgiven. */
       Vfx.miss(node, modeIdOf(mode));
       if (save.flashes !== false) Vfx.veil('#FF3D6E', (free || saved) ? .3 : .55, 460);
-      const shakeCls = (!saved && multWas > 1) ? 'shake-big' : 'shake';
-      el.surface.classList.add(shakeCls);
-      setTimeout(() => el.surface.classList.remove(shakeCls), 400);
+      /* The board used to shake on a miss, up to 13 px. It no longer moves: a miss is told by the snag, the reddened
+         edges, the falling tone and the words, and nothing about it is a punishment (docs/bible/03-juice.md). */
     }
     sfx.bad(); buzz('bad');
     const said = !free && !saved && !r.timedOut ? quip(mode, false) : '';
@@ -20400,6 +20591,7 @@ function startRun(kind, modeId, twistId, poolIds, gate){
   run.learnFree = run.guided ? GUIDED_FREE : 0;
   /* What the player has brought with them, and how the mode is being played. */
   run.charms = []; run.yarn = 0;
+  run.knots = 0; run.bows = 0; run.purrs = 0; run.bestPurr = null; run.trail = []; run.slips = 0; run.steps = 0; run.aided = false;
   Fx.start(run);
   const tw = (kind === 'marathon' && twistId && twistId !== 'classic' && TWIST_BY_ID[twistId] && Twist.open(modeId, twistId))
     ? twistId : null;
@@ -20410,6 +20602,7 @@ function startRun(kind, modeId, twistId, poolIds, gate){
   /* Which of the three kinds dealt this Shuffle, so Go again deals from it again and its best is its own. */
   run.gate = kind === 'shuffle' && GATES[gate] ? gate : null;
   run.target = runTarget(run);
+  paintThread(false);
   Day.note('run', 1);
   /* pickMode only reshuffles when the bag is empty, so a bag handed over here
      is played in the order it was built. */
@@ -20722,6 +20915,12 @@ function endRun(){
   $('overKind').textContent = (r.mode ? modeName(r.mode) + ' · ' : '') + (r.gate && r.gate !== 'full' ? t('gate.' + r.gate) : kindName(r.kind))
     + (r.twist ? ' · ' + t('twist.' + r.twist) : '');
   $('overScore').textContent = k.scored ? fmt(r.score) : fmt(r.solved);
+  {
+    const pk = peakOf(r, best, k), el3 = $('overPeak');
+    el3.hidden = !pk; el3.textContent = pk ? pk.text : ''; el3.classList.toggle('met', !!pk && pk.kind === 'met');
+    /* The peak is heard again as it is read (the stinger it had in the run), a beat after the screen lands. */
+    if (pk && (pk.kind === 'purr' || pk.kind === 'bow')) setTimeout(() => (pk.kind === 'bow' ? sfx.bow : sfx.purr)(), 700);
+  }
   $('newBest').hidden = !best;
   $('flawlessBadge').hidden = !(k.scored && r.solved >= 10 && r.missed === 0);
 

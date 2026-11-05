@@ -68,7 +68,7 @@ top of the board, five knots long.
 - A plain solve **holds** the thread: no knot, nothing lost. *Safety: tension
   without punishment.*
 - A miss **unravels** it, visibly and gently, back to zero.
-- The fifth knot closes a **Cat's Cradle**: the strand loops into a cradle
+- The fifth knot ties a **Bow**: the strand loops into a bow
   figure over the whole surface (canvas, never the board), the music hits its
   peak chord, and the run pays a cradle bonus: `500 × stage` points and +5 yarn.
   Then the thread starts over.
@@ -79,7 +79,7 @@ consecutive solves and lost on a miss). The two chains differ:
 | Chain | Built by | Broken by | Pays | Spectacle |
 |---|---|---|---|---|
 | Streak heat (live) | any solve | a miss | point multiplier ×1 to ×5, embers | tier-up ring, ×5 veil and rain once a run |
-| Thread (new) | Purrfects | a miss | cradle bonus every 5 knots | knots, then the Cat's Cradle |
+| Thread (new) | Purrfects | a miss | Bow bonus every 5 knots | knots, then the Bow |
 | Stage (live) | every 10 solves | nothing | `250 × stage` points, 6 s of clock, a charm draft | sweep and stars |
 
 Three layers, three rhythms: heat every solve, the thread every few, stages
@@ -100,7 +100,7 @@ Combos between what you carry and how you play, so builds matter:
   and its perk ticks up a little on a Clean.
 - **Variety** (today only the kitten cat pays for changing family, `fx.varied`
   ×1.2 points) gets its own feedback for everyone: a three-colour stitch when the last three solves were from three
-  different kinds. Called **Patchwork**, it pays +1 yarn.
+  different kinds. Called the **Variety stitch** (not "Patchwork": that is a game's name), it pays +1 yarn.
 
 ## The loop, second by second (Challenge, a good run)
 
@@ -111,7 +111,7 @@ Combos between what you carry and how you play, so builds matter:
 | 2.1 s | Solved, Swift and Clean: **Purrfect** | stamp, gold ring, three rising notes in key, double tick, +1 knot |
 | 2.4 s | Token flies to the score; score counts up; heat ×3 to ×4 | progress, visible |
 | 2.8 s | Next board deals | novelty again |
-| ... | Five Purrfects later: **Cat's Cradle** | the run's peak: music swell, cradle figure, cradle bonus |
+| ... | Five Purrfects later: **a Bow** | the run's peak: music swell, the bow drawn over the board, the Bow bonus |
 | 10th solve | **Stage** beat: sweep, stars, charm draft | a choice, a breather, a landmark |
 
 ## Pressure test
@@ -120,11 +120,11 @@ Combos between what you carry and how you play, so builds matter:
 |---|---|
 | **Decisions with a downside?** | Charm drafts (three cards, one pick); Swift vs Clean (rushing risks a slip); kind and mode choice; Different puzzle (3 a run, costs nothing but skips a board you might have liked) |
 | **Mastery curve?** | A new player solves. A practised one solves Clean, then Swift, then Purrfect, then keeps a thread through boards they find hard, then plays twists, then chases mastery stars and the Gold Thread |
-| **Dominant strategy?** | "Play only the easiest kind." Variety pays (Patchwork, the kitten's ×1.2), each game's mastery stars only come from that game, and the Quilt shows every game you haven't touched |
+| **Dominant strategy?** | "Play only the easiest kind." Variety pays (the Variety stitch, the kitten's ×1.2), each game's mastery stars only come from that game, and the Quilt shows every game you haven't touched |
 | **Snowballing?** | Heat compounds points, but the clock and the cradle bonus are capped per stage. Losing doesn't compound: adaptive difficulty eases after two misses, and a miss costs the thread and some clock, never progress |
 | **The second hour?** | Charms and synergies, twists (five rule variants per game), cats' perks and bonds, the Thread, Challenge ghosts |
 | **The tenth hour?** | The Quilt nearing completion, Gold Thread mastery, seasonal patterns, Sparkle kits and stations, the Archive |
-| **Cut list (first to go if time is short)** | 1. Patchwork variety stitch. 2. Thread-aware charms. 3. Cat style reactions. The grades and the Thread stand without them |
+| **Cut list (first to go if time is short)** | 1. The Variety stitch. 2. Thread-aware charms. 3. Cat style reactions. The grades and the Thread stand without them |
 
 ## Numbers (tunables, collected in one block)
 
@@ -136,7 +136,7 @@ const STYLE = {
   swiftSpeed: 0.45,      // speed ≥ this is Swift (same "quick" as adaptive)
   cleanPts: 1.10, purrPts: 1.25,
   cleanYarn: 0.2, swiftYarn: 0.2, purrYarn: 1,
-  threadKnots: 5,        // Purrfects to a Cat's Cradle
+  knots: 5,              // Purrfects to a Bow
   cradlePts: 500,        // × stage (min 1)
   cradleYarn: 5,
   patchworkYarn: 1

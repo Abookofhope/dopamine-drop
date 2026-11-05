@@ -15,7 +15,7 @@ overhaul notes say where it has been.
 |---|---|---|
 | 0 | [Baseline](00-baseline.md) | What exists today, with numbers, and the ten faults found while taking stock |
 | 1 | [Vision](01-vision.md) | The one-page promise: what stays, what's added, for whom, how we'll know |
-| 2 | [Core loop](02-core-loop.md) | The inner and outer loops; style grades, the Thread, the Cat's Cradle; the pressure test |
+| 2 | [Core loop](02-core-loop.md) | The inner and outer loops; style grades, the Thread, the Bow; the pressure test |
 | 3 | [Juice and feedback](03-juice.md) | The feedback ladder T0–T6, laws, per-system table, profiles, budget |
 | 4 | [Progression and ownership](04-progression.md) | Three time scales; the Quilt; milestones; cats; the Kit; mastery |
 | 5 | [Economy](05-economy.md) | Sources, sinks, the income model, variable rewards, the recap, money if ever |
