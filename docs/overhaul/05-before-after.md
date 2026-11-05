@@ -217,6 +217,34 @@ so everything falls back to Inter and every board comes out 17 px taller. The pi
 v0.145.0 build here and v0.146.0 compared against them; `shots.mjs` now refuses to compare across font
 environments instead of reporting every board changed.
 
+## v0.147.0: Purrfect, the Thread and the Bow (bible release 2)
+
+| What | Before | After |
+|---|---|---|
+| A quick solve with no slip | the game's burst, a chime, a 16 ms pulse; nothing said how it was made | "Purrfect!" in gold under the score, three rising notes, a double pulse, a gold ring and a stamp, a 2 px kick of the frame round the board; 25% more points and 1 more yarn |
+| A quick solve after a hint or a slip | the same | "Swift", a slide up, 0.2 more yarn |
+| A careful solve of a board of two or more touches with no slip | the same | "Clean", a bright third note, 10% more points |
+| Five Purrfects in a row | nothing | the Thread beside the multiplier ties a Bow: drawn over the board as an overlay (gone 2 s later), a bright chord, 500 points a stage and 5 yarn |
+| A miss | the board shook up to 13 px | the board stays put; the Thread unravels if the miss cost something |
+| A round that timed out | "Too slow" | "Time ran out on this one" |
+| Odd Skein: a wrong tile with tries left | silent to everything but the tries (a quick solve after it could not be told from a clean one) | a slip: the solve after it is Swift at best |
+| Game Over | led with the number, even a giant 0 | leads with the run's best true moment (a new best, a Bow, the fastest Purrfect with its game and time, ×5, a streak) or, for a run with no solves, the game met and its rule |
+| `style.mjs` failed checks | 9 of 17 on v0.146.0 | 0 of 17 |
+| `peakend.mjs` failed checks | 6 of 7 on v0.146.0 | 0 of 7 |
+
+## v0.148.0: Room Radio (bible release 3)
+
+| What | Before | After |
+|---|---|---|
+| Music | none (a three-sine pad in Fidget Loop only) | Room Radio: generated live in Web Audio, I-vi-IV-V in C at 76 bpm; the room's air and a pad from the start, a plucked arpeggio at ×2, brushes and a kick at ×3, bells at ×5; scheduled 120 ms ahead on a 25 ms timer |
+| A miss | a falling tone | and the music muffles (low-pass to 900 Hz) and opens again over 1.5 s |
+| A stage beat, a Bow | sound effects only | the progression lifts a tone; the bells come in for four bars |
+| A Purrfect's three notes | fixed pitches in the family's key | the notes of the chord the music is on |
+| Pause, Game Over | — | the music fades out; Game Over resolves to the home chord and stops |
+| Controls | Sound and Volume | and Music (follows Sound) and Music volume; silent in Fidget Loop and the menus |
+| Choosing effects | play to find out | Preview effects in Settings plays a solve, a Purrfect, a miss and a level-up at the current settings |
+| `radio.mjs` failed checks | 5 of 5 that can run on v0.147.0 | 0 of 18 |
+
 ## How to reproduce
 
 ```

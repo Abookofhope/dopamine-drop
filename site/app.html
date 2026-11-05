@@ -4465,6 +4465,18 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
               <span class="txt"><b id="volLbl" data-i18n="set.volume">Volume</b><small data-i18n="set.volumeSub">How loud every sound is</small></span>
               <input type="range" class="volrange" id="volRange" min="0" max="100" step="5" aria-labelledby="volLbl">
             </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.music">Music</b><small data-i18n="set.musicSub">Room Radio: music made as you play, rising with your streak</small></span>
+              <button class="sw" id="swMusic" role="switch" aria-checked="true" data-i18n-aria="set.music" aria-label="Music"></button>
+            </div>
+            <div class="setrow sliderrow">
+              <span class="txt"><b id="musicLbl" data-i18n="set.musicVol">Music volume</b><small data-i18n="set.musicVolSub">How loud the music is, under the sounds</small></span>
+              <input type="range" class="volrange" id="musicRange" min="0" max="100" step="5" aria-labelledby="musicLbl">
+            </div>
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.preview">Preview effects</b><small data-i18n="set.previewSub">A solve, a Purrfect, a miss and a level-up, as your settings make them</small></span>
+              <button class="ghost previewbtn" id="previewBtn" type="button" data-i18n="set.previewBtn">Play</button>
+            </div>
             <div class="setrow" id="vibRow">
               <span class="txt"><b data-i18n="set.vib">Vibration</b><small id="vibSub" data-i18n="set.vibSub">A short pulse on every answer</small></span>
               <button class="sw" id="swHaptics" role="switch" aria-checked="true" aria-label="Vibration"></button>
@@ -4921,7 +4933,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.147.0';
+const VERSION_TAG = 'v0.148.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4937,7 +4949,7 @@ const defaults = {
   pbBlitz:0, pbGate:{}, pbMix:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, pbEndless:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, bigFx:true, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
-  volume:1, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
+  volume:1, music:true, musicVol:0.5, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
   lifetime:0, perks:[], perkLv:{}, tokens:0,
   dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0, purrfects:0, bows:0,
   lastMode:null, onboarded:false,
@@ -5297,7 +5309,8 @@ const sfx = {
      tonic chord, in the family's key, so it always agrees with the chime under it. The Bow is that chord whole. */
   clean: () => setTimeout(() => tone(1319 * toneShift, 0.09, 'triangle', 0.03), 110),
   swift: () => tone(880 * toneShift, 0.12, 'sine', 0.03, 1.6),
-  purr: () => [659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f * toneShift * 2, 0.12, 'triangle', 0.04), 90 + i * 75)),
+  purr: () => { const ch = Radio.chord(); (ch || [659, 784, 1047].map(f => f * toneShift * 2))
+    .forEach((f, i) => setTimeout(() => tone(f, 0.12, 'triangle', 0.04), 90 + i * 75)); },
   bow:  () => { [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => tone(f * toneShift, 0.42, 'triangle', 0.04), i * 45));
                 setTimeout(() => tone(2093 * toneShift, 0.5, 'sine', 0.025), 260); },
   /* A toast: two soft notes, a sixth apart, quieter than a solve. */
@@ -5366,6 +5379,130 @@ function stopAmbient(){
   bus.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.7);
   setTimeout(() => oscs.forEach(o => { try { o.stop(); } catch(e){} }), 800);
 }
+/* ═══ Room Radio ═════════════════════════════════════════════════════════
+   Music made on the spot (docs/bible/09-av-standards.md). Nothing is downloaded and nothing repeats exactly: a slow
+   I-vi-IV-V in C, the key every game's sounds already share, one bar to a chord, with layers that come in as the
+   streak climbs: the room's air and a pad from the start, a plucked arpeggio at ×2, soft brushes and a kick at ×3,
+   bells at ×5. A miss muffles it for a moment instead of stopping it; a stage beat lifts it a tone; a Bow brings the
+   bells in for four bars. Notes are scheduled 120 ms ahead on a 25 ms timer (the usual Web Audio way), so a busy
+   frame does not make it stumble. Off with Sound, off with its own switch, and its own volume. Not in Fidget Loop,
+   which keeps its own still pad. */
+const Radio = (() => {
+  const C3 = 130.81, hz = semi => C3 * Math.pow(2, semi / 12);
+  /* chord tones in semitones above C4 (C3 + 12): C, Am, F, G */
+  const PROG = [[12, 16, 19], [9, 12, 16], [5, 9, 12], [7, 11, 14]];
+  const PENT = [0, 2, 4, 7, 9];
+  const STATIONS = { hearth: { bpm: 76 } };
+  let ac = null, out = null, lp = null, air = null, noiseBuf = null, timer = 0, nextT = 0, i = 0;
+  let heat = 1, lift = 0, bellsTo = -1, urgent = false, on = false;
+  const vol = () => (typeof save.musicVol === 'number' ? save.musicVol : 0.5);
+  const wanted = () => !!save.sound && save.music !== false && vol() > 0;
+  const eighth = () => 60 / (STATIONS[save.station] || STATIONS.hearth).bpm / 2;
+  function voice(type, f, t, dur, peak, attack){
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + (attack || 0.01));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(lp); o.start(t); o.stop(t + dur + 0.05);
+    o.onended = () => { try { g.disconnect(); } catch(e){} };
+  }
+  function noise(t, dur, peak, hp){
+    const b = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+    b.buffer = noiseBuf; f.type = 'highpass'; f.frequency.value = hp;
+    g.gain.setValueAtTime(peak, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    b.connect(f); f.connect(g); g.connect(lp); b.start(t, Math.random() * 0.5); b.stop(t + dur + 0.02);
+    b.onended = () => { try { g.disconnect(); } catch(e){} };
+  }
+  function kick(t){
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(118, t); o.frequency.exponentialRampToValueAtTime(46, t + 0.16);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.05, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+    o.connect(g); g.connect(lp); o.start(t); o.stop(t + 0.26);
+  }
+  const chordAt = n => PROG[Math.floor(n / 8) % 4].map(x => x + lift);
+  function step(t){
+    const beat = i % 8, ch = chordAt(i), bar = 8 * eighth();
+    if (beat === 0){
+      ch.forEach(n => { voice('triangle', hz(n), t, bar * 1.05, 0.011, 0.4); voice('triangle', hz(n) * 1.004, t, bar * 1.05, 0.008, 0.45); });
+      voice('sine', hz(ch[0] - 12), t, bar * 0.95, 0.028, 0.06);
+    }
+    if (heat >= 2) voice('triangle', hz(ch[[0, 1, 2, 1, 0, 1, 2, 1][beat]] + 12), t + (Math.random() - 0.5) * 0.008, 0.34, 0.015, 0.006);
+    if (heat >= 3){
+      noise(t, 0.05, beat % 2 ? 0.006 : 0.009, 7000);
+      if (urgent) noise(t + eighth() / 2, 0.04, 0.005, 7500);
+      if (beat === 0 || beat === 4) kick(t);
+    }
+    if ((heat >= 5 || i < bellsTo) && (beat === 0 || beat === 3 || beat === 5 || beat === 6))
+      voice('sine', hz(PENT[(i * 7 + (i >> 3)) % 5] + 36 + lift), t, 0.8, 0.007, 0.004);
+  }
+  function tick(){
+    if (!ac || !on) return;
+    while (nextT < ac.currentTime + 0.12){ step(nextT); nextT += eighth(); i++; }
+  }
+  function build(){
+    if (out) return;
+    out = ac.createGain(); out.gain.value = 0.0001;
+    lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 12000;
+    lp.connect(out); out.connect(master || ac.destination);
+    noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+    const d = noiseBuf.getChannelData(0); let b = 0;
+    for (let k = 0; k < d.length; k++) d[k] = Math.random() * 2 - 1;
+    /* the room's air: brown noise, very low, always there while the music is */
+    const ab = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate), a = ab.getChannelData(0);
+    for (let k = 0; k < a.length; k++){ b = (b + 0.02 * (Math.random() * 2 - 1)) / 1.02; a[k] = b * 3.5; }
+    air = ac.createBufferSource(); air.buffer = ab; air.loop = true;
+    const af = ac.createBiquadFilter(), ag = ac.createGain();
+    af.type = 'lowpass'; af.frequency.value = 420; ag.gain.value = 0.05;
+    air.connect(af); af.connect(ag); ag.connect(lp); air.start();
+  }
+  function fadeTo(v, sec){
+    if (!out) return;
+    const t = ac.currentTime;
+    out.gain.cancelScheduledValues(t); out.gain.setValueAtTime(Math.max(0.0001, out.gain.value), t);
+    out.gain.exponentialRampToValueAtTime(Math.max(0.0001, v), t + sec);
+  }
+  return {
+    start(){
+      if (!wanted()) return;
+      ac = audio(); if (!ac) return;
+      build();
+      fadeTo(vol() * 0.7, 1.2);
+      if (!on){ on = true; nextT = ac.currentTime + 0.08; }
+      if (!timer) timer = setInterval(tick, 25);
+    },
+    heat(n){ heat = n | 0 || 1; },
+    urgent(b){ urgent = !!b; },
+    miss(){
+      if (!on || !lp) return;
+      const t = ac.currentTime, f = lp.frequency;
+      f.cancelScheduledValues(t); f.setValueAtTime(f.value, t);
+      f.exponentialRampToValueAtTime(900, t + 0.08); f.exponentialRampToValueAtTime(12000, t + 1.5);
+    },
+    duck(){ if (on && out){ const t = ac.currentTime, v = vol() * 0.7; out.gain.cancelScheduledValues(t); out.gain.setValueAtTime(Math.max(0.0001, out.gain.value), t);
+      out.gain.exponentialRampToValueAtTime(Math.max(0.0001, v * 0.5), t + 0.04); out.gain.exponentialRampToValueAtTime(Math.max(0.0001, v), t + 0.34); } },
+    stage(){ lift = lift ? 0 : 2; },
+    bow(){ bellsTo = i + 32; },
+    /* the notes a Purrfect plays, from the chord the music is on now, an octave or two up */
+    chord(){ return on ? chordAt(i).map(n => hz(n + 24)) : null; },
+    pause(){ if (!on) return; on = false; fadeTo(0.0001, 0.6); setTimeout(() => { if (!on){ clearInterval(timer); timer = 0; } }, 700); },
+    /* a run's end: the home chord, slowly, then quiet */
+    end(){
+      if (!on || !ac){ on = false; return; }
+      on = false;
+      const t = ac.currentTime + 0.05;
+      [12, 16, 19, 24].forEach((n, k) => voice('triangle', hz(n), t + k * 0.12, 2.2, 0.012, 0.05));
+      fadeTo(0.0001, 2.6);
+      setTimeout(() => { if (!on){ clearInterval(timer); timer = 0; } }, 2700);
+      heat = 1; lift = 0; bellsTo = -1; urgent = false;
+    },
+    stop(){ on = false; fadeTo(0.0001, 0.3); setTimeout(() => { if (!on){ clearInterval(timer); timer = 0; } }, 400); heat = 1; lift = 0; bellsTo = -1; urgent = false; },
+    volume(){ if (on) fadeTo(vol() * 0.7, 0.2); },
+    state(){ return { on, heat, lift, steps: i, lp: lp ? lp.frequency.value : 0, gain: out ? out.gain.value : 0, bells: i < bellsTo, urgent, ctx: ac ? ac.state : 'none' }; }
+  };
+})();
+try { if (localStorage.getItem('dd.probe')) window.__radio = Radio; } catch(e){}
+
 /* Twenty-odd call sites had each picked their own number — 6, 8, 10, 12, 14,
    20, [20,30,20] — so the same event buzzed differently depending on which
    mode you were in. These five are the whole vocabulary; the numbers behind
@@ -5875,6 +6012,7 @@ const STRINGS = {
     'goal.room':'{n} more yarn for {name}', 'goal.bond':'{n} solves until {name} feels closer', 'goal.wish':'{a} of {b} for today’s wish',
     'room.introTitle':'Every solve pays yarn', 'room.intro':'Spend it on cats and on the corners of this room. Cats ride along in your runs and each does something different; a furnished room pays more yarn and opens more seats. Wishes and the daily gift add to it.', 'room.introOk':'Got it',
     /* settings: volume, contrast, flashes */
+    'set.music':'Music', 'set.musicSub':'Room Radio: music made as you play, rising with your streak', 'set.musicVol':'Music volume', 'set.musicVolSub':'How loud the music is, under the sounds', 'set.preview':'Preview effects', 'set.previewSub':'A solve, a Purrfect, a miss and a level-up, as your settings make them', 'set.previewBtn':'Play',
     'set.volume':'Volume', 'set.volumeSub':'How loud every sound is', 'set.contrast':'High contrast',
     'set.contrastSub':'Brighter text and clearer edges', 'set.flash':'Screen flashes', 'set.flashSub':'The colour wash on every solve and miss',
     /* stats, recap, share, welcome */
@@ -6393,6 +6531,7 @@ const STRINGS = {
     'goal.room':'Encore {n} de laine pour « {name} »', 'goal.bond':'Encore {n} réussites avant que {name} se rapproche', 'goal.wish':'{a} sur {b} pour le souhait du jour',
     'room.introTitle':'Chaque réussite rapporte de la laine', 'room.intro':'Dépensez-la pour des chats et pour les coins de cet atelier. Les chats vous accompagnent en partie et chacun fait autre chose ; un atelier aménagé rapporte plus de laine et ouvre plus de places. Les souhaits et le cadeau du jour s’y ajoutent.', 'room.introOk':'Compris',
     /* settings: volume, contrast, flashes */
+    'set.music':'Musique', 'set.musicSub':'Radio de l’atelier : une musique faite pendant que tu joues, qui monte avec ta série', 'set.musicVol':'Volume de la musique', 'set.musicVolSub':'Le niveau de la musique, sous les sons', 'set.preview':'Aperçu des effets', 'set.previewSub':'Une réussite, un Ronronfait, un raté et un niveau, tels que tes réglages les rendent', 'set.previewBtn':'Jouer',
     'set.volume':'Volume', 'set.volumeSub':'Le niveau de tous les sons', 'set.contrast':'Contraste élevé',
     'set.contrastSub':'Texte plus clair et bords plus nets', 'set.flash':'Éclats d’écran', 'set.flashSub':'La lueur de couleur à chaque réussite et raté',
     /* stats, recap, share, welcome */
@@ -6910,6 +7049,7 @@ const STRINGS = {
     'goal.room':'{n} de lana más para «{name}»', 'goal.bond':'{n} aciertos hasta que {name} se sienta más cerca', 'goal.wish':'{a} de {b} para el deseo de hoy',
     'room.introTitle':'Cada acierto da lana', 'room.intro':'Gástala en gatos y en los rincones de este taller. Los gatos te acompañan en las partidas y cada uno hace algo distinto; un taller amueblado da más lana y abre más asientos. Los deseos y el regalo diario se suman.', 'room.introOk':'Entendido',
     /* settings: volume, contrast, flashes */
+    'set.music':'Música', 'set.musicSub':'Radio del taller: música hecha mientras juegas, que sube con tu racha', 'set.musicVol':'Volumen de la música', 'set.musicVolSub':'Lo fuerte que suena la música, bajo los sonidos', 'set.preview':'Probar efectos', 'set.previewSub':'Un acierto, un Ronronfecto, un fallo y un nivel, como los hacen tus ajustes', 'set.previewBtn':'Probar',
     'set.volume':'Volumen', 'set.volumeSub':'Lo fuerte que suena todo', 'set.contrast':'Alto contraste',
     'set.contrastSub':'Texto más brillante y bordes más claros', 'set.flash':'Destellos de pantalla', 'set.flashSub':'El destello de color en cada acierto y fallo',
     /* stats, recap, share, welcome */
@@ -7427,6 +7567,7 @@ const STRINGS = {
     'goal.room':'Noch {n} Wolle für „{name}“', 'goal.bond':'Noch {n} Treffer, bis {name} sich näher fühlt', 'goal.wish':'{a} von {b} für den heutigen Wunsch',
     'room.introTitle':'Jedes Rätsel bringt Wolle', 'room.intro':'Gib sie für Katzen und für die Ecken dieser Werkstatt aus. Katzen begleiten dich in Läufen und jede tut etwas anderes; eine eingerichtete Werkstatt bringt mehr Wolle und öffnet mehr Plätze. Wünsche und das Tagesgeschenk kommen dazu.', 'room.introOk':'Verstanden',
     /* settings: volume, contrast, flashes */
+    'set.music':'Musik', 'set.musicSub':'Werkstattradio: Musik, die beim Spielen entsteht und mit deiner Serie wächst', 'set.musicVol':'Musiklautstärke', 'set.musicVolSub':'Wie laut die Musik unter den Klängen ist', 'set.preview':'Effekte ansehen', 'set.previewSub':'Eine Lösung, ein Schnurrfekt, ein Fehler und ein Level, so wie deine Einstellungen sie machen', 'set.previewBtn':'Abspielen',
     'set.volume':'Lautstärke', 'set.volumeSub':'Wie laut alles klingt', 'set.contrast':'Hoher Kontrast',
     'set.contrastSub':'Hellerer Text und klarere Kanten', 'set.flash':'Bildschirmblitze', 'set.flashSub':'Das Farbaufblitzen bei jedem Treffer und Fehler',
     /* stats, recap, share, welcome */
@@ -7737,6 +7878,11 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.148.0', date:'2026-11-05', items:[
+    'Room Radio: music made as you play. A slow, warm piece in the key every game already sounds in, with layers that come in as your streak climbs (a soft piano at ×2, brushes at ×3, bells at ×5). A miss muffles it for a moment, a stage lifts it a tone, a Bow brings the bells in, and Game Over brings it home. A Purrfect now plays the notes of the chord the music is on.',
+    'Music has its own switch and volume in Settings (it follows Sound, and is quiet in the menus and in Fidget Loop).',
+    'Preview effects in Settings plays a solve, a Purrfect, a miss and a level-up the way your settings make them, so you can choose without playing.',
+  ] },
   { v:'0.147.0', date:'2026-11-05', items:[
     'Every solve is graded by how you made it. Quick and with no slip or hint is a Purrfect: gold words under the score, three rising notes, a double pulse and a ring of light. Quick is Swift, and a board of several steps with no slip is Clean. Each pays a little more; a plain solve pays what it always did.',
     'Purrfects tie knots in a Thread beside the multiplier. Five tie a Bow: it is drawn over the board in gold with a bright chord, and pays 500 points a stage and 5 yarn. A miss that costs you something unravels the Thread; a forgiven one holds it.',
@@ -19313,7 +19459,7 @@ function paintThread(pop, unravel){
 }
 function styleMoment(grade, node, mid, ms, k){
   if (grade === 'purr'){
-    sfx.purr(); buzz('purr'); kick(2);
+    sfx.purr(); buzz('purr'); kick(2); Radio.duck();
     run.purrs++; save.purrfects = (save.purrfects | 0) + 1; persist();
     if (save.purrfects === 1) run.firstPurr = mid;
     if (!run.bestPurr || ms < run.bestPurr.ms) run.bestPurr = { ms, id: mid };
@@ -19342,7 +19488,7 @@ function tieBow(k){
   const pts = STYLE.bowPts * Math.max(1, run.stage | 0);
   if (k && k.scored){ run.score += pts; save.lifetime = (save.lifetime || 0) + pts; }
   run.yarn = (run.yarn || 0) + Yarn.give(STYLE.bowYarn * Yarn.mult(run));
-  sfx.bow(); buzz('bow'); kick(3);
+  sfx.bow(); buzz('bow'); kick(3); Radio.bow();
   floatPts($('hudScore'), t(k && k.scored ? 'bow.float' : 'bow.floatYarn', { n: fmt(pts), y: STYLE.bowYarn }), 5);
   if (!motionOff()){
     const r = el.surface.getBoundingClientRect();
@@ -19686,6 +19832,7 @@ function emberLoop(heat){
 }
 
 function renderHud(){
+  if (run){ Radio.heat(multiplier()); Radio.urgent(!!KINDS[run.kind].timed && run.started && run.time < 8000); }
   if (!run) return;
   const k = KINDS[run.kind];
   /* In Shuffle, Mixtape and the Daily the puzzle changes every round and the
@@ -20370,7 +20517,7 @@ function resolve(ok, node){
         glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 16.7 6.6 19.6l1.2-6L3.3 9.4l6.1-.8z" fill="currentColor" stroke="none"/></svg>',
         eyebrow: t('stage.eyebrow', { n: stage }), title: t('stage.title'),
         desc: t(k.timed ? 'stage.descTimed' : 'stage.desc', { n: bonus, s: STAGE_BREATHER_MS / 1000 }) });
-      sfx.combo(5);
+      sfx.combo(5); Radio.stage();
       /* A stage is a landmark: light crosses the board and stars go up from it. */
       if (!motionOff()){
         Vfx.sweep(el.surface, '#FFC53D', 860);
@@ -20486,7 +20633,7 @@ function resolve(ok, node){
       /* The board used to shake on a miss, up to 13 px. It no longer moves: a miss is told by the snag, the reddened
          edges, the falling tone and the words, and nothing about it is a punishment (docs/bible/03-juice.md). */
     }
-    sfx.bad(); buzz('bad');
+    sfx.bad(); buzz('bad'); Radio.miss();
     const said = !free && !saved && !r.timedOut ? quip(mode, false) : '';
     el.prompt.textContent = learn ? t('p.learn') : free ? t('p.free') : saved ? t('p.saved')
       : r.timedOut ? t('p.tooSlow')
@@ -20629,6 +20776,7 @@ function startRun(kind, modeId, twistId, poolIds, gate){
     lastTs = performance.now();
     if (!raf) raf = rawRAF(tick);
     if (kind === 'zen'){ startAmbient(); if (!motionOff()) el.surface.classList.add('zenflow'); }
+    else if (kind !== 'discover') Radio.start();
     nextRound();
   });
 }
@@ -20687,6 +20835,7 @@ function pauseRun(){
   wakeOff();
   clearTimers();
   stopAmbient();
+  Radio.pause();
   el.surface.classList.remove('zenflow');
   /* Come back to the same puzzle at the same round number, not a new one. Unless
      the round was already won and a charm was being chosen: then there is no
@@ -20797,6 +20946,7 @@ function resumeRun(){
   el.prompt.textContent = t('p.ready');
   countIn(() => { lastTs = performance.now(); if (!raf) raf = rawRAF(tick); wakeOn();
     if (run.kind === 'zen'){ startAmbient(); if (!motionOff()) el.surface.classList.add('zenflow'); }
+    else if (run.kind !== 'discover') Radio.start();
     if (run.draftDue) offerDraft(); else nextRound(); });
 }
 
@@ -20808,6 +20958,7 @@ function endRun(){
   if (raf){ rawCAF(raf); raf = 0; }
   roundLive = false;
   stopAmbient();
+  Radio.end();
   el.surface.classList.remove('zenflow');
   const k = KINDS[run.kind], r = run;
   run = null;
@@ -21855,11 +22006,13 @@ function paintSettings(){
      made from another tab, this screen is hidden and every width measures zero.
      Painting happens when it is on screen. */
   levelSettingButtons();
-  [['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swEasy','easyRead'],['swAdapt','adaptive'],['swCaps','captions']]
+  [['swSound','sound'],['swMusic','music'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swEasy','easyRead'],['swAdapt','adaptive'],['swCaps','captions']]
     .forEach(([id,key]) => $(id).setAttribute('aria-checked', String(!!save[key])));
   $('swFlashes').setAttribute('aria-checked', String(save.flashes !== false));
   $('swBig').setAttribute('aria-checked', String(save.bigFx !== false));
   $('volRange').value = String(Math.round(volumeNow() * 100));
+  $('swMusic').setAttribute('aria-checked', String(save.music !== false));
+  $('musicRange').value = String(Math.round((typeof save.musicVol === 'number' ? save.musicVol : 0.5) * 100));
   Array.from($('speedRow').children).forEach(b => {
     const on = b.dataset.sp === (save.gameSpeed || 'normal');
     b.classList.toggle('on', on);
@@ -22464,6 +22617,19 @@ Array.from($('handRow').children).forEach(b =>
 /* A slider is the one control here that changes a value rather than flipping one, so
    it is written as it moves and only heard when the finger lifts. */
 $('volRange').addEventListener('input', () => { save.volume = +$('volRange').value / 100; applyVolume(); });
+$('musicRange').addEventListener('input', () => { save.musicVol = +$('musicRange').value / 100; Radio.volume(); });
+$('musicRange').addEventListener('change', () => { persist(); });
+/* Preview: the four moments that matter most, played the way the current settings make them, at the button. */
+$('previewBtn').addEventListener('click', () => {
+  const b = $('previewBtn'), at = () => Vfx.box(b);
+  const solveFx = () => { sfx.good(3); buzz('good'); if (!motionOff()){ const p = at(); Vfx.spray('radial', p.x, p.y, 16, { pal: ['#33E6C8', '#FFF3E6'] }); } };
+  const purrFx = () => { sfx.good(5); sfx.purr(); buzz('purr'); if (!motionOff()){ const p = at(); Vfx.ring(p.x, p.y, '#FFC53D', { r0: 10, r1: 64, line: 3 }); Vfx.glints(p.x, p.y, 5, 36, '#FFE08A'); } };
+  const missFx = () => { sfx.bad(); buzz('bad'); if (!motionOff() && save.flashes !== false) Vfx.veil('#FF3D6E', .3, 420); };
+  const levelFx = () => { sfx.level(); buzz('win'); if (!motionOff() && save.bigFx !== false) Vfx.cannons(26); };
+  b.disabled = true;
+  [solveFx, purrFx, missFx, levelFx].forEach((f, k) => setTimeout(f, k * 700));
+  setTimeout(() => { b.disabled = false; }, 4 * 700);
+});
 $('volRange').addEventListener('change', () => { persist(); sfx.tap(); });
 function applyContrast(){ document.documentElement.classList.toggle('hc', !!save.contrast); }
 function applyEasyRead(){ document.documentElement.classList.toggle('easyread', !!save.easyRead); }
@@ -22497,15 +22663,21 @@ $('quitBtn').addEventListener('click', () => {
   if (raf){ rawCAF(raf); raf = 0; }
   if (run && (run.solved || run.missed)) return endRun();
   wakeOff();
+  Radio.stop();
   run = null; clearBoard(); goTab('Play');
 });
 
-[['swSound','sound'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swFlashes','flashes'],['swBig','bigFx'],['swEasy','easyRead'],['swAdapt','adaptive'],['swCaps','captions']]
+[['swSound','sound'],['swMusic','music'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swFlashes','flashes'],['swBig','bigFx'],['swEasy','easyRead'],['swAdapt','adaptive'],['swCaps','captions']]
   .forEach(([id, key]) => {
     const sw = $(id);
     const flip = () => {
       if (sw.disabled) return;
-      save[key] = key === 'flashes' || key === 'bigFx' ? (save[key] === false) : !save[key];
+      save[key] = key === 'flashes' || key === 'bigFx' || key === 'music' ? (save[key] === false) : !save[key];
+      /* Music follows Sound and its own switch at once, in a run as well. */
+      if (key === 'sound' || key === 'music'){
+        if (run && run.started && !run.paused && run.kind !== 'zen' && run.kind !== 'discover' && save.sound && save.music !== false) Radio.start();
+        else Radio.stop();
+      }
       if (key === 'contrast') applyContrast();
       if (key === 'easyRead') applyEasyRead();
       persist(); paintSettings();
@@ -22624,9 +22796,9 @@ $('resetGone').addEventListener('click', () => {
    defaults" is the same machinery with every key at its default. The open or
    closed state of each panel is a view preference, not progress, so it lives
    under its own key: a reset, an export or an import never touches it. */
-const SETTING_KEYS = ['sound','volume','haptics','flashes','reduceMotion','bigFx','gameSpeed','contrast','colorAssist','easyRead','textSize','adaptive','captions','oneHand'];
+const SETTING_KEYS = ['sound','volume','music','musicVol','haptics','flashes','reduceMotion','bigFx','gameSpeed','contrast','colorAssist','easyRead','textSize','adaptive','captions','oneHand'];
 const PRESETS = {
-  calm:  { sound:true, volume:0.4, haptics:false, flashes:false, reduceMotion:true, gameSpeed:'relaxed' },
+  calm:  { sound:true, volume:0.4, musicVol:0.35, haptics:false, flashes:false, reduceMotion:true, gameSpeed:'relaxed' },
   focus: { sound:true, volume:0.6, haptics:true,  flashes:false, reduceMotion:true, gameSpeed:'normal' },
   easy:  { contrast:true, colorAssist:true, easyRead:true, textSize:'115', flashes:false, reduceMotion:true, gameSpeed:'relaxed', captions:true }
 };
