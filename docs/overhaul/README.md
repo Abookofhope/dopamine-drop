@@ -32,6 +32,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.146.0 | Honest and uninterrupted (bible release 1): Go again keeps your kind and each kind has its own best; every charm does what its card says where it is dealt; the daily gift waits for you after days away; nothing that is not about the round interrupts it, notes sit under the score and a tap puts them away |
 | v0.147.0 | Purrfect (bible release 2): every solve graded by how it was made (Purrfect, Swift, Clean) and told on every channel; Purrfects tie a Thread and five tie a Bow; Game Over leads with the run's best moment; a miss no longer shakes the board |
 | v0.148.0 | Room Radio (bible release 3): music made as you play, in the games' own key, with layers that rise with your streak; a miss muffles it, a stage lifts it, a Bow brings the bells; its own switch and volume; Preview effects in Settings |
+| v0.149.0 | Two doors (bible release 4): Cozy (no clock, nothing to lose, the same yarn) and Challenge (the clock, and your best run's pace beside the multiplier); HUD density; the HUD steps back during a round; an install row |
 
 ## Ground rules the work follows
 

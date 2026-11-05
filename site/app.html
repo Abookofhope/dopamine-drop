@@ -1737,6 +1737,29 @@ html[data-ts="130"] .achgrid,html[data-ts="150"] .achgrid{grid-template-columns:
 .thread.unravel i{transition:background 600ms linear,border-color 600ms linear}
 html[data-motion="on"] .thread i.pop{animation:knotPop 420ms var(--e-spring)}
 @keyframes knotPop{from{transform:scale(.3)}}
+/* The doors: Cozy or Challenge, under the gate's question. */
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 12px;padding:4px;border-radius:var(--r-lg);
+  background:#ffffff08;border:1px solid var(--edge-soft)}
+.door{min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 8px;
+  border-radius:calc(var(--r-lg) - 4px);border:0;background:transparent;color:var(--haze);cursor:pointer;
+  transition:background 200ms var(--e-out),color 200ms var(--e-out)}
+.door b{font-size:calc(14px*var(--ts));font-weight:800;color:inherit}
+.door small{font-size:calc(10.5px*var(--ts));line-height:1.25;text-align:center}
+.door.on{background:var(--ink-2);color:var(--fg, #FFF3E6);box-shadow:0 6px 16px -10px #000a}
+.door[data-door="cozy"].on b{color:#CDBCF7}
+.door[data-door="challenge"].on b{color:#FF8A5C}
+/* The ghost: ahead of your best run at this moment, or behind it. */
+.tobeat.ahead b{color:#FFC53D}
+.tobeat.behind b{color:var(--haze)}
+/* HUD density. Minimal keeps the score, the multiplier, the Thread, the clock and the way out. */
+.pace{display:none;font-size:calc(10.5px*var(--ts));color:var(--haze);font-variant-numeric:tabular-nums;white-space:nowrap}
+html[data-hud="detailed"] .pace{display:inline}
+html[data-hud="minimal"] #play .kind, html[data-hud="minimal"] #play .famdot, html[data-hud="minimal"] #hudMeter,
+html[data-hud="minimal"] #hudCat, html[data-hud="minimal"] #hudBest, html[data-hud="minimal"] #adaptNote,
+html[data-hud="minimal"] #hudPerks, html[data-hud="minimal"] #hudCharms{display:none!important}
+/* While a round is live, what does not change during it steps back (opacity only, after a moment). */
+#play .kind, #play .famdot, #hudPerks, #hudCharms, #adaptNote{transition:opacity 260ms linear}
+#play.live .kind, #play.live .famdot, #play.live #hudPerks, #play.live #hudCharms, #play.live #adaptNote{opacity:.7;transition-delay:1.2s}
 /* The Bow: an overlay above the board, never part of it. */
 .bowfx{position:fixed;pointer-events:none;z-index:74}
 .bowfx svg{width:100%;height:100%;display:block;overflow:visible}
@@ -4046,6 +4069,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
           <!-- Three kinds of game, and a place to make your own. Every game belongs to one of the three. -->
           <div class="gate" id="gate">
             <div class="gateTitle" data-i18n="gate.title">How is your brain today?</div>
+            <div class="doors" id="doors" role="radiogroup" data-i18n-aria="door.label" aria-label="How to play">
+              <button class="door" type="button" role="radio" data-door="cozy" aria-checked="false"><b data-i18n="door.cozy">Cozy</b><small data-i18n="door.cozySub">No clock, nothing to lose</small></button>
+              <button class="door" type="button" role="radio" data-door="challenge" aria-checked="true"><b data-i18n="door.challenge">Challenge</b><small data-i18n="door.challengeSub">The clock, and your best to beat</small></button>
+            </div>
             <div class="gatelist">
               <button class="gateBtn" data-gate="calm" type="button" style="--gbg:#CDBCF7;--gfg:#2A1B4D;--gsub:#4A3A78;--gk:#CDBCF7">
                 <span class="g" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M30 33c8 0 12-5 10-10" fill="none" stroke="#2A1B4D" stroke-width="3" stroke-linecap="round"/><ellipse cx="21" cy="32" rx="15" ry="9" fill="#F6EBD9" stroke="#2A1B4D" stroke-width="2"/><path d="M9 26L8 17L15 21M23 22L26 15L30 23" fill="#F6EBD9" stroke="#2A1B4D" stroke-width="2" stroke-linejoin="round"/><circle cx="14" cy="27" r="7" fill="#F6EBD9" stroke="#2A1B4D" stroke-width="2"/><path d="M11 27q1.6 1.6 3.2 0M15 27q1.6 1.6 3.2 0" fill="none" stroke="#2A1B4D" stroke-width="1.6" stroke-linecap="round"/></svg></span>
@@ -4477,6 +4504,10 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
               <span class="txt"><b data-i18n="set.preview">Preview effects</b><small data-i18n="set.previewSub">A solve, a Purrfect, a miss and a level-up, as your settings make them</small></span>
               <button class="ghost previewbtn" id="previewBtn" type="button" data-i18n="set.previewBtn">Play</button>
             </div>
+            <div class="setrow" id="installRow" hidden>
+              <span class="txt"><b data-i18n="set.install">Install the app</b><small data-i18n="set.installSub">Put Dopamine Drop on your home screen. It works offline.</small></span>
+              <button class="ghost previewbtn" id="installBtn" type="button" data-i18n="set.installBtn">Install</button>
+            </div>
             <div class="setrow" id="vibRow">
               <span class="txt"><b data-i18n="set.vib">Vibration</b><small id="vibSub" data-i18n="set.vibSub">A short pulse on every answer</small></span>
               <button class="sw" id="swHaptics" role="switch" aria-checked="true" aria-label="Vibration"></button>
@@ -4543,6 +4574,14 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
                  the same ctx.after every mode already schedules through) without
                  touching scoring, par, or what counts as a solve — the puzzle is
                  the same puzzle, just with more room to think about it. -->
+            <div class="setrow">
+              <span class="txt"><b data-i18n="set.hud">During a run</b><small data-i18n="set.hudSub">How much the screen shows around the board</small></span>
+            </div>
+            <div class="segrow" id="hudRow" role="group" data-i18n-aria="set.hud">
+              <button class="seg" type="button" data-hd="minimal"><span data-i18n="set.hudMin">Minimal</span></button>
+              <button class="seg" type="button" data-hd="standard"><span data-i18n="set.hudStd">Standard</span></button>
+              <button class="seg" type="button" data-hd="detailed"><span data-i18n="set.hudMax">Detailed</span></button>
+            </div>
             <div class="setrow">
               <span class="txt"><b data-i18n="set.speed">Game speed</b><small data-i18n="set.speedSub">More time to think, same puzzles and scoring</small></span>
             </div>
@@ -4654,6 +4693,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
           <span class="streak" id="hudStreak">&times;1</span>
           <span class="tobeat" id="hudBest" hidden><small id="hudBestL">Best</small><b id="hudBestN">0</b></span>
           <span class="thread" id="hudThread" aria-hidden="true" hidden><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="pace" id="hudPace" aria-hidden="true"></span>
         </span>
       </div>
       <div class="roundbar" id="roundBar" hidden><i id="roundFill"></i></div>
@@ -4933,7 +4973,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.148.0';
+const VERSION_TAG = 'v0.149.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4949,7 +4989,7 @@ const defaults = {
   pbBlitz:0, pbGate:{}, pbMix:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, pbEndless:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, bigFx:true, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
-  volume:1, music:true, musicVol:0.5, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
+  volume:1, music:true, musicVol:0.5, door:'challenge', hud:'standard', curves:{}, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
   lifetime:0, perks:[], perkLv:{}, tokens:0,
   dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0, purrfects:0, bows:0,
   lastMode:null, onboarded:false,
@@ -6205,6 +6245,7 @@ const STRINGS = {
     /* The menu */
     'me.open':'Your progress', 'me.level':'Level {n}',
     'grade.purr':'Purrfect!', 'grade.clean':'Clean', 'grade.swift':'Swift', 'bow.float':'A Bow! +{n}', 'bow.floatYarn':'A Bow! +{y} yarn', 'fx.variety':'All three kinds! +1 yarn', 'cap.purr':'Three rising notes: Purrfect', 'cap.bow':'A bright chord: the Thread tied a Bow', 'peak.best':'A new best: {n}', 'peak.firstBow':'Your first Bow: five Purrfects in a row', 'peak.bow':'The Thread tied a Bow', 'peak.bows':'The Thread tied {n} Bows', 'peak.firstPurr':'Your first Purrfect, on {m}', 'peak.purr':'Fastest Purrfect: {m}, {s} s', 'peak.five':'You reached ×5', 'peak.streak':'{n} in a row', 'peak.fast':'Quickest solve: {m}, {s} s', 'peak.met':'You met {m}. {rule}',
+    'cozy.title':'Cozy', 'door.label':'How to play', 'door.cozy':'Cozy', 'door.cozySub':'No clock, nothing to lose', 'door.challenge':'Challenge', 'door.challengeSub':'The clock, and your best to beat', 'stage.descCozy':'A gift of 10 yarn, and the music lifts.', 'hud.pace':'Pace', 'hud.paceLine':'{n}/min · {p}% Purrfect', 'set.hud':'During a run', 'set.hudSub':'How much the screen shows around the board', 'set.hudMin':'Minimal', 'set.hudStd':'Standard', 'set.hudMax':'Detailed', 'set.install':'Install the app', 'set.installSub':'Put Dopamine Drop on your home screen. It works offline.', 'set.installBtn':'Install',
     'hud.solved':'{n} solved', 'set.assistPrev':'Every colour also carries a shape', 'over.whilePlayed':'While you played', 'hud.pause':'Pause', 'hud.best':'Best', 'hud.newBest':'New best', 'pause.sofar':'{s}\u00a0points · {n}\u00a0solved · best\u00a0streak\u00a0{b}', 'brand.tag':'Brain snacks',
     'you.switch':'Progress or settings', 'you.progress':'Progress',
     'modes.ways':'More ways to play', 'modes.waysSub':'Endless, Mixtape, Marathon and more', 'gate.fourAll':'All four games',
@@ -6724,6 +6765,7 @@ const STRINGS = {
     /* The menu */
     'me.open':'Votre progression', 'me.level':'Niveau {n}',
     'grade.purr':'Ronronfait !', 'grade.clean':'Net', 'grade.swift':'Vif', 'bow.float':'Un nœud ! +{n}', 'bow.floatYarn':'Un nœud ! +{y} de laine', 'fx.variety':'Les trois sortes ! +1 laine', 'cap.purr':'Trois notes montantes : Ronronfait', 'cap.bow':'Un accord clair : le fil fait un nœud', 'peak.best':'Nouveau record : {n}', 'peak.firstBow':'Ton premier nœud : cinq Ronronfaits d’affilée', 'peak.bow':'Le fil a fait un nœud', 'peak.bows':'Le fil a fait {n} nœuds', 'peak.firstPurr':'Ton premier Ronronfait, sur {m}', 'peak.purr':'Ronronfait le plus rapide : {m}, {s} s', 'peak.five':'Tu as atteint ×5', 'peak.streak':'{n} d’affilée', 'peak.fast':'Réussite la plus rapide : {m}, {s} s', 'peak.met':'Tu as découvert {m}. {rule}',
+    'cozy.title':'Douillet', 'door.label':'Comment jouer', 'door.cozy':'Douillet', 'door.cozySub':'Sans chrono, rien à perdre', 'door.challenge':'Défi', 'door.challengeSub':'Le chrono, et ton record à battre', 'stage.descCozy':'Un cadeau de 10 laines, et la musique monte.', 'hud.pace':'Allure', 'hud.paceLine':'{n}/min · {p} % Ronronfait', 'set.hud':'Pendant une partie', 'set.hudSub':'Ce que l’écran montre autour du plateau', 'set.hudMin':'Minimal', 'set.hudStd':'Standard', 'set.hudMax':'Détaillé', 'set.install':'Installer l’app', 'set.installSub':'Mets Dopamine Drop sur ton écran d’accueil. Elle marche hors ligne.', 'set.installBtn':'Installer',
     'hud.solved':'{n} réussis', 'set.assistPrev':'Chaque couleur porte aussi une forme', 'over.whilePlayed':'Pendant la partie', 'hud.pause':'Pause', 'hud.best':'Record', 'hud.newBest':'Nouveau record', 'pause.sofar':'{s}\u00a0points · {n}\u00a0réussis · meilleure\u00a0série\u00a0{b}', 'brand.tag':'Douceurs pour cerveaux',
     'you.switch':'Progression ou réglages', 'you.progress':'Progression',
     'modes.ways':'Autres façons de jouer', 'modes.waysSub':'Sans fin, Mixtape, Marathon et plus', 'gate.fourAll':'Les quatre jeux',
@@ -7242,6 +7284,7 @@ const STRINGS = {
     /* The menu */
     'me.open':'Tu progreso', 'me.level':'Nivel {n}',
     'grade.purr':'¡Ronronfecto!', 'grade.clean':'Limpio', 'grade.swift':'Veloz', 'bow.float':'¡Un lazo! +{n}', 'bow.floatYarn':'¡Un lazo! +{y} de lana', 'fx.variety':'¡Las tres clases! +1 lana', 'cap.purr':'Tres notas ascendentes: Ronronfecto', 'cap.bow':'Un acorde brillante: el hilo hace un lazo', 'peak.best':'Nuevo récord: {n}', 'peak.firstBow':'Tu primer lazo: cinco Ronronfectos seguidos', 'peak.bow':'El hilo hizo un lazo', 'peak.bows':'El hilo hizo {n} lazos', 'peak.firstPurr':'Tu primer Ronronfecto, en {m}', 'peak.purr':'Ronronfecto más rápido: {m}, {s} s', 'peak.five':'Llegaste a ×5', 'peak.streak':'{n} seguidos', 'peak.fast':'Acierto más rápido: {m}, {s} s', 'peak.met':'Conociste {m}. {rule}',
+    'cozy.title':'Acogedor', 'door.label':'Cómo jugar', 'door.cozy':'Acogedor', 'door.cozySub':'Sin reloj, nada que perder', 'door.challenge':'Desafío', 'door.challengeSub':'El reloj, y tu récord por batir', 'stage.descCozy':'Un regalo de 10 lanas, y la música sube.', 'hud.pace':'Ritmo', 'hud.paceLine':'{n}/min · {p} % Ronronfecto', 'set.hud':'Durante la partida', 'set.hudSub':'Cuánto muestra la pantalla alrededor del tablero', 'set.hudMin':'Mínimo', 'set.hudStd':'Estándar', 'set.hudMax':'Detallado', 'set.install':'Instalar la app', 'set.installSub':'Pon Dopamine Drop en tu pantalla de inicio. Funciona sin conexión.', 'set.installBtn':'Instalar',
     'hud.solved':'{n} resueltos', 'set.assistPrev':'Cada color lleva también una forma', 'over.whilePlayed':'Mientras jugabas', 'hud.pause':'Pausa', 'hud.best':'Récord', 'hud.newBest':'Nuevo récord', 'pause.sofar':'{s}\u00a0puntos · {n}\u00a0resueltos · mejor\u00a0racha\u00a0{b}', 'brand.tag':'Bocaditos para el cerebro',
     'you.switch':'Progreso o ajustes', 'you.progress':'Progreso',
     'modes.ways':'Más formas de jugar', 'modes.waysSub':'Sin fin, Mixtape, Maratón y más', 'gate.fourAll':'Los cuatro juegos',
@@ -7760,6 +7803,7 @@ const STRINGS = {
     /* The menu */
     'me.open':'Dein Fortschritt', 'me.level':'Stufe {n}',
     'grade.purr':'Schnurrfekt!', 'grade.clean':'Sauber', 'grade.swift':'Flink', 'bow.float':'Eine Schleife! +{n}', 'bow.floatYarn':'Eine Schleife! +{y} Wolle', 'fx.variety':'Alle drei Sorten! +1 Wolle', 'cap.purr':'Drei steigende Töne: Schnurrfekt', 'cap.bow':'Ein heller Akkord: der Faden bindet eine Schleife', 'peak.best':'Neuer Bestwert: {n}', 'peak.firstBow':'Deine erste Schleife: fünf Schnurrfekte in Folge', 'peak.bow':'Der Faden hat eine Schleife gebunden', 'peak.bows':'Der Faden hat {n} Schleifen gebunden', 'peak.firstPurr':'Dein erstes Schnurrfekt, bei {m}', 'peak.purr':'Schnellstes Schnurrfekt: {m}, {s} s', 'peak.five':'Du hast ×5 erreicht', 'peak.streak':'{n} in Folge', 'peak.fast':'Schnellste Lösung: {m}, {s} s', 'peak.met':'Du hast {m} kennengelernt. {rule}',
+    'cozy.title':'Gemütlich', 'door.label':'Wie spielen', 'door.cozy':'Gemütlich', 'door.cozySub':'Keine Uhr, nichts zu verlieren', 'door.challenge':'Herausforderung', 'door.challengeSub':'Die Uhr und dein Bestwert', 'stage.descCozy':'Ein Geschenk von 10 Wolle, und die Musik steigt.', 'hud.pace':'Tempo', 'hud.paceLine':'{n}/min · {p} % Schnurrfekt', 'set.hud':'Während eines Laufs', 'set.hudSub':'Wie viel der Bildschirm um das Brett zeigt', 'set.hudMin':'Minimal', 'set.hudStd':'Standard', 'set.hudMax':'Ausführlich', 'set.install':'App installieren', 'set.installSub':'Leg Dopamine Drop auf deinen Startbildschirm. Sie läuft offline.', 'set.installBtn':'Installieren',
     'hud.solved':'{n} gelöst', 'set.assistPrev':'Jede Farbe trägt auch eine Form', 'over.whilePlayed':'Während du gespielt hast', 'hud.pause':'Pause', 'hud.best':'Bestwert', 'hud.newBest':'Neuer Bestwert', 'pause.sofar':'{s}\u00a0Punkte · {n}\u00a0gelöst · beste\u00a0Serie\u00a0{b}', 'brand.tag':'Snacks fürs Gehirn',
     'you.switch':'Fortschritt oder Optionen', 'you.progress':'Fortschritt',
     'modes.ways':'Weitere Spielarten', 'modes.waysSub':'Endlos, Mixtape, Marathon und mehr', 'gate.fourAll':'Alle vier Spiele',
@@ -7878,6 +7922,12 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.149.0', date:'2026-11-05', items:[
+    'Two doors under "How is your brain today?": Cozy and Challenge. Cozy has no clock and nothing to lose: a miss cools your streak a step instead of breaking it, the Thread holds, every tenth solve brings a gift of yarn instead of a decision, and it pays as much per solve as Challenge, plus a little for every solve at the end. Challenge is the run you know.',
+    'In Challenge, the chip beside the multiplier now shows where your best run stood at this moment, ahead or behind and by how much, once you have a best run to race.',
+    'During a run, choose how much the screen shows around the board: Minimal, Standard or Detailed (solves a minute and your Purrfect rate). What does not change during a round steps back a little while you play.',
+    'Where the browser offers it, Settings has a quiet row to install the game on your home screen.',
+  ] },
   { v:'0.148.0', date:'2026-11-05', items:[
     'Room Radio: music made as you play. A slow, warm piece in the key every game already sounds in, with layers that come in as your streak climbs (a soft piano at ×2, brushes at ×3, bells at ×5). A miss muffles it for a moment, a stage lifts it a tone, a Bow brings the bells in, and Game Over brings it home. A Purrfect now plays the notes of the chord the music is on.',
     'Music has its own switch and volume in Settings (it follows Sound, and is quiet in the menus and in Fidget Loop).',
@@ -18764,7 +18814,13 @@ const KINDS = {
      move on. Shaped exactly like Fidget Loop's own unscored, untimed,
      lives-less kind — the closest existing precedent — deliberately, not
      by coincidence. */
-  discover: { label:'Taste Test',  key:'discover.title', timed:false, scored:false }
+  discover: { label:'Taste Test',  key:'discover.title', timed:false, scored:false },
+  /* The Cozy door (docs/bible/06-dual-mode.md): the same games with nothing that can go wrong. No clock, no lives, no
+     score on show and no records; a miss deals the next board and cools the streak a step instead of breaking it, the
+     Thread holds, and every ten solves is a stage with a gift of yarn instead of a decision. It pays per solve what
+     a Challenge run pays at the same heat, and a little for every solve at the end, so a cozy minute is never worth
+     less than a tense one. */
+  cozy:     { label:'Cozy',        key:'cozy.title',     timed:false, scored:false, cozy:true }
 };
 const kindName = kind => t(KINDS[kind].key);
 
@@ -19773,6 +19829,17 @@ const hudProp = (node, name, v) => { v = String(v); if (node.style.getPropertyVa
 /* The best a Shuffle is measured against is its kind's own (the first run and the Full Purr deal from every game,
    so they share one), and Custom's sixty seconds keep a best of their own. pbBlitz stays the best of all of them. */
 const gateBest = r => (save.pbGate || {})[r.gate || 'full'] || 0;
+/* The key a run's best curve is kept under (the same split as its best). */
+const curveKey = r => r.kind === 'shuffle' ? 'g.' + (r.gate || 'full') : r.kind === 'marathon' ? 'm.' + r.mode + ':' + (r.twist || 'classic')
+  : ['mix', 'reflexrush', 'puzzlecascade', 'chaos', 'survival', 'endless'].indexOf(r.kind) >= 0 ? r.kind : null;
+/* Where the best run stood at this moment of play: interpolated between its ten-second samples. */
+function ghostAt(r){
+  const key = curveKey(r), c = key && (save.curves || {})[key];
+  if (!c || c.length < 2) return null;
+  const x = (r.playMs || 0) / 10000, i = Math.floor(x);
+  if (i >= c.length - 1) return c[c.length - 1];
+  return Math.round(c[i] + (c[i + 1] - c[i]) * (x - i));
+}
 function runTarget(r){
   switch (r.kind){
     case 'shuffle': return gateBest(r);
@@ -19896,6 +19963,11 @@ function renderHud(){
       hudHide(clk, false);
     } else hudHide(clk, true);
   }
+  /* Detailed: solves a minute and the run's Purrfect rate, beside the multiplier. */
+  if (document.documentElement.dataset.hud === 'detailed'){
+    const mins = Math.max(1 / 6, (run.playMs || 0) / 60000);
+    hudText($('hudPace'), t('hud.paceLine', { n: (run.solved / mins).toFixed(1), p: run.solved ? Math.round(100 * (run.purrs || 0) / run.solved) : 0 }));
+  }
   /* What this run is chasing: your best for it, and once you are past it, by how much. */
   {
     const bt = $('hudBest');
@@ -19903,8 +19975,18 @@ function renderHud(){
       const beat = run.score > run.target;
       if (beat && !run.beatBest){ run.beatBest = true; beatBestMoment(); }
       if (bt.classList.contains('beat') !== beat) bt.classList.toggle('beat', beat);
-      hudText($('hudBestL'), t(beat ? 'hud.newBest' : 'hud.best'));
-      hudText($('hudBestN'), beat ? '+' + fmt(run.score - run.target) : fmt(run.target));
+      /* Ahead of or behind your best run at this same moment, once there is a best run to compare with. */
+      const g = beat ? null : ghostAt(run);
+      if (g != null && run.playMs > 3000){
+        const d = run.score - g;
+        bt.classList.toggle('ahead', d >= 0); bt.classList.toggle('behind', d < 0);
+        hudText($('hudBestL'), t('hud.pace'));
+        hudText($('hudBestN'), (d >= 0 ? '+' : '\u2212') + fmt(Math.abs(d)));
+      } else {
+        bt.classList.remove('ahead', 'behind');
+        hudText($('hudBestL'), t(beat ? 'hud.newBest' : 'hud.best'));
+        hudText($('hudBestN'), beat ? '+' + fmt(run.score - run.target) : fmt(run.target));
+      }
       hudHide(bt, false);
     } else hudHide(bt, true);
   }
@@ -19976,6 +20058,12 @@ function tick(ts){
   /* Only while a round is live. The clock used to run through the pause after a
      solve, the pause after a miss and the whole of the mode plate — time you
      could not do anything with, spent before the board existed. */
+  /* Play time for the ghost: the score is sampled every ten seconds of live rounds, the same clock a best is made on. */
+  if (run.started && roundLive){
+    run.playMs = (run.playMs || 0) + edt;
+    const c = run.curve || (run.curve = []);
+    while (c.length <= Math.floor(run.playMs / 10000)) c.push(run.score);
+  }
   if (kind.timed && run.started && roundLive){
     const zone = zoneOn();
     if (zone !== !!run.inZone){ run.inZone = zone; paintZone(zone); }
@@ -20177,7 +20265,7 @@ function nextRound(){
    Settings turns it off. It only runs where the pool is every mode and the player is not being
    compared with anyone: not the Daily Drop, which is the same twelve boards for everybody, and
    not Marathon, Fidget Loop or Taste Test, where the mode or the pace is the point. */
-const ADAPT_KINDS = ['shuffle','endless','mix','reflexrush','puzzlecascade','survival','chaos'];
+const ADAPT_KINDS = ['shuffle','endless','mix','reflexrush','puzzlecascade','survival','chaos','cozy'];
 const ADAPT_MAX = 3, ADAPT_QUICK = 0.45;
 /* A new player's first boards are free to get wrong. Until three boards have been solved (ever), up to three misses
    in a run cost nothing at all: no time, no life, and the streak stays. The rule comes back after each one. */
@@ -20212,7 +20300,7 @@ function adaptRound(ok, speed){
   w.push(ok ? (speed > ADAPT_QUICK ? 2 : 1) : 0);
   if (w.length > 3) w.shift();
   let step = 0;
-  if (w.filter(v => v === 0).length >= 2) step = -1;
+  if (w.filter(v => v === 0).length >= (run.kind === 'cozy' ? 1 : 2)) step = -1;   /* Cozy eases after one */
   else if (w.length === 3 && w.every(v => v === 2)) step = 1;
   if (!step) return;
   run.recent = [];
@@ -20231,6 +20319,7 @@ function beginRound(mode, firstMeet){
   if (!run || run.curMode !== mode || run.paused) return;
   const k = KINDS[run.kind];
   roundLive = true;
+  el.play.classList.add('live');
   roundStart = performance.now();
   run.slips = 0; run.steps = 0; run.aided = false;          /* how this round is being solved, for its grade */
   /* Settled once per round, because the round clock, the mode's own difficulty
@@ -20380,7 +20469,7 @@ const STYLE = {
   bowYarn: 5,
   varietyYarn: 1            /* three solves in a row from all three kinds */
 };
-const STAGED_KINDS = new Set(['shuffle', 'mix', 'chaos', 'endless', 'reflexrush', 'puzzlecascade']);
+const STAGED_KINDS = new Set(['shuffle', 'mix', 'chaos', 'endless', 'reflexrush', 'puzzlecascade', 'cozy']);
 const STAGE_BREATHER_MS = 6000;
 
 /* Each mode has a voice for how a round ended, three lines for a win and two for a miss, in the cat-and-craft room's own
@@ -20397,6 +20486,7 @@ function quip(mode, win){
 function resolve(ok, node){
   if (!roundLive || !run) return;
   roundLive = false;
+  el.play.classList.remove('live');
   const k = KINDS[run.kind], mode = run.curMode, r = run;
   let saved = false;
   const leftAtSolve = run.roundLeft;      /* what the round clock had, before it is spent */
@@ -20508,7 +20598,8 @@ function resolve(ok, node){
       const sx = Fx.stage(run);
       const bonus = Math.round(250 * Math.min(stage, 8) * sx.stageK);
       run.stage = stage;
-      run.draftDue = true;                 /* a stage beat is where a charm is offered */
+      run.draftDue = !k.cozy;              /* a stage beat is where a charm is offered (in Cozy, a gift instead) */
+      if (k.cozy) run.yarn = (run.yarn || 0) + Yarn.give(10 * Yarn.mult(run));
       if (k.scored){ run.score += bonus; save.lifetime = (save.lifetime || 0) + bonus; }
       if (k.timed) run.time = Math.min(capOf(k), run.time + STAGE_BREATHER_MS + sx.time);
       if (sx.life && k.lives){ run.lives += sx.life; run.livesMax = Math.max(run.livesMax, run.lives); }
@@ -20516,7 +20607,7 @@ function resolve(ok, node){
       announceToast({ ink:'#FFC53D',
         glyph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 16.7 6.6 19.6l1.2-6L3.3 9.4l6.1-.8z" fill="currentColor" stroke="none"/></svg>',
         eyebrow: t('stage.eyebrow', { n: stage }), title: t('stage.title'),
-        desc: t(k.timed ? 'stage.descTimed' : 'stage.desc', { n: bonus, s: STAGE_BREATHER_MS / 1000 }) });
+        desc: t(k.cozy ? 'stage.descCozy' : k.timed ? 'stage.descTimed' : 'stage.desc', { n: bonus, s: STAGE_BREATHER_MS / 1000 }) });
       sfx.combo(5); Radio.stage();
       /* A stage is a landmark: light crosses the board and stars go up from it. */
       if (!motionOff()){
@@ -20610,6 +20701,7 @@ function resolve(ok, node){
        the clock — it buys back momentum, never the mistake. */
     const multWas = multiplier();
     if (free){ saved = true; }
+    else if (k.cozy){ run.streak = Math.max(0, run.streak - 4); saved = true; }
     else if (run.shields > 0){ run.shields--; saved = true; } else { run.streak = 0; }
     /* A miss that costs something unravels the Thread; a forgiven one holds it. */
     if (!free && !saved && run.knots){ run.knots = 0; paintThread(false, true); }
@@ -20747,7 +20839,7 @@ function startRun(kind, modeId, twistId, poolIds, gate){
   if (tw === 'iron'){ run.lives = 1; run.livesMax = 1; run.fxs.free = 0; run.fxs.stageFree = 0; }
   run.twStart = kind === 'marathon' ? Twist.total(modeId) : 0;
   /* Which of the three kinds dealt this Shuffle, so Go again deals from it again and its best is its own. */
-  run.gate = kind === 'shuffle' && GATES[gate] ? gate : null;
+  run.gate = (kind === 'shuffle' || kind === 'cozy') && GATES[gate] ? gate : null;
   run.target = runTarget(run);
   paintThread(false);
   Day.note('run', 1);
@@ -20832,6 +20924,7 @@ function pauseRun(){
   if (wasDrafting){ run.drafting = false; run.draftDue = true; }
   run.paused = true;
   roundLive = false;
+  el.play.classList.remove('live');
   wakeOff();
   clearTimers();
   stopAmbient();
@@ -20957,6 +21050,7 @@ function endRun(){
   adaptClear();
   if (raf){ rawCAF(raf); raf = 0; }
   roundLive = false;
+  el.play.classList.remove('live');
   stopAmbient();
   Radio.end();
   el.surface.classList.remove('zenflow');
@@ -21015,10 +21109,14 @@ function endRun(){
     }
   }
   if (r.bestStreak > save.pbStreak) save.pbStreak = r.bestStreak;
+  /* A new best keeps its curve, for the ghost next time (about 60 numbers for a ten-minute run). */
+  if (best && k.scored && curveKey(r) && r.curve){
+    save.curves = Object.assign({}, save.curves, { [curveKey(r)]: r.curve.concat(r.score).slice(0, 120) });
+  }
   /* What the run pays for having been played: a ball of wool for every five
      hundred points, on top of what each solve banked. */
   {
-    const fin = k.scored ? Math.floor(r.score / 500) : 0;
+    const fin = k.scored ? Math.floor(r.score / 500) : k.cozy ? Math.round(0.6 * r.solved) : 0;
     if (fin) r.yarn = (r.yarn || 0) + Yarn.give(fin * Yarn.mult(r));
     Day.note('score', r.score);
     if (r.kind === 'daily') Day.note('daily', 1);
@@ -22013,6 +22111,10 @@ function paintSettings(){
   $('volRange').value = String(Math.round(volumeNow() * 100));
   $('swMusic').setAttribute('aria-checked', String(save.music !== false));
   $('musicRange').value = String(Math.round((typeof save.musicVol === 'number' ? save.musicVol : 0.5) * 100));
+  Array.from($('hudRow').children).forEach(b => {
+    const on = b.dataset.hd === (save.hud || 'standard');
+    b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
+  });
   Array.from($('speedRow').children).forEach(b => {
     const on = b.dataset.sp === (save.gameSpeed || 'normal');
     b.classList.toggle('on', on);
@@ -22448,7 +22550,19 @@ document.querySelectorAll('.gateBtn').forEach(b => b.addEventListener('click', (
   const sc = $('tabPlay').querySelector('.scroll'); if (sc) sc.scrollTop = 0;
 }));
 $('gateBack').addEventListener('click', () => { setPlayView('home'); sfx.tap(); });
-$('moodPlay').addEventListener('click', () => startRun('shuffle', null, null, (GATES[gateOn] || GATES.full).pool(), GATES[gateOn] ? gateOn : 'full'));
+/* The door decides how a mix is played: Cozy (no clock, nothing to lose) or Challenge (the clock, and a best). */
+$('moodPlay').addEventListener('click', () => startRun(save.door === 'cozy' ? 'cozy' : 'shuffle', null, null,
+  (GATES[gateOn] || GATES.full).pool(), GATES[gateOn] ? gateOn : 'full'));
+function paintDoors(){
+  document.querySelectorAll('#doors .door').forEach(b => {
+    const on = b.dataset.door === (save.door === 'cozy' ? 'cozy' : 'challenge');
+    b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on));
+  });
+}
+document.querySelectorAll('#doors .door').forEach(b => b.addEventListener('click', () => {
+  save.door = b.dataset.door === 'cozy' ? 'cozy' : 'challenge'; persist(); paintDoors(); sfx.tap();
+}));
+paintDoors();
 $('customBtn').addEventListener('click', () => { sfx.tap(); goTab('Mix'); });
 $('statsBtn').addEventListener('click', () => goTab('Stats'));
 $('reflexRushBtn').addEventListener('click', () => startRun('reflexrush'));
@@ -22607,6 +22721,11 @@ $('shareBtn').addEventListener('click', () => {
 Array.from($('sFilter').children).forEach(b =>
   onTap(b, () => { statFilter = b.dataset.f; sfx.tap(); paintStats(); }));
 
+function applyHud(){ const v = ['minimal', 'standard', 'detailed'].indexOf(save.hud) >= 0 ? save.hud : 'standard'; document.documentElement.dataset.hud = v; }
+Array.from($('hudRow').children).forEach(b => b.addEventListener('click', () => {
+  save.hud = b.dataset.hd; applyHud(); persist(); paintSettings(); sfx.tap();
+}));
+applyHud();
 Array.from($('speedRow').children).forEach(b =>
   onTap(b, () => { save.gameSpeed = b.dataset.sp; applyGameSpeed(); persist(); sfx.tap(); paintSettings(); }));
 Array.from($('textRow').children).forEach(b =>
@@ -22619,6 +22738,15 @@ Array.from($('handRow').children).forEach(b =>
 $('volRange').addEventListener('input', () => { save.volume = +$('volRange').value / 100; applyVolume(); });
 $('musicRange').addEventListener('input', () => { save.musicVol = +$('musicRange').value / 100; Radio.volume(); });
 $('musicRange').addEventListener('change', () => { persist(); });
+/* Install: only when the browser offers it, and only as a quiet row in Settings, never a pop-up. */
+let installAsk = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installAsk = e; $('installRow').hidden = false; });
+window.addEventListener('appinstalled', () => { installAsk = null; $('installRow').hidden = true; });
+$('installBtn').addEventListener('click', () => {
+  if (!installAsk) return;
+  try { installAsk.prompt(); } catch(e){}
+  installAsk = null; $('installRow').hidden = true;
+});
 /* Preview: the four moments that matter most, played the way the current settings make them, at the button. */
 $('previewBtn').addEventListener('click', () => {
   const b = $('previewBtn'), at = () => Vfx.box(b);
@@ -22796,7 +22924,7 @@ $('resetGone').addEventListener('click', () => {
    defaults" is the same machinery with every key at its default. The open or
    closed state of each panel is a view preference, not progress, so it lives
    under its own key: a reset, an export or an import never touches it. */
-const SETTING_KEYS = ['sound','volume','music','musicVol','haptics','flashes','reduceMotion','bigFx','gameSpeed','contrast','colorAssist','easyRead','textSize','adaptive','captions','oneHand'];
+const SETTING_KEYS = ['sound','volume','music','musicVol','hud','haptics','flashes','reduceMotion','bigFx','gameSpeed','contrast','colorAssist','easyRead','textSize','adaptive','captions','oneHand'];
 const PRESETS = {
   calm:  { sound:true, volume:0.4, musicVol:0.35, haptics:false, flashes:false, reduceMotion:true, gameSpeed:'relaxed' },
   focus: { sound:true, volume:0.6, haptics:true,  flashes:false, reduceMotion:true, gameSpeed:'normal' },

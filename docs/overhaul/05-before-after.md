@@ -245,6 +245,18 @@ environments instead of reporting every board changed.
 | Choosing effects | play to find out | Preview effects in Settings plays a solve, a Purrfect, a miss and a level-up at the current settings |
 | `radio.mjs` failed checks | 5 of 5 that can run on v0.147.0 | 0 of 18 |
 
+## v0.149.0: two doors (bible release 4)
+
+| What | Before | After |
+|---|---|---|
+| How a mix is played | always against the clock (Shuffle, 10:00) | the player picks a door under "How is your brain today?": Cozy or Challenge (Challenge first) |
+| Cozy | — | no clock, no score on show, no records; a miss cools the streak one step (×2 stays ×2 after six solves) and holds the Thread; every tenth solve is a stage with 10 yarn instead of a charm draft; adaptive difficulty eases after one miss; 0.6 yarn per solve at the end |
+| The chip beside the multiplier | the final best ("Best 3,000") | where your best run stood at this moment ("Pace +767"), gold when ahead, grey when behind; the best run's score is kept every 10 s of play (about 60 numbers for ten minutes) |
+| The HUD | one density | Minimal (score, multiplier, Thread, clock, the way out), Standard, Detailed (adds solves a minute and Purrfect rate) |
+| While a round is live | everything at full strength | the game's name, perks, charms and the adaptive note step back to 70% after 1.2 s (opacity only) |
+| Installing | only from the browser's menu | a quiet row in Settings when the browser offers it |
+| `dualmode.mjs` failed checks | 14 of 19 on v0.148.0 | 0 of 19 |
+
 ## How to reproduce
 
 ```
