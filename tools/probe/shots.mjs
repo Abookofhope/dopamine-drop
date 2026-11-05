@@ -12,8 +12,8 @@
  *   UPDATE=1 node tools/probe/shots.mjs   accept what is on screen now
  *   ONLY=odd,sum node tools/probe/shots.mjs   just those modes (add UPDATE=1 to accept only them)
  *
- * Comparison is byte-exact, which is only honest if the render is actually
- * deterministic, so the run does not assume that — it shoots every mode TWICE
+ * Comparison is byte-exact apart from a small anti-aliasing budget (see AA_PX below), which is only honest if the
+ * render is actually deterministic, so the run does not assume that — it shoots every mode TWICE
  * and only compares the ones that produced identical bytes both times. A mode
  * that cannot hold still is reported as unstable and skipped rather than
  * failing at random, which is the failure mode that gets a visual suite
@@ -63,6 +63,39 @@ await ctx.addInitScript(() => {
 });
 const page = await ctx.newPage();
 
+/* The pictures are only comparable on a machine that draws text the same way. The game ships no web fonts (it names
+   Archivo and Instrument Sans and falls back to the system's), so a container without them draws every heading in
+   another face, the HUD comes out a few pixels taller and every board a few pixels shorter: the v0.145.0 baselines,
+   compared on a fresh container in November, reported all of them changed, on the very build that made them. So the
+   environment is fingerprinted (browser version, and the width of a fixed string in each of the game's font stacks)
+   and stored beside the pictures; when it differs, the run says so and stops instead of reporting a wall of changes. */
+const fingerprint = async () => {
+  await page.goto('about:blank');
+  const w = await page.evaluate(() => {
+    const c = document.createElement('canvas').getContext('2d'), out = {};
+    for (const [k, f] of [['disp', '800 30px "Archivo","Arial Black",system-ui,sans-serif'], ['body', '600 30px "Instrument Sans",system-ui,-apple-system,sans-serif'], ['mono', '600 30px ui-monospace,monospace']]){
+      c.font = f; out[k] = Math.round(c.measureText('Dopamine Drop 0123456789 Stitch').width * 10) / 10;
+    }
+    return out;
+  });
+  return { browser: browser.version(), fonts: w };
+};
+const ENVF = join(BASE, 'env.json');
+const env = await fingerprint();
+if (!UPDATE && existsSync(ENVF)){
+  const was = JSON.parse(readFileSync(ENVF, 'utf8'));
+  if (JSON.stringify(was.fonts) !== JSON.stringify(env.fonts)){
+    console.log('ENVIRONMENT DIFFERS from the one the baselines were taken in, so nothing here can be compared:');
+    console.log('  baselines: ' + JSON.stringify(was));
+    console.log('  this run:  ' + JSON.stringify(env));
+    console.log('Re-baseline from the previous release\'s build first (UPDATE=1 against it), then compare the new build.');
+    await browser.close();
+    process.exit(2);
+  }
+  if (was.browser !== env.browser) console.log(`note: browser ${env.browser}, baselines taken with ${was.browser} (fonts match, so comparing)`);
+}
+if (UPDATE && !ONLY.length) writeFileSync(ENVF, JSON.stringify(env, null, 1) + '\n');
+
 /* A fresh save for every single shot. A seeded RNG is not enough on its own:
    the FIRST time a mode is met it is dealt at the shallow end (nextRound caps
    run.lvl at 6 when save.seen[id] is unset, and showHow then marks it seen), so
@@ -99,6 +132,38 @@ const shoot = async id => {
   return prev;
 };
 
+/* An anti-aliasing budget. Three loads of Meld's board, with nothing moving on it, came out one pixel apart by 1 of
+   255: its tiles sit at fractional positions, and the rasteriser's edge coverage can round either way from one load
+   to the next, so Meld was "unstable" on about half of all runs since v0.132 and went uncompared. A real change to a
+   board touches hundreds of pixels by far more than that, so a handful of pixels, none off by more than 3 of 255, is
+   the same picture. Anything past it is still a difference, and the count of comparisons that needed the budget is
+   printed so it can never grow quietly. */
+const AA_PX = 24, AA_DIFF = 3;
+let cmpPage = null, aaUsed = 0;
+async function alike(a, b){
+  if (a.equals(b)) return true;
+  if (!cmpPage) cmpPage = await browser.newPage();
+  const r = await cmpPage.evaluate(async ([a, b]) => {
+    const px = async s => {
+      const bm = await createImageBitmap(await (await fetch('data:image/png;base64,' + s)).blob());
+      const c = new OffscreenCanvas(bm.width, bm.height), x = c.getContext('2d');
+      x.drawImage(bm, 0, 0); return x.getImageData(0, 0, bm.width, bm.height);
+    };
+    const A = await px(a), B = await px(b);
+    if (A.width !== B.width || A.height !== B.height) return { size: false };
+    let n = 0, max = 0;
+    for (let i = 0; i < A.data.length; i += 4){
+      let d = 0;
+      for (let k = 0; k < 4; k++) d = Math.max(d, Math.abs(A.data[i + k] - B.data[i + k]));
+      if (d){ n++; if (d > max) max = d; }
+    }
+    return { size: true, n, max };
+  }, [a.toString('base64'), b.toString('base64')]);
+  const ok = r.size && r.n <= AA_PX && r.max <= AA_DIFF;
+  if (ok) aaUsed++;
+  return ok;
+}
+
 const changed = [], unstable = [], fresh = [];
 let same = 0;
 for (const id of ids){
@@ -111,14 +176,14 @@ for (const id of ids){
      15 pixels of corner anti-aliasing, none above 2 of 255. */
   try { a = await shoot(id); b = await shoot(id); c = await shoot(id); }
   catch (e){ unstable.push(id + ' (' + e.message.slice(0, 40) + ')'); continue; }
-  if (!a.equals(b) || !b.equals(c)){ unstable.push(id); continue; }
+  if (!(await alike(a, b)) || !(await alike(b, c))){ unstable.push(id); continue; }
   const file = join(BASE, id + '.png');
   if (!existsSync(file) || UPDATE){
     writeFileSync(file, a);
     fresh.push(id);
     continue;
   }
-  if (readFileSync(file).equals(a)) same++;
+  if (await alike(readFileSync(file), a)) same++;
   else {
     changed.push(id);
     writeFileSync(join(BASE, id + '.actual.png'), a);
@@ -135,6 +200,7 @@ if (UPDATE){
 }
 if (fresh.length && !UPDATE) console.log('  no baseline yet: ' + fresh.join(', '));
 if (unstable.length) console.log('  unstable (not compared): ' + unstable.join(', '));
+if (aaUsed) console.log(`  ${aaUsed} comparison(s) differed only within the anti-aliasing budget (${AA_PX} px, ${AA_DIFF}/255)`);
 if (changed.length){
   console.log('\n  CHANGED — the board does not look how it used to:');
   changed.forEach(id => console.log(`    ${id}  (was baseline/${id}.png, now baseline/${id}.actual.png)`));

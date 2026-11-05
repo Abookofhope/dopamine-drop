@@ -91,6 +91,8 @@ settings search, reset with undo, save export and import, wake lock, P to pause.
 
 ## Found while taking stock (fixed in the MVP, see [13-roadmap.md](13-roadmap.md))
 
+B1–B5 and B8 were fixed in **v0.146.0** (`honest.mjs`, `toasts.mjs`). B6, B7, B9 and B10 are scheduled in the roadmap.
+
 | # | Finding | Why it matters |
 |---|---|---|
 | B1 | **Go again after a Calm or Quick mix deals all 44 games**: the replay button doesn't carry the kind's pool ✓ | the player chose a mood and the game forgot it |

@@ -82,7 +82,7 @@ const firstBoard = page => page.waitForFunction(() => document.querySelector('#s
   const page = await newPage();
   await openApp(page, { schema: 10, lifetime: 52000 });      // the harness writes schema 10, with no cats and no yarn
   const s = await stored(page);
-  check(s.schema === 11, 'a schema-10 save is migrated to 11');
+  check(s.schema >= 11, 'a schema-10 save is migrated to the current schema (' + s.schema + ')');
   check(s.pals && s.pals.biscuit && s.palsOn.join() === 'biscuit', 'and everyone is given Biscuit, riding along');
   const paid = Object.keys(s.achPaid || {}).length;
   check(paid > 0 && s.yarn > 130 && s.yarnEver >= s.yarn, 'the estimate (52000/400 = 130) is topped up by the achievements the save had already earned (' + paid + ' paid, ' + s.yarn + ' yarn)');
@@ -322,7 +322,8 @@ const firstBoard = page => page.waitForFunction(() => document.querySelector('#s
   const seven = await collect({ last: key(-1), streak: 6 });
   check(seven.after.yarn === 120 && seven.after.gift.streak === 7 && seven.after.pals.biscuit.bond === 40, 'yesterday and six in a row: day seven pays 120 yarn and feeds the cat (' + seven.after.yarn + ', bond ' + seven.after.pals.biscuit.bond + ')');
   const lapsed = await collect({ last: key(-4), streak: 6 });
-  check(lapsed.after.yarn === 20 && lapsed.after.gift.streak === 1, 'a lapsed streak starts again at day one, and takes nothing away (' + lapsed.after.yarn + ')');
+  /* Since v0.146.0 the ladder rests instead of starting over: four days away, and day seven is still waiting. */
+  check(lapsed.after.yarn === 120 && lapsed.after.gift.streak === 7, 'a lapsed ladder rests: after four days away, day seven is still waiting (' + lapsed.after.yarn + ')');
   const wrap = await collect({ last: key(-1), streak: 7 });
   check(wrap.after.yarn === 20 && wrap.after.gift.streak === 8, 'after day seven the cycle begins again (' + wrap.after.yarn + ')');
 

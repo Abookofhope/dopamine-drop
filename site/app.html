@@ -2274,7 +2274,11 @@ html[data-motion="on"] .streak{transition:transform var(--t-med),color var(--t-f
   transition:transform 560ms var(--e-spring);
   pointer-events:none;overflow:hidden;
 }
-.achtoast.in{transform:translate(-50%,0)}
+.achtoast.in{transform:translate(-50%,0);pointer-events:auto;cursor:pointer}
+/* In a run it never covers the pause button, the clock or the score: it sits under the score (top is set from the
+   score's own box) and fades in where it is, instead of sliding down across the HUD. */
+.achtoast.inrun{transform:translate(-50%,-6px);opacity:0;transition:transform 360ms var(--e-out),opacity 220ms linear}
+.achtoast.inrun.in{transform:translate(-50%,0);opacity:1}
 /* It lands with a little bounce, its glyph pops in a beat later, and a shine crosses it once. */
 .achtoast::after{content:"";position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(105deg,transparent 30%,#ffffff1f 48%,#ffffff2e 50%,#ffffff1f 52%,transparent 70%);transform:translateX(-110%)}
@@ -3048,6 +3052,17 @@ html[data-motion="off"] .charm{animation:none}
 .goalstrip[hidden]{display:none}
 .goalstrip small{color:var(--zap);font-weight:800;font-size:calc(10px*var(--ts));letter-spacing:.14em;text-transform:uppercase}
 .goalstrip b{font-size:calc(13.5px*var(--ts));font-weight:700;line-height:1.3}
+/* What happened in the room while you played (a cat's bond deepening, say): held back from the run and listed here. */
+.heldlist{display:flex;flex-direction:column;gap:8px;padding:11px 13px;margin:0 0 10px;border-radius:var(--r-md);
+  border:1px solid var(--edge-soft);background:#ffffff06}
+.heldlist[hidden]{display:none}
+.heldlist > small{color:var(--haze);font-weight:800;font-size:calc(10px*var(--ts));letter-spacing:.14em;text-transform:uppercase}
+.heldlist .hrow{display:flex;align-items:center;gap:10px}
+.heldlist .hrow .g{width:28px;height:28px;flex:none;padding:5px;border-radius:9px;color:var(--ink);
+  background:color-mix(in srgb, var(--ink) 16%, transparent)}
+.heldlist .hrow .g svg{width:100%;height:100%;display:block}
+.heldlist .hrow b{display:block;font-size:calc(13px*var(--ts));font-weight:700;line-height:1.3}
+.heldlist .hrow span{display:block;font-size:calc(11px*var(--ts));color:var(--haze);line-height:1.3}
 
 /* High contrast: the same room, with the faint things made plain. Only the tokens
    change, so nothing has to be restyled and nothing can be missed. */
@@ -4653,6 +4668,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
       </div>
       <div class="recap" id="recap" hidden></div>
       <div class="goalstrip" id="goalStrip" hidden><small data-i18n="goal.label">Next up</small><b id="goalLine"></b></div>
+      <div class="heldlist" id="overHeld" hidden></div>
       <button class="perkcall over" id="roomCall" type="button" style="--cink:#FF8AD8" hidden>
         <span class="g" id="roomCallGlyph" aria-hidden="true"></span>
         <span class="txt">
@@ -4878,7 +4894,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.145.0';
+const VERSION_TAG = 'v0.146.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -4889,9 +4905,9 @@ const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
        would tell the next migration to redo steps already applied.        */
 const KEY = 'dd.v1';
 const QUARANTINE = 'dd.v1.unreadable';
-const SCHEMA = 11;
+const SCHEMA = 12;
 const defaults = {
-  pbBlitz:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, pbEndless:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
+  pbBlitz:0, pbGate:{}, pbMix:0, pbStreak:0, pbReflexRush:0, pbPuzzleCascade:0, pbSurvival:0, pbChaos:0, pbEndless:0, runs:0, xp:0, solved:0, marathon:{}, daily:{},
   mix:[], sound:true, haptics:true, reduceMotion:false, bigFx:true, colorAssist:false, gameSpeed:'normal',
   lang:null, seenVersion:null,
   volume:1, contrast:false, flashes:true, easyRead:false, textSize:'100', adaptive:true, captions:false, oneHand:'off',
@@ -5052,6 +5068,16 @@ function migrate(data){
     if (!data.hist || typeof data.hist !== 'object') data.hist = {};
     if (!data.fams || typeof data.fams !== 'object') data.fams = {};
     from = 11;
+  }
+  if (from < 12){
+    /* Schema 12 splits the Shuffle best. A Calm mix, a Quick mix, the whole Full Purr and Custom's
+       sixty seconds all used to chase one number, so a one-minute Custom run was shown a ten-minute
+       Shuffle score to beat and a Calm mix a Quick one's. The old best was earned somewhere in the
+       full shuffle more often than not, so that is where it carries over; the others start fresh,
+       and the overall best (pbBlitz) stays what the achievements and the You tab count. */
+    if (!data.pbGate || typeof data.pbGate !== 'object') data.pbGate = { full: data.pbBlitz || 0 };
+    if (typeof data.pbMix !== 'number') data.pbMix = 0;
+    from = 12;
   }
   if (from <= SCHEMA) data.schema = SCHEMA;
   return data;
@@ -5240,6 +5266,8 @@ const sfx = {
   over: () => { [420,340,260].forEach((f,i)=>setTimeout(()=>tone(f,0.22,'triangle',0.045,0.92), i*130)); },
   level:() => { [520,660,880].forEach((f,i)=>setTimeout(()=>tone(f,0.26,'triangle',0.05), i*110)); },
   go:   () => tone(760 * toneShift, 0.14, 'triangle', 0.05),
+  /* A toast: two soft notes, a sixth apart, quieter than a solve. */
+  note: () => { tone(1046, 0.09, 'sine', 0.03); setTimeout(() => tone(1568, 0.11, 'sine', 0.022), 70); },
   /* good() plays on every solve and has to stay small — this plays only on
      the tap that actually crosses into a new multiplier tier (×3, ×4, ×5),
      which is a handful of times in a good run rather than every few seconds,
@@ -5263,7 +5291,9 @@ function caption(key){
   clearTimeout(capTimer);
   capTimer = setTimeout(() => { box.hidden = true; }, 1300);
 }
-Object.keys(CAPTION_OF).forEach(k => { const f = sfx[k]; sfx[k] = (...a) => { caption(CAPTION_OF[k]); return f(...a); }; });
+/* The rising chimes mean "streak up" only in a run; in the menus they are a reward being handed over (a gift, a wish). */
+const inARun = () => { try { return !!run; } catch(e){ return false; } };   /* `run` is declared further down */
+Object.keys(CAPTION_OF).forEach(k => { const f = sfx[k]; sfx[k] = (...a) => { caption(k === 'combo' && !inARun() ? 'cap.reward' : CAPTION_OF[k]); return f(...a); }; });
 
 /* ═══ Ambient (Fidget Loop) ═══════════════════════════════════════════════
    Everywhere else, sound is a one-shot reaction to a tap. Fidget Loop has no
@@ -5510,7 +5540,7 @@ const STRINGS = {
     'endless.title':'Endless', 'endless.sub':'No clock, no lives. A miss only breaks your streak.', 'stage.eyebrow':'Stage {n}', 'stage.title':'Stage cleared', 'stage.desc':'+{n} points', 'stage.descTimed':'+{n} points and {s} more seconds',
     
     'mix.title':'Custom', 'mix.tapToChoose':'Tap to choose your modes',
-    'reflexrush.title':'Reflex Rush', 'reflexrush.sub':'All 7 reflex modes, back to back',
+    'reflexrush.title':'Reflex Rush', 'reflexrush.sub':'All 8 reflex modes, back to back',
     'puzzlecascade.title':'Puzzle Cascade', 'puzzlecascade.sub':'All 4 make modes, longer and deeper',
     'survival.title':'Survival Protocol', 'survival.sub':'Any mode, three lives, waves of ten',
     'survival.wave':'Wave {n}', 'survival.boss':'Boss wave', 'survival.bossDesc':'Harder than usual — just this once',
@@ -5562,7 +5592,7 @@ const STRINGS = {
     'cosmetic.teal':'Teal', 'cosmetic.flare':'Flare', 'cosmetic.zap':'Gold', 'cosmetic.purple':'Violet', 'cosmetic.pink':'Pink', 'cosmetic.blue':'Sky',
     'set.access':'Accessibility', 'set.assist':'Colour assist',
     'set.assistSub':'Adds shapes and brightness so no puzzle depends on telling two colours apart',
-    'set.adapt':'Adaptive difficulty', 'set.adaptSub':'Rounds ease off a little after two misses and step up after three quick solves. A note shows each change.', 'set.adaptOff':'Fixed difficulty', 'set.caps':'Sound captions', 'set.capsSub':'A short word on screen for each sound, so nothing depends on hearing it.', 'set.hand':'One-handed layout', 'set.handSub':'Moves the exit button to a lower corner and lowers the pause sheet, so a thumb reaches everything.', 'set.handRight':'Right hand', 'set.handLeft':'Left hand', 'cap.good':'Chime: solved', 'cap.combo':'Rising chimes: streak up', 'cap.bad':'Low buzz: a miss', 'cap.level':'Rising notes: level up', 'cap.over':'Falling notes: run over', 'cap.go':'Ping: go', 'cap.tick':'Tick', 'adapt.label':'Difficulty', 'adapt.down':'A bit easier', 'adapt.up':'A bit harder', 'adapt.nowDown':'Easier than your level right now ({n} of 3)', 'adapt.nowUp':'Harder than your level right now ({n} of 3)', 'pause.skip':'Different puzzle ({n} left)', 'pause.skipNone':'Different puzzle (none left)',
+    'set.adapt':'Adaptive difficulty', 'set.adaptSub':'Rounds ease off a little after two misses and step up after three quick solves. A note shows each change.', 'set.adaptOff':'Fixed difficulty', 'set.caps':'Sound captions', 'set.capsSub':'A short word on screen for each sound, so nothing depends on hearing it.', 'set.hand':'One-handed layout', 'set.handSub':'Moves the exit button to a lower corner and lowers the pause sheet, so a thumb reaches everything.', 'set.handRight':'Right hand', 'set.handLeft':'Left hand', 'cap.good':'Chime: solved', 'cap.combo':'Rising chimes: streak up', 'cap.reward':'Rising chimes: a reward', 'cap.bad':'Low buzz: a miss', 'cap.level':'Rising notes: level up', 'cap.over':'Falling notes: run over', 'cap.go':'Ping: go', 'cap.tick':'Tick', 'adapt.label':'Difficulty', 'adapt.down':'A bit easier', 'adapt.up':'A bit harder', 'adapt.nowDown':'Easier than your level right now ({n} of 3)', 'adapt.nowUp':'Harder than your level right now ({n} of 3)', 'pause.skip':'Different puzzle ({n} left)', 'pause.skipNone':'Different puzzle (none left)',
     'set.speed':'Game speed', 'set.speedSub':'More time to think, same puzzles and scoring',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Relaxed', 'set.speedSlow':'Slow',
     'set.lang':'Language', 'set.data':'Data',
@@ -5754,7 +5784,7 @@ const STRINGS = {
     'draft.sub':'One rides along for the rest of this run.', 'draft.skip':'Take a nap instead (+{n} yarn)', 'draft.taken':'Charm taken',
     'draft.spicy':'Bargain', 'charm.longwhiskers':'Long Whiskers', 'charm.longwhiskers.d':'+1s on every solve in a timed run; +6% points in any other.',
     'charm.yarnball':'Ball of Yarn', 'charm.yarnball.d':'+1 yarn on every solve.', 'charm.tunatin':'Tuna Tin',
-    'charm.tunatin.d':'Every stage beat: +4s, or +1 life if the run has lives.', 'charm.sunbeam':'Sunbeam', 'charm.sunbeam.d':'Round clocks 20% longer, and +0.5s per solve in a timed run.',
+    'charm.tunatin.d':'Every stage beat: +4s, or +1 life if the run has lives.', 'charm.sunbeam':'Sunbeam', 'charm.sunbeam.d':'+0.5s on the clock for every solve.',
     'charm.bellcollar':'Bell Collar', 'charm.bellcollar.d':'Streak rungs arrive one solve sooner.', 'charm.catnip':'Catnip',
     'charm.catnip.d':'Every 5th solve pays ×1.5.', 'charm.scratchpost':'Scratching Post', 'charm.scratchpost.d':'Your first miss of each stage costs nothing.',
     'charm.box':'Cardboard Box', 'charm.box.d':'The solve after a miss pays 25% more.', 'charm.laserdot':'Laser Dot',
@@ -5766,7 +5796,7 @@ const STRINGS = {
     'charm.silverspool':'Silver Spool', 'charm.silverspool.d':'All yarn +50%.', 'charm.moonmilk':'Moon Milk',
     'charm.moonmilk.d':'Every 8th solve: +5s, or +1 life if the run has lives.', 'charm.kitten':'Curious Kitten', 'charm.kitten.d':'Change family from one round to the next and it pays 20% more.',
     'charm.pounce':'Pounce', 'charm.pounce.d':'Solves faster than half of par pay ×1.5.', 'charm.ghostcat':'Hungry Ghost',
-    'charm.ghostcat.d':'+40% points, but a miss costs double.', 'charm.sharpclaws':'Sharp Claws', 'charm.sharpclaws.d':'+30% points, but round clocks are 20% shorter.',
+    'charm.ghostcat.d':'+40% points, but a miss costs double.', 'charm.sharpclaws':'Sharp Claws', 'charm.sharpclaws.d':'+30% points, but the clock runs 25% faster.',
     /* twists and mastery ranks */
     'twist.title':'How to play it', 'twist.classic':'Classic', 'twist.classic.d':'The mode as it was made. Three lives.',
     'twist.blitz':'Blitz', 'twist.blitz.d':'Round clocks are 40% shorter. Points ×1.5.', 'twist.fog':'Fog',
@@ -5804,7 +5834,7 @@ const STRINGS = {
     'ach.blitz15k.d':'Score 15,000 in a Shuffle.', 'ach.paid':'Your achievements paid {n} yarn',
     /* the daily gift, what is nearest, and the room's introduction */
     'gift.title':'Daily gift', 'gift.day':'Day {n}', 'gift.collect':'Collect',
-    'gift.later':'Back tomorrow', 'gift.streak':'{n} days in a row', 'gift.week':'Day 7 brings a treat for every cat riding along.',
+    'gift.later':'Back tomorrow', 'gift.rested':'Welcome back. Day {n} waited for you.', 'gift.week':'Day 7 brings a treat for every cat riding along.',
     'gift.got':'Daily gift · +{y} yarn', 'goal.label':'Next up', 'goal.pal':'{n} more yarn for {name}',
     'goal.room':'{n} more yarn for {name}', 'goal.bond':'{n} solves until {name} feels closer', 'goal.wish':'{a} of {b} for today’s wish',
     'room.introTitle':'Every solve pays yarn', 'room.intro':'Spend it on cats and on the corners of this room. Cats ride along in your runs and each does something different; a furnished room pays more yarn and opens more seats. Wishes and the daily gift add to it.', 'room.introOk':'Got it',
@@ -5830,7 +5860,7 @@ const STRINGS = {
     'charm.pawprint.d':'Every 4th solve: +1.5s on a clock, or +12% points without one.', 'charm.nightlight':'Night Light', 'charm.nightlight.d':'Solving with the clock nearly out pays +25% points.',
     'charm.knit':'Knitting', 'charm.knit.d':'Each solve in a streak adds 2% to points, up to +40%.', 'charm.boa':'Feather Boa',
     'charm.boa.d':'A streak of 10 or more: points ×1.3.', 'charm.bowl':'Water Bowl', 'charm.bowl.d':'A miss gives back 1.5s of clock.',
-    'charm.windowseat':'Window Seat', 'charm.windowseat.d':'Round clocks run 15% longer.', 'charm.crown':'Little Crown',
+    'charm.windowseat':'Window Seat', 'charm.windowseat.d':'The clock runs 13% slower.', 'charm.crown':'Little Crown',
     'charm.crown.d':'At ×3 or higher, points ×1.25.', 'charm.treasure':'Buried Treasure', 'charm.treasure.d':'Every stage pays +6 yarn.',
     'charm.tangle':'Tangled Knot', 'charm.tangle.d':'+50% yarn, but a miss costs double.', 'ach.famfocus':'Eagle Eyes',
     'ach.famfocus.d':'Solve 100 focus puzzles.', 'ach.famreflex':'Quick Paws', 'ach.famreflex.d':'Solve 100 reflex puzzles.',
@@ -6000,7 +6030,7 @@ const STRINGS = {
     'gate.custom':'Custom', 'gate.customSub':'Build your own playlist', 'gate.count':'{n} games', 'gate.playMix':'Play a mix',
     /* The menu */
     'me.open':'Your progress', 'me.level':'Level {n}',
-    'hud.pause':'Pause', 'hud.best':'Best', 'hud.newBest':'New best', 'pause.sofar':'{s}\u00a0points · {n}\u00a0solved · best\u00a0streak\u00a0{b}', 'brand.tag':'Brain snacks',
+    'hud.solved':'{n} solved', 'set.assistPrev':'Every colour also carries a shape', 'over.whilePlayed':'While you played', 'hud.pause':'Pause', 'hud.best':'Best', 'hud.newBest':'New best', 'pause.sofar':'{s}\u00a0points · {n}\u00a0solved · best\u00a0streak\u00a0{b}', 'brand.tag':'Brain snacks',
     'you.switch':'Progress or settings', 'you.progress':'Progress',
     'modes.ways':'More ways to play', 'modes.waysSub':'Endless, Mixtape, Marathon and more', 'gate.fourAll':'All four games',
     /* The gateway */
@@ -6025,7 +6055,7 @@ const STRINGS = {
     'endless.title':'Sans fin', 'endless.sub':'Ni chrono ni vies. Une erreur ne casse que votre série.', 'stage.eyebrow':'Étape {n}', 'stage.title':'Étape franchie', 'stage.desc':'+{n} points', 'stage.descTimed':'+{n} points et {s} secondes de plus',
     
     'mix.title':'Sur mesure', 'mix.tapToChoose':'Touchez pour choisir vos modes',
-    'reflexrush.title':'Ruée réflexe', 'reflexrush.sub':'Les 7 modes réflexe, à la suite',
+    'reflexrush.title':'Ruée réflexe', 'reflexrush.sub':'Les 8 modes réflexe, à la suite',
     'puzzlecascade.title':'Cascade de puzzles', 'puzzlecascade.sub':'Les 4 modes Créer, plus longs et plus profonds',
     'survival.title':'Protocole de survie', 'survival.sub':'N’importe quel mode, trois vies, vagues de dix',
     'survival.wave':'Vague {n}', 'survival.boss':'Vague de boss', 'survival.bossDesc':'Plus dure que d’habitude — juste cette fois',
@@ -6077,7 +6107,7 @@ const STRINGS = {
     'cosmetic.teal':'Turquoise', 'cosmetic.flare':'Flamme', 'cosmetic.zap':'Or', 'cosmetic.purple':'Violet', 'cosmetic.pink':'Rose', 'cosmetic.blue':'Ciel',
     'set.access':'Accessibilité', 'set.assist':'Aide aux couleurs',
     'set.assistSub':'Ajoute formes et luminosité pour qu’aucun casse-tête ne repose sur la distinction de deux couleurs',
-    'set.adapt':'Difficulté adaptative', 'set.adaptSub':'Les manches s’allègent un peu après deux ratés et montent d’un cran après trois réussites rapides. Une note signale chaque changement.', 'set.adaptOff':'Difficulté fixe', 'set.caps':'Sous-titres des sons', 'set.capsSub':'Un mot court à l’écran pour chaque son, pour que rien ne dépende de l’ouïe.', 'set.hand':'Mode une main', 'set.handSub':'Déplace le bouton de sortie dans un coin du bas et abaisse la fenêtre de pause, pour que le pouce atteigne tout.', 'set.handRight':'Main droite', 'set.handLeft':'Main gauche', 'cap.good':'Carillon : réussi', 'cap.combo':'Carillons montants : série en hausse', 'cap.bad':'Bourdonnement grave : raté', 'cap.level':'Notes montantes : niveau supérieur', 'cap.over':'Notes descendantes : partie finie', 'cap.go':'Ping : partez', 'cap.tick':'Tic', 'adapt.label':'Difficulté', 'adapt.down':'Un peu plus facile', 'adapt.up':'Un peu plus difficile', 'adapt.nowDown':'Plus facile que votre niveau ({n} sur 3)', 'adapt.nowUp':'Plus difficile que votre niveau ({n} sur 3)', 'pause.skip':'Autre énigme (encore {n})', 'pause.skipNone':'Autre énigme (plus aucune)',
+    'set.adapt':'Difficulté adaptative', 'set.adaptSub':'Les manches s’allègent un peu après deux ratés et montent d’un cran après trois réussites rapides. Une note signale chaque changement.', 'set.adaptOff':'Difficulté fixe', 'set.caps':'Sous-titres des sons', 'set.capsSub':'Un mot court à l’écran pour chaque son, pour que rien ne dépende de l’ouïe.', 'set.hand':'Mode une main', 'set.handSub':'Déplace le bouton de sortie dans un coin du bas et abaisse la fenêtre de pause, pour que le pouce atteigne tout.', 'set.handRight':'Main droite', 'set.handLeft':'Main gauche', 'cap.good':'Carillon : réussi', 'cap.combo':'Carillons montants : série en hausse', 'cap.reward':'Carillons montants : une récompense', 'cap.bad':'Bourdonnement grave : raté', 'cap.level':'Notes montantes : niveau supérieur', 'cap.over':'Notes descendantes : partie finie', 'cap.go':'Ping : partez', 'cap.tick':'Tic', 'adapt.label':'Difficulté', 'adapt.down':'Un peu plus facile', 'adapt.up':'Un peu plus difficile', 'adapt.nowDown':'Plus facile que votre niveau ({n} sur 3)', 'adapt.nowUp':'Plus difficile que votre niveau ({n} sur 3)', 'pause.skip':'Autre énigme (encore {n})', 'pause.skipNone':'Autre énigme (plus aucune)',
     'set.speed':'Vitesse de jeu', 'set.speedSub':'Plus de temps pour réfléchir, mêmes énigmes et le même score',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Détendu', 'set.speedSlow':'Lent',
     'set.lang':'Langue', 'set.data':'Données',
@@ -6271,7 +6301,7 @@ const STRINGS = {
     'draft.sub':'Il vous accompagne jusqu’à la fin de la partie.', 'draft.skip':'Faire une sieste à la place (+{n} de laine)', 'draft.taken':'Charme choisi',
     'draft.spicy':'Marché', 'charm.longwhiskers':'Longues moustaches', 'charm.longwhiskers.d':'+1 s à chaque réussite en partie chronométrée ; +6 % de points sinon.',
     'charm.yarnball':'Pelote de laine', 'charm.yarnball.d':'+1 de laine à chaque réussite.', 'charm.tunatin':'Boîte de thon',
-    'charm.tunatin.d':'À chaque palier : +4 s, ou +1 vie si la partie en a.', 'charm.sunbeam':'Rayon de soleil', 'charm.sunbeam.d':'Chronos de manche 20 % plus longs, et +0,5 s par réussite en partie chronométrée.',
+    'charm.tunatin.d':'À chaque palier : +4 s, ou +1 vie si la partie en a.', 'charm.sunbeam':'Rayon de soleil', 'charm.sunbeam.d':'+0,5 s au chrono à chaque réussite.',
     'charm.bellcollar':'Collier à clochette', 'charm.bellcollar.d':'Les paliers de série arrivent une réussite plus tôt.', 'charm.catnip':'Herbe à chat',
     'charm.catnip.d':'Une réussite sur 5 rapporte ×1,5.', 'charm.scratchpost':'Griffoir', 'charm.scratchpost.d':'Votre premier raté de chaque étape ne coûte rien.',
     'charm.box':'Boîte en carton', 'charm.box.d':'La réussite qui suit un raté rapporte 25 % de plus.', 'charm.laserdot':'Point laser',
@@ -6283,7 +6313,7 @@ const STRINGS = {
     'charm.silverspool':'Bobine d’argent', 'charm.silverspool.d':'Toute la laine +50 %.', 'charm.moonmilk':'Lait de lune',
     'charm.moonmilk.d':'Toutes les 8 réussites : +5 s, ou +1 vie si la partie en a.', 'charm.kitten':'Chaton curieux', 'charm.kitten.d':'Changer de famille d’une manche à l’autre rapporte 20 % de plus.',
     'charm.pounce':'Bond', 'charm.pounce.d':'Résoudre en moins de la moitié du temps de référence rapporte ×1,5.', 'charm.ghostcat':'Fantôme affamé',
-    'charm.ghostcat.d':'+40 % de points, mais un raté coûte le double.', 'charm.sharpclaws':'Griffes acérées', 'charm.sharpclaws.d':'+30 % de points, mais les chronos de manche sont 20 % plus courts.',
+    'charm.ghostcat.d':'+40 % de points, mais un raté coûte le double.', 'charm.sharpclaws':'Griffes acérées', 'charm.sharpclaws.d':'+30 % de points, mais le chrono file 25 % plus vite.',
     /* twists and mastery ranks */
     'twist.title':'Comment y jouer', 'twist.classic':'Classique', 'twist.classic.d':'Le mode tel qu’il a été conçu. Trois vies.',
     'twist.blitz':'Éclair', 'twist.blitz.d':'Les chronos de manche sont 40 % plus courts. Points ×1,5.', 'twist.fog':'Brume',
@@ -6321,7 +6351,7 @@ const STRINGS = {
     'ach.blitz15k.d':'Marquez 15 000 points en Mélange.', 'ach.paid':'Vos succès ont rapporté {n} de laine',
     /* the daily gift, what is nearest, and the room's introduction */
     'gift.title':'Cadeau du jour', 'gift.day':'Jour {n}', 'gift.collect':'Récupérer',
-    'gift.later':'À demain', 'gift.streak':'{n} jours d’affilée', 'gift.week':'Le jour 7 apporte une friandise à chaque chat du voyage.',
+    'gift.later':'À demain', 'gift.rested':'Bon retour. Le jour {n} t’a attendu.', 'gift.week':'Le jour 7 apporte une friandise à chaque chat du voyage.',
     'gift.got':'Cadeau du jour · +{y} de laine', 'goal.label':'Prochain objectif', 'goal.pal':'Encore {n} de laine pour {name}',
     'goal.room':'Encore {n} de laine pour « {name} »', 'goal.bond':'Encore {n} réussites avant que {name} se rapproche', 'goal.wish':'{a} sur {b} pour le souhait du jour',
     'room.introTitle':'Chaque réussite rapporte de la laine', 'room.intro':'Dépensez-la pour des chats et pour les coins de cet atelier. Les chats vous accompagnent en partie et chacun fait autre chose ; un atelier aménagé rapporte plus de laine et ouvre plus de places. Les souhaits et le cadeau du jour s’y ajoutent.', 'room.introOk':'Compris',
@@ -6347,7 +6377,7 @@ const STRINGS = {
     'charm.pawprint.d':'Toutes les 4 réussites : +1,5 s au chrono, ou +12 % de points sans chrono.', 'charm.nightlight':'Veilleuse', 'charm.nightlight.d':'Réussir quand le chrono est presque épuisé rapporte +25 % de points.',
     'charm.knit':'Tricot', 'charm.knit.d':'Chaque réussite d’une série ajoute 2 % de points, jusqu’à +40 %.', 'charm.boa':'Boa à plumes',
     'charm.boa.d':'Série de 10 ou plus : points ×1,3.', 'charm.bowl':'Gamelle d’eau', 'charm.bowl.d':'Un raté rend 1,5 s de chrono.',
-    'charm.windowseat':'Coin de fenêtre', 'charm.windowseat.d':'Les chronos de manche durent 15 % de plus.', 'charm.crown':'Petite couronne',
+    'charm.windowseat':'Coin de fenêtre', 'charm.windowseat.d':'Le chrono file 13 % moins vite.', 'charm.crown':'Petite couronne',
     'charm.crown.d':'À ×3 ou plus, points ×1,25.', 'charm.treasure':'Trésor enfoui', 'charm.treasure.d':'Chaque étape rapporte +6 de laine.',
     'charm.tangle':'Nœud emmêlé', 'charm.tangle.d':'+50 % de laine, mais un raté coûte le double.', 'ach.famfocus':'Yeux d’aigle',
     'ach.famfocus.d':'Résolvez 100 énigmes d’attention.', 'ach.famreflex':'Pattes vives', 'ach.famreflex.d':'Résolvez 100 énigmes de réflexes.',
@@ -6517,7 +6547,7 @@ const STRINGS = {
     'gate.custom':'Sur mesure', 'gate.customSub':'Compose ta propre playlist', 'gate.count':'{n} jeux', 'gate.playMix':'Lancer un mélange',
     /* The menu */
     'me.open':'Votre progression', 'me.level':'Niveau {n}',
-    'hud.pause':'Pause', 'hud.best':'Record', 'hud.newBest':'Nouveau record', 'pause.sofar':'{s}\u00a0points · {n}\u00a0réussis · meilleure\u00a0série\u00a0{b}', 'brand.tag':'Douceurs pour cerveaux',
+    'hud.solved':'{n} réussis', 'set.assistPrev':'Chaque couleur porte aussi une forme', 'over.whilePlayed':'Pendant la partie', 'hud.pause':'Pause', 'hud.best':'Record', 'hud.newBest':'Nouveau record', 'pause.sofar':'{s}\u00a0points · {n}\u00a0réussis · meilleure\u00a0série\u00a0{b}', 'brand.tag':'Douceurs pour cerveaux',
     'you.switch':'Progression ou réglages', 'you.progress':'Progression',
     'modes.ways':'Autres façons de jouer', 'modes.waysSub':'Sans fin, Mixtape, Marathon et plus', 'gate.fourAll':'Les quatre jeux',
     /* The gateway */
@@ -6542,7 +6572,7 @@ const STRINGS = {
     'endless.title':'Sin fin', 'endless.sub':'Sin reloj ni vidas. Un fallo solo rompe tu racha.', 'stage.eyebrow':'Etapa {n}', 'stage.title':'Etapa superada', 'stage.desc':'+{n} puntos', 'stage.descTimed':'+{n} puntos y {s} segundos más',
     
     'mix.title':'A tu medida', 'mix.tapToChoose':'Toca para elegir tus modos',
-    'reflexrush.title':'Ráfaga refleja', 'reflexrush.sub':'Los 7 modos de reflejos, seguidos',
+    'reflexrush.title':'Ráfaga refleja', 'reflexrush.sub':'Los 8 modos de reflejos, seguidos',
     'puzzlecascade.title':'Cascada de puzles', 'puzzlecascade.sub':'Los 4 modos Crear, más largos y profundos',
     'survival.title':'Protocolo de supervivencia', 'survival.sub':'Cualquier modo, tres vidas, oleadas de diez',
     'survival.wave':'Oleada {n}', 'survival.boss':'Oleada de jefe', 'survival.bossDesc':'Más difícil de lo normal — solo esta vez',
@@ -6594,7 +6624,7 @@ const STRINGS = {
     'cosmetic.teal':'Turquesa', 'cosmetic.flare':'Llama', 'cosmetic.zap':'Oro', 'cosmetic.purple':'Violeta', 'cosmetic.pink':'Rosa', 'cosmetic.blue':'Cielo',
     'set.access':'Accesibilidad', 'set.assist':'Ayuda de color',
     'set.assistSub':'Añade formas y brillo para que ningún reto dependa de distinguir dos colores',
-    'set.adapt':'Dificultad adaptable', 'set.adaptSub':'Las rondas se suavizan un poco tras dos fallos y suben un nivel tras tres aciertos rápidos. Una nota avisa de cada cambio.', 'set.adaptOff':'Dificultad fija', 'set.caps':'Subtítulos de sonido', 'set.capsSub':'Una palabra corta en pantalla por cada sonido, para que nada dependa de oírlo.', 'set.hand':'Modo una mano', 'set.handSub':'Mueve el botón de salida a una esquina inferior y baja la hoja de pausa, para que el pulgar llegue a todo.', 'set.handRight':'Mano derecha', 'set.handLeft':'Mano izquierda', 'cap.good':'Campanilla: resuelto', 'cap.combo':'Campanillas ascendentes: racha', 'cap.bad':'Zumbido grave: fallo', 'cap.level':'Notas ascendentes: nivel nuevo', 'cap.over':'Notas descendentes: fin de partida', 'cap.go':'Ping: ya', 'cap.tick':'Tic', 'adapt.label':'Dificultad', 'adapt.down':'Un poco más fácil', 'adapt.up':'Un poco más difícil', 'adapt.nowDown':'Más fácil que tu nivel ({n} de 3)', 'adapt.nowUp':'Más difícil que tu nivel ({n} de 3)', 'pause.skip':'Otro puzle (restantes: {n})', 'pause.skipNone':'Otro puzle (ya no quedan)',
+    'set.adapt':'Dificultad adaptable', 'set.adaptSub':'Las rondas se suavizan un poco tras dos fallos y suben un nivel tras tres aciertos rápidos. Una nota avisa de cada cambio.', 'set.adaptOff':'Dificultad fija', 'set.caps':'Subtítulos de sonido', 'set.capsSub':'Una palabra corta en pantalla por cada sonido, para que nada dependa de oírlo.', 'set.hand':'Modo una mano', 'set.handSub':'Mueve el botón de salida a una esquina inferior y baja la hoja de pausa, para que el pulgar llegue a todo.', 'set.handRight':'Mano derecha', 'set.handLeft':'Mano izquierda', 'cap.good':'Campanilla: resuelto', 'cap.combo':'Campanillas ascendentes: racha', 'cap.reward':'Campanillas ascendentes: una recompensa', 'cap.bad':'Zumbido grave: fallo', 'cap.level':'Notas ascendentes: nivel nuevo', 'cap.over':'Notas descendentes: fin de partida', 'cap.go':'Ping: ya', 'cap.tick':'Tic', 'adapt.label':'Dificultad', 'adapt.down':'Un poco más fácil', 'adapt.up':'Un poco más difícil', 'adapt.nowDown':'Más fácil que tu nivel ({n} de 3)', 'adapt.nowUp':'Más difícil que tu nivel ({n} de 3)', 'pause.skip':'Otro puzle (restantes: {n})', 'pause.skipNone':'Otro puzle (ya no quedan)',
     'set.speed':'Velocidad de juego', 'set.speedSub':'Más tiempo para pensar, mismos puzles y puntuación',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Relajado', 'set.speedSlow':'Lento',
     'set.lang':'Idioma', 'set.data':'Datos',
@@ -6787,7 +6817,7 @@ const STRINGS = {
     'draft.sub':'Te acompaña el resto de la partida.', 'draft.skip':'Echar una siesta (+{n} de lana)', 'draft.taken':'Amuleto elegido',
     'draft.spicy':'Trato', 'charm.longwhiskers':'Bigotes largos', 'charm.longwhiskers.d':'+1 s por acierto con tiempo; +6 % de puntos en el resto.',
     'charm.yarnball':'Ovillo de lana', 'charm.yarnball.d':'+1 de lana por acierto.', 'charm.tunatin':'Lata de atún',
-    'charm.tunatin.d':'En cada etapa: +4 s, o +1 vida si la partida tiene vidas.', 'charm.sunbeam':'Rayo de sol', 'charm.sunbeam.d':'Relojes de ronda un 20 % más largos y +0,5 s por acierto con tiempo.',
+    'charm.tunatin.d':'En cada etapa: +4 s, o +1 vida si la partida tiene vidas.', 'charm.sunbeam':'Rayo de sol', 'charm.sunbeam.d':'+0,5 s en el reloj por cada acierto.',
     'charm.bellcollar':'Collar con cascabel', 'charm.bellcollar.d':'Los escalones de racha llegan un acierto antes.', 'charm.catnip':'Hierba gatera',
     'charm.catnip.d':'Cada 5.º acierto paga ×1,5.', 'charm.scratchpost':'Rascador', 'charm.scratchpost.d':'Tu primer fallo de cada etapa no cuesta nada.',
     'charm.box':'Caja de cartón', 'charm.box.d':'El acierto tras un fallo paga un 25 % más.', 'charm.laserdot':'Punto láser',
@@ -6799,7 +6829,7 @@ const STRINGS = {
     'charm.silverspool':'Carrete de plata', 'charm.silverspool.d':'Toda la lana +50 %.', 'charm.moonmilk':'Leche de luna',
     'charm.moonmilk.d':'Cada 8.º acierto: +5 s, o +1 vida si la partida tiene vidas.', 'charm.kitten':'Gatito curioso', 'charm.kitten.d':'Cambiar de familia de una ronda a otra paga un 20 % más.',
     'charm.pounce':'Salto', 'charm.pounce.d':'Acertar en menos de la mitad del tiempo de referencia paga ×1,5.', 'charm.ghostcat':'Fantasma hambriento',
-    'charm.ghostcat.d':'+40 % de puntos, pero un fallo cuesta el doble.', 'charm.sharpclaws':'Garras afiladas', 'charm.sharpclaws.d':'+30 % de puntos, pero los relojes de ronda son un 20 % más cortos.',
+    'charm.ghostcat.d':'+40 % de puntos, pero un fallo cuesta el doble.', 'charm.sharpclaws':'Garras afiladas', 'charm.sharpclaws.d':'+30 % de puntos, pero el reloj corre un 25 % más rápido.',
     /* twists and mastery ranks */
     'twist.title':'Cómo jugarlo', 'twist.classic':'Clásico', 'twist.classic.d':'El modo tal como se hizo. Tres vidas.',
     'twist.blitz':'Relámpago', 'twist.blitz.d':'Los relojes de ronda son un 40 % más cortos. Puntos ×1,5.', 'twist.fog':'Niebla',
@@ -6837,7 +6867,7 @@ const STRINGS = {
     'ach.blitz15k.d':'Consigue 15 000 puntos en Mezcla.', 'ach.paid':'Tus logros dieron {n} de lana',
     /* the daily gift, what is nearest, and the room's introduction */
     'gift.title':'Regalo diario', 'gift.day':'Día {n}', 'gift.collect':'Cobrar',
-    'gift.later':'Vuelve mañana', 'gift.streak':'{n} días seguidos', 'gift.week':'El día 7 trae un premio para cada gato de viaje.',
+    'gift.later':'Vuelve mañana', 'gift.rested':'Bienvenido de nuevo. El día {n} te esperó.', 'gift.week':'El día 7 trae un premio para cada gato de viaje.',
     'gift.got':'Regalo diario · +{y} de lana', 'goal.label':'Lo siguiente', 'goal.pal':'{n} de lana más para {name}',
     'goal.room':'{n} de lana más para «{name}»', 'goal.bond':'{n} aciertos hasta que {name} se sienta más cerca', 'goal.wish':'{a} de {b} para el deseo de hoy',
     'room.introTitle':'Cada acierto da lana', 'room.intro':'Gástala en gatos y en los rincones de este taller. Los gatos te acompañan en las partidas y cada uno hace algo distinto; un taller amueblado da más lana y abre más asientos. Los deseos y el regalo diario se suman.', 'room.introOk':'Entendido',
@@ -6863,7 +6893,7 @@ const STRINGS = {
     'charm.pawprint.d':'Cada 4 aciertos: +1,5 s en el reloj, o +12 % de puntos sin reloj.', 'charm.nightlight':'Luz nocturna', 'charm.nightlight.d':'Acertar con el reloj casi agotado paga +25 % de puntos.',
     'charm.knit':'Punto', 'charm.knit.d':'Cada acierto de una racha suma un 2 % de puntos, hasta +40 %.', 'charm.boa':'Boa de plumas',
     'charm.boa.d':'Racha de 10 o más: puntos ×1,3.', 'charm.bowl':'Bebedero', 'charm.bowl.d':'Un fallo devuelve 1,5 s de reloj.',
-    'charm.windowseat':'Asiento de ventana', 'charm.windowseat.d':'Los relojes de ronda duran un 15 % más.', 'charm.crown':'Coronita',
+    'charm.windowseat':'Asiento de ventana', 'charm.windowseat.d':'El reloj corre un 13 % más despacio.', 'charm.crown':'Coronita',
     'charm.crown.d':'A ×3 o más, puntos ×1,25.', 'charm.treasure':'Tesoro enterrado', 'charm.treasure.d':'Cada etapa paga +6 de lana.',
     'charm.tangle':'Nudo enredado', 'charm.tangle.d':'+50 % de lana, pero un fallo cuesta el doble.', 'ach.famfocus':'Ojos de águila',
     'ach.famfocus.d':'Resuelve 100 puzles de atención.', 'ach.famreflex':'Patas veloces', 'ach.famreflex.d':'Resuelve 100 puzles de reflejos.',
@@ -7033,7 +7063,7 @@ const STRINGS = {
     'gate.custom':'A tu medida', 'gate.customSub':'Crea tu propia lista', 'gate.count':'{n} juegos', 'gate.playMix':'Jugar una mezcla',
     /* The menu */
     'me.open':'Tu progreso', 'me.level':'Nivel {n}',
-    'hud.pause':'Pausa', 'hud.best':'Récord', 'hud.newBest':'Nuevo récord', 'pause.sofar':'{s}\u00a0puntos · {n}\u00a0resueltos · mejor\u00a0racha\u00a0{b}', 'brand.tag':'Bocaditos para el cerebro',
+    'hud.solved':'{n} resueltos', 'set.assistPrev':'Cada color lleva también una forma', 'over.whilePlayed':'Mientras jugabas', 'hud.pause':'Pausa', 'hud.best':'Récord', 'hud.newBest':'Nuevo récord', 'pause.sofar':'{s}\u00a0puntos · {n}\u00a0resueltos · mejor\u00a0racha\u00a0{b}', 'brand.tag':'Bocaditos para el cerebro',
     'you.switch':'Progreso o ajustes', 'you.progress':'Progreso',
     'modes.ways':'Más formas de jugar', 'modes.waysSub':'Sin fin, Mixtape, Maratón y más', 'gate.fourAll':'Los cuatro juegos',
     /* The gateway */
@@ -7058,7 +7088,7 @@ const STRINGS = {
     'endless.title':'Endlos', 'endless.sub':'Keine Uhr, keine Leben. Ein Fehler unterbricht nur deine Serie.', 'stage.eyebrow':'Etappe {n}', 'stage.title':'Etappe geschafft', 'stage.desc':'+{n} Punkte', 'stage.descTimed':'+{n} Punkte und {s} Sekunden mehr',
     
     'mix.title':'Eigene Mischung', 'mix.tapToChoose':'Tippen, um Modi zu wählen',
-    'reflexrush.title':'Reflex-Rausch', 'reflexrush.sub':'Alle 7 Reflex-Modi im Wechsel',
+    'reflexrush.title':'Reflex-Rausch', 'reflexrush.sub':'Alle 8 Reflex-Modi im Wechsel',
     'puzzlecascade.title':'Rätsel-Kaskade', 'puzzlecascade.sub':'Alle 4 Bauen-Modi, länger und tiefer',
     'survival.title':'Überlebensprotokoll', 'survival.sub':'Jeder Modus, drei Leben, Wellen zu zehnt',
     'survival.wave':'Welle {n}', 'survival.boss':'Bosswelle', 'survival.bossDesc':'Schwerer als sonst — nur dieses eine Mal',
@@ -7110,7 +7140,7 @@ const STRINGS = {
     'cosmetic.teal':'Türkis', 'cosmetic.flare':'Flamme', 'cosmetic.zap':'Gold', 'cosmetic.purple':'Violett', 'cosmetic.pink':'Pink', 'cosmetic.blue':'Himmel',
     'set.access':'Barrierefreiheit', 'set.assist':'Farbhilfe',
     'set.assistSub':'Ergänzt Formen und Helligkeit, damit kein Rätsel vom Unterscheiden zweier Farben abhängt',
-    'set.adapt':'Automatische Schwierigkeit', 'set.adaptSub':'Runden werden nach zwei Fehlern etwas leichter und nach drei schnellen Lösungen etwas schwerer. Jede Änderung wird angezeigt.', 'set.adaptOff':'Feste Schwierigkeit', 'set.caps':'Klang-Untertitel', 'set.capsSub':'Ein kurzes Wort auf dem Bildschirm zu jedem Ton, damit nichts vom Hören abhängt.', 'set.hand':'Einhandlayout', 'set.handSub':'Rückt die Beenden-Taste in eine untere Ecke und senkt das Pausenblatt, damit der Daumen alles erreicht.', 'set.handRight':'Rechte Hand', 'set.handLeft':'Linke Hand', 'cap.good':'Glöckchen: gelöst', 'cap.combo':'Steigende Glöckchen: Serie wächst', 'cap.bad':'Tiefes Brummen: Fehler', 'cap.level':'Steigende Töne: neues Level', 'cap.over':'Fallende Töne: Lauf vorbei', 'cap.go':'Ping: los', 'cap.tick':'Tick', 'adapt.label':'Schwierigkeit', 'adapt.down':'Etwas leichter', 'adapt.up':'Etwas schwerer', 'adapt.nowDown':'Leichter als dein Niveau ({n} von 3)', 'adapt.nowUp':'Schwerer als dein Niveau ({n} von 3)', 'pause.skip':'Anderes Rätsel (noch {n})', 'pause.skipNone':'Anderes Rätsel (keins mehr)',
+    'set.adapt':'Automatische Schwierigkeit', 'set.adaptSub':'Runden werden nach zwei Fehlern etwas leichter und nach drei schnellen Lösungen etwas schwerer. Jede Änderung wird angezeigt.', 'set.adaptOff':'Feste Schwierigkeit', 'set.caps':'Klang-Untertitel', 'set.capsSub':'Ein kurzes Wort auf dem Bildschirm zu jedem Ton, damit nichts vom Hören abhängt.', 'set.hand':'Einhandlayout', 'set.handSub':'Rückt die Beenden-Taste in eine untere Ecke und senkt das Pausenblatt, damit der Daumen alles erreicht.', 'set.handRight':'Rechte Hand', 'set.handLeft':'Linke Hand', 'cap.good':'Glöckchen: gelöst', 'cap.combo':'Steigende Glöckchen: Serie wächst', 'cap.reward':'Steigende Glöckchen: eine Belohnung', 'cap.bad':'Tiefes Brummen: Fehler', 'cap.level':'Steigende Töne: neues Level', 'cap.over':'Fallende Töne: Lauf vorbei', 'cap.go':'Ping: los', 'cap.tick':'Tick', 'adapt.label':'Schwierigkeit', 'adapt.down':'Etwas leichter', 'adapt.up':'Etwas schwerer', 'adapt.nowDown':'Leichter als dein Niveau ({n} von 3)', 'adapt.nowUp':'Schwerer als dein Niveau ({n} von 3)', 'pause.skip':'Anderes Rätsel (noch {n})', 'pause.skipNone':'Anderes Rätsel (keins mehr)',
     'set.speed':'Spielgeschwindigkeit', 'set.speedSub':'Mehr Zeit zum Nachdenken, gleiche Rätsel und Wertung',
     'set.speedNormal':'Normal', 'set.speedRelaxed':'Entspannt', 'set.speedSlow':'Langsam',
     'set.lang':'Sprache', 'set.data':'Daten',
@@ -7303,7 +7333,7 @@ const STRINGS = {
     'draft.sub':'Er begleitet dich für den Rest dieses Laufs.', 'draft.skip':'Lieber ein Nickerchen (+{n} Wolle)', 'draft.taken':'Glücksbringer gewählt',
     'draft.spicy':'Handel', 'charm.longwhiskers':'Lange Schnurrhaare', 'charm.longwhiskers.d':'+1 s pro Treffer in Läufen mit Zeit; sonst +6 % Punkte.',
     'charm.yarnball':'Wollknäuel', 'charm.yarnball.d':'+1 Wolle pro Treffer.', 'charm.tunatin':'Thunfischdose',
-    'charm.tunatin.d':'Bei jeder Etappe: +4 s oder +1 Leben, wenn der Lauf Leben hat.', 'charm.sunbeam':'Sonnenstrahl', 'charm.sunbeam.d':'Rundenuhren 20 % länger und +0,5 s pro Treffer in Läufen mit Zeit.',
+    'charm.tunatin.d':'Bei jeder Etappe: +4 s oder +1 Leben, wenn der Lauf Leben hat.', 'charm.sunbeam':'Sonnenstrahl', 'charm.sunbeam.d':'+0,5 s auf der Uhr für jeden Treffer.',
     'charm.bellcollar':'Glöckchenhalsband', 'charm.bellcollar.d':'Serienstufen kommen einen Treffer früher.', 'charm.catnip':'Katzenminze',
     'charm.catnip.d':'Jeder 5. Treffer zahlt ×1,5.', 'charm.scratchpost':'Kratzpfosten', 'charm.scratchpost.d':'Dein erster Fehler jeder Etappe kostet nichts.',
     'charm.box':'Pappkarton', 'charm.box.d':'Der Treffer nach einem Fehler zahlt 25 % mehr.', 'charm.laserdot':'Laserpunkt',
@@ -7315,7 +7345,7 @@ const STRINGS = {
     'charm.silverspool':'Silberne Spule', 'charm.silverspool.d':'Alle Wolle +50 %.', 'charm.moonmilk':'Mondmilch',
     'charm.moonmilk.d':'Jeder 8. Treffer: +5 s oder +1 Leben, wenn der Lauf Leben hat.', 'charm.kitten':'Neugieriges Kätzchen', 'charm.kitten.d':'Wechselt die Familie von Runde zu Runde, zahlt es 20 % mehr.',
     'charm.pounce':'Sprung', 'charm.pounce.d':'Treffer unter der halben Richtzeit zahlen ×1,5.', 'charm.ghostcat':'Hungriger Geist',
-    'charm.ghostcat.d':'+40 % Punkte, aber ein Fehler kostet das Doppelte.', 'charm.sharpclaws':'Scharfe Krallen', 'charm.sharpclaws.d':'+30 % Punkte, aber Rundenuhren sind 20 % kürzer.',
+    'charm.ghostcat.d':'+40 % Punkte, aber ein Fehler kostet das Doppelte.', 'charm.sharpclaws':'Scharfe Krallen', 'charm.sharpclaws.d':'+30 % Punkte, aber die Uhr läuft 25 % schneller.',
     /* twists and mastery ranks */
     'twist.title':'Wie du es spielst', 'twist.classic':'Klassisch', 'twist.classic.d':'Der Modus, wie er gedacht war. Drei Leben.',
     'twist.blitz':'Blitz', 'twist.blitz.d':'Rundenuhren sind 40 % kürzer. Punkte ×1,5.', 'twist.fog':'Nebel',
@@ -7353,7 +7383,7 @@ const STRINGS = {
     'ach.blitz15k.d':'Erziele 15.000 Punkte im Mix.', 'ach.paid':'Deine Erfolge brachten {n} Wolle',
     /* the daily gift, what is nearest, and the room's introduction */
     'gift.title':'Tagesgeschenk', 'gift.day':'Tag {n}', 'gift.collect':'Abholen',
-    'gift.later':'Bis morgen', 'gift.streak':'{n} Tage in Folge', 'gift.week':'Tag 7 bringt jeder mitreisenden Katze ein Leckerli.',
+    'gift.later':'Bis morgen', 'gift.rested':'Willkommen zurück. Tag {n} hat auf dich gewartet.', 'gift.week':'Tag 7 bringt jeder mitreisenden Katze ein Leckerli.',
     'gift.got':'Tagesgeschenk · +{y} Wolle', 'goal.label':'Als Nächstes', 'goal.pal':'Noch {n} Wolle für {name}',
     'goal.room':'Noch {n} Wolle für „{name}“', 'goal.bond':'Noch {n} Treffer, bis {name} sich näher fühlt', 'goal.wish':'{a} von {b} für den heutigen Wunsch',
     'room.introTitle':'Jedes Rätsel bringt Wolle', 'room.intro':'Gib sie für Katzen und für die Ecken dieser Werkstatt aus. Katzen begleiten dich in Läufen und jede tut etwas anderes; eine eingerichtete Werkstatt bringt mehr Wolle und öffnet mehr Plätze. Wünsche und das Tagesgeschenk kommen dazu.', 'room.introOk':'Verstanden',
@@ -7379,7 +7409,7 @@ const STRINGS = {
     'charm.pawprint.d':'Jeder 4. Treffer: +1,5 s auf der Uhr, oder +12 % Punkte ohne Uhr.', 'charm.nightlight':'Nachtlicht', 'charm.nightlight.d':'Ein Treffer, wenn die Uhr fast abgelaufen ist, bringt +25 % Punkte.',
     'charm.knit':'Stricken', 'charm.knit.d':'Jeder Treffer einer Serie bringt 2 % mehr Punkte, bis +40 %.', 'charm.boa':'Federboa',
     'charm.boa.d':'Serie ab 10: Punkte ×1,3.', 'charm.bowl':'Wassernapf', 'charm.bowl.d':'Ein Fehler gibt 1,5 s Uhr zurück.',
-    'charm.windowseat':'Fensterplatz', 'charm.windowseat.d':'Rundenuhren laufen 15 % länger.', 'charm.crown':'Krönchen',
+    'charm.windowseat':'Fensterplatz', 'charm.windowseat.d':'Die Uhr läuft 13 % langsamer.', 'charm.crown':'Krönchen',
     'charm.crown.d':'Ab ×3 bringen Punkte ×1,25.', 'charm.treasure':'Vergrabener Schatz', 'charm.treasure.d':'Jede Etappe bringt +6 Wolle.',
     'charm.tangle':'Wirrer Knoten', 'charm.tangle.d':'+50 % Wolle, aber ein Fehler kostet doppelt.', 'ach.famfocus':'Adleraugen',
     'ach.famfocus.d':'Löse 100 Konzentrationsrätsel.', 'ach.famreflex':'Flinke Pfoten', 'ach.famreflex.d':'Löse 100 Reaktionsrätsel.',
@@ -7549,7 +7579,7 @@ const STRINGS = {
     'gate.custom':'Eigene Mischung', 'gate.customSub':'Stell deine eigene Playlist zusammen', 'gate.count':'{n} Spiele', 'gate.playMix':'Mix spielen',
     /* The menu */
     'me.open':'Dein Fortschritt', 'me.level':'Stufe {n}',
-    'hud.pause':'Pause', 'hud.best':'Bestwert', 'hud.newBest':'Neuer Bestwert', 'pause.sofar':'{s}\u00a0Punkte · {n}\u00a0gelöst · beste\u00a0Serie\u00a0{b}', 'brand.tag':'Snacks fürs Gehirn',
+    'hud.solved':'{n} gelöst', 'set.assistPrev':'Jede Farbe trägt auch eine Form', 'over.whilePlayed':'Während du gespielt hast', 'hud.pause':'Pause', 'hud.best':'Bestwert', 'hud.newBest':'Neuer Bestwert', 'pause.sofar':'{s}\u00a0Punkte · {n}\u00a0gelöst · beste\u00a0Serie\u00a0{b}', 'brand.tag':'Snacks fürs Gehirn',
     'you.switch':'Fortschritt oder Optionen', 'you.progress':'Fortschritt',
     'modes.ways':'Weitere Spielarten', 'modes.waysSub':'Endlos, Mixtape, Marathon und mehr', 'gate.fourAll':'Alle vier Spiele',
     /* The gateway */
@@ -7667,6 +7697,13 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.146.0', date:'2026-11-05', items:[
+    'Go again keeps your kind: after a Calm & Collect or Quick Paws mix it deals that kind again, not all forty-four games. Each kind now keeps its own best score, and Custom keeps its own, so the score you are chasing is one the run can actually reach.',
+    'Every charm does what it says, where it is offered. Window Seat had been doing nothing (it stretched round clocks, and no run that deals charms has one); it now slows the run\u2019s clock, and Sharp Claws\u2019 price is a faster clock. Charms that pay or cost time are only dealt in runs that have a clock.',
+    'The daily gift waits for you. Missing a day used to send it back to day one; now it rests, and you collect the day you had reached.',
+    'Nothing interrupts a round that is not about it. A cat\u2019s bond deepening is kept for Game Over (\u201cWhile you played\u201d), notes during a run sit under the score instead of over the pause button and the clock, any notice goes away with a tap, and notices have their own small sound instead of the level-up fanfare.',
+    'Small fixes: Reflex Rush counts eight games, two lines that stayed in English now follow your language, perk and cat cards are named by the words they show (for voice control), and tapping two tabs quickly no longer raises an error.',
+  ] },
   { v:'0.145.0', date:'2026-10-07', items:[
     'A new logo: the drop from the name has become a cat, with yarn wound round it and one eye lit, the odd one out. It is on the home screen icon, at the top of every menu and on the welcome card, and it blinks now and then.',
     'The top of the menus is a little HUD: your daily streak once it is two days long, the yarn in your basket (tap it to go to the Room) and your level, its number on the ring.',
@@ -17096,10 +17133,29 @@ function backfillAchievements(){
    unlock and a daily-streak bonus are the same shape of interruption (an
    icon, an eyebrow, a title, a line under it), so they share one queue and
    one piece of markup rather than each getting their own toast host. */
-let toastQueue = [], toastBusy = false;
+let toastQueue = [], toastBusy = false, toastHide = null, heldNotes = [];
+/* Most toasts are about the run in play (a stage, a boss wave, a coach note) and are worth their moment. A notice
+   marked `later` is news from the room (a cat's bond deepening): while a run is on it is held, and Game Over lists it,
+   because nothing that is not the puzzle should cut into a round. */
 function announceToast(x){
+  if (x.later && run){ heldNotes.push(x); return false; }
   toastQueue.push(x);
   if (!toastBusy) drainToast();
+  return true;
+}
+function paintHeld(){
+  const box = $('overHeld'); if (!box) return;
+  const list = heldNotes.splice(0);
+  box.hidden = !list.length; box.innerHTML = '';
+  if (!list.length) return;
+  const h = mk('small'); h.textContent = t('over.whilePlayed'); box.appendChild(h);
+  list.slice(0, 4).forEach(x => {
+    const row = mk('div', 'hrow'); row.style.setProperty('--ink', x.ink || 'var(--zap)');
+    const g = mk('span', 'g'); g.innerHTML = x.glyph || ''; g.setAttribute('aria-hidden', 'true');
+    const tx = mk('div'); const b = mk('b'); b.textContent = (x.eyebrow ? x.eyebrow + ' · ' : '') + x.title;
+    const d = mk('span'); d.textContent = x.desc || '';
+    tx.appendChild(b); if (x.desc) tx.appendChild(d); row.appendChild(g); row.appendChild(tx); box.appendChild(row);
+  });
 }
 function announceAchievement(a){
   announceToast({ ink: a.ink, glyph: a.glyph, eyebrow: t('ach.unlocked'),
@@ -17116,15 +17172,29 @@ function drainToast(){
   host.querySelector('b').textContent = x.title;
   host.querySelector('small').textContent = x.desc;
   host.classList.toggle('wrap', !!x.wrap);
+  /* In a run: under the score, never over the top row or the score itself. */
+  const inRun = screen === 'play' && !!run && !el.play.hidden;
+  host.classList.toggle('inrun', inRun);
+  if (inRun){
+    const sb = $('hudScore').getBoundingClientRect();
+    host.style.top = Math.round(sb.bottom + 8) + 'px';
+  } else host.style.top = '';
   host.hidden = false;
   void host.offsetWidth;
   host.classList.add('in');
-  sfx.level();
+  /* Its own small sound. Every toast used to play the level-up fanfare, so a stage beat or a coach note was captioned
+     "level up". A notice is read, so it is not captioned. */
+  sfx.note();
+  let done = false;
   const hide = () => {
+    if (done) return; done = true;
+    clearTimeout(toastHide); host.onclick = null;
     host.classList.remove('in');
     setTimeout(() => { host.hidden = true; drainToast(); }, 260);
   };
-  setTimeout(hide, motionOff() ? 1400 : 2400);
+  /* A tap anywhere on it puts it away. */
+  host.onclick = hide;
+  toastHide = setTimeout(hide, motionOff() ? 1400 : 2400);
 }
 
 /* ── Cat art ────────────────────────────────────────────────────────────────
@@ -17375,14 +17445,14 @@ const CHARM_BY_ID = Object.fromEntries(CHARMS.map(c => [c.id, c]));
 const CHARM_FX = {
   longwhiskers: { solve(a,i){ if (i.timed) a.time += 1000; else a.pts *= 1.06; } },
   yarnball:     { solve(a){ a.yarn += 1; } },
-  tunatin:      { stage(a,r){ if (r.livesMax) a.life += 1; else a.time += 4000; } },
-  sunbeam:      { solve(a,i){ if (i.timed) a.time += 500; }, clock:1.2 },
+  tunatin:      { stage(a,r){ if (r.livesMax) a.life += 1; else a.time += 4000; }, timedOnly:1 },
+  sunbeam:      { solve(a,i){ if (i.timed) a.time += 500; }, timedOnly:1 },
   bellcollar:   { zeal:1 },
   catnip:       { solve(a,i){ if (i.n % 5 === 0){ a.pts *= 1.5; a.note('catnip'); } } },
   scratchpost:  { stageFree:1 },
   box:          { solve(a,i){ if (i.back){ a.pts *= 1.25; a.note('back'); } } },
   laserdot:     { solve(a){ a.speedK *= 2; } },
-  blanket:      { solve(a,i,r){ if (r.time < 15000 && i.timed){ a.time += 1000; } } },
+  blanket:      { solve(a,i,r){ if (r.time < 15000 && i.timed){ a.time += 1000; } }, timedOnly:1 },
   feather:      { solve(a,i){ if (i.streak >= 5) a.pts *= 1.15; } },
   hairball:     { solve(a,i,r){ if (r.kind !== 'daily' && Math.random() < 0.12){ a.pts *= 3; a.note('hairball'); } } },
   whisker:      { solve(a,i){ if (i.fresh){ a.pts *= 1.25; a.note('new'); } } },
@@ -17390,21 +17460,21 @@ const CHARM_FX = {
   sardine:      { stage(a){ a.stageK *= 2; } },
   goldbell:     { solve(a){ a.pts *= 1.2; } },
   silverspool:  { yarn(){ return 1.5; } },
-  moonmilk:     { solve(a,i,r){ if (i.n % 8 === 0){ if (r.livesMax) a.life += 1; else a.time += 5000; a.note('milk'); } } },
+  moonmilk:     { solve(a,i,r){ if (i.n % 8 === 0){ if (r.livesMax) a.life += 1; else a.time += 5000; a.note('milk'); } }, timedOnly:1 },
   kitten:       { solve(a,i){ if (i.varied){ a.pts *= 1.2; a.note('vary'); } } },
   pounce:       { solve(a,i){ if (i.speed > 0.5){ a.pts *= 1.5; a.note('pounce'); } } },
-  ghostcat:     { solve(a){ a.pts *= 1.4; }, penalty:2 },
-  sharpclaws:   { solve(a){ a.pts *= 1.3; }, clock:0.8 },
+  ghostcat:     { solve(a){ a.pts *= 1.4; }, penalty:2, timedOnly:1 },
+  sharpclaws:   { solve(a){ a.pts *= 1.3; }, drain:1.25, timedOnly:1 },
   mousetoy:     { solve(a,i){ if (i.speed > 0.6) a.yarn += 1; } },
   pawprint:     { solve(a,i){ if (i.n % 4 === 0){ if (i.timed) a.time += 1500; else a.pts *= 1.12; } } },
-  nightlight:   { solve(a,i){ if (i.low) a.pts *= 1.25; } },
+  nightlight:   { solve(a,i){ if (i.low) a.pts *= 1.25; }, timedOnly:1 },
   knit:         { solve(a,i){ a.pts *= 1 + 0.02 * Math.min(i.streak, 20); } },
   boa:          { solve(a,i){ if (i.streak >= 10) a.pts *= 1.3; } },
-  bowl:         { miss(a){ a.timeBack += 1500; } },
-  windowseat:   { clock:1.15 },
+  bowl:         { miss(a){ a.timeBack += 1500; }, timedOnly:1 },
+  windowseat:   { drain:0.87, timedOnly:1 },
   crown:        { solve(a,i){ if (i.mult >= 3) a.pts *= 1.25; } },
   treasure:     { stage(a){ a.yarn += 6; } },
-  tangle:       { yarn(){ return 1.5; }, penalty:2 }
+  tangle:       { yarn(){ return 1.5; }, penalty:2, timedOnly:1 }
 };
 
 /* ── Twists ───────────────────────────────────────────────────────────────── */
@@ -17595,7 +17665,9 @@ const Fx = {
     if (r && r.fxs && r.fxs.soft){ k *= 1 + r.fxs.soft / 100; r.fxs.soft = 0; }     /* a soft landing lasts one round */
     return k;
   },
-  zeal: r => ((r && r.charms) || []).reduce((n, id) => n + ((CHARM_FX[id] && CHARM_FX[id].zeal) || 0), 0)
+  zeal: r => ((r && r.charms) || []).reduce((n, id) => n + ((CHARM_FX[id] && CHARM_FX[id].zeal) || 0), 0),
+  /* How fast a timed run's own clock drains: Window Seat slows it, Sharp Claws speeds it. */
+  drainK: r => ((r && r.charms) || []).reduce((k, id) => k * ((CHARM_FX[id] && CHARM_FX[id].drain) || 1), 1)
 };
 
 /* ── Days and wishes ──────────────────────────────────────────────────────── */
@@ -17700,7 +17772,10 @@ const Charm = {
      likelier a rare one: the offer should feel like it is getting better. */
   offer(r){
     const have = new Set(r.charms || []);
-    const pool = CHARMS.filter(c => !have.has(c.id));
+    /* A charm that cannot do anything in this run is a blank card: Window Seat once stretched round clocks, and no run
+       that offers charms has one. Those that pay or cost time (or a life) are dealt only where there is a clock. */
+    const timed = !!(KINDS[r.kind] || {}).timed;
+    const pool = CHARMS.filter(c => !have.has(c.id) && (timed || !(CHARM_FX[c.id] || {}).timedOnly));
     const out = [];
     const stage = r.stage || 1;
     while (out.length < 3 && pool.length){
@@ -17717,6 +17792,12 @@ const Charm = {
     Day.note('charm', 1);
   }
 };
+/* Probe-only: what a draft would deal in a given kind of run, and a way to carry a charm into the live run and read
+   its clock, so a test can see a charm do what its card says. */
+try { if (localStorage.getItem('dd.probe')) window.__charm = {
+  offer: kind => Charm.offer({ kind, charms: [], stage: 3 }).map(c => c.id),
+  give: id => { if (run) (run.charms || (run.charms = [])).push(id); },
+  time: () => run ? run.time : -1 }; } catch(e){}
 
 /* ── Twists ───────────────────────────────────────────────────────────────── */
 const Twist = {
@@ -17737,9 +17818,9 @@ const Twist = {
 
 
 /* ── The daily gift ───────────────────────────────────────────────────────── */
-/* A seven-day cycle, and forgiving: a missed day starts the cycle again from one,
-   but nothing already in the basket is ever taken away. Day seven is the big one,
-   and it feeds the cats riding along as well. */
+/* A seven-day cycle that waits for you. A missed day used to start the cycle again from day one, which turned a
+   day off into a loss and the gift into something to keep up with. Now the ladder simply rests: come back after a
+   week away and you collect the day you had reached. Day seven is the big one, and it feeds the cats riding along. */
 const GIFT_YARN = [20, 25, 30, 40, 50, 70, 120];
 const Gift = {
   state: () => save.gift || (save.gift = { last:'', streak:0 }),
@@ -17747,14 +17828,15 @@ const Gift = {
   /* Which day of the cycle collecting now would be. */
   day(){
     const g = Gift.state();
-    const n = g.last === todayKey() ? g.streak : (g.last === dayKey(-1) ? g.streak : 0) + 1;
-    return ((n - 1) % 7) + 1;
+    const n = g.last === todayKey() ? g.streak : g.streak + 1;
+    return ((Math.max(1, n) - 1) % 7) + 1;
   },
-  streak(){ const g = Gift.state(); return (g.last === todayKey() || g.last === dayKey(-1)) ? g.streak : 0; },
+  /* Away for more than a day: said kindly, because nothing was lost. */
+  rested(){ const g = Gift.state(); return !!g.last && g.last !== todayKey() && g.last !== dayKey(-1); },
   claim(){
     if (!Gift.ready()) return null;
     const g = Gift.state();
-    const n = (g.last === dayKey(-1) ? g.streak : 0) + 1;
+    const n = (g.streak | 0) + 1;
     g.streak = n; g.last = todayKey();
     const day = ((n - 1) % 7) + 1;
     const y = Yarn.give(GIFT_YARN[day - 1] * Yarn.mult(null));
@@ -18051,7 +18133,7 @@ function paintPals(){
     else if (!need.ok){ sub.textContent = t('pal.need.' + need.key, { n: need.n, have: need.have }); }
     else sub.textContent = t('pal.cost', { n: fmt(p.cost) });
     c.appendChild(art); c.appendChild(nm); c.appendChild(sub);
-    c.setAttribute('aria-label', t('pal.' + p.id));
+    /* Named by its own words (the cat and the line under it), not a label that left the line out (WCAG 2.5.3). */
     onTap(c, () => openPalSheet(p.id));
     host.appendChild(c);
   });
@@ -18192,9 +18274,10 @@ function petPal(id, ev){
 
 /* A bond deepening is the payoff for playing with a cat along, so it gets a moment. */
 function bondMoment(p, n){
-  announceToast({ ink: p.coat.base, glyph: catSvg(p.coat), eyebrow: t('bond.eyebrow', { name: t('pal.' + p.id) }),
+  /* News from the room: held until the run is over if one is on (the fanfare with it). */
+  const now = announceToast({ later: true, ink: p.coat.base, glyph: catSvg(p.coat), eyebrow: t('bond.eyebrow', { name: t('pal.' + p.id) }),
     title: t('bond.title', { n }), desc: n >= 3 ? t('bond.max') : t('bond.desc') });
-  sfx.combo(5);
+  if (now) sfx.combo(5);
 }
 
 /* ── The room's corners ───────────────────────────────────────────────────── */
@@ -18254,7 +18337,7 @@ function paintGift(){
   host.classList.toggle('ready', ready);
   const top = mk('div', 'gtop');
   const b = mk('b'); b.textContent = t('gift.title');
-  const sm = mk('small'); sm.textContent = Gift.streak() ? t('gift.streak', { n: Gift.streak() }) : t('gift.week');
+  const sm = mk('small'); sm.textContent = ready && Gift.rested() ? t('gift.rested', { n: day }) : t('gift.week');
   const txt = mk('div', 'gtxt'); txt.appendChild(b); txt.appendChild(sm);
   const btn = mk('button', 'wclaim'); btn.type = 'button';
   btn.textContent = ready ? t('gift.collect') : t('gift.later'); btn.disabled = !ready;
@@ -19373,9 +19456,13 @@ const hudHide = (node, v) => { v = !!v; if (node.hidden !== v) node.hidden = v; 
 const hudProp = (node, name, v) => { v = String(v); if (node.style.getPropertyValue(name) !== v) node.style.setProperty(name, v); };
 
 /* The best a run is chasing, read once when it starts (endRun moves the bests after the run). */
+/* The best a Shuffle is measured against is its kind's own (the first run and the Full Purr deal from every game,
+   so they share one), and Custom's sixty seconds keep a best of their own. pbBlitz stays the best of all of them. */
+const gateBest = r => (save.pbGate || {})[r.gate || 'full'] || 0;
 function runTarget(r){
   switch (r.kind){
-    case 'shuffle': case 'mix': return save.pbBlitz || 0;
+    case 'shuffle': return gateBest(r);
+    case 'mix': return save.pbMix || 0;
     case 'reflexrush': return save.pbReflexRush || 0;
     case 'puzzlecascade': return save.pbPuzzleCascade || 0;
     case 'survival': return save.pbSurvival || 0;
@@ -19441,7 +19528,7 @@ function renderHud(){
   const nowId = run.curMode ? modeIdOf(run.curMode) : run.mode;
   hudText($('hudKind'), (nowId ? modeName(nowId) : kindName(run.kind))
     + (run.twist ? ' \u00B7 ' + t('twist.' + run.twist) : ''));
-  hudText($('hudScore'), k.scored ? fmt(run.score) : fmt(run.solved) + ' solved');
+  hudText($('hudScore'), k.scored ? fmt(run.score) : t('hud.solved', { n: fmt(run.solved) }));
   /* A multiplier that climbs in silence is not something anyone plays for.
      It carries its own level now, so ×5 looks like it was earned, and a ring
      round it fills with how close the next step is — the "almost" is the part
@@ -19578,7 +19665,7 @@ function tick(ts){
     const zone = zoneOn();
     if (zone !== !!run.inZone){ run.inZone = zone; paintZone(zone); }
     if (zone) run.zoneMs = (run.zoneMs || 0) + edt;
-    else run.time -= edt;
+    else run.time -= edt * Fx.drainK(run);
     if (run.time <= 0){ run.time = 0; renderHud(); return endRun(); }
   }
   /* The round limit. Timed runs already punish slowness through the shared
@@ -20270,7 +20357,7 @@ function showRateStep(){
 }
 
 /* ═══ Runs ════════════════════════════════════════════════════════════════ */
-function startRun(kind, modeId, twistId, poolIds){
+function startRun(kind, modeId, twistId, poolIds, gate){
   const k = KINDS[kind];
   const lvl = playerLevel();
   /* Nothing left to try. pickMode()'s bag would shuffle an empty pool and
@@ -20320,6 +20407,8 @@ function startRun(kind, modeId, twistId, poolIds){
   run.speedK = tw === 'frenzy' ? 1.35 : 1;
   if (tw === 'iron'){ run.lives = 1; run.livesMax = 1; run.fxs.free = 0; run.fxs.stageFree = 0; }
   run.twStart = kind === 'marathon' ? Twist.total(modeId) : 0;
+  /* Which of the three kinds dealt this Shuffle, so Go again deals from it again and its best is its own. */
+  run.gate = kind === 'shuffle' && GATES[gate] ? gate : null;
   run.target = runTarget(run);
   Day.note('run', 1);
   /* pickMode only reshuffles when the bag is empty, so a bag handed over here
@@ -20538,7 +20627,10 @@ function endRun(){
 
   let best = false;
   if (k.scored){
-    if ((r.kind === 'shuffle' || r.kind === 'mix') && r.score > save.pbBlitz){ save.pbBlitz = r.score; best = true; }
+    /* A fresh object every time: a new save's pbGate is the defaults' own, and writing into it would change the defaults. */
+    if (r.kind === 'shuffle' && r.score > gateBest(r)){ save.pbGate = Object.assign({}, save.pbGate, { [r.gate || 'full']: r.score }); best = true; }
+    if (r.kind === 'mix' && r.score > (save.pbMix || 0)){ save.pbMix = r.score; best = true; }
+    if ((r.kind === 'shuffle' || r.kind === 'mix') && r.score > (save.pbBlitz || 0)) save.pbBlitz = r.score;
     if (r.kind === 'reflexrush' && r.score > (save.pbReflexRush || 0)){ save.pbReflexRush = r.score; best = true; }
     if (r.kind === 'puzzlecascade' && r.score > (save.pbPuzzleCascade || 0)){ save.pbPuzzleCascade = r.score; best = true; }
     if (r.kind === 'survival' && r.score > (save.pbSurvival || 0)){ save.pbSurvival = r.score; best = true; }
@@ -20627,7 +20719,7 @@ function endRun(){
   if (up) got.textContent = t('lvl.range', { a: r.playerLevel, b: lvlAfter });
 
   const attempts = r.solved + r.missed;
-  $('overKind').textContent = (r.mode ? modeName(r.mode) + ' · ' : '') + kindName(r.kind)
+  $('overKind').textContent = (r.mode ? modeName(r.mode) + ' · ' : '') + (r.gate && r.gate !== 'full' ? t('gate.' + r.gate) : kindName(r.kind))
     + (r.twist ? ' · ' + t('twist.' + r.twist) : '');
   $('overScore').textContent = k.scored ? fmt(r.score) : fmt(r.solved);
   $('newBest').hidden = !best;
@@ -20680,6 +20772,7 @@ function endRun(){
     const g = nextGoal();
     $('goalStrip').hidden = !g;
     if (g) $('goalLine').textContent = t(g.key, g.args);
+    paintHeld();
   }
   /* The first time a run that solved something ends, say where the yarn went. Once ever, and never to someone who
      has already opened the Room's own welcome card. */
@@ -20705,7 +20798,7 @@ function endRun(){
   $('stStreak').textContent = String(r.bestStreak);
   $('stAcc').textContent = attempts ? Math.round(r.solved/attempts*100) + '%' : '—';
 
-  const target = (r.kind === 'shuffle' || r.kind === 'mix') ? save.pbBlitz
+  const target = r.kind === 'shuffle' ? gateBest(r) : r.kind === 'mix' ? (save.pbMix || 0)
     : r.kind === 'reflexrush' ? (save.pbReflexRush || 0)
     : r.kind === 'puzzlecascade' ? (save.pbPuzzleCascade || 0)
     : r.kind === 'survival' ? (save.pbSurvival || 0)
@@ -20736,6 +20829,7 @@ function endRun(){
     $('nearBest').textContent = t('over.yourBest', { n: fmt(target) });
   }
   el.over.dataset.kind = r.kind;
+  el.over.dataset.gate = r.gate || '';
   el.over.dataset.mode = r.mode || '';
   el.over.dataset.twist = r.twist || '';
   el.over.dataset.yarn = String(r.yarn || 0);
@@ -21374,9 +21468,9 @@ function paintPerks(){
       + '<span class="ptxt"><b>' + t('perk.' + p.id) + '</b>'
       + '<small>' + perkLine(p.id, PERK_BY_ID[p.id].steps[Math.max(0, lv-1)]) + '</small></span>'
       + '<span class="plv">' + (on ? '<i></i>'.repeat(lv) + '<u></u>'.repeat(3-lv) : '') + '</span>';
+    /* Named by what it shows (WCAG 2.5.3, label in name: a voice user says the words on the button), and pressed or
+       not says whether it is equipped. It used to carry its own label, which left the line under the name out. */
     face.setAttribute('aria-pressed', on ? 'true' : 'false');
-    face.setAttribute('aria-label', t('perk.' + p.id) + ' — '
-      + t(on ? 'perk.equipped' : 'perk.notEquipped', { n: lv }));
     card.appendChild(face);
     face.addEventListener('click', () => {
       sfx.tap();
@@ -21596,7 +21690,7 @@ function paintSettings(){
   if (save.colorAssist && !prev.dataset.built){
     prev.innerHTML = INKS.slice(0,5).map(c =>
       '<span class="sq" style="background:' + c.hex + '">' + shapeSvg(c.shape, 'var(--ink)') + '</span>'
-    ).join('') + '<span>Every colour also carries a shape</span>';
+    ).join('') + '<span>' + t('set.assistPrev') + '</span>';
     prev.dataset.built = '1';
   }
   paintCosmetics();
@@ -21644,7 +21738,13 @@ function withTransition(fn, dir){
   /* Which way the page slides: forward into something, back out of it, or a plain cross-fade. */
   document.documentElement.dataset.vtdir = dir || 'same';
   if (motionOff() || !document.startViewTransition) return fn();
-  try { document.startViewTransition(fn); } catch(e){ fn(); }
+  /* A second transition started before the first ends skips the first, and its promises reject with an AbortError
+     that nothing was catching (a page error in Chromium 153 whenever two tabs were tapped quickly). Skipping is fine;
+     the rejection is not news. */
+  try {
+    const vt = document.startViewTransition(fn);
+    ['ready', 'finished', 'updateCallbackDone'].forEach(k => { if (vt && vt[k] && vt[k].catch) vt[k].catch(() => {}); });
+  } catch(e){ fn(); }
 }
 
 /* Where each screen sits along the tab bar, so a change of tab slides the way the pill does. */
@@ -21996,7 +22096,7 @@ document.querySelectorAll('.gateBtn').forEach(b => b.addEventListener('click', (
   const sc = $('tabPlay').querySelector('.scroll'); if (sc) sc.scrollTop = 0;
 }));
 $('gateBack').addEventListener('click', () => { setPlayView('home'); sfx.tap(); });
-$('moodPlay').addEventListener('click', () => startRun('shuffle', null, null, (GATES[gateOn] || GATES.full).pool()));
+$('moodPlay').addEventListener('click', () => startRun('shuffle', null, null, (GATES[gateOn] || GATES.full).pool(), GATES[gateOn] ? gateOn : 'full'));
 $('customBtn').addEventListener('click', () => { sfx.tap(); goTab('Mix'); });
 $('statsBtn').addEventListener('click', () => goTab('Stats'));
 $('reflexRushBtn').addEventListener('click', () => startRun('reflexrush'));
@@ -22176,8 +22276,13 @@ function applyTextSize(){ document.documentElement.dataset.ts = ['100', '115', '
 
 $('homeBtn').addEventListener('click', () => goTab('Play'));
 $('roomCall').addEventListener('click', () => { sfx.tap(); goTab('Room'); });
-$('againBtn').addEventListener('click', () =>
-  startRun(el.over.dataset.kind || 'shuffle', el.over.dataset.mode || null, el.over.dataset.twist || null));
+/* Again means the same again: a Calm mix deals Calm games, not all forty-four. It used to drop the kind and
+   start a Shuffle over everything, because the button only carried the run type. */
+$('againBtn').addEventListener('click', () => {
+  const g = el.over.dataset.gate || '';
+  startRun(el.over.dataset.kind || 'shuffle', el.over.dataset.mode || null, el.over.dataset.twist || null,
+    GATES[g] ? GATES[g].pool() : null, GATES[g] ? g : null);
+});
 $('quitBtn').addEventListener('click', () => {
   /* This used to end the run on a single tap, in the top-left corner where a
      thumb reaching for the board lands. Any run that has actually begun is

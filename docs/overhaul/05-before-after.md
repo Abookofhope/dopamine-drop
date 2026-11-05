@@ -186,6 +186,37 @@ Measured on served builds; "before" is v0.144.0.
 
 What this does not prove: that the cat reads as a cat at 29 px on every launcher (it is checked by eye at 192 and in the header at 30), or that every browser grants a wake lock (where it cannot, nothing changes).
 
+## v0.146.0: honest and uninterrupted (bible release 1)
+
+The first release of the overhaul bible ([../bible/](../bible/README.md)), fixing what taking stock found
+(B1–B5 and B8 in [00-baseline.md](../bible/00-baseline.md)).
+
+| What | Before | After |
+|---|---|---|
+| Go again after a Quick Paws mix | dealt all 44 games (4 boards seen: 1 not Quick); Game Over said "Shuffle" | deals Quick Paws games (4 of 4); Game Over says "Quick Paws" |
+| The best a run chases | one number for every Shuffle and Custom: a 60-second Custom run and a Calm mix were shown a 10-minute Full Purr best (9,000) | a best per kind and one for Custom; an old save's best carries over as the Full Purr's; pbBlitz stays the overall best for achievements |
+| Window Seat (rare) | did nothing in any run that deals charms | the run's clock drains 13% slower (2.6 s in 3 s against 3.0) |
+| Sharp Claws' price | never applied | the clock drains 25% faster (3.75 s in 3 s) |
+| Charms that pay or cost time, in Endless | dealt (Endless has no clock) | never dealt (0 in 1,200 cards); timed runs still deal them |
+| The daily gift after three days away, four days into the ladder | day 1, 20 yarn | day 5, 50 yarn, "Welcome back. Day 5 waited for you." |
+| A cat's bond deepening mid-run | a toast and a fanfare over the board | banked at once, listed on Game Over under While you played |
+| A note in a run (the first solve's) | slid over the pause button, the clock and the score (top 14 px) | under the score (top 110 px at 390 wide, 105 at 320), covering none of them |
+| Tapping a notice | went through it (pointer-events none) | puts it away |
+| A notice's sound | the level-up fanfare, every time | two soft notes of its own, uncaptioned; the gift's rising chimes are captioned "a reward", not "streak up" |
+| Text | Reflex Rush "7 modes" (8); "N solved" and the colour helper's caption in English in every language | 8; both in the player's language |
+| The busiest moment at 4× CPU slowdown | not measured | p95 frame 16.8 ms at 390x844 and 16.7 at 412x915 (median of 3), particles shed from 198 to 44–51 inside 2.5 s; at 20× it is 67–83 ms, so the probe can fail |
+| `shots.mjs` | byte-exact; Meld "unstable" on about half of runs (one pixel, 1 of 255) | a 24 px / 3-of-255 anti-aliasing budget, counted in the output; an environment fingerprint (browser, font widths) beside the pictures |
+| Perk and cat cards (axe 4.14, WCAG 2.5.3 label in name) | named by a label that left out the words under the name (8 findings) | named by what they show; equipped is told by pressed or not |
+| Tapping two tabs quickly | an unhandled AbortError from the skipped page transition (a page error in Chromium 153) | the skipped transition's promises are caught |
+| `honest.mjs` failed checks | 9 of 22 on v0.145.0 | 0 of 22 |
+| `toasts.mjs` failed checks | 11 of 22 on v0.145.0 | 0 of 22 |
+
+Found while verifying: the v0.145.0 baselines could not be reproduced on this session's fresh container, on
+v0.145.0 itself, because it has neither Archivo nor Instrument Sans (the game names them and ships no web font),
+so everything falls back to Inter and every board comes out 17 px taller. The pictures were re-taken from the
+v0.145.0 build here and v0.146.0 compared against them; `shots.mjs` now refuses to compare across font
+environments instead of reporting every board changed.
+
 ## How to reproduce
 
 ```
