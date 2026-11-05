@@ -76,7 +76,12 @@ for (const id of ids){
   let dragged = 0;
   if (!ended){
     const box = await (await page.$('#surface')).boundingBox();
-    const fresh = await targets();
+    /* With nothing to tap (Tidy Up's items are only dragged), start on something drawn on the board rather than at fixed
+       points: on a random layout four fixed points could all land on empty floor, and a live board read as dead. */
+    const tappable = await targets();
+    const fresh = tappable.length ? tappable : await page.evaluate(() => [...document.querySelectorAll('#surface *')].filter(e => {
+      const r = e.getBoundingClientRect(); return r.width >= 16 && r.height >= 16 && r.width < innerWidth * 0.6 && getComputedStyle(e).visibility !== 'hidden';
+    }).map(e => { const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }));
     for (let d = 0; d < 4 && !ended; d++){
       await arm();
       const from = fresh.length ? fresh[Math.floor((d + 0.5) * fresh.length / 4)] : null;

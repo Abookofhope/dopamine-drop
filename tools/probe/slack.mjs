@@ -19,7 +19,9 @@ const open = async (xp, lang = 'en', vp = { width: 400, height: 820 }) => {
   page.on('pageerror', e => errs.push(String(e).slice(0, 120)));
   await openApp(page, { reduceMotion: true, xp, runs: 40, solved: 600, sound: false, haptics: false, onboarded: true, seen: { slack: 1 }, schema: 11, lang });
   await openModeList(page); await clickMode(page, 'slack');
-  await page.waitForSelector('#surface .slacknode', { timeout: 9000 }); await page.waitForTimeout(500);
+  await page.waitForSelector('#surface .slacknode', { timeout: 9000 });
+  /* the Hint button can arrive a beat after the pegs (it read as missing once in a full chain): wait for it, then settle */
+  await page.waitForSelector('.sumcol .sumtool', { timeout: 6000 }).catch(() => {}); await page.waitForTimeout(500);
   return page;
 };
 const read = page => page.evaluate(() => {
