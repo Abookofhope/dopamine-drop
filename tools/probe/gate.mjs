@@ -1,8 +1,9 @@
 /* The menu: three kinds of game, and a place to make your own.
  *
- *   Calm & Collect  (Predominantly Inattentive)             soothing, repetitive, low-pressure
- *   Quick Paws      (Predominantly Hyperactive-Impulsive)   fast, satisfying, action-oriented
- *   The Full Purr   (Combined)                              a balanced mix of calm strategy and quick action
+ *   Calm & Collect  Slow and soothing    soothing, repetitive, low-pressure
+ *   Quick Paws      Quick and bright     fast, satisfying, action-oriented
+ *   The Full Purr   A bit of both        a balanced mix of calm strategy and quick action
+ *   (until v0.155.0 the second column named ADHD subtypes; a kind says how it feels, never who the player is)
  *   Custom                                                  your own playlist
  *
  * Every game belongs to one of the three kinds. Opening a kind shows all of its games and a button that plays a mix of them, a game
@@ -47,7 +48,7 @@ const kinds = {};
   const page = await open('en');
   const h = await home(page);
   check(h.gates.map(g => g.title).join('|') === 'Calm & Collect|Quick Paws|The Full Purr', `three kinds of game, named Calm & Collect, Quick Paws and The Full Purr (${h.gates.map(g => g.title).join(', ')})`);
-  check(h.gates.map(g => g.who).join('|') === '(Predominantly Inattentive)|(Predominantly Hyperactive-Impulsive)|(Combined)', 'each with its presentation under the name');
+  check(h.gates.map(g => g.who).join('|') === 'Slow and soothing|Quick and bright|A bit of both', `each says how it feels under the name, not who the player is (${h.gates.map(g => g.who).join(' / ')})`);
   check(h.gates.every(g => g.vibe.length > 10 && g.h >= 90 && g.count >= 10), `a line for the feel of it, and how many games it holds (${h.gates.map(g => g.count).join(', ')})`);
   check(!!h.custom && /Custom/.test(h.custom.title) && h.custom.h >= 56, `and Custom, for your own playlist (${h.custom && h.custom.title})`);
   check(!!h.daily, `with Daily Drop above them (${h.daily})`);

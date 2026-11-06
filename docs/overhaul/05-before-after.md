@@ -316,6 +316,14 @@ The full chain on v0.153.0 passed 78 of 86 steps. Everything it found is fixed h
 | The Yarn Shop's More yarn button | named "Buy … for 12 Coins of Gratitude" while it shows "More yarn · 12" (axe 4.14, WCAG 2.5.3) | named by what it shows first, then the details (`board.mjs`) |
 | `fx_unit.mjs`, `style.mjs`, `tumble.mjs` | red since v0.146.0 (old charm rules); one run in two; crashed on a one-colour drum | updated to the v0.146.0 rules; 6 of 6 runs; picks a two-colour drum |
 
+## v0.155.0: the kinds say how they feel (bible B9)
+
+| What | Before | After |
+|---|---|---|
+| Under each kind's name | ADHD subtype names: "(Predominantly Inattentive)", "(Predominantly Hyperactive-Impulsive)", "(Combined)", and the same in French, Spanish and German | how it feels: "Slow and soothing", "Quick and bright", "A bit of both" (and "Lent et apaisant", "Lento y relajante", "Langsam und beruhigend", ...) |
+| A clinical word in the build | nothing stopped one | `check_site.py` refuses ADHD (and TDAH, ADHS), subtype and diagnostic words in any of the four languages (fails on v0.154.0, passes on v0.155.0) |
+| `gate.mjs` | expected the subtype names | expects the mood words |
+
 ## How to reproduce
 
 ```

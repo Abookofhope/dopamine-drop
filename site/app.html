@@ -5131,7 +5131,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.154.0';
+const VERSION_TAG = 'v0.155.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6420,9 +6420,9 @@ const STRINGS = {
     'modes.ways':'More ways to play', 'modes.waysSub':'Endless, Mixtape, Marathon and more', 'gate.fourAll':'All four games',
     /* The gateway */
     'gate.title':'How is your brain today?', 'gate.sub':'Pick the one that sounds like you — the games are chosen to match.', 'gate.more':'More in this mood',
-    'gate.calm':'Calm & Collect', 'gate.calmWho':'(Predominantly Inattentive)', 'gate.calmVibe':'Soothing, repetitive, low-pressure.',
-    'gate.quick':'Quick Paws', 'gate.quickWho':'(Predominantly Hyperactive-Impulsive)', 'gate.quickVibe':'Fast, satisfying, action-oriented.',
-    'gate.full':'The Full Purr', 'gate.fullWho':'(Combined)', 'gate.fullVibe':'A balanced mix of calm strategy and quick action.',
+    'gate.calm':'Calm & Collect', 'gate.calmWho':'Slow and soothing', 'gate.calmVibe':'Soothing, repetitive, low-pressure.',
+    'gate.quick':'Quick Paws', 'gate.quickWho':'Quick and bright', 'gate.quickVibe':'Fast, satisfying, action-oriented.',
+    'gate.full':'The Full Purr', 'gate.fullWho':'A bit of both', 'gate.fullVibe':'A balanced mix of calm strategy and quick action.',
     /* Yarn Ball Blaster */
     'm.blast':'Yarn Ball Blaster|Fire matching yarn to pop the wall before it creeps down', 'p.blast':'{n} yarn balls left — fire the colour you are holding',
     'blast.board':'Wall of yarn', 'blast.col':'Lane {n}, front ball {k}', 'blast.empty':'Lane {n}, empty', 'blast.paw':'Paw cannon, {k} loaded, {j} next. Activate to swap.',
@@ -6942,9 +6942,9 @@ const STRINGS = {
     'modes.ways':'Autres façons de jouer', 'modes.waysSub':'Sans fin, Mixtape, Marathon et plus', 'gate.fourAll':'Les quatre jeux',
     /* The gateway */
     'gate.title':'Comment va ta tête aujourd’hui ?', 'gate.sub':'Choisis ce qui te ressemble — les jeux sont choisis pour aller avec.', 'gate.more':'Dans le même esprit',
-    'gate.calm':'Calme & Collecte', 'gate.calmWho':'(Principalement inattentif)', 'gate.calmVibe':'Apaisant, répétitif, sans pression.',
-    'gate.quick':'Pattes Rapides', 'gate.quickWho':'(Principalement hyperactif-impulsif)', 'gate.quickVibe':'Rapide, satisfaisant, plein d’action.',
-    'gate.full':'Le Grand Ronron', 'gate.fullWho':'(Mixte)', 'gate.fullVibe':'Un équilibre entre stratégie tranquille et action rapide.',
+    'gate.calm':'Calme & Collecte', 'gate.calmWho':'Lent et apaisant', 'gate.calmVibe':'Apaisant, répétitif, sans pression.',
+    'gate.quick':'Pattes Rapides', 'gate.quickWho':'Vif et lumineux', 'gate.quickVibe':'Rapide, satisfaisant, plein d’action.',
+    'gate.full':'Le Grand Ronron', 'gate.fullWho':'Un peu des deux', 'gate.fullVibe':'Un équilibre entre stratégie tranquille et action rapide.',
     /* Yarn Ball Blaster */
     'm.blast':'Lance-pelotes|Tire la bonne couleur pour faire éclater le mur avant qu’il ne descende', 'p.blast':'Encore {n} pelotes — tire la couleur que tu tiens',
     'blast.board':'Mur de laine', 'blast.col':'Colonne {n}, première pelote {k}', 'blast.empty':'Colonne {n}, vide', 'blast.paw':'Canon-patte, {k} chargée, {j} ensuite. Activer pour échanger.',
@@ -7463,9 +7463,9 @@ const STRINGS = {
     'modes.ways':'Más formas de jugar', 'modes.waysSub':'Sin fin, Mixtape, Maratón y más', 'gate.fourAll':'Los cuatro juegos',
     /* The gateway */
     'gate.title':'¿Cómo está tu cabeza hoy?', 'gate.sub':'Elige el que más se parezca a ti: los juegos se eligen a juego.', 'gate.more':'Más con este ánimo',
-    'gate.calm':'Calma y Colección', 'gate.calmWho':'(Predominantemente inatento)', 'gate.calmVibe':'Relajante, repetitivo, sin presión.',
-    'gate.quick':'Patitas Rápidas', 'gate.quickWho':'(Predominantemente hiperactivo-impulsivo)', 'gate.quickVibe':'Rápido, satisfactorio, lleno de acción.',
-    'gate.full':'El Ronroneo Completo', 'gate.fullWho':'(Combinado)', 'gate.fullVibe':'Un equilibrio entre estrategia tranquila y acción rápida.',
+    'gate.calm':'Calma y Colección', 'gate.calmWho':'Lento y relajante', 'gate.calmVibe':'Relajante, repetitivo, sin presión.',
+    'gate.quick':'Patitas Rápidas', 'gate.quickWho':'Rápido y luminoso', 'gate.quickVibe':'Rápido, satisfactorio, lleno de acción.',
+    'gate.full':'El Ronroneo Completo', 'gate.fullWho':'Un poco de ambos', 'gate.fullVibe':'Un equilibrio entre estrategia tranquila y acción rápida.',
     /* Yarn Ball Blaster */
     'm.blast':'Lanzaovillos|Dispara el color que toca para reventar la pared antes de que baje', 'p.blast':'Quedan {n} ovillos: dispara el color que llevas',
     'blast.board':'Pared de lana', 'blast.col':'Carril {n}, primer ovillo {k}', 'blast.empty':'Carril {n}, vacío', 'blast.paw':'Cañón-pata, {k} cargado, {j} después. Activa para cambiar.',
@@ -7984,9 +7984,9 @@ const STRINGS = {
     'modes.ways':'Weitere Spielarten', 'modes.waysSub':'Endlos, Mixtape, Marathon und mehr', 'gate.fourAll':'Alle vier Spiele',
     /* The gateway */
     'gate.title':'Wie tickt dein Kopf heute?', 'gate.sub':'Wähl, was zu dir passt — die Spiele werden passend gewählt.', 'gate.more':'Mehr in dieser Stimmung',
-    'gate.calm':'Ruhig & Sammeln', 'gate.calmWho':'(Überwiegend unaufmerksam)', 'gate.calmVibe':'Beruhigend, wiederholend, ohne Druck.',
-    'gate.quick':'Flinke Pfoten', 'gate.quickWho':'(Überwiegend hyperaktiv-impulsiv)', 'gate.quickVibe':'Schnell, befriedigend, actionreich.',
-    'gate.full':'Das volle Schnurren', 'gate.fullWho':'(Kombiniert)', 'gate.fullVibe':'Eine Mischung aus ruhiger Strategie und schneller Action.',
+    'gate.calm':'Ruhig & Sammeln', 'gate.calmWho':'Langsam und beruhigend', 'gate.calmVibe':'Beruhigend, wiederholend, ohne Druck.',
+    'gate.quick':'Flinke Pfoten', 'gate.quickWho':'Schnell und hell', 'gate.quickVibe':'Schnell, befriedigend, actionreich.',
+    'gate.full':'Das volle Schnurren', 'gate.fullWho':'Von beidem etwas', 'gate.fullVibe':'Eine Mischung aus ruhiger Strategie und schneller Action.',
     /* Yarn Ball Blaster */
     'm.blast':'Wollknäuel-Blaster|Schieß die passende Farbe und lass die Wand platzen, bevor sie runterkommt', 'p.blast':'Noch {n} Knäuel — schieß die Farbe, die du hältst',
     'blast.board':'Wollwand', 'blast.col':'Bahn {n}, vorderstes Knäuel {k}', 'blast.empty':'Bahn {n}, leer', 'blast.paw':'Pfotenkanone, {k} geladen, danach {j}. Aktivieren zum Tauschen.',
@@ -8097,6 +8097,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.155.0', date:'2026-11-06', items:[
+    'The three kinds now say how they feel: Calm & Collect is slow and soothing, Quick Paws is quick and bright, and The Full Purr is a bit of both. They used to carry clinical labels, which describe a person, not a game.',
+  ] },
   { v:'0.154.0', date:'2026-11-05', items:[
     'A lucky skein now says so under the score as well, so it is seen with reduced motion too.',
     'This week’s pattern has moved to More ways to play, beside Marathon, so the Play menu fits on one screen again.',
@@ -16116,7 +16119,7 @@ const MODES = {
 
       /* A shot you cannot take back would make this a mode you lose to one bad
          guess. Tapping any square the last shot painted winds it off the board,
-         and costs a move, like the shot did. */
+         and gives its move back (an undo that cost a move would be worse than the mistake). */
       pix.forEach((b, i) => onTap(b, () => {
         if (done || busy || !hist.length) return;
         const last = hist[hist.length - 1];

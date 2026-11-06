@@ -8,7 +8,7 @@ the defence failed.
 |---|---|---|---|---|
 | R1 | **Overstimulation** | every solve explodes; motion sickness; fatigue | the ladder (proportion and rarity); Big celebrations and Reduce motion; the board never moves; no flashing above 3 a second | `motion.mjs`, `framebudget.mjs` |
 | R2 | **Compulsion over joy** | "one more run" from anxiety, not desire; playing past enjoyment | Tuck in; no streak loss; no FOMO; the 30-minute kind nudge; Cozy | `peakend.mjs`; analytics (opt-in): session length vs a 1-tap mood check |
-| R3 | **Health claims** | store rejection, or a label that pathologises the player | the kinds' subtitles currently name ADHD subtypes (B9): **replace with mood words** ("Slow and soothing", "Quick and bright", "A bit of both") pending the owner's decision; a banned-term gate list | `check_site.py` banned terms |
+| R3 | **Health claims** | store rejection, or a label that pathologises the player | done in v0.155.0 on the owner's decision: the kinds' subtitles are mood words ("Slow and soothing", "Quick and bright", "A bit of both") in all four languages, and the gate refuses ADHD, subtype and diagnostic words in any of them | `check_site.py` banned terms |
 | R4 | **Streak anxiety** | players play out of fear of losing a streak | the gift rests (Q3); the Daily streak is shown only as a celebration from day 2; no "at risk" copy | `honest.mjs` |
 | R5 | **Economy inflation** | yarn stops meaning anything (B7) | new cosmetic sinks (~44k), seasons, the treat jar; prices tied to days of play | income model in [05-economy.md](05-economy.md), re-checked each season |
 | R6 | **Economy deflation** | new players see nothing affordable | the first cat (Noodle) costs 150, about one session; the first room grade costs 50 | `meta.mjs` |

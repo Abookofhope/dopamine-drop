@@ -42,6 +42,13 @@ for blk in re.findall(r"<style[^>]*>(.*?)</style>", html, re.S):
             bare.append(ln.strip()[:70])
 check("every font size scales with the text size setting", not bare, f"{len(bare)} bare, e.g. {bare[:2]}")
 
+# Health words. The game is for anyone who wants a short, kind break; it does not diagnose, treat or describe anyone, and
+# app stores read a clinical label in an app as a health claim (docs/bible/12-risks.md, R3). The kinds were once subtitled
+# with ADHD subtypes; this keeps any such word, in any of the four languages, out of the build.
+BANNED = r"\b(adhd|tdah|adhs|inattenti\w*|inatent\w*|unaufmerksam\w*|hyperacti\w*|hiperacti\w*|hyperakti\w*|impulsi[vf]\w*|diagnos\w*|disorder|trouble du d\w*|trastorno|st[oö]rung)\b"
+hits = sorted(set(m.group(0).lower() for m in re.finditer(BANNED, html, re.I)))
+check("no clinical or diagnostic words in the build", not hits, f"found {hits[:6]}")
+
 # Every inline script, checked separately. The page has more than one — the
 # game and the service-worker registration — and treating them as one blob
 # produces a syntax error from the boundary between them, not from the code.

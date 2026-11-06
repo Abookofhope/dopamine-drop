@@ -30,17 +30,18 @@ Cat's Cradle, Cat Fight, Tumble Dryer, Needle Pass, Mending, Peekaboo, Snip, Rip
 Tangle Watch, Catch the Balls, Heft, Yarn Ball Blaster, Purr, Cat's Eyes, Basket Drop (nudge is a move, not an
 aid), Tidy Up, Dye Pots, Follow the Thread, Yarn Tangled Tangle, No Crossing (inferred: dragging a peg back is the undo).
 
-## Games with a move budget and no Undo: review
+## Games with a move budget and no Undo: decided (2026-11-06, v0.155.0)
 
-| Game | id | What a wrong move does | Proposed decision |
-|---|---|---|---|
-| Mirror Stitch | mirror | lighting a wrong square; putting it out returns its move (per the changelog) | **no change**: putting a square out is the undo, and it is free |
-| Darning | bridge | a stitch laid on the wrong square spends a move | **review**: if a laid stitch cannot be lifted, add a free Undo of the last stitch |
-| Splice | splice | joining the wrong word halves | **review**: if a join cannot be broken, add a free Undo |
-| Balance | lever | a drag moves the balance point; the next drag can move it back | **no change** (inferred from its rules, not tested): every move is reversible by playing |
-| Kitten's Snack Attack | forage | sending a kitten to the wrong treat fills a holding slot | **review**: a filled slot can jam the board, which is damage, so Undo of the last send is a candidate |
-| Spool Shots | volley | a shot paints squares; the hint already offers "wind back" when the board is stuck | **review**: make wind-back a visible Undo rather than a hint-only path |
-| Sandbox of Softness | sift | a scoop poured in the wrong place layers wrong sand | **review**: layering is the puzzle; an Undo may trivialise it, so playtest before adding |
+The owner asked for each to be investigated. Each was read in the code and checked against the probe that already plays it. None needs an Undo added: in each, either a wrong move cannot damage the board, or playing already takes it back for free.
 
-The five **review** games are listed in the roadmap as follow-ups. Each needs its own probe (a wrong move, then Undo,
-leaves the board exactly as before and the move budget whole) before it ships.
+| Game | id | What a wrong move does (from the code) | Decision | Held by |
+|---|---|---|---|---|
+| Mirror Stitch | mirror | lighting a wrong square; putting it out returns its move | **no change**: putting a square out is the undo, and it is free | `mirror.mjs` |
+| Darning | bridge | a stitch on the wrong square spends a move; tapping or dragging over it again lifts it and gives the move back | **no change**: lifting is the undo, and it is free | `bridge.mjs` ("laying a stitch costs a move and lifting it gives the move back") |
+| Splice | splice | a wrong pairing is refused: both halves flash and it costs a move, but nothing is joined | **no change**: the board is never damaged, so there is nothing to undo | `splice.mjs` ("a wrong pairing costs a move") |
+| Balance | lever | a drag moves the balance point; the next drag can move it back | **no change** (inferred from its rules, not tested): every move is reversible by playing | — |
+| Kitten's Snack Attack | forage | a swarm sent at a colour the edge cannot reach yet waits in a basket slot | **no change**, as recommended (the owner's answer named the other four, so this one stays open to their word): the send order is the puzzle (its own comments), and the spare moves already forgive a careless order; a free Undo would let a player try a send, look, and take it back | `forage.mjs` |
+| Spool Shots | volley | a shot paints squares | **no change**: tapping a square the last shot painted winds it back and gives its move back, and when the board is stuck the hint lights the squares to wind back. The code comment that said winding back "costs a move" was wrong and is corrected | `volley.mjs` ("winding the last shot back by tapping a square it painted gives its move back") |
+| Sandbox of Softness | sift | a grain that finds no scoop rolls round again, costing a move, never the picture | **no change**: the picture can always be finished | `sand.mjs` ("a grain that finds no scoop rolls round again (it costs a move, not the picture)") |
+
+The owner asked for Darning, Splice, Spool Shots and Sandbox of Softness to be investigated; each already meets the rule. Snack Attack stays without an Undo as recommended, open to the owner's word.

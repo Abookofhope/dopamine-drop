@@ -91,7 +91,7 @@ settings search, reset with undo, save export and import, wake lock, P to pause.
 
 ## Found while taking stock (fixed in the MVP, see [13-roadmap.md](13-roadmap.md))
 
-B1–B5 and B8 were fixed in **v0.146.0** (`honest.mjs`, `toasts.mjs`), B10 in **v0.147.0** (`peakend.mjs`), B6 in **v0.150.0** (`resume.mjs`), and B7 in **v0.152.0–v0.153.0** (`kit.mjs`, `seasons.mjs`). B9 waits on the owner's decision.
+B1–B5 and B8 were fixed in **v0.146.0** (`honest.mjs`, `toasts.mjs`), B10 in **v0.147.0** (`peakend.mjs`), B6 in **v0.150.0** (`resume.mjs`), B7 in **v0.152.0–v0.153.0** (`kit.mjs`, `seasons.mjs`), and B9 in **v0.155.0**, on the owner's decision (`gate.mjs`, and a banned-terms check in `check_site.py`).
 
 | # | Finding | Why it matters |
 |---|---|---|
@@ -103,5 +103,5 @@ B1–B5 and B8 were fixed in **v0.146.0** (`honest.mjs`, `toasts.mjs`), B10 in *
 | B6 | A run is lost if the app is closed or killed mid-run (progress is banked, but the run is gone) ✓ v0.150.0: offered back for a day | a phone call shouldn't cost a run |
 | B7 | **Yarn runs out of things to buy** (27,370 in all) ✓ v0.152–v0.153 add 36,200 of fixed sinks (Sparkle kits 4,200, stations 2,000, something to wear 1,050 for each of 20 cats, seasons 9,000) and one open-ended sink (treats, 25 each) | a currency with nothing to buy is noise, and the most loyal players reach that point first |
 | B8 | ✓ Small text faults: Reflex Rush says 7 reflex games (there are 8); the Room says comfort gives "a fifth" more yarn (it is up to 24%); "N solved" on the HUD and the colour-helper preview caption are English in every language | correctness and localization |
-| B9 | The three kinds are subtitled with **clinical ADHD subtype names** ("Predominantly Inattentive", ...) | a health-claim risk on app stores and a label on the player; see [12-risks.md](12-risks.md) R3. **Needs the owner's decision** |
+| B9 | The three kinds are subtitled with **clinical ADHD subtype names** ("Predominantly Inattentive", ...) | a health-claim risk on app stores and a label on the player; see [12-risks.md](12-risks.md) R3. ✓ v0.155.0: mood words ("Slow and soothing", "Quick and bright", "A bit of both"), chosen by the owner |
 | B10 | A Game Over with no solves leads with a giant **0** ✓ v0.147.0: peak first | a five-minute player who had a bad run leaves on a low; against the Peak-End rule |
