@@ -1,6 +1,7 @@
 /* The load-up (v0.156.0): the Books Entertainment intro plays over the game as it starts.
  *
  * It plays on every launch and can be skipped only after one full watch (save.introSeen, v0.158.0).
+ * The page is the studio's web v8 (v0.159.0).
  * Asked for with dd.splash (automated browsers skip it otherwise): it covers the screen, its frame is the studio's own page
  * (the wordmark "Books Entertainment"); the harness seeds Reduce motion on, so the full intro is asked for with it off, the Skip button is a full-size target and has focus; Escape skips it and the game
  * underneath is ready; left alone it leaves when the forging ends (the page's own data-end); with Reduce motion it leaves
@@ -44,6 +45,9 @@ const frameDoc = page => page.frame({ url: /about:srcdoc/ });
   const word = f ? await f.evaluate(() => ({ label: document.getElementById('wordmark').getAttribute('aria-label'), text: document.getElementById('wordmark').textContent.replace(/\s+/g, ''), hint: getComputedStyle(document.getElementById('hint')).display })) : null;
   check(!!word && word.label === 'Books Entertainment' && word.text === 'BOOKSENTERTAINMENT', `its frame is the studio's own page ("${word && word.text}")`);
   check(!!word && word.hint === 'none', 'without its "click for sound" line (a tap skips here)');
+  /* v0.159.0: the studio's web v8 — the only version with a fog layer and a quality level it writes for itself */
+  const v8 = f ? await f.evaluate(() => ({ fog: !!document.getElementById('bgfx'), q: document.body.dataset.q || '' })) : null;
+  check(!!v8 && v8.fog && /^(full|high|medium|light)$/.test(v8.q), `and it is the studio's web v8 (fog layer ${v8 && v8.fog}, quality "${v8 && v8.q}")`);
   /* frames along the way, for a person to look at (OUT) */
   if (OUT){ let at = 600; for (const t of [2000, 3400, 4600, 6400, 9200]){ await page.waitForTimeout(t - at); at = t; await page.screenshot({ path: `${OUT}/intro_${t}.png` }); } }
   await page.keyboard.press('Escape');

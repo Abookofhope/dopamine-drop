@@ -356,6 +356,15 @@ The first-solve measure (bible 13, target under 5 s) now counts from the end of 
 | A frame that fails to load | — | the game is let in after a safety timeout, but that is not counted as a watch |
 | `splash.mjs` | 11 checks | 15; the new five fail on v0.157.0 |
 
+## v0.159.0: the studio's web v8 intro (the owner's request)
+
+| What | Before | After |
+|---|---|---|
+| The intro's page | the uploaded Books Entertainment page (62 KB) | the studio's web v8, byte for byte (94 KB): fog and dust in the light, cracks that branch from one point, the camera moving through the frozen pieces, molten gold filling each letter, a mirror image under the name |
+| Smoothness | one level of detail | the page picks a level of detail from the device and drops a level if frames run slow |
+| Length | about 12 s | about 13 s (the page's own data-end); every rule from v0.158.0 is kept |
+| `splash.mjs` | 15 checks | 16; the new one (a fog layer and a quality level, which only v8 has) fails on v0.158.0 |
+
 ## How to reproduce
 
 ```
