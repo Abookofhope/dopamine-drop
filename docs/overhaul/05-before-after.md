@@ -393,6 +393,18 @@ The intro itself, measured the same way, runs at a median of 33 ms per frame at 
 How the probe went wrong on the way, all in the probe, none in the game: a solver for Odd Skein that reads colours from the DOM must use only the board on top (a Daily round stacks boards), skip the tiles a wrong tap rules out, and judge "lightest" perceptually; a Daily round of several boards scores only when the last is solved; and a stage at ten solves asks the player to choose a charm, which a bot has to answer.
 
 
+## v0.162.0: tablets (AAA, platforms)
+
+| What | Before | After |
+|---|---|---|
+| The screens on a tablet (768x1024 to 1180x820) | a 460px phone column; 154–360px empty on each side | a 640px column, centred with a margin; phones unchanged (`--colw`, one variable for the column and the sheets) |
+| A board on an upright tablet (820x1180, Patchwork) | 6x6 cells about 66px | about 96px |
+| Every board at 820x1180 and 1024x768 (`sweep`, `geometry`) | — | 44 of 44 clean at both |
+| Patchwork on a short, wide screen | its note sat on the grid's top row, and Undo and Hint ran off the bottom (also at 460px, and on phones on their side) | the note keeps a strip of its own; the quilt is sized from the board's own inner height, not the surface's (which counted the surface's padding) |
+| `tablet.mjs` (new) | before the Patchwork fix, its board check fails at 1024x768 (the note over the grid) | 23 of 23 |
+
+Not done here: native Android and iOS shells (they need store accounts) and a two-pane layout for sideways tablets (the boards are drawn upright, so a sideways tablet still shows one centred column).
+
 ## How to reproduce
 
 ```

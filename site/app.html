@@ -19,6 +19,10 @@
    gets `contain` so a repaint in one row cannot invalidate the page.
    ────────────────────────────────────────────────────────────────────────── */
 :root{
+  /* The width of every screen: a phone column. On a tablet (at least 700px each way, in either orientation) it widens to
+     640px, keeping a margin, so a board gets the room the screen has instead of a phone-sized strip in the middle of it.
+     The boards already fit any column from 320 to 460px; `tablet.mjs` checks every one of them at 640 (v0.162.0). */
+  --colw:460px;
   --ink:#0D0918; --ink-2:#171029; --ink-3:#20163C;
   --edge:#31235C; --edge-soft:#271B49;
   --haze:#9C90C4; --cream:#FFF3E6;
@@ -85,7 +89,7 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    scrolling is .scroll's job and always was; the shell should never move.
    100vh first as the fallback for anything without dvh. */
 .cab{justify-content:center;
-  width:100%;max-width:460px;
+  width:100%;max-width:var(--colw);
   height:100%;max-height:100%;overflow:hidden;
   display:flex;flex-direction:column;position:relative;
   /* Only the bottom inset was reserved, so on a notched phone the quit button
@@ -3322,8 +3326,9 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
   max-height:86dvh;display:flex;flex-direction:column;gap:12px;
   box-shadow:0 1px 0 0 #ffffff14 inset, 0 -24px 46px -20px #000000c8;
   animation:sheetup 300ms cubic-bezier(.2,.9,.3,1);
-  width:100%;max-width:460px;margin:0 auto;
+  width:100%;max-width:var(--colw);margin:0 auto;
 }
+@media (min-width:700px) and (min-height:700px){ :root{--colw:min(640px, calc(100vw - 96px))} }
 @keyframes sheetup{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 .sheet .grab{width:38px;height:4px;border-radius:99px;background:var(--edge);margin:0 auto 4px}
 .sheet h2{font-family:var(--f-disp);font-weight:800;font-size:calc(22px*var(--ts));margin:0;text-transform:uppercase}
@@ -3917,6 +3922,9 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
     repeating-radial-gradient(ellipse 90% 140% at 100% 0%, transparent 0 12%, #00000026 12% 14.5%)}
 .hc :is(.hbit,.gdrop,.plinkball,.falling)::before{display:none}
 /* Patchwork: the colour rule, stated on the quilt. */
+/* A note laid on the quilt keeps a strip of its own at the top: on a short, wide screen (a tablet on its side, a phone on
+   its side) the grid fills the height and its top row slid under the note (tablet.mjs, v0.162.0). */
+.forgewrap:has(> .fnote){padding-top:calc(13px*var(--ts) + 12px)}
 .fnote{position:absolute;right:2px;top:-2px;z-index:3;padding:3px 9px;border-radius:99px;border:1px solid var(--edge);background:#0d0918d9;
   color:var(--haze);font-family:var(--f-data);font-size:calc(9.5px*var(--ts));font-weight:700;letter-spacing:.07em;text-transform:uppercase;pointer-events:none}
 /* ── Loaf Box: kittens asleep in a cardboard box, and loaves to fit round them ─────────────────── */
@@ -5162,7 +5170,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.161.0';
+const VERSION_TAG = 'v0.162.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -8136,6 +8144,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.162.0', date:'2026-11-10', items:[
+    'On a tablet the game uses the room: every screen is 640 pixels wide instead of a phone-sized strip, so the boards are bigger and easier to play. Phones are unchanged.',
+    'Fixed: on a short, wide screen (a tablet or a phone on its side) Patchwork’s note sat on top of its grid, and its Undo and Hint buttons could slip off the bottom. The quilt now sizes itself to the room it really has.',
+  ] },
   { v:'0.161.0', date:'2026-11-10', items:[
     'Fixed: opening a friend’s Daily link before playing your own Daily that day showed “New best” from your first point, and never showed how you stood against your friend. The race now shows from the first round.',
   ] },
@@ -14117,7 +14129,11 @@ const MODES = {
       const fitBoard = () => {
         /* The tray holds the height it had when full, so taking a patch out of it cannot resize the quilt under the finger. */
         if (!tray.style.minHeight && tray.offsetHeight) tray.style.minHeight = tray.offsetHeight + 'px';
-        const left = ctx.surface.clientHeight - tray.offsetHeight - tools.offsetHeight - 24;
+        /* The room the quilt really has: the board's own inner height (not the surface's, which counts the surface's padding),
+           less the strip a note keeps at the top, the two gaps, the tray and the tools. Measured from the surface, the
+           quilt came out too tall on a short screen and pushed the tools off the bottom (tablet.mjs, v0.162.0). */
+        const cs = getComputedStyle(wrap), inner = (wrap.clientHeight || ctx.surface.clientHeight) - parseFloat(cs.paddingTop || 0) - parseFloat(cs.paddingBottom || 0);
+        const left = inner - tray.offsetHeight - tools.offsetHeight - 2 * (parseFloat(cs.rowGap) || 12);
         const side = Math.max(120, Math.min(ctx.surface.clientWidth, left));
         grid.style.width = side + 'px'; grid.style.aspectRatio = '1'; grid.style.height = 'auto';
       };
