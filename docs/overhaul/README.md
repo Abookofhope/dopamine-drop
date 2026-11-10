@@ -42,6 +42,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.155.0 | The kinds say how they feel (bible B9): mood words in place of ADHD subtype names, and a gate that refuses clinical words |
 | v0.156.0 | The load-up opens with the Books Entertainment intro, played in its own frame, skippable with a tap or a key, short with Reduce motion |
 | v0.157.0 | Every board plays from the keyboard: Tab to the board, arrows move a pointer, Space presses or holds, Enter taps |
+| v0.158.0 | The intro plays on every launch and can be skipped only after it has been watched to the end once |
 
 ## Ground rules the work follows
 

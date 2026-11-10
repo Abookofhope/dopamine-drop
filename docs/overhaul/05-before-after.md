@@ -346,6 +346,16 @@ The first-solve measure (bible 13, target under 5 s) now counts from the end of 
 | The board itself | not focusable | a Tab stop named "Board", described by its keys in four languages; the crosshair shows only while it has focus |
 | `kbd.mjs` (new) | 44 of 44 games fail (no board takes focus) | 0 of 44 |
 
+## v0.158.0: the intro plays every launch, and is skippable after one full watch (the owner's rule)
+
+| What | Before | After |
+|---|---|---|
+| The first launch on a device | the intro could be skipped at once | it plays through: no Skip button, and taps, Escape, Enter and Space do nothing (and reach nothing behind it) |
+| After one full watch | — | kept in the save (`introSeen`); every later launch still plays it, and a tap or a key skips it |
+| Reduce motion | — | its short version (the finished name) counts as a full watch |
+| A frame that fails to load | — | the game is let in after a safety timeout, but that is not counted as a watch |
+| `splash.mjs` | 11 checks | 15; the new five fail on v0.157.0 |
+
 ## How to reproduce
 
 ```

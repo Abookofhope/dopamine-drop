@@ -1,5 +1,6 @@
 /* The load-up (v0.156.0): the Books Entertainment intro plays over the game as it starts.
  *
+ * It plays on every launch and can be skipped only after one full watch (save.introSeen, v0.158.0).
  * Asked for with dd.splash (automated browsers skip it otherwise): it covers the screen, its frame is the studio's own page
  * (the wordmark "Books Entertainment"); the harness seeds Reduce motion on, so the full intro is asked for with it off, the Skip button is a full-size target and has focus; Escape skips it and the game
  * underneath is ready; left alone it leaves when the forging ends (the page's own data-end); with Reduce motion it leaves
@@ -22,7 +23,8 @@ async function open(state = {}, asked = true){
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
   const page = await ctx.newPage();
   page.on('pageerror', e => errs.push(String(e).slice(0, 160)));
-  await page.addInitScript(([v, a]) => { localStorage.setItem('dd.v1', v); localStorage.setItem('dd.probe', '1'); if (a) localStorage.setItem('dd.splash', '1'); },
+  /* the top window only: the intro's own frame shares this storage, and seeding it again there would undo what the game saved */
+  await page.addInitScript(([v, a]) => { if (window.top !== window) return; localStorage.setItem('dd.v1', v); localStorage.setItem('dd.probe', '1'); if (a) localStorage.setItem('dd.splash', '1'); },
     [seedSave(Object.assign({ onboarded: true, xp: 9000, runs: 40, solved: 600, lang: 'en', reduceMotion: false }, state)), asked]);
   await page.goto(URL, { waitUntil: 'domcontentloaded' });
   return { page, ctx };
@@ -30,9 +32,9 @@ async function open(state = {}, asked = true){
 const shown = page => page.evaluate(() => { const h = document.getElementById('bootSplash'); return !!h && !h.hidden && !h.classList.contains('out'); });
 const frameDoc = page => page.frame({ url: /about:srcdoc/ });
 
-/* ── 1. it plays, it is the studio's page, and Escape skips it ── */
+/* ── 1. it plays, it is the studio's page, and once it has been watched fully Escape skips it ── */
 {
-  const { page, ctx } = await open();
+  const { page, ctx } = await open({ introSeen: true });
   await page.waitForTimeout(600);
   const s = await page.evaluate(() => { const h = document.getElementById('bootSplash'), r = h.getBoundingClientRect(), b = document.getElementById('bootSkip').getBoundingClientRect();
     return { shown: !h.hidden, full: r.width >= innerWidth - 1 && r.height >= innerHeight - 1, skip: [Math.round(b.width), Math.round(b.height)], focus: document.activeElement && document.activeElement.id, label: h.getAttribute('aria-label') }; });
@@ -51,17 +53,24 @@ const frameDoc = page => page.frame({ url: /about:srcdoc/ });
   await ctx.close();
 }
 
-/* ── 2. left alone, it leaves when the forging is done ── */
+/* ── 2. the first time it cannot be skipped: it plays to the end, and that full watch is kept ── */
 {
-  const { page, ctx } = await open();
-  await page.waitForTimeout(1500);
+  const { page, ctx } = await open({ introSeen: false });
+  await page.waitForTimeout(900);
+  const sk = await page.evaluate(() => { const b = document.getElementById('bootSkip'); return { hidden: b.hidden || !b.getClientRects().length }; });
+  check(sk.hidden, 'before a first full watch there is no Skip button');
+  await page.keyboard.press('Escape'); await page.mouse.click(195, 300); await page.keyboard.press('Enter');
+  await page.waitForTimeout(600);
+  check(await shown(page), 'and Escape, Enter and a tap do not skip it');
   const f = frameDoc(page);
   const end = f ? await f.evaluate(() => parseFloat(document.body.dataset.end)) : NaN;
   check(end > 6 && end < 16, `the page says how long it runs (${end && end.toFixed(1)} s)`);
   const t0 = Date.now();
   const left = await page.waitForFunction(() => document.getElementById('bootSplash').hidden, null, { timeout: 22000, polling: 200 }).then(() => true, () => false);
   const took = (Date.now() - t0) / 1000 + 1.5;
-  check(left && took >= end - 0.5 && took <= end + 2.5, `and it leaves by itself when the forging ends (after ${took.toFixed(1)} s)`);
+  check(left && took >= end - 0.5 && took <= end + 2.5, `it plays to the end and leaves by itself (after ${took.toFixed(1)} s)`);
+  const seen = await page.evaluate(() => JSON.parse(localStorage.getItem('dd.v1')).introSeen);
+  check(seen === true, 'and the full watch is kept, so it can be skipped from the next launch');
   if (OUT && left) await page.screenshot({ path: `${OUT}/after.png` });
   await ctx.close();
 }
@@ -75,12 +84,13 @@ const frameDoc = page => page.frame({ url: /about:srcdoc/ });
   const left = await page.waitForFunction(() => document.getElementById('bootSplash').hidden, null, { timeout: 8000, polling: 100 }).then(() => true, () => false);
   const took = (Date.now() - t0) / 1000;
   check(left && took < 4, `with Reduce motion it shows the finished name and leaves within a few seconds (${took.toFixed(1)} s)`);
+  check(await page.evaluate(() => JSON.parse(localStorage.getItem('dd.v1')).introSeen) === true, 'and that counts as watching it');
   await ctx.close();
 }
 
-/* ── 4. a tap anywhere skips it ── */
+/* ── 4. once watched, a tap anywhere skips it ── */
 {
-  const { page, ctx } = await open();
+  const { page, ctx } = await open({ introSeen: true });
   await page.waitForTimeout(900);
   await page.mouse.click(195, 300);
   await page.waitForTimeout(800);
