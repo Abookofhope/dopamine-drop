@@ -336,6 +336,16 @@ The full chain on v0.153.0 passed 78 of 86 steps. Everything it found is fixed h
 
 The first-solve measure (bible 13, target under 5 s) now counts from the end of the intro, or from the first tap, which skips it.
 
+## v0.157.0: every board plays from the keyboard (bible 13, AAA accessibility)
+
+| What | Before | After |
+|---|---|---|
+| A board with nothing to tap (Tidy Up, Chalk Line, Trace, Siphon, Cairn, Gather, Ripples, Snip, Dropped Stitch, Purr) | needed a mouse or a finger | Tab to the board: the arrow keys move a crosshair over it (Shift for fine steps), Space presses where it is (held, it drags or holds), Enter taps |
+| A board of buttons | Tab and Enter reached its buttons, but not what lies between them (a bar's end, a peg) | the same buttons, and the pointer for everything else |
+| How the pointer reaches a game | — | the same pointer events a finger sends, so every game answers as it does to touch and no game's rules changed; a game that captures the pointer gets it, and a click lands on what the press and release share |
+| The board itself | not focusable | a Tab stop named "Board", described by its keys in four languages; the crosshair shows only while it has focus |
+| `kbd.mjs` (new) | 44 of 44 games fail (no board takes focus) | 0 of 44 |
+
 ## How to reproduce
 
 ```

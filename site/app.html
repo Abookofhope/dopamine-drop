@@ -1921,6 +1921,16 @@ html[data-hud="minimal"] #hudPerks, html[data-hud="minimal"] #hudCharms{display:
   padding:0 18px;border:0;border-radius:22px;background:transparent;color:rgba(232,224,208,.72);cursor:pointer;
   font:400 calc(11px*var(--ts))/1 Georgia,"Times New Roman",serif;letter-spacing:.3em;text-transform:uppercase}
 #bootSplash .bootskip:focus-visible{outline:1.5px solid rgba(232,224,208,.6);outline-offset:2px}
+/* The keyboard pointer: Tab to the board, arrows move it, Space presses (held: a drag or a hold), Enter taps. */
+#surface:focus-visible{outline:2px dashed var(--cream);outline-offset:4px}
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+#kbPtr{position:fixed;z-index:60;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;pointer-events:none;
+  border:2.5px solid #FFF3E6;box-shadow:0 0 0 2px #1A1230,inset 0 0 0 2px #1A1230}
+#kbPtr::before,#kbPtr::after{content:"";position:absolute;background:#FFF3E6;box-shadow:0 0 0 1px #1A1230}
+#kbPtr::before{left:50%;top:6px;bottom:6px;width:2px;margin-left:-1px}
+#kbPtr::after{top:50%;left:6px;right:6px;height:2px;margin-top:-1px}
+#kbPtr.down{background:#FFC53D66;transform:scale(.86)}
+#kbPtr[hidden]{display:none}
 #surface.shake{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
 @keyframes shake{10%,90%{transform:translateX(-3px)}20%,80%{transform:translateX(5px)}30%,50%,70%{transform:translateX(-8px)}40%,60%{transform:translateX(8px)}}
 /* A miss that snaps an active streak should read as a bigger loss than a
@@ -4855,7 +4865,7 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
       <div class="roundbar" id="roundBar" hidden><i id="roundFill"></i></div>
       <p class="prompt" id="prompt">Get ready</p>
       <p class="howto" id="howto" hidden></p>
-      <div id="surface"><div id="count"><b>3</b></div></div>
+      <div id="surface" tabindex="0" role="group" data-i18n-aria="kb.board" aria-label="Board" aria-describedby="kbHint"><div id="count"><b>3</b></div></div>
     </section>
 
     <!-- ── GAME OVER ───────────────────────────────────────────────── -->
@@ -5096,6 +5106,8 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 </div>
 <!-- The load-up, part one: the studio. The intro itself is the studio's own page, carried unchanged and played in a
      frame of its own so that none of its names or colours can reach the game's (docs/overhaul/05-before-after.md, v0.156.0). -->
+<!-- The board's key help, for screen readers (aria-describedby on #surface); kept outside the play area, which is measured. -->
+<p class="vh" id="kbHint" data-i18n="kb.hint">Arrow keys move the pointer. Space presses: hold it to drag or to hold. Enter taps.</p>
 <div id="bootSplash" role="dialog" aria-modal="true" aria-label="Books Entertainment" hidden>
   <iframe id="bootSplashFrame" title="Books Entertainment" tabindex="-1" aria-hidden="true"></iframe>
   <button class="bootskip" id="bootSkip" type="button" data-i18n="boot.skip">Skip</button>
@@ -5146,7 +5158,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.156.0';
+const VERSION_TAG = 'v0.157.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6431,6 +6443,7 @@ const STRINGS = {
     'cosmetic.sakura':'Sakura', 'cosmetic.fishbone':'Fishbone', 'cosmetic.starlight':'Starlight', 'cosmetic.buttons':'Button box', 'set.kitBuy':'{k}, {n} yarn', 'set.kitAsk':'{k}: tap again to buy for {n} yarn', 'set.kitGot':'{k} is yours', 'set.station':'Station', 'set.stationSub':'How the room sounds', 'st.hearth':'Hearth', 'st.paws':'Busy Paws', 'st.rain':'Rainy Window', 'st.box':'Music Box', 'st.boxHow':'Comes with your 500th solve', 'acc.title':'Something to wear', 'acc.collar':'Collar', 'acc.bowtie':'Bow', 'acc.scarf':'Scarf', 'acc.wear':'Wear', 'acc.wearing':'Wearing', 'acc.ask':'Tap again: {n}', 'treat.give':'Give a treat: {n} yarn, +{b} bond', 'pal.nameLabel':'A name of your own', 'pal.nameSave':'Name', 'pal.nameHow':'At {n} bond you can give this cat a name of your own.', 'style.title':'Your style', 'style.note':'Over your last {n} solves.', 'kit.title':'Your kits', 'kit.lead':'A kit is the cats riding along, your perks, your sparkle and your station, kept together. Save what you have now, and put it back with one tap.', 'kit.n':'Kit {n}', 'kit.empty':'Empty', 'kit.use':'Use', 'kit.save':'Save here',
     'season.lead':'Small things for the window sill. Every season\'s things stay in the Archive at the same price, so there is never a rush.', 'season.now':'This season: {s}', 'season.archive':'The Archive', 'season.winter':'Winter', 'season.spring':'Spring', 'season.summer':'Summer', 'season.autumn':'Autumn', 'si.owned':'On the sill', 'si.stocking':'Stocking', 'si.globe':'Snow globe', 'si.star':'Star', 'si.mittens':'Mittens', 'si.pot':'Flower pot', 'si.kite':'Kite', 'si.bunting':'Bunting', 'si.boots':'Rain boots', 'si.fan':'Paper fan', 'si.hat':'Sun hat', 'si.melon':'Melon slice', 'si.boat':'Paper boat', 'si.lantern':'Lantern', 'si.leaves':'Leaves', 'si.pumpkin':'Pumpkin', 'si.throw':'Knitted throw', 'week.title':'This week\'s pattern', 'week.bonus':'Yarn ×1.5 in Marathon', 'fx.skein':'A lucky skein! ×2 yarn', 'fx.skeinShort':'Lucky skein ×2', 'cap.lucky':'Four bright notes: a lucky skein', 'hud.friend':'Friend',
     'boot.skip':'Skip',
+    'kb.board':'Board', 'kb.hint':'Arrow keys move the pointer. Space presses: hold it to drag or to hold. Enter taps.',
     'hud.solved':'{n} solved', 'set.assistPrev':'Every colour also carries a shape', 'over.whilePlayed':'While you played', 'hud.pause':'Pause', 'hud.best':'Best', 'hud.newBest':'New best', 'pause.sofar':'{s}\u00a0points · {n}\u00a0solved · best\u00a0streak\u00a0{b}', 'brand.tag':'Brain snacks',
     'you.switch':'Progress or settings', 'you.progress':'Progress',
     'modes.ways':'More ways to play', 'modes.waysSub':'Endless, Mixtape, Marathon and more', 'gate.fourAll':'All four games',
@@ -6954,6 +6967,7 @@ const STRINGS = {
     'cosmetic.sakura':'Sakura', 'cosmetic.fishbone':'Arête', 'cosmetic.starlight':'Lueur d’étoile', 'cosmetic.buttons':'Boîte à boutons', 'set.kitBuy':'{k}, {n} laines', 'set.kitAsk':'{k} : touche encore pour l’acheter {n} laines', 'set.kitGot':'{k} est à toi', 'set.station':'Station', 'set.stationSub':'Le son de la pièce', 'st.hearth':'Coin du feu', 'st.paws':'Pattes vives', 'st.rain':'Fenêtre de pluie', 'st.box':'Boîte à musique', 'st.boxHow':'Vient avec ta 500ᵉ réussite', 'acc.title':'De quoi s’habiller', 'acc.collar':'Collier', 'acc.bowtie':'Nœud', 'acc.scarf':'Écharpe', 'acc.wear':'Porter', 'acc.wearing':'Porté', 'acc.ask':'Touche encore : {n}', 'treat.give':'Donner une friandise : {n} laines, +{b} lien', 'pal.nameLabel':'Un nom à toi', 'pal.nameSave':'Nommer', 'pal.nameHow':'À {n} de lien, tu pourras donner à ce chat un nom à toi.', 'style.title':'Ton style', 'style.note':'Sur tes {n} dernières réussites.', 'kit.title':'Tes ensembles', 'kit.lead':'Un ensemble, ce sont les chats du voyage, tes atouts, ton éclat et ta station, gardés ensemble. Enregistre ce que tu as, et remets-le d’un geste.', 'kit.n':'Ensemble {n}', 'kit.empty':'Vide', 'kit.use':'Utiliser', 'kit.save':'Enregistrer ici',
     'season.lead':'De petites choses pour le rebord de la fenêtre. Les choses de chaque saison restent aux Archives au même prix : rien ne presse.', 'season.now':'Cette saison : {s}', 'season.archive':'Les Archives', 'season.winter':'Hiver', 'season.spring':'Printemps', 'season.summer':'Été', 'season.autumn':'Automne', 'si.owned':'Sur le rebord', 'si.stocking':'Chaussette', 'si.globe':'Boule à neige', 'si.star':'Étoile', 'si.mittens':'Moufles', 'si.pot':'Pot de fleurs', 'si.kite':'Cerf-volant', 'si.bunting':'Fanions', 'si.boots':'Bottes de pluie', 'si.fan':'Éventail', 'si.hat':'Chapeau de soleil', 'si.melon':'Tranche de melon', 'si.boat':'Bateau en papier', 'si.lantern':'Lanterne', 'si.leaves':'Feuilles', 'si.pumpkin':'Citrouille', 'si.throw':'Plaid tricoté', 'week.title':'Le motif de la semaine', 'week.bonus':'Laine ×1,5 en Marathon', 'fx.skein':'Une pelote porte-bonheur ! ×2 laine', 'fx.skeinShort':'Pelote porte-bonheur ×2', 'cap.lucky':'Quatre notes claires : pelote porte-bonheur', 'hud.friend':'Ami',
     'boot.skip':'Passer',
+    'kb.board':'Plateau', 'kb.hint':'Les flèches déplacent le pointeur. Espace appuie : maintiens-la pour glisser ou tenir. Entrée touche.',
     'hud.solved':'{n} réussis', 'set.assistPrev':'Chaque couleur porte aussi une forme', 'over.whilePlayed':'Pendant la partie', 'hud.pause':'Pause', 'hud.best':'Record', 'hud.newBest':'Nouveau record', 'pause.sofar':'{s}\u00a0points · {n}\u00a0réussis · meilleure\u00a0série\u00a0{b}', 'brand.tag':'Douceurs pour cerveaux',
     'you.switch':'Progression ou réglages', 'you.progress':'Progression',
     'modes.ways':'Autres façons de jouer', 'modes.waysSub':'Sans fin, Mixtape, Marathon et plus', 'gate.fourAll':'Les quatre jeux',
@@ -7476,6 +7490,7 @@ const STRINGS = {
     'cosmetic.sakura':'Sakura', 'cosmetic.fishbone':'Espina', 'cosmetic.starlight':'Luz de estrella', 'cosmetic.buttons':'Caja de botones', 'set.kitBuy':'{k}, {n} lanas', 'set.kitAsk':'{k}: toca otra vez para comprarlo por {n} lanas', 'set.kitGot':'{k} es tuyo', 'set.station':'Emisora', 'set.stationSub':'Cómo suena el cuarto', 'st.hearth':'Hogar', 'st.paws':'Patas inquietas', 'st.rain':'Ventana con lluvia', 'st.box':'Caja de música', 'st.boxHow':'Llega con tu acierto 500', 'acc.title':'Algo que ponerse', 'acc.collar':'Collar', 'acc.bowtie':'Lazo', 'acc.scarf':'Bufanda', 'acc.wear':'Poner', 'acc.wearing':'Puesto', 'acc.ask':'Toca otra vez: {n}', 'treat.give':'Dar un premio: {n} lanas, +{b} vínculo', 'pal.nameLabel':'Un nombre tuyo', 'pal.nameSave':'Nombrar', 'pal.nameHow':'Con {n} de vínculo podrás darle a este gato un nombre tuyo.', 'style.title':'Tu estilo', 'style.note':'En tus últimos {n} aciertos.', 'kit.title':'Tus equipos', 'kit.lead':'Un equipo son los gatos de viaje, tus ventajas, tu brillo y tu emisora, guardados juntos. Guarda lo que tienes y recupéralo con un toque.', 'kit.n':'Equipo {n}', 'kit.empty':'Vacío', 'kit.use':'Usar', 'kit.save':'Guardar aquí',
     'season.lead':'Cositas para el alféizar. Las cosas de cada estación se quedan en el Archivo al mismo precio, así que nunca hay prisa.', 'season.now':'Esta estación: {s}', 'season.archive':'El Archivo', 'season.winter':'Invierno', 'season.spring':'Primavera', 'season.summer':'Verano', 'season.autumn':'Otoño', 'si.owned':'En el alféizar', 'si.stocking':'Calcetín', 'si.globe':'Bola de nieve', 'si.star':'Estrella', 'si.mittens':'Manoplas', 'si.pot':'Maceta', 'si.kite':'Cometa', 'si.bunting':'Banderines', 'si.boots':'Botas de lluvia', 'si.fan':'Abanico', 'si.hat':'Sombrero', 'si.melon':'Tajada de melón', 'si.boat':'Barco de papel', 'si.lantern':'Farol', 'si.leaves':'Hojas', 'si.pumpkin':'Calabaza', 'si.throw':'Manta de punto', 'week.title':'El patrón de la semana', 'week.bonus':'Lana ×1,5 en Maratón', 'fx.skein':'¡Un ovillo de la suerte! ×2 lana', 'fx.skeinShort':'Ovillo de la suerte ×2', 'cap.lucky':'Cuatro notas claras: ovillo de la suerte', 'hud.friend':'Amigo',
     'boot.skip':'Saltar',
+    'kb.board':'Tablero', 'kb.hint':'Las flechas mueven el puntero. Espacio pulsa: mantenlo para arrastrar o sostener. Intro toca.',
     'hud.solved':'{n} resueltos', 'set.assistPrev':'Cada color lleva también una forma', 'over.whilePlayed':'Mientras jugabas', 'hud.pause':'Pausa', 'hud.best':'Récord', 'hud.newBest':'Nuevo récord', 'pause.sofar':'{s}\u00a0puntos · {n}\u00a0resueltos · mejor\u00a0racha\u00a0{b}', 'brand.tag':'Bocaditos para el cerebro',
     'you.switch':'Progreso o ajustes', 'you.progress':'Progreso',
     'modes.ways':'Más formas de jugar', 'modes.waysSub':'Sin fin, Mixtape, Maratón y más', 'gate.fourAll':'Los cuatro juegos',
@@ -7998,6 +8013,7 @@ const STRINGS = {
     'cosmetic.sakura':'Sakura', 'cosmetic.fishbone':'Gräte', 'cosmetic.starlight':'Sternenlicht', 'cosmetic.buttons':'Knopfdose', 'set.kitBuy':'{k}, {n} Wolle', 'set.kitAsk':'{k}: noch einmal tippen, um es für {n} Wolle zu kaufen', 'set.kitGot':'{k} gehört dir', 'set.station':'Sender', 'set.stationSub':'Wie das Zimmer klingt', 'st.hearth':'Kamin', 'st.paws':'Flinke Pfoten', 'st.rain':'Regenfenster', 'st.box':'Spieluhr', 'st.boxHow':'Kommt mit deiner 500. Lösung', 'acc.title':'Etwas zum Anziehen', 'acc.collar':'Halsband', 'acc.bowtie':'Schleife', 'acc.scarf':'Schal', 'acc.wear':'Anziehen', 'acc.wearing':'Angezogen', 'acc.ask':'Noch einmal: {n}', 'treat.give':'Ein Leckerli geben: {n} Wolle, +{b} Bindung', 'pal.nameLabel':'Ein eigener Name', 'pal.nameSave':'Benennen', 'pal.nameHow':'Ab {n} Bindung kannst du dieser Katze einen eigenen Namen geben.', 'style.title':'Dein Stil', 'style.note':'Über deine letzten {n} Lösungen.', 'kit.title':'Deine Sets', 'kit.lead':'Ein Set sind die mitreisenden Katzen, deine Vorteile, dein Funkeln und dein Sender, zusammen aufbewahrt. Speichere, was du jetzt hast, und hol es mit einem Tipp zurück.', 'kit.n':'Set {n}', 'kit.empty':'Leer', 'kit.use':'Nutzen', 'kit.save':'Hier speichern',
     'season.lead':'Kleinigkeiten fürs Fensterbrett. Die Sachen jeder Jahreszeit bleiben zum selben Preis im Archiv, also gibt es keine Eile.', 'season.now':'Diese Jahreszeit: {s}', 'season.archive':'Das Archiv', 'season.winter':'Winter', 'season.spring':'Frühling', 'season.summer':'Sommer', 'season.autumn':'Herbst', 'si.owned':'Auf dem Fensterbrett', 'si.stocking':'Strumpf', 'si.globe':'Schneekugel', 'si.star':'Stern', 'si.mittens':'Fäustlinge', 'si.pot':'Blumentopf', 'si.kite':'Drachen', 'si.bunting':'Wimpel', 'si.boots':'Gummistiefel', 'si.fan':'Fächer', 'si.hat':'Sonnenhut', 'si.melon':'Melonenstück', 'si.boat':'Papierboot', 'si.lantern':'Laterne', 'si.leaves':'Blätter', 'si.pumpkin':'Kürbis', 'si.throw':'Strickdecke', 'week.title':'Das Muster der Woche', 'week.bonus':'Wolle ×1,5 im Marathon', 'fx.skein':'Ein Glücksknäuel! ×2 Wolle', 'fx.skeinShort':'Glücksknäuel ×2', 'cap.lucky':'Vier helle Töne: ein Glücksknäuel', 'hud.friend':'Freund',
     'boot.skip':'Überspringen',
+    'kb.board':'Spielfeld', 'kb.hint':'Pfeiltasten bewegen den Zeiger. Leertaste drückt: halten zum Ziehen oder Halten. Eingabe tippt.',
     'hud.solved':'{n} gelöst', 'set.assistPrev':'Jede Farbe trägt auch eine Form', 'over.whilePlayed':'Während du gespielt hast', 'hud.pause':'Pause', 'hud.best':'Bestwert', 'hud.newBest':'Neuer Bestwert', 'pause.sofar':'{s}\u00a0Punkte · {n}\u00a0gelöst · beste\u00a0Serie\u00a0{b}', 'brand.tag':'Snacks fürs Gehirn',
     'you.switch':'Fortschritt oder Optionen', 'you.progress':'Fortschritt',
     'modes.ways':'Weitere Spielarten', 'modes.waysSub':'Endlos, Mixtape, Marathon und mehr', 'gate.fourAll':'Alle vier Spiele',
@@ -8116,6 +8132,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.157.0', date:'2026-11-10', items:[
+    'Every board can be played from a keyboard. Tab to the board: the arrow keys move a pointer over it (hold Shift for small steps), Space presses where it is (hold it to drag or to hold), and Enter taps. Boards with buttons still take Tab and Enter on each one.',
+  ] },
   { v:'0.156.0', date:'2026-11-06', items:[
     'The game now opens with the Books Entertainment intro: cold letters behind glass, the glass breaks, and the pieces forge the name in gold. Tap, or press Escape, Enter or Space, to skip it; with Reduce motion on it shows the finished name for a moment.',
   ] },
@@ -23974,6 +23993,67 @@ function studioIntro(){
   try { skip.focus({ preventScroll: true }); } catch(e){}
   try { if (localStorage.getItem('dd.probe')) window.__intro = { done, state: () => ({ gone, shown: !host.hidden }) }; } catch(e){}
 }
+/* ═══ The keyboard pointer ════════════════════════════════════════════════
+   Every board is played with a pointer, and a few with keys of their own; this makes all of them playable from a
+   keyboard without touching a single game's rules (bible 13, AAA: keyboard play on every board). Tab to the board:
+   the arrow keys move a crosshair over it (Shift for fine steps), Space presses where it is (held, it drags or holds,
+   as a finger would), Enter taps. What reaches the game is the same pointer events a finger sends, so every game
+   answers exactly as it does to touch. Buttons inside a board keep their own Tab and Enter. */
+const KbPtr = (() => {
+  const ID = 7071;
+  let x = 0.5, y = 0.5, down = false, cap = null, downEl = null, mark = null;
+  /* A synthetic pointer has no capture of its own: the games that capture get it redirected here. */
+  const P = Element.prototype, sc = P.setPointerCapture, rc = P.releasePointerCapture, hc = P.hasPointerCapture;
+  P.setPointerCapture = function(id){ if (id === ID){ cap = this; return; } return sc.call(this, id); };
+  P.releasePointerCapture = function(id){ if (id === ID){ if (cap === this) cap = null; return; } return rc.call(this, id); };
+  P.hasPointerCapture = function(id){ return id === ID ? cap === this : hc.call(this, id); };
+  const box = () => el.surface.getBoundingClientRect();
+  const at = () => { const r = box(); return { cx: r.left + x * r.width, cy: r.top + y * r.height }; };
+  function paint(){
+    if (!mark){ mark = document.createElement('div'); mark.id = 'kbPtr'; mark.setAttribute('aria-hidden', 'true'); mark.hidden = true; document.body.appendChild(mark); }
+    const { cx, cy } = at();
+    mark.style.left = cx + 'px'; mark.style.top = cy + 'px';
+    mark.classList.toggle('down', down);
+  }
+  function show(on){ paint(); mark.hidden = !on; }
+  function send(type){
+    const { cx, cy } = at();
+    const hit = document.elementFromPoint(cx, cy);
+    const target = cap || (hit && el.surface.contains(hit) ? hit : el.surface);
+    const o = { bubbles: true, cancelable: true, composed: true, pointerId: ID, pointerType: 'mouse', isPrimary: true,
+      clientX: cx, clientY: cy, screenX: cx, screenY: cy, button: type === 'pointermove' ? -1 : 0, buttons: down ? 1 : 0, pressure: down ? 0.5 : 0, detail: 1 };
+    target.dispatchEvent(new PointerEvent(type, o));
+    if (type === 'pointerdown') downEl = target;
+    if (type === 'pointerup'){
+      /* a click lands on what the press and the release share, as it does for a finger */
+      let c = downEl; while (c && !c.contains(target)) c = c.parentElement;
+      cap = null; downEl = null;
+      if (c && el.surface.contains(c) || c === el.surface) c.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true, clientX: cx, clientY: cy, button: 0, detail: 1 }));
+    }
+  }
+  function move(dx, dy){
+    x = clamp(x + dx, 0.01, 0.99); y = clamp(y + dy, 0.01, 0.99);
+    paint();
+    if (down) send('pointermove');
+  }
+  function release(){ if (down){ down = false; send('pointerup'); paint(); } }
+  el.surface.addEventListener('keydown', ev => {
+    if (ev.target !== el.surface || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (!run || run.paused) return;
+    const step = ev.shiftKey ? 0.0125 : 0.05;
+    const dir = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[ev.key];
+    if (dir){ ev.preventDefault(); ev.stopPropagation(); show(true); move(dir[0], dir[1]); return; }
+    if (ev.key === ' '){ ev.preventDefault(); ev.stopPropagation(); if (ev.repeat || down) return; show(true); down = true; send('pointerdown'); paint(); return; }
+    if (ev.key === 'Enter'){ ev.preventDefault(); ev.stopPropagation(); if (ev.repeat) return; show(true); release(); down = true; send('pointerdown'); down = false; send('pointerup'); paint(); }
+  });
+  el.surface.addEventListener('keyup', ev => { if (ev.key === ' ' && ev.target === el.surface){ ev.preventDefault(); ev.stopPropagation(); release(); } });
+  el.surface.addEventListener('focus', () => show(true));
+  el.surface.addEventListener('blur', () => { release(); show(false); });
+  window.addEventListener('resize', () => { if (mark && !mark.hidden) paint(); });
+  document.addEventListener('scroll', () => { if (mark && !mark.hidden) paint(); }, true);
+  return { reset(){ release(); x = 0.5; y = 0.5; if (mark && !mark.hidden) paint(); }, state: () => ({ x, y, down }) };
+})();
+try { if (localStorage.getItem('dd.probe')) window.__kb = KbPtr; } catch(e){}
 
 function boot(){
   ensureMeta();
