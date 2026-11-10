@@ -42,7 +42,8 @@ nothing ships on a red probe.
 | v0.157.0 | see the log | AAA, accessibility: keyboard play on every board, through one keyboard pointer that sends the game the same events a finger does (`kbd.mjs`: 44 of 44). The independent review (screen readers on phones, photosensitivity, motor) still needs external testers |
 | v0.158.0 | 2c939d8 | the owner's rule: the intro plays every launch and can be skipped only after one full watch |
 | v0.159.0 | 949da33 | the intro is the studio's web v8 |
-| v0.160.0 | see the log | AAA, performance: the busiest moment already holds 60 fps at 4x (and to 8x); the first launch after an update no longer freezes building What's new; the release history is gated |
+| v0.160.0 | b1884c1 | AAA, performance: the busiest moment already holds 60 fps at 4x (and to 8x); the first launch after an update no longer freezes building What's new; the release history is gated |
+| v0.161.0 | see the log | AAA, the open probes: the lucky skein pays exactly double (probed); a friend's Daily raced on your first Daily of the day (fixed, probed); the first 90 s: a grade and the Thread on screen in 5 of 5 first runs (probed) |
 
 ### Cut lists (what each release drops first if it runs long)
 
@@ -73,7 +74,7 @@ nothing ships on a red probe.
 | Measure | Now | MVP target | AAA target |
 |---|---|---|---|
 | First solve | 3.3 s | under 5 s | under 5 s |
-| Taught in play | grades and chains don't exist | Thread and grades seen within 90 s in 4 of 5 first runs | — |
+| Taught in play | grades and chains don't exist | Thread and grades seen within 90 s in 4 of 5 first runs (now: 5 of 5, `promises.mjs`, v0.161.0) | — |
 | Busiest moment at 4× slowdown | not measured (now: p95 16.7 ms at 4×, 60 fps to 8×, v0.160.0) | p95 frame under 33 ms | under 16.7 ms on a mid phone |
 | Game Over leads with a peak | no (B10) | 100% of runs | — |
 | Things to buy for a 3-month regular | none left at about month 2 | through month 6 | through year 2, with seasons |

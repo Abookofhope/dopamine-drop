@@ -147,9 +147,16 @@ for (const lang of ['en', 'es']){
   await startShuffle(page);
   await page.waitForFunction(() => { const c = document.getElementById('hudClock'); return c && !c.hidden; }, null, { timeout: 12000 }).catch(() => {});
   const c1 = await page.evaluate(() => { const c = document.getElementById('hudClock'), b = document.getElementById('hudBest'); return { on: !!c && !c.hidden, t: c ? c.textContent : '', best: !!b && !b.hidden }; });
-  await page.waitForTimeout(2200);
-  const c2 = await page.evaluate(() => { const c = document.getElementById('hudClock'); return c ? c.textContent : ''; });
+  /* The clock runs from the moment the board is live, after the count-in: wait for that, then up to six seconds for it to
+     drop. A fixed 2.2 s from the clock appearing caught one tick, or none on a busy machine (failed once, 2026-11-10). */
+  await page.waitForFunction(() => document.getElementById('play').classList.contains('live'), null, { timeout: 12000 }).catch(() => {});
   const sec = s => { const m = /^(\d+):(\d\d)$/.exec(s || ''); return m ? +m[1] * 60 + +m[2] : NaN; };
+  let c2 = '';
+  for (let k = 0; k < 30; k++){
+    await page.waitForTimeout(200);
+    c2 = await page.evaluate(() => { const c = document.getElementById('hudClock'); return c ? c.textContent : ''; });
+    if (sec(c2) < sec(c1.t)) break;
+  }
   check(c1.on && /^\d+:\d\d$/.test(c1.t) && sec(c2) < sec(c1.t), `a timed run shows its clock in m:ss, counting down (${c1.t} then ${c2})`);
   check(!c1.best, 'with no best yet, there is nothing to chase on screen');
   await page.close();

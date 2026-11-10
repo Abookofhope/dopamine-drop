@@ -380,6 +380,19 @@ Measured at 4x CPU slowdown, 390x844 and 412x915, three runs each, with the intr
 
 The intro itself, measured the same way, runs at a median of 33 ms per frame at 4x in this container (it draws its canvas in software here, which overstates a phone's cost), and its own governor steps down from "high" to "light" within 7–9 s. It is the studio's page, kept unchanged, so it is measured here and not tuned.
 
+## v0.161.0: the promises the roadmap left unprobed (AAA)
+
+| What | Before | After |
+|---|---|---|
+| A lucky skein pays exactly double | not probed | probed: the lucky solve gains 2.0 against a 1.0 base, every other solve exactly its base, and the stored wool grows by exactly the sum of the payouts |
+| A friend's Daily, raced on your first Daily of the day | broken since v0.153.0: your best for today is 0, so the first point "beat" it; the chip said New best and the race never showed | the chip says Friend and how far ahead or behind you are from the first round; only a best that exists can be beaten |
+| A friend's link from another day | not probed | probed: not raced |
+| The first 90 s, five new players at 0.5–1.8 s a board | "partly done" (two checks) | probed: a grade and the Thread on screen in 5 of 5 runs (the bible asks 4); knots tied are reported (3 of 5 and 5 of 5 in two runs: a matter of pace) |
+| `promises.mjs` (new) | — | 16 of 16; with only the Daily fix reverted, its 4 race checks fail |
+
+How the probe went wrong on the way, all in the probe, none in the game: a solver for Odd Skein that reads colours from the DOM must use only the board on top (a Daily round stacks boards), skip the tiles a wrong tap rules out, and judge "lightest" perceptually; a Daily round of several boards scores only when the last is solved; and a stage at ten solves asks the player to choose a charm, which a bot has to answer.
+
+
 ## How to reproduce
 
 ```

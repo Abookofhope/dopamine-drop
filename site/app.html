@@ -5162,7 +5162,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.160.0';
+const VERSION_TAG = 'v0.161.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -8136,6 +8136,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.161.0', date:'2026-11-10', items:[
+    'Fixed: opening a friend’s Daily link before playing your own Daily that day showed “New best” from your first point, and never showed how you stood against your friend. The race now shows from the first round.',
+  ] },
   { v:'0.160.0', date:'2026-11-10', items:[
     'What’s new now shows what is new to you: every update since you last looked, and at least the latest three. Older updates are one tap away. The first launch after an update no longer stutters while it builds the whole list.',
   ] },
@@ -20094,8 +20097,9 @@ function paintWeek(){
 let luckSeed = (Date.now() & 0xffff) | 3;
 const luckRoll = () => { luckSeed = (Math.imul(luckSeed, 1103515245) + 12345) & 0x7fffffff; return luckSeed / 0x80000000; };
 let luckForced = false;   /* probe only: the next solve that may be lucky, is */
+let luckLog = null;       /* probe only: each solve's yarn, before and after its luck, once a probe asks */
 const luckyNow = r => (r.solved | 0) - (r.lastLucky == null ? -99 : r.lastLucky) >= 10 && (luckForced ? (luckForced = false, true) : luckRoll() < 1 / 40);
-try { if (localStorage.getItem('dd.probe')) window.__luck = { force: () => { luckForced = true; }, armed: () => luckForced, count: () => ((run && run.luckies) | 0) }; } catch(e){}
+try { if (localStorage.getItem('dd.probe')) window.__luck = { force: () => { luckForced = true; }, armed: () => luckForced, count: () => ((run && run.luckies) | 0), track: () => { luckLog = []; }, log: () => luckLog }; } catch(e){}
 /* A Daily shared with a link carries its score after each round; the friend who opens it on the same day races it. */
 function readVs(){
   try {
@@ -20671,7 +20675,9 @@ function renderHud(){
   {
     const bt = $('hudBest');
     if (k.scored && (run.target > 0 || (run.kind === 'daily' && vsToday()))){
-      const beat = run.score > run.target;
+      /* Only a best that exists can be beaten. A friend's link on your first Daily of the day has no best of yours behind
+         it: until v0.161.0 the first point "beat" a best of 0, so the chip said New best and the race never showed. */
+      const beat = run.target > 0 && run.score > run.target;
       if (beat && !run.beatBest){ run.beatBest = true; beatBestMoment(); }
       if (bt.classList.contains('beat') !== beat) bt.classList.toggle('beat', beat);
       /* Ahead of or behind your best run at this same moment, once there is a best run to compare with. */
@@ -21237,7 +21243,11 @@ function resolve(ok, node){
     {
       const lucky = luckyNow(run);
       if (lucky) run.lastLucky = run.solved;
-      const got = Yarn.give(((0.8 + 0.4 * (mult - 1)) + fx.yarn + (STYLE.yarn[grade] || 0)) * fx.yarnK * Yarn.mult(run) * (lucky ? 2 : 1));
+      const base = ((0.8 + 0.4 * (mult - 1)) + fx.yarn + (STYLE.yarn[grade] || 0)) * fx.yarnK * Yarn.mult(run);
+      const paid = base * (lucky ? 2 : 1);
+      const w0 = (save.yarn || 0) + (save.yarnFrac || 0);
+      const got = Yarn.give(paid);
+      if (luckLog) luckLog.push({ base, paid, lucky, gained: (save.yarn || 0) + (save.yarnFrac || 0) - w0 });
       if (lucky){
         run.luckies = (run.luckies | 0) + 1; run.luckyThis = true;
         later(180, () => { sfx.lucky(); floatPts(node, t('fx.skein'), 4);
@@ -21563,6 +21573,8 @@ function startRun(kind, modeId, twistId, poolIds, gate, resume){
   /* pickMode only reshuffles when the bag is empty, so a bag handed over here
      is played in the order it was built. */
   if (kind === 'daily') run.bag = dailyBag(run.rnd);
+  /* Probe-only, as above: a held pool holds the Daily's twelve too. */
+  try { if (kind === 'daily' && localStorage.getItem('dd.probe') && localStorage.getItem('dd.pool')) run.bag = run.bag.map((_, i) => run.pool[i % run.pool.length]); } catch(e){}
   if (!save.runs && (kind === 'shuffle' || kind === 'endless'))
     run.opening = OPENING_MODES.filter(id => run.pool.indexOf(id) >= 0);
   if (!resume) save.runs++;
