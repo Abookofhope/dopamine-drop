@@ -40,6 +40,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.153.0 | The living room (bible release 8): seasons in the window and on the sill, with every season in the Archive; this week's pattern; the lucky skein; a friend's Daily to race |
 | v0.154.0 | What the full chain found: Patchwork's quilt and the You rows restored (two borrowed class names), the Lucky paw note restored and duplicate string keys refused by the gate, the lucky skein named under the score, the Play menu on one screen again, the week's pattern beside Marathon, a label-in-name fix, three probes repaired |
 | v0.155.0 | The kinds say how they feel (bible B9): mood words in place of ADHD subtype names, and a gate that refuses clinical words |
+| v0.156.0 | The load-up opens with the Books Entertainment intro, played in its own frame, skippable with a tap or a key, short with Reduce motion |
 
 ## Ground rules the work follows
 

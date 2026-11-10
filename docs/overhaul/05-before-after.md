@@ -324,6 +324,18 @@ The full chain on v0.153.0 passed 78 of 86 steps. Everything it found is fixed h
 | A clinical word in the build | nothing stopped one | `check_site.py` refuses ADHD (and TDAH, ADHS), subtype and diagnostic words in any of the four languages (fails on v0.154.0, passes on v0.155.0) |
 | `gate.mjs` | expected the subtype names | expects the mood words |
 
+## v0.156.0: the load-up opens with Books Entertainment
+
+| What | Before | After |
+|---|---|---|
+| Opening the app | straight to the Play menu | the Books Entertainment intro ("The Forging", about 12 s): cold letters behind glass, the glass cracks and bursts, the pieces forge the name in gold; then it fades to the game, which has been starting underneath |
+| Skipping it | — | a tap anywhere, or Escape, Enter or Space; a Skip button (44 px) has focus for keyboards and screen readers |
+| Reduce motion | — | the finished name for a moment (about 2 s), then the game |
+| The intro's own code | — | the studio's page byte for byte, played in a frame of its own: its class names (`.wordmark`, `.stage`, `.hint`) and colours cannot reach the game's; the game adds only a Reduce motion signal and hides the page's "click for sound" line |
+| `splash.mjs` | stops at its first check on v0.155.0 (no intro) | 0 of 11 |
+
+The first-solve measure (bible 13, target under 5 s) now counts from the end of the intro, or from the first tap, which skips it.
+
 ## How to reproduce
 
 ```
