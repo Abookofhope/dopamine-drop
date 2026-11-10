@@ -365,6 +365,21 @@ The first-solve measure (bible 13, target under 5 s) now counts from the end of 
 | Length | about 12 s | about 13 s (the page's own data-end); every rule from v0.158.0 is kept |
 | `splash.mjs` | 15 checks | 16; the new one (a fog layer and a quality level, which only v8 has) fails on v0.158.0 |
 
+## v0.160.0: a smooth first launch after an update (AAA, performance)
+
+Measured at 4x CPU slowdown, 390x844 and 412x915, three runs each, with the intro playing (frames over 120 ms in the first 2 s).
+
+| What | Before | After |
+|---|---|---|
+| The busiest moment in play (`framebudget.mjs`) | p95 16.7 ms at 4x; holds 60 fps to 8x, 30 fps at 12x | unchanged: already at the AAA target with twice the margin |
+| What's new, on the first launch after an update | built all 218 releases at once (1,640 elements) | builds what is new to the player, at least three (19 elements for three); "Older updates" builds the rest on request |
+| The freeze it caused, about 1.5 s into that launch | 300–480 ms, in 6 of 6 runs | gone, in 6 of 6 runs |
+| The start-up freeze, about 0.35 s in (compiling the page's one script) | 450–680 ms | unchanged; noted, not fixed (splitting the script is an architecture change) |
+| The release history | 0.71.0 was written as a second 0.70.0 | fixed; `check_site.py` now refuses a history that is not newest first with each version once, or whose newest entry is not the build's version |
+| `logsheet.mjs` (new) | 7 of 13 fail on v0.159.0 | 13 of 13 |
+
+The intro itself, measured the same way, runs at a median of 33 ms per frame at 4x in this container (it draws its canvas in software here, which overstates a phone's cost), and its own governor steps down from "high" to "light" within 7–9 s. It is the studio's page, kept unchanged, so it is measured here and not tuned.
+
 ## How to reproduce
 
 ```

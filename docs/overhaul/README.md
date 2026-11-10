@@ -44,6 +44,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.157.0 | Every board plays from the keyboard: Tab to the board, arrows move a pointer, Space presses or holds, Enter taps |
 | v0.158.0 | The intro plays on every launch and can be skipped only after it has been watched to the end once |
 | v0.159.0 | The intro is the studio's web v8 |
+| v0.160.0 | What's new shows what is new to you, so the first launch after an update no longer freezes while it builds 218 releases |
 
 ## Ground rules the work follows
 

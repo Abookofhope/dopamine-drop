@@ -97,6 +97,20 @@ check("page contains the play surface", 'id="surface"' in html)
 check("page contains the mode registry", "const MODES = {" in html and "MODE_IDS" in html)
 modes = re.findall(r"^  ([a-z]+): \{$", html, re.M)
 check("registry has a full roster", len(modes) >= 12, f"found {len(modes)}")
+# The release history is read by version: the What's new sheet shows every release since the one a player last saw,
+# found by its number. Two entries with one number (0.71.0 was written as a second 0.70.0 from September to November 2026) or one out
+# of order would show a player the wrong slice; and the newest entry must be the version the build says it is.
+ci = html.find("const CHANGELOG = [")
+if ci >= 0:
+    vers = re.findall(r"^  \{ v:'([\d.]+)'", html[ci:], re.M)
+    key = lambda v: tuple(int(x) for x in v.split("."))
+    tag = re.search(r"const VERSION_TAG = 'v([\d.]+)'", html)
+    out_of_order = [f"{a} then {b}" for a, b in zip(vers, vers[1:]) if key(a) <= key(b)]
+    check("the release history is newest first, each version once", len(vers) > 20 and not out_of_order,
+          f"{len(vers)} entries; {out_of_order[:3]}")
+    check("the newest release is the build's version", bool(tag) and vers[:1] == [tag.group(1)],
+          f"{vers[:1]} vs {tag and tag.group(1)}")
+
 # Every language table must carry every key. A missing one renders as the
 # raw key ("tab.Mix") in the interface, which nobody notices in a language
 # they do not read — so it is checked rather than eyeballed.

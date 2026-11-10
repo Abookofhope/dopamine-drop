@@ -3370,6 +3370,8 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 }
 .logentry:not(.latest) li{color:var(--haze)}
 .logentry:not(.latest) li::before{background:var(--edge)}
+.logmore{min-height:44px;margin-top:2px}
+.logentry:focus{outline:none}.logentry:focus-visible{outline:2px solid var(--zap);outline-offset:4px;border-radius:var(--r-sm)}
 
 /* ── Mode preview ────────────────────────────────────────────────────────── */
 .mpvtop{display:flex;align-items:center;gap:13px}
@@ -5160,7 +5162,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.159.0';
+const VERSION_TAG = 'v0.160.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6038,7 +6040,7 @@ const STRINGS = {
     'over.acc':'Accuracy', 'run.streak':'Streak ×{n}!',
     'run.missed':'Missed',
     'lang.title':'Language', 'lang.sub':'The whole game, including the word puzzles.',
-    'log.title':'What’s new', 'log.sub':'Newest first.',
+    'log.title':'What’s new', 'log.sub':'Newest first.', 'log.older':'Older updates ({n})',
     'm.odd':'Odd Skein|Spot the skein that does not match',
     'm.order':'Count the Stitches|Tap the stitches in order, fast',
     'm.stroop':'Dye Trap|Match the dye, ignore the label',
@@ -6562,7 +6564,7 @@ const STRINGS = {
     'over.acc':'Précision', 'run.streak':'Série ×{n} !',
     'run.missed':'Raté',
     'lang.title':'Langue', 'lang.sub':'Tout le jeu, y compris les casse-tête de mots.',
-    'log.title':'Nouveautés', 'log.sub':'Du plus récent.',
+    'log.title':'Nouveautés', 'log.sub':'Du plus récent.', 'log.older':'Mises à jour précédentes ({n})',
     'm.odd':'Intrus de Laine|Trouvez la pelote qui ne va pas',
     'm.order':'Compter les Mailles|Touchez les mailles dans l’ordre, vite',
     'm.stroop':'Piège de Teinture|Touchez la teinture, ignorez l’étiquette',
@@ -7085,7 +7087,7 @@ const STRINGS = {
     'over.acc':'Precisión', 'run.streak':'¡Racha ×{n}!',
     'run.missed':'Fallo',
     'lang.title':'Idioma', 'lang.sub':'Todo el juego, incluidos los retos de palabras.',
-    'log.title':'Novedades', 'log.sub':'Lo más reciente primero.',
+    'log.title':'Novedades', 'log.sub':'Lo más reciente primero.', 'log.older':'Actualizaciones anteriores ({n})',
     'm.odd':'Ovillo Distinto|Encuentra el ovillo que no encaja',
     'm.order':'Cuenta Puntos|Toca los puntos en orden, rápido',
     'm.stroop':'Trampa de Tinte|Toca el tinte, ignora la etiqueta',
@@ -7608,7 +7610,7 @@ const STRINGS = {
     'over.acc':'Genauigkeit', 'run.streak':'Serie ×{n}!',
     'run.missed':'Daneben',
     'lang.title':'Sprache', 'lang.sub':'Das ganze Spiel, auch die Worträtsel.',
-    'log.title':'Neuerungen', 'log.sub':'Neueste zuerst.',
+    'log.title':'Neuerungen', 'log.sub':'Neueste zuerst.', 'log.older':'Frühere Updates ({n})',
     'm.odd':'Fremdes Knäuel|Finde das Knäuel, das nicht passt',
     'm.order':'Maschen Zählen|Tippe die Maschen der Reihe nach, schnell',
     'm.stroop':'Färbefalle|Tippe die Farbe, ignoriere das Etikett',
@@ -8134,6 +8136,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.160.0', date:'2026-11-10', items:[
+    'What’s new now shows what is new to you: every update since you last looked, and at least the latest three. Older updates are one tap away. The first launch after an update no longer stutters while it builds the whole list.',
+  ] },
   { v:'0.159.0', date:'2026-11-10', items:[
     'A richer Books Entertainment intro: fog and dust in the light, the glass cracking from one point, the camera moving through the frozen pieces, and each letter filling with molten gold. It adjusts its detail to your device so it stays smooth.',
   ] },
@@ -8535,7 +8540,7 @@ const CHANGELOG = [
   { v:'0.72.0', date:'2026-09-24', items:[
     'A new way to play, in My Stuff: Taste Test deals one round of every mode you haven’t given a verdict on yet — no clock, no lives, no score, since whether you liked it isn’t something speed should be able to buy. Solve it or don’t, then say so with a tap: liked ones join your favorites, and either way you won’t be asked about that mode again. A new achievement for reaching the end of all 66.',
   ] },
-  { v:'0.70.0', date:'2026-09-24', items:[
+  { v:'0.71.0', date:'2026-09-24', items:[
     'Four surfaces the depth pass missed the first time round now match the rest of the app: Mixtape’s mode rows, the language picker’s rows, perk cards, and — the one that actually mattered — every bottom sheet (language, changelog, mode preview), which had no lift of its own at all despite floating over a dimmed screen.',
   ] },
   { v:'0.70.0', date:'2026-09-24', items:[
@@ -23112,20 +23117,43 @@ $('langClose').addEventListener('click', () => { $('langSheet').hidden = true; }
 $('langSheet').addEventListener('click', ev => { if (ev.target === $('langSheet')) $('langSheet').hidden = true; });
 
 /* ═══ Changelog ═══════════════════════════════════════════════════════════ */
+/* What a player reads is what is new to them: every release since they last closed this sheet (at most twelve), and
+   never fewer than the newest three. The rest of the history (over two hundred releases, some 1,600 elements) is built
+   only when they ask for it. Built whole, it froze the first launch after every update for about half a second on a
+   slow phone, just as the intro was playing (v0.160.0). */
+const LOG_MIN = 3, LOG_MAX = 12;
+function logEntry(entry, i){
+  const box = mk('div','logentry' + (i === 0 ? ' latest' : ''));
+  const head = mk('div','logv');
+  head.innerHTML = '<b></b><small></small>';
+  head.querySelector('b').textContent = 'v' + entry.v;
+  head.querySelector('small').textContent = entry.date;
+  box.appendChild(head);
+  const ul = mk('ul');
+  entry.items.forEach(item => { const li = mk('li'); li.textContent = item; ul.appendChild(li); });
+  box.appendChild(ul);
+  return box;
+}
 function paintLog(){
+  const seenAt = CHANGELOG.findIndex(e => e.v === save.seenVersion);
+  const n = Math.min(CHANGELOG.length, Math.max(LOG_MIN, Math.min(LOG_MAX, seenAt)));
   const frag = document.createDocumentFragment();
-  CHANGELOG.forEach((entry, i) => {
-    const box = mk('div','logentry' + (i === 0 ? ' latest' : ''));
-    const head = mk('div','logv');
-    head.innerHTML = '<b></b><small></small>';
-    head.querySelector('b').textContent = 'v' + entry.v;
-    head.querySelector('small').textContent = entry.date;
-    box.appendChild(head);
-    const ul = mk('ul');
-    entry.items.forEach(item => { const li = mk('li'); li.textContent = item; ul.appendChild(li); });
-    box.appendChild(ul);
-    frag.appendChild(box);
-  });
+  CHANGELOG.slice(0, n).forEach((entry, i) => frag.appendChild(logEntry(entry, i)));
+  if (n < CHANGELOG.length){
+    const more = mk('button','ghost logmore'); more.type = 'button';
+    more.textContent = t('log.older', { n: CHANGELOG.length - n });
+    more.addEventListener('click', () => {
+      sfx.tap();
+      const rest = document.createDocumentFragment();
+      CHANGELOG.slice(n).forEach((entry, i) => rest.appendChild(logEntry(entry, n + i)));
+      const first = rest.firstChild;
+      more.replaceWith(rest);
+      /* the button is gone, so focus moves to the first entry it brought in */
+      first.tabIndex = -1;
+      try { first.focus(); } catch(e){}
+    });
+    frag.appendChild(more);
+  }
   $('logList').replaceChildren(frag);
 }
 function openLog(){ paintLog(); $('logSheet').hidden = false; }
