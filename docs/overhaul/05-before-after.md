@@ -503,7 +503,7 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | A tap inside a live round | a square blip at 520 Hz × the family's key, whatever the game | the family's voice: focus a clear triangle chime, reflex a short bright square, logic a woody triangle knock, numbers a small sine bell, words a low typewriter square, calm a soft long sine, physics a falling pluck, make a soft rising sine; in the family's key, detuned as before |
 | A tap in the menus | the plain tap | unchanged |
 | The gate | — | refuses a family without a voice |
-| `voices.mjs` (new) | 3 of 7 fail on v0.168.0 | 7 of 7 |
+| `voices.mjs` (new) | 3 of 6 fail on v0.168.0 | 6 of 6 |
 
 ## How to reproduce
 
