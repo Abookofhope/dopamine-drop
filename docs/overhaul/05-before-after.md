@@ -592,6 +592,18 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 
 Not checked: on a real phone.
 
+## v0.177.2: a dimmer afterglow in the intro (the owner's request)
+
+| What | Before | After |
+|---|---|---|
+| The gold light round the finished name | the fog, the light behind the name, the glow round the letters and the shafts through them stayed at full strength until the set was switched off | once the forging's flash has passed they settle, over about two seconds, to 30% |
+| The name itself, its reflection, the embers | unchanged | unchanged |
+| Everything up to the forging, and the switch-off | unchanged | unchanged (the recordings' first ten seconds are the same frames) |
+| Reduce motion | the finished name in full light | the finished name in the dimmer light |
+| `splash.mjs` | 29 checks | 30: the new one (the live page reports how much gold light is left) fails on v0.177.1 |
+
+Not checked: on a real phone.
+
 ## How to reproduce
 
 ```
