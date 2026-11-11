@@ -4,6 +4,8 @@
  * either orientation) it widens to 640px, keeping a margin, so a board is not a phone-sized strip in the middle of it.
  *
  *   1. The column: 640px and centred on four tablet shapes; still 460px or less on phones, upright and on their side.
+ *      Playing (0.171.0): on a tablet on its side, two panes, the board beside the score and nearly the full height;
+ *      upright, one column.
  *   2. The four tabs and a bottom sheet on a tablet: nothing wider than the screen, nothing outside the column, and
  *      the sheet as wide as the column.
  *   3. Every board, at an upright and a sideways tablet: it opens, it fits on the screen, and nothing drawn over it
@@ -33,7 +35,7 @@ async function open(w, h){
   await openApp(page, PROF);
   return page;
 }
-const column = page => page.evaluate(() => { const r = document.querySelector('.cab').getBoundingClientRect(); return { left: Math.round(r.left), w: Math.round(r.width), right: Math.round(innerWidth - r.right) }; });
+const column = page => page.evaluate(() => { const r = document.getElementById('tabPlay').getBoundingClientRect(); return { left: Math.round(r.left), w: Math.round(r.width), right: Math.round(innerWidth - r.right) }; });
 
 /* ── 1. the column ── */
 if (part(1)){
@@ -49,6 +51,22 @@ if (part(1)){
   }
 }
 
+/* ── 1b. playing on a tablet: two panes on its side (the board right of the score, nearly the full height), one column
+   upright (0.171.0) ── */
+if (part(1)){
+  for (const [w, h] of TABLETS){
+    const page = await open(w, h);
+    await openModeList(page); await clickMode(page, 'forge');
+    await page.waitForFunction(() => document.getElementById('play').classList.contains('live'), null, { timeout: 9000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    const g = await page.evaluate(() => { const s = document.getElementById('surface').getBoundingClientRect(), sc = document.querySelector('#play .scoreband').getBoundingClientRect();
+      return { side: s.left >= sc.right - 1, below: s.top >= sc.bottom - 1, h: Math.round(s.height), vh: innerHeight }; });
+    if (w > h) check(g.side && g.h >= 0.9 * g.vh, `${w}x${h}: on its side, the board sits beside the score and takes nearly the full height (${g.h} of ${g.vh})`);
+    else check(g.below && !g.side, `${w}x${h}: upright, the board sits under the score in one column`);
+    await page.close();
+  }
+}
+
 /* ── 2. the tabs and a sheet ── */
 if (part(2)){
   for (const [w, h] of [[820, 1180], [1180, 820]]){
@@ -56,8 +74,10 @@ if (part(2)){
     for (const tab of ['Play', 'Modes', 'Room', 'Stats']){
       await goTab(page, tab); await page.waitForTimeout(350);
       const r = await page.evaluate(() => {
-        const cab = document.querySelector('.cab').getBoundingClientRect();
-        const out = [...document.querySelectorAll('.cab *')].filter(e => { const b = e.getBoundingClientRect(); if (!b.width || !b.height) return false;
+        /* the column you see: the screen on show (on a tablet on its side the app's frame is wider, for play) */
+        const shown = [...document.querySelectorAll('.cab .screen')].find(e => !e.hidden && e.getClientRects().length), cab = shown.getBoundingClientRect();
+        /* wrappers that hold the screen (the stage) are frames, not content */
+        const out = [...document.querySelectorAll('.cab *')].filter(e => { if (e.contains(shown)) return false; const b = e.getBoundingClientRect(); if (!b.width || !b.height) return false;
           const cs = getComputedStyle(e); if (cs.visibility === 'hidden' || cs.position === 'fixed') return false;
           return b.left < cab.left - 1 || b.right > cab.right + 1; }).map(e => e.id || e.className).slice(0, 4);
         return { over: document.documentElement.scrollWidth > innerWidth, out };
@@ -66,7 +86,7 @@ if (part(2)){
     }
     await goTab(page, 'Play');
     await page.evaluate(() => document.getElementById('logBtn').click()); await page.waitForTimeout(400);
-    const s = await page.evaluate(() => { const p = document.querySelector('#logSheet .panel').getBoundingClientRect(), c = document.querySelector('.cab').getBoundingClientRect(); return [Math.round(p.width), Math.round(c.width)]; });
+    const s = await page.evaluate(() => { const p = document.querySelector('#logSheet .panel').getBoundingClientRect(), c = document.getElementById('tabPlay').getBoundingClientRect(); return [Math.round(p.width), Math.round(c.width)]; });
     check(s[0] === s[1], `${w}x${h}: a bottom sheet is as wide as the column (${s[0]} and ${s[1]})`);
     await page.close();
   }

@@ -87,6 +87,17 @@ Standards:
   and the music's peak ("♪ the room swells").
 - **Mixing.** Master gain 0.9 × volume (live). Room Radio sits on its own bus
   at 0.5 × the music volume, ducking −6 dB for 300 ms under every T3+ effect.
+- **A voice per family (live since v0.169.0).** A tap inside a live round plays
+  the family's voice (`VOICE`: a wave, a register, a length, a slide), not one
+  square blip for all 45 games: focus a clear triangle chime, reflex a short
+  bright square, logic a woody knock, numbers a small bell, words a low
+  typewriter key, calm a soft long sine, physics a falling pluck, make a soft
+  rise. Menus keep the plain tap. The gate refuses a family without a voice.
+- **A sound for the verb.** A game whose verb is not a tap gives it its own
+  sound (Pond Skate: a glide as long as the slide, a bump, a crack, a pick-up).
+- **Haptics stay one vocabulary.** Unlike sound, the five haptic patterns
+  (`HAPTIC`) are deliberately the same in every game: they once differed by game
+  and were unified, so a buzz means the same event everywhere.
 
 ### Room Radio (new): dynamic music
 

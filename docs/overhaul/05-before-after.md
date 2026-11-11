@@ -512,6 +512,29 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | The pond for a screen reader | "Frozen pond" and the prompt: the arrows were named, but nothing said where anything was | the board's name reads the pond: the cat's, the basket's and the yarn's row and column, and the ways the cat can slide; updated after every slide; en, fr, es, de |
 | `skate.mjs` | 24 checks | 27: the name matches what the probe reads off the pond, before and after a slide (both fail on v0.169.0), and the board passes axe |
 
+## v0.171.0: two panes on a tablet on its side (platforms)
+
+| What | Before | After |
+|---|---|---|
+| Playing at 1180x820 | one 640px column: the score, the Thread and the prompt above a board about 500px tall | two panes in a 1,080px frame: the score, the Thread, the prompt and the board's chips on the left (260-320px), the board on the right at 810px tall |
+| Playing at 1024x768 | the same column, the board about 500px tall | the board 596x758 |
+| Menus, sheets and the header on a tablet on its side | the 640px column | unchanged: only play takes the width |
+| Upright tablets and phones | — | unchanged |
+| `tablet.mjs` | 23 checks | 27: two panes on its side (the board beside the score and at least 90% of the height), one column upright; the column and the sheets are measured against the screen you see; and every board is checked at 1024x768, now in two panes |
+
+## v0.172.0: Puddle Hop, the 46th game (content)
+
+| Rule | How Puddle Hop keeps it |
+|---|---|
+| A loop in one sentence | read the stone, hop that far, to reach the basket |
+| A real choice with a cost | every hop spends a move; the budget is the board's true shortest route (searched before dealing) plus the shared slack; dead ends exist, and a hop into one is announced and ends the round |
+| Scales past level 20 | 5x5 to 8x8; numbers to 4; target routes from 2-3 hops to 6-9; more puddles from level 10 |
+| No hidden rules | a stone always means exactly the number it shows (a "slippery stone that hops one further" was designed and dropped for that reason); the cat's own number rides on it as a badge |
+| Four languages, a signature, a door, a voice | en, fr, es, de; raindrops that bounce (no other game pairs that style and shape); Calm & Collect; the numbers family's bell for its taps |
+| Accessibility | the lit stones are buttons named for where they are and the number they show (axe's label-in-name rule caught the first version, which left the number out); the board's name says where the cat and basket are |
+| The gate | refused the build until a probe named it |
+| `puddle.mjs` (new) | 21 of 21 |
+
 ## How to reproduce
 
 ```

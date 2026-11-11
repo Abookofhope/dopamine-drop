@@ -157,14 +157,24 @@ beatable and never endless. Fidget Loop is the deliberate exception.
 
 ### Adding a mode
 
-1. Add an entry to `MODES` in `site/app.html` with `name`, `blurb`, `par`,
-   `bonus`, `glyph` and `build(ctx)`.
-2. Add its strings to all four language tables — the build fails otherwise.
-3. Make sure it can be lost, and that it scales past effective level 20.
-4. Run `tools/check_site.py`, then look at it on a 400px-wide screen (and a
-   320px one: `tools/probe/sizes.mjs` lists every control under 40px).
-5. Add a probe for what is new about it (`tools/probe/README.md` has the
-   pattern), and put it in `all.mjs`.
+1. Add an entry to `MODES` in `site/app.html` with `name`, `blurb`, `cat`,
+   `par`, `bonus`, `glyph` and `build(ctx)`. Prefix its classes (`.pond…`):
+   one stylesheet means a generic name collides.
+2. Add its strings to all four language tables: `m.<id>` (name|blurb),
+   `p.<id>` (its prompt) and the five quips `q.<id>.w1–w3`, `q.<id>.m1–m2`.
+3. Give it a signature in `SIG` (a style and particle kinds no other game uses
+   together) and put it in a door in `GATES` (calm, quick, or only full).
+4. Make sure it can be lost, and that it scales past effective level 20. A
+   generated board must be beatable: search it before dealing it, and set any
+   move budget from its true minimum (`moveBudget`).
+5. Run `tools/check_site.py`: it refuses a game without its quips, a
+   signature, a door, an icon, or a probe that names it, and the floor of
+   games (raise `MODE_FLOOR` in the same commit). Its taps use its family's
+   voice (`VOICE`) automatically; give its verb a sound of its own if it has one.
+6. Look at it on a 400px-wide screen, a 320px one (`sizes.mjs`), an upright
+   tablet and a tablet on its side (`tablet.mjs`: two panes).
+7. Add a probe for what is new about it that reads what the player sees (for a
+   puzzle, solve it with the probe's own search), and put it in `all.mjs`.
 
 ### Accessibility
 
