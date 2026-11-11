@@ -16,11 +16,14 @@
  *   node tools/probe/forge.mjs              all three goals at three levels
  *   XP=60000 node tools/probe/forge.mjs     one level
  *   GOAL=line node tools/probe/forge.mjs    one goal
+ *   TAP=1 node tools/probe/forge.mjs        every patch laid with taps instead of a drag
  */
 import { chromium } from 'playwright';
 import { openApp, openModeList, clickMode } from './harness.mjs';
 
 const XPS = process.env.XP ? [+process.env.XP] : [2000, 12000, 60000];
+/* TAP=1: every patch is laid with taps, not dragged (v0.176.0, WCAG 2.5.7); taponly.mjs runs it this way */
+const TAP = !!process.env.TAP;
 const GOALS = process.env.GOAL ? [process.env.GOAL] : ['line', 'block', 'fill'];
 const OFF = 0.45;
 let bad = 0;
@@ -149,7 +152,14 @@ for (const goal of GOALS) for (const xp of XPS){
     const lift = (Math.max(...s.o.map(q => q[1])) + 1) * (cw + 3) / 2 + 34;
     const go2 = async (fx, fy, tx, ty) => { await page.mouse.move(fx, fy); await page.mouse.down(); await page.mouse.move(fx + 10, fy - 10, { steps: 2 });
       await page.mouse.move(tx, ty, { steps: 8 }); await page.waitForTimeout(40); await page.mouse.up(); await page.waitForTimeout(130); };
-    await go2(tp.x, tp.y, cx + (Math.random() - .5) * cw * OFF * 2, cy + lift + (Math.random() - .5) * cw * OFF * 2);
+    if (TAP){
+      /* without dragging (v0.176.0): the patch must be chosen (a tap turns and chooses it, so a whole turn of four taps
+         leaves it as it is); then a tap on its square nearest the middle of where it goes */
+      if (!(await page.evaluate(i => { const e = document.querySelector('.ftray .fpiece[data-idx="' + i + '"]'); return e && e.classList.contains('chosen'); }, s.p.idx)))
+        for (let k = 0; k < 4; k++){ await page.mouse.click(tp.x, tp.y); await page.waitForTimeout(80); }
+      const near = s.cells.reduce((b, i) => Math.hypot(cur.pos[i].x - cx, cur.pos[i].y - cy) < Math.hypot(cur.pos[b].x - cx, cur.pos[b].y - cy) ? i : b, s.cells[0]);
+      await page.mouse.click(cur.pos[near].x, cur.pos[near].y); await page.waitForTimeout(160);
+    } else await go2(tp.x, tp.y, cx + (Math.random() - .5) * cw * OFF * 2, cy + lift + (Math.random() - .5) * cw * OFF * 2);
     const now = await read(page);
     const got = now.setc.filter(i => !st.setc.includes(i));
     if (!got.length) refused++; else if (s.cells.every(i => got.includes(i))) exact++; else elsewhere++;

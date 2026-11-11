@@ -560,6 +560,16 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | Keyboard play | a press and release on the spot did nothing in these three | a pick-up or a place, as for a finger (the keyboard pointer sends a finger's events) |
 | `taponly.mjs` (new) | — | 13 of 13: each of the three won at a low and a high level with taps alone; fails on v0.174.0 |
 
+## v0.176.0: Patchwork, Snip and Chalk Line without dragging; every game by taps
+
+| What | Before | After |
+|---|---|---|
+| Laying a patch | only by dragging it onto the quilt (a tap on a tray patch turned it) | a tap still turns it and also chooses it (ringed, pressed, "Tap again to turn it, or tap the quilt where it goes"); a tap on a quilt square lays it at the fit around that square nearest by its own squares; a square it cannot cover flashes and nothing is spent |
+| Keyboard | Enter on a tray patch turned it | it turns and chooses it |
+| Snip, Chalk Line | a cut or a ramp only by swiping or drawing a path | a tap sets where the line starts (a ring, "Now tap where the line ends"), the next tap makes the straight line: Snip cuts what it crosses, Chalk Line chalks it with the same ink (stopping where the ink runs out) |
+| `forge.mjs` | dragged every patch | TAP=1 lays every patch with taps: nine quilts finished, 49 of 50 patches where aimed |
+| `taponly.mjs` | 13 checks | 25: Patchwork's choose check, a hint-led quilt by taps, the TAP=1 run of `forge.mjs`, Snip won at two levels by two-tap snips, Chalk Line's answer laid by two-tap lines and won at two levels |
+
 ## How to reproduce
 
 ```

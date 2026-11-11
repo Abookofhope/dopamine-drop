@@ -21,9 +21,9 @@ Target: WCAG 2.2 level AA. "Evidence" names the check that backs the status; "Op
 | 2.1.2 No keyboard trap | Pass | The level-up card is modal and keeps Tab on its one button on purpose; Escape, Enter or a tap closes it and focus returns to where it was |
 | 2.4.3 Focus order | Pass | DOM order matches visual order in panels |
 | 2.4.7 Focus visible | Pass | Gold 2.5px ring; inside the sticky search and panel headers it is drawn inside so the scroller does not clip it |
-| 2.5.1 Pointer gestures | Partial | Audited mode by mode on 2026-11-11: every path gesture has a tap alternative except Slice's cut stroke and Chalk Line's ramp strokes, which are path-based by design and still **Open** |
+| 2.5.1 Pointer gestures | Pass | Audited mode by mode on 2026-11-11: since v0.176.0 every path gesture has a single-pointer alternative; Snip's cut and Chalk Line's ramps are two taps, start and end (`taponly.mjs`) |
 | 2.5.3 Label in name | Pass | Visible names match accessible names |
-| 2.5.7 Dragging movements | Partial | Audited mode by mode on 2026-11-11. Of the drag games, 24 already had a tap path; v0.175.0 gave Tidy Up, Dye Pots and No Crossing a tap to pick up and a tap to place (`taponly.mjs` wins each with taps alone). Still **Open**: Patchwork (a patch is placed only by dragging), Slice and Chalk Line |
+| 2.5.7 Dragging movements | Pass | Audited mode by mode on 2026-11-11. Of the drag games, 24 already had a tap path; v0.175.0 gave Tidy Up, Dye Pots and No Crossing a tap to pick up and a tap to place (`taponly.mjs` wins each with taps alone). v0.176.0 did the same for Patchwork (a tap on a tray patch turns and chooses it, a tap on the quilt lays it; `forge.mjs` with TAP=1 finishes all nine quilts by taps). and for Snip and Chalk Line, whose strokes were paths: a tap sets where a line starts, a second tap makes the straight line. **Pass**: every game can be finished with taps alone (`taponly.mjs`) |
 | 2.5.8 Target size (minimum 24px) | Pass; 44px adopted | Settings, You, Room, pause sheet and Game Over assert 44px. Boards: `sweep.mjs` flags anything under 40px |
 | 3.1.1 Language of page | Pass | `html lang` follows the chosen language |
 | 3.2.x Predictable | Pass | A panel opening never moves focus; a preset says what it did and offers Undo |

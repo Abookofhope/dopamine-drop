@@ -528,6 +528,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   background:var(--ink-2);cursor:grab;min-width:44px;min-height:44px;
   place-content:center;transition:border-color var(--t-fast),transform var(--t-fast)}
 .fpiece.fsel{border-color:#C08BFF;transform:translateY(-3px)}
+/* Chosen with a tap (0.176.0), to be laid with a tap on the quilt. */
+.fpiece.chosen{border-color:var(--text, #fff);box-shadow:0 0 0 2px var(--text, #fff);transform:translateY(-3px)}
 /* Lifted well clear of a thumb, scaled up so it reads against board-sized
    cells rather than its own small tray size, and its own transition turned
    off — eased motion would lag a full step behind a moving finger. Letting
@@ -822,6 +824,9 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   box-shadow:0 2px 6px #0008;pointer-events:none;z-index:2}
 
 /* ── Slice ────────────────────────────────────────────────────────────── */
+/* Where a two-tap line starts (0.176.0, WCAG 2.5.7): a ring that waits for the second tap. */
+.tapanchor{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;border:3px solid var(--text, #fff);
+  box-shadow:0 0 0 2px #0008;pointer-events:none;z-index:4}
 .slicebox{position:relative;width:100%;height:100%;touch-action:none;overflow:hidden;
   border-radius:var(--r-lg);background:#ffffff05;border:1px solid var(--edge-soft)}
 .slicetrail{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
@@ -5282,7 +5287,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.175.0';
+const VERSION_TAG = 'v0.176.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6271,7 +6276,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Mending|Finish the frayed ones before they unravel',
-    'paws.again':'Not that one — try again', 'p.tapPlace':'Now tap where it goes', 'paws.left':'{n} chances left', 'skim.again':'Not there — the needle keeps going', 'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
+    'paws.again':'Not that one — try again', 'p.tapPlace':'Now tap where it goes', 'p.tapEnd':'Now tap where the line ends', 'paws.left':'{n} chances left', 'skim.again':'Not there — the needle keeps going', 'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
     'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble Dryer|Pair the socks faster than the drum refills',
     'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Cat Fight|Read the tell, pick the counter, win the scrap',
     'p.arc':'{n} left to reach', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Cat’s Cradle|Loop every peg before the thread goes slack',  'm.slack':'No Crossing|Drag the pegs until no thread crosses',  'm.tide':'Purr|Hold to swell, let go to settle — stay in the band',  'm.plink':'Basket Drop|Pull one peg, then drop into the lit basket',  'p.missed':'Missed', 'slide.hint':'Hint', 'p.slide':'Tap the end of a bar to slide it that way', 
@@ -6455,7 +6460,7 @@ const STRINGS = {
     'forge.undo':'Undo', 'forge.clearNote':'Fill a whole row or column and it stitches itself away', 'p.forgeClear':'Lines to clear: {n}', 'forge.jam':'No room for any of them — the cat tidied two rows', 'forge.swap':'Swap', 'forge.hint':'Hint', 'forge.turn':'Tap to turn it',
     'forge.anyLine':'Any row or column counts', 'forge.anyBlock':'A solid block anywhere counts', 'forge.spares':'Spare patches — you won’t need them all', 'forge.open':'Quilt, column {x} row {y}',
     'p.forgeLine':'{n} more squares for a straight line, edge to edge', 'p.forgeBlock':'{n} more squares for a solid {w}×{h} block',
-    'forge.dead':'That leaves no way to finish — undo a patch', 'p.forgeRule':'{n} squares left — the same colour can’t touch',
+    'forge.dead':'That leaves no way to finish — undo a patch', 'forge.tapPlace':'Tap again to turn it, or tap the quilt where it goes', 'p.forgeRule':'{n} squares left — the same colour can’t touch',
     /* patchwork pictures */
     'p.forgePic':'{n} squares left — it is {what}', 'forge.pic.cat':'a cat', 'forge.pic.heart':'a heart',
     'forge.pic.fish':'a fish', 'forge.pic.ball':'a ball of yarn', 'forge.pic.bell':'a bell',
@@ -6797,7 +6802,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Raccommodage|Finissez les effilochés avant qu’ils ne filent',
-    'paws.again':'Pas celle-là — encore une chance', 'p.tapPlace':'Touchez maintenant où le poser', 'paws.left':'{n} chances restantes', 'skim.again':'Pas là — l’aiguille continue', 'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
+    'paws.again':'Pas celle-là — encore une chance', 'p.tapPlace':'Touchez maintenant où le poser', 'p.tapEnd':'Touchez maintenant où finit la ligne', 'paws.left':'{n} chances restantes', 'skim.again':'Pas là — l’aiguille continue', 'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
     'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Sèche-Linge|Appariez les chaussettes plus vite que le tambour',
     'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Bagarre|Lisez l’indice, choisissez la parade, gagnez la bagarre',
     'p.arc':'{n} à relier', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Jeu de Ficelle|Bouclez chaque piquet avant que le fil ne mollisse',  'm.slack':'Sans Croisement|Déplacez les piquets jusqu’à ce qu’aucun fil ne se croise',  'm.tide':'Ronron|Maintenez pour enfler, lâchez pour calmer — restez dans la bande',  'm.plink':'Chute au Panier|Retirez un piquet, puis tombez dans le panier allumé',  'p.missed':'Raté', 'slide.hint':'Indice', 'p.slide':'Touchez le bout d’une barre pour la pousser', 
@@ -6981,7 +6986,7 @@ const STRINGS = {
     'forge.undo':'Annuler', 'forge.clearNote':'Remplissez une rangée ou une colonne entière : elle se couture et disparaît', 'p.forgeClear':'Lignes à effacer : {n}', 'forge.jam':'Plus de place pour aucun — le chat a rangé deux rangées', 'forge.swap':'Changer', 'forge.hint':'Indice', 'forge.turn':'Touchez pour la tourner',
     'forge.anyLine':'Toute ligne ou colonne compte', 'forge.anyBlock':'Un bloc plein, n’importe où, compte', 'forge.spares':'Pièces en plus — inutile de toutes les poser', 'forge.open':'Courtepointe, colonne {x} ligne {y}',
     'p.forgeLine':'Encore {n} cases pour une ligne droite, d’un bord à l’autre', 'p.forgeBlock':'Encore {n} cases pour un bloc plein de {w}×{h}',
-    'forge.dead':'Plus de solution possible — annulez une pièce', 'p.forgeRule':'Encore {n} cases — deux pièces de même couleur ne se touchent pas',
+    'forge.dead':'Plus de solution possible — annulez une pièce', 'forge.tapPlace':'Touchez encore pour la tourner, ou touchez le quilt là où elle va', 'p.forgeRule':'Encore {n} cases — deux pièces de même couleur ne se touchent pas',
     /* patchwork pictures */
     'p.forgePic':'Encore {n} cases — c’est {what}', 'forge.pic.cat':'un chat', 'forge.pic.heart':'un cœur',
     'forge.pic.fish':'un poisson', 'forge.pic.ball':'une pelote', 'forge.pic.bell':'une clochette',
@@ -7322,7 +7327,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Remiendo|Termina los deshilachados antes de que se suelten',
-    'paws.again':'Esa no — prueba otra vez', 'p.tapPlace':'Ahora toca dónde va', 'paws.left':'Quedan {n} oportunidades', 'skim.again':'Ahí no — la aguja sigue', 'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
+    'paws.again':'Esa no — prueba otra vez', 'p.tapPlace':'Ahora toca dónde va', 'p.tapEnd':'Ahora toca dónde acaba la línea', 'paws.left':'Quedan {n} oportunidades', 'skim.again':'Ahí no — la aguja sigue', 'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
     'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Secadora|Empareja los calcetines más rápido que el tambor',
     'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Riña de Gatos|Lee la señal, elige la réplica, gana la riña',
     'p.arc':'Faltan {n}', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Cuna de Gato|Enlaza cada clavija antes de que afloje el hilo',  'm.slack':'Sin Cruces|Mueve las clavijas hasta que ningún hilo se cruce',  'm.tide':'Ronroneo|Mantén para crecer, suelta para calmar — quédate en la banda',  'm.plink':'Caída al Cesto|Quita una clavija y cae en la cesta encendida',  'p.missed':'Fallado', 'slide.hint':'Pista', 'p.slide':'Toca el extremo de una barra para empujarla', 
@@ -7506,7 +7511,7 @@ const STRINGS = {
     'forge.undo':'Deshacer', 'forge.clearNote':'Llena una fila o columna entera y se cose sola y desaparece', 'p.forgeClear':'Líneas por borrar: {n}', 'forge.jam':'No cabe ninguno — el gato ordenó dos filas', 'forge.swap':'Cambiar', 'forge.hint':'Pista', 'forge.turn':'Toca para girarla',
     'forge.anyLine':'Vale cualquier fila o columna', 'forge.anyBlock':'Vale un bloque macizo en cualquier sitio', 'forge.spares':'Piezas de sobra: no hace falta usarlas todas', 'forge.open':'Colcha, columna {x} fila {y}',
     'p.forgeLine':'Faltan {n} casillas para una línea recta, de borde a borde', 'p.forgeBlock':'Faltan {n} casillas para un bloque macizo de {w}×{h}',
-    'forge.dead':'Así ya no se puede terminar: deshaz una pieza', 'p.forgeRule':'Quedan {n} casillas — el mismo color no puede tocarse',
+    'forge.dead':'Así ya no se puede terminar: deshaz una pieza', 'forge.tapPlace':'Toca otra vez para girarla, o toca la colcha donde va', 'p.forgeRule':'Quedan {n} casillas — el mismo color no puede tocarse',
     /* patchwork pictures */
     'p.forgePic':'Quedan {n} casillas — es {what}', 'forge.pic.cat':'un gato', 'forge.pic.heart':'un corazón',
     'forge.pic.fish':'un pez', 'forge.pic.ball':'un ovillo', 'forge.pic.bell':'un cascabel',
@@ -7847,7 +7852,7 @@ const STRINGS = {
     
 
     'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Ausbessern|Flicke die Ausgefransten, bevor sie sich auflösen',
-    'paws.again':'Die nicht — versuch es nochmal', 'p.tapPlace':'Jetzt tippe, wo es hingehört', 'paws.left':'Noch {n} Chancen', 'skim.again':'Nicht dort — die Nadel läuft weiter', 'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
+    'paws.again':'Die nicht — versuch es nochmal', 'p.tapPlace':'Jetzt tippe, wo es hingehört', 'p.tapEnd':'Jetzt tippe, wo die Linie endet', 'paws.left':'Noch {n} Chancen', 'skim.again':'Nicht dort — die Nadel läuft weiter', 'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
     'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Wäschetrockner|Paare die Socken schneller, als die Trommel füllt',
     'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Katzenstreit|Lies das Zeichen, wähl die Antwort, gewinn den Streit',
     'p.arc':'Noch {n}', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Fadenspiel|Schling jeden Stift, bevor der Faden erschlafft',  'm.slack':'Ohne Kreuzung|Zieh die Stifte, bis kein Faden kreuzt',  'm.tide':'Schnurren|Halten zum Anschwellen, loslassen zum Abklingen — bleib im Band',  'm.plink':'Korbwurf|Zieh einen Stift, dann fall in den erleuchteten Korb',  'p.missed':'Verpasst', 'slide.hint':'Tipp', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 
@@ -8031,7 +8036,7 @@ const STRINGS = {
     'forge.undo':'Zurück', 'forge.clearNote':'Fülle eine ganze Reihe oder Spalte, und sie näht sich selbst weg', 'p.forgeClear':'Linien zu räumen: {n}', 'forge.jam':'Keiner passt mehr — die Katze hat zwei Reihen aufgeräumt', 'forge.swap':'Tauschen', 'forge.hint':'Tipp', 'forge.turn':'Tippen zum Drehen',
     'forge.anyLine':'Jede Reihe oder Spalte zählt', 'forge.anyBlock':'Ein voller Block irgendwo zählt', 'forge.spares':'Ersatzteile — du brauchst nicht alle', 'forge.open':'Quilt, Spalte {x} Zeile {y}',
     'p.forgeLine':'Noch {n} Felder für eine gerade Linie von Rand zu Rand', 'p.forgeBlock':'Noch {n} Felder für einen vollen {w}×{h}-Block',
-    'forge.dead':'So lässt es sich nicht beenden — nimm ein Teil zurück', 'p.forgeRule':'Noch {n} Felder — gleiche Farben dürfen sich nicht berühren',
+    'forge.dead':'So lässt es sich nicht beenden — nimm ein Teil zurück', 'forge.tapPlace':'Tippe noch einmal zum Drehen, oder tippe auf die Decke, wo es hingehört', 'p.forgeRule':'Noch {n} Felder — gleiche Farben dürfen sich nicht berühren',
     /* patchwork pictures */
     'p.forgePic':'Noch {n} Felder — es wird {what}', 'forge.pic.cat':'eine Katze', 'forge.pic.heart':'ein Herz',
     'forge.pic.fish':'ein Fisch', 'forge.pic.ball':'ein Wollknäuel', 'forge.pic.bell':'ein Glöckchen',
@@ -8292,6 +8297,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.176.0', date:'2026-11-11', items:[
+    'Patchwork can be played without dragging: tap a patch in the tray to turn it, which also picks it (it is ringed), then tap a square of the quilt to lay it there. If it does not fit around that square, the square flashes and nothing is spent. Dragging works as before.',
+    'Snip and Chalk Line can be played without swiping or drawing: tap where a line starts (a ring marks it), then tap where it ends. Snip cuts everything that straight line crosses; Chalk Line chalks it with the same ink a drawn line takes. Every game can now be played with taps alone.',
+  ] },
   { v:'0.175.0', date:'2026-11-11', items:[
     'Tidy Up, Dye Pots and No Crossing can be played without dragging: tap a piece to pick it up (it is ringed), then tap where it goes. Tap it again to put it down. Dragging works as before.',
   ] },
@@ -12652,6 +12661,11 @@ const MODES = {
         if (cut >= need){ done = true; return ctx.win(box); }
       };
 
+      /* Without a swipe (0.176.0, WCAG 2.5.7): a tap sets where a snip starts (a ring), and the next tap snips straight
+         from there to it, cutting what that line crosses exactly as a swipe along it would. */
+      let anchor = null;
+      const mark = mk('i','tapanchor'); mark.hidden = true; mark.setAttribute('aria-hidden','true'); box.appendChild(mark);
+      const setAnchor = q => { anchor = q; mark.hidden = !q; if (q){ mark.style.left = q.x + '%'; mark.style.top = q.y + '%'; ctx.prompt(t('p.tapEnd')); sfx.tap(); } };
       onDrag(box, {
         start: q => { path = [q]; strokeCut = 0; got3 = got5 = false; trail.setAttribute('points', q.x+','+q.y); },
         move:  q => {
@@ -12663,7 +12677,19 @@ const MODES = {
           if (path.length > 26) path.shift();
           trail.setAttribute('points', path.map(p => p.x+','+p.y).join(' '));
         },
-        end: () => { path = []; trail.setAttribute('points',''); }
+        end: q => {
+          const tapped = path.length === 1;
+          path = []; trail.setAttribute('points','');
+          if (!tapped || done || !q) { if (!tapped) setAnchor(null); return; }
+          if (!anchor){ setAnchor(q); return; }
+          const a = anchor; setAnchor(null);
+          strokeCut = 0; got3 = got5 = false;
+          trail.setAttribute('points', a.x+','+a.y+' '+q.x+','+q.y);
+          ctx.after(220, () => trail.setAttribute('points',''));
+          /* in short steps, as a finger would sweep it */
+          const n = Math.max(1, Math.ceil(Math.hypot(q.x - a.x, q.y - a.y) / 3));
+          for (let i = 0; i < n && !done; i++) sweep({ x: a.x + (q.x - a.x) * i / n, y: a.y + (q.y - a.y) * i / n }, { x: a.x + (q.x - a.x) * (i + 1) / n, y: a.y + (q.y - a.y) * (i + 1) / n });
+        }
       });
     }
   },
@@ -13710,16 +13736,45 @@ const MODES = {
       if (window.ResizeObserver) new ResizeObserver(positionRound).observe(box);
       const inkLeft = () => inkCap - used;
 
+      /* Without drawing (0.176.0, WCAG 2.5.7): a tap sets where a line starts (a ring), and the next tap chalks a straight
+         line from there to it, with the same ink a drawn one would take; the chalk stops where the ink runs out. */
+      let anchor = null;
+      const mark = mk('i','tapanchor'); mark.hidden = true; mark.setAttribute('aria-hidden','true'); box.appendChild(mark);
+      const setAnchor = q => { anchor = q; mark.hidden = !q; if (q){ mark.style.left = q.x + '%'; mark.style.top = q.y + '%'; say('p.tapEnd'); sfx.tap(); } };
+      const straight = (a, b) => {
+        const asp = aspect(), d = Math.hypot(b.x - a.x, (b.y - a.y) * asp); if (d < 2) return;
+        const st = [{ x: a.x, y: a.y }]; let L = used;
+        const n = Math.max(2, Math.ceil(d / 1.5));
+        for (let i = 1; i <= n; i++){
+          const p = { x: a.x + (b.x - a.x) * i / n, y: a.y + (b.y - a.y) * i / n }, last = st[st.length - 1];
+          const step = Math.hypot(p.x - last.x, (p.y - last.y) * asp);
+          if (L + step > inkCap){ dry = true; break; }
+          L += step; st.push(p);
+        }
+        if (st.length >= 3){ strokes.push(st); used = L; }
+        if (dry) say('p.chalkDry'); else say();
+        redraw(); sfx.tap();
+      };
+      /* how far the finger has gone since it went down: a tap is a press that did not travel, whatever the chalk did (a
+         drag with no chalk left adds no points, and is still not a tap) */
+      let q0 = null, travelled = false;
       onDrag(box, {
-        start: q => { if (done || launched) return; drawing = true; cur = [{ x: q.x, y: q.y }]; strokes.push(cur); redraw(); },
+        start: q => { if (done || launched) return; drawing = true; q0 = q; travelled = false; cur = [{ x: q.x, y: q.y }]; strokes.push(cur); redraw(); },
         move:  q => { if (!drawing || !cur) return;
+          if (!travelled && Math.hypot(q.x - q0.x, (q.y - q0.y) * aspect()) >= 2.5) travelled = true;
           const last = cur[cur.length-1], a = aspect();
           const d = Math.hypot(q.x - last.x, (q.y - last.y)*a);
           if (d < 1.1) return;
           if (used + d > inkCap){ if (!dry){ dry = true; say('p.chalkDry'); } return; }   /* the chalk simply stops */
           used += d; cur.push({ x: q.x, y: q.y }); redraw(); },
-        end:   () => { if (!drawing) return; drawing = false;
-          /* A stray tap is not a stroke. */
+        end:   q => { if (!drawing) return; drawing = false;
+          /* A tap is not a stroke: it starts or ends a two-tap line. */
+          if (!travelled && cur && cur.length === 1 && q && !done && !launched){
+            strokes.pop(); cur = null; redraw();
+            if (!anchor) setAnchor(q); else { const a = anchor; setAnchor(null); straight(a, q); }
+            return;
+          }
+          if (anchor) setAnchor(null);
           if (cur && cur.length < 3){ strokes.pop(); }
           cur = null; used = strokes.reduce((n, st) => n + lenAt(st), 0); if (dry && used < inkCap - 2){ dry = false; say(); } redraw(); }
       });
@@ -13737,7 +13792,7 @@ const MODES = {
       });
       onTap(dropBtn, () => {
         if (done || launched || used < 6) return;
-        launched = true; peekEl.setAttribute('points',''); box.classList.remove('peekwin','peeklose'); box.classList.add('live'); redraw(); say();
+        launched = true; anchor = null; mark.hidden = true; peekEl.setAttribute('points',''); box.classList.remove('peekwin','peeklose'); box.classList.add('live'); redraw(); say();
         const wd = world(aspect()), s = makeSim(wd, strokes); s.rec = true;
         const thread = [[bx, by]]; let acc = 0, last = performance.now(), sinceThread = 0;
         const frame = () => {
@@ -14262,7 +14317,7 @@ const MODES = {
       let held = null, done = false, hints = 3;
       const used = new Set();             /* the Tetris way: patches that have been laid (their squares may since have cleared) or thrown back */
       const inTray = i => !used.has(i) && !placed.some(p => p.part === i) && !(held && held.part === i);
-      let lines = 0, swaps = 2, busy = false;
+      let lines = 0, swaps = 2, busy = false, chosen = -1;
       const paws = goal === 'clear' ? pawChances(ctx) : null;
       const wantLines = linesFor(ctx.level);
       const say = (key, args) => ctx.prompt(key ? t(key, args)
@@ -14389,9 +14444,35 @@ const MODES = {
           e.style.width = e.style.height = (side*bit + (side - 1)*2 + pad*2 + 4) + 'px'; e.style.padding = pad + 'px';
           e.appendChild(bitsOf(orient(i), pal[colour[i]]));
           e.setAttribute('aria-label', t('forge.part', { n: p.sh.length }) + '. ' + t('forge.turn'));
-          e.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); rot[i] = (rot[i]+1)%4; drawTray(); } });
+          if (i === chosen){ e.classList.add('chosen'); e.setAttribute('aria-pressed', 'true'); } else e.setAttribute('aria-pressed', 'false');
+          e.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); rot[i] = (rot[i]+1)%4; choose(i); drawTray(); } });
           tray.appendChild(e);
         });
+      };
+      /* Without dragging (0.176.0, WCAG 2.5.7): tapping a patch in the tray still turns it, and also chooses it (ringed);
+         tapping a square of the quilt then lays the chosen patch over that square, at the fit nearest the tap. A square it
+         cannot cover flashes and nothing is spent. Dragging works as it always did. */
+      const choose = i => { chosen = i; say('forge.tapPlace'); };
+      const tapPlace = cellIdx => {
+        if (chosen < 0 || !inTray(chosen)){ chosen = -1; return false; }
+        const o = orient(chosen), gr = gridRect(), pt = pitch(), cx = cellIdx % g, cy = Math.floor(cellIdx / g);
+        let best = null;
+        for (const c of o){
+          const ax = cx - c[0], ay = cy - c[1];
+          const cells = spot(chosen, o, ax, ay, filled); if (!cells) continue;
+          /* nearest by the patch's own squares, not its bounding box: an L is aimed by where its squares are */
+          const mx = o.reduce((t2, q) => t2 + q[0], 0) / o.length, my = o.reduce((t2, q) => t2 + q[1], 0) / o.length;
+          const d = Math.hypot(ax + mx - cx, ay + my - cy);
+          if (!best || d < best.d) best = { d, cells, o };
+        }
+        if (!best){
+          cellEls[cellIdx].classList.add('drop-bad'); sfx.tap();
+          ctx.after(420, () => cellEls[cellIdx] && cellEls[cellIdx].classList.remove('drop-bad'));
+          return false;
+        }
+        held = { part: chosen, from: 'tray', snap: { cells: best.cells, o: best.o } }; chosen = -1;
+        dropIt();
+        return true;
       };
       const fitBoard = () => {
         /* The tray holds the height it had when full, so taking a patch out of it cannot resize the quilt under the finger. */
@@ -14525,7 +14606,7 @@ const MODES = {
       };
       const swap = () => {
         if (done || busy || held || swaps <= 0) return;
-        swaps--; redealTray(); redraw(); say(); sfx.tap();
+        swaps--; chosen = -1; redealTray(); redraw(); say(); sfx.tap();
       };
 
       const dropIt = () => {
@@ -14608,7 +14689,12 @@ const MODES = {
         if (hand && ev.pointerId !== hand.id){ if (held){ ev.preventDefault(); turnHeld(); } return; }
         if (ev.target.closest && ev.target.closest('.ftool')) return;
         const at = pieceAt(ev.clientX, ev.clientY);
-        if (!at) return;
+        if (!at){
+          /* an open square, with a patch chosen: lay it there */
+          const el3 = document.elementFromPoint(ev.clientX, ev.clientY), cl = el3 && el3.closest && el3.closest('.fcell');
+          if (cl && chosen >= 0){ ev.preventDefault(); tapPlace(cellEls.indexOf(cl)); }
+          return;
+        }
         ev.preventDefault();
         hand = { id: ev.pointerId, part: at.part, from: at.from, x0: ev.clientX, y0: ev.clientY, moved: false };
         lastXY = [ev.clientX, ev.clientY];
@@ -14631,7 +14717,7 @@ const MODES = {
         if (done) return;
         if (!h.moved){
           /* A tap: turn a patch in the tray; take one off the quilt back to the tray. */
-          if (h.from === 'tray'){ rot[h.part] = (rot[h.part] + 1) % 4; drawTray(); sfx.tap(); }
+          if (h.from === 'tray'){ rot[h.part] = (rot[h.part] + 1) % 4; choose(h.part); drawTray(); sfx.tap(); }
           else { const p = placed.find(q => q.part === h.part); if (p){ p.cells.forEach(i => filled.delete(i)); placed.splice(placed.indexOf(p), 1); redraw(); say(); } }
           return;
         }
