@@ -58,6 +58,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.170.0 | Pond Skate reads the pond aloud for a screen reader |
 | v0.171.0 | On a tablet on its side, play in two panes: the board at nearly the full height |
 | v0.172.0 | A new game, Puddle Hop: the 46th |
+| v0.173.0 | Puddle Hop's own sounds |
 
 ## Ground rules the work follows
 

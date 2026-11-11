@@ -54,8 +54,9 @@ nothing ships on a red probe.
 | v0.168.0 | f0168c6 | juice on the verb (bible 03): Pond Skate's slide swishes (a falling sine as long as the slide), a bump thuds, thin ice cracks, yarn rings and sparkles in the game's own shapes; the closed-pond check in `skate.mjs` made robust (four slides deep, sixteen ponds) |
 | v0.169.0 | 47e252b | AV (bible 09): an audit found 44 of 45 games used only the generic tap, good and bad; a voice per family (wave, register, length, slide) now plays every tap in a live round, in the family's key; menus keep the plain tap; the gate requires a voice for every family |
 | v0.170.0 | 0b1646e | accessibility: Pond Skate's board names where the cat, the basket and the yarn are (row and column) and which ways the cat can slide, after every slide, in four languages; the independent review still needs external testers |
-| v0.171.0 | see the log | platforms, tablets on their side: play in two panes (the score and the round's chips on the left, the board at nearly the full height on the right), menus, sheets and the header kept to the 640px column; all 45 boards checked in two panes |
-| v0.172.0 | see the log | content: Puddle Hop, the 46th game (numbers family; Calm door), built to the README checklist and stopped by the gate until its probe existed: fixed-distance hops, every board searched before it is dealt, budget from the true minimum, dead ends announced, Hint, read aloud, keyboard, an achievement |
+| v0.171.0 | 2c1c55c | platforms, tablets on their side: play in two panes (the score and the round's chips on the left, the board at nearly the full height on the right), menus, sheets and the header kept to the 640px column; all 45 boards checked in two panes |
+| v0.172.0 | 2c1c55c | content: Puddle Hop, the 46th game (numbers family; Calm door), built to the README checklist and stopped by the gate until its probe existed: fixed-distance hops, every board searched before it is dealt, budget from the true minimum, dead ends announced, Hint, read aloud, keyboard, an achievement |
+| v0.173.0 | see the log | Puddle Hop's verb gets its own sound: a hop springs (a rising sine) and lands (a low triangle), heard by `puddle.mjs` through the page's oscillators |
 
 ### Cut lists (what each release drops first if it runs long)
 

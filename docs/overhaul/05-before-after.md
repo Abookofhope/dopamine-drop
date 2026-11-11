@@ -535,6 +535,13 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | The gate | refused the build until a probe named it |
 | `puddle.mjs` (new) | 21 of 21 |
 
+## v0.173.0: Puddle Hop sounds like hopping
+
+| What | Before | After |
+|---|---|---|
+| A hop | the numbers family's bell, like any tap | a spring (a sine rising by half) as the cat jumps, and a soft landing (a low triangle) on the stone, in the numbers key |
+| `puddle.mjs` | 21 checks | 22: hears a sine and then a low triangle on a hop (fails on v0.172.0, which plays the bell) |
+
 ## How to reproduce
 
 ```

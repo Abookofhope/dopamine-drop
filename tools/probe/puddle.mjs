@@ -9,6 +9,7 @@
  *   3. Hopping back and forth away from the basket runs the hops out and loses the round.
  *   4. A hop to a dead end (no way on, by the probe's own search) gets the round ended with a message.
  *   5. The Hint lights the first stone of a shortest way; there are two a round.
+ *   7. A hop has its own sounds: a rising sine as the cat springs, a low triangle as it lands (v0.173.0).
  *   6. The reachable stones are buttons named for where they are, reached with Tab and taken with Enter; the board's name
  *      says where the cat and the basket are; the board passes axe; ten exact boards earn "Dry Paws".
  *
@@ -168,6 +169,29 @@ for (const [label, prof] of LV){
   const got = await p2.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('dd.v1')).achieve || {}));
   check(got.includes('puddleline'), `ten boards in their shortest route earn "Dry Paws" (${got.includes('puddleline') ? 'earned' : 'not earned'})`);
   await p2.close();
+}
+
+/* ── 7. its sounds: a hop springs up (a sine), the landing is a soft triangle (v0.173.0) ── */
+{
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true });
+  page.on('pageerror', e => errs.push(String(e).slice(0, 160)));
+  await page.addInitScript(() => {
+    localStorage.setItem('dd.probe', '1'); localStorage.setItem('dd.pool', 'puddle');
+    window.__osc = []; const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    const make = AC.prototype.createOscillator;
+    AC.prototype.createOscillator = function(){ const o = make.call(this); const st = o.start.bind(o), sv = o.frequency.setValueAtTime.bind(o.frequency);
+      o.frequency.setValueAtTime = (v, t) => { if (o.__f === undefined) o.__f = v; return sv(v, t); };
+      o.start = (...a) => { window.__osc.push({ type: o.type, f: Math.round(o.__f !== undefined ? o.__f : o.frequency.value), t: performance.now() }); return st(...a); }; return o; };
+  });
+  await openApp(page, { reduceMotion: false, onboarded: true, seen: { puddle: 1 }, sound: true, xp: 9000, runs: 40, solved: 600 });
+  await openModeList(page); await clickMode(page, 'puddle'); await waitBoard(page);
+  const b = await read(page);
+  const q = b.can.find(q => q !== b.goal && route(Object.assign({}, b, { cat: q })));
+  const t0 = await page.evaluate(() => performance.now());
+  if (q !== undefined){ await tapCell(page, q); await page.waitForTimeout(500); }
+  const o = await page.evaluate(t => window.__osc.filter(x => x.t >= t), t0);
+  check(q !== undefined && o.some(x => x.type === 'sine') && o.some(x => x.type === 'triangle' && x.f < 400), `a hop springs (a sine) and lands softly (a low triangle) (${o.map(x => x.type + ' ' + x.f).join(', ') || 'nothing'})`);
+  await page.close();
 }
 
 check(!errs.length, `no page errors (${errs.slice(0, 2).join(' | ') || 'none'})`);

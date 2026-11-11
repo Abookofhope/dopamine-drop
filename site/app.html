@@ -5233,7 +5233,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.172.0';
+const VERSION_TAG = 'v0.173.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -5639,6 +5639,9 @@ const sfx = {
   bump: () => tone(160, 0.07, 'triangle', 0.032, 0.8),
   crack: () => { tone(2093, 0.03, 'square', 0.012, 0.5); setTimeout(() => tone(1568, 0.04, 'square', 0.01, 0.5), 35); },
   pickup: () => tone(1319 * toneShift, 0.08, 'triangle', 0.03),
+  /* Puddle Hop (0.173.0): a hop springs up (a sine that rises), and the cat lands softly on its stone. */
+  hop: () => tone(587 * toneShift, 0.12, 'sine', 0.026, 1.5),
+  land: () => tone(220 * toneShift, 0.06, 'triangle', 0.028, 0.85),
   /* good() plays on every solve and has to stay small — this plays only on
      the tap that actually crosses into a new multiplier tier (×3, ×4, ×5),
      which is a handful of times in a good run rather than every few seconds,
@@ -8238,6 +8241,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.173.0', date:'2026-11-11', items:[
+    'Puddle Hop has its own sounds: a hop springs up, and the cat lands softly on its stone.',
+  ] },
   { v:'0.172.0', date:'2026-11-11', items:[
     'A new game: Puddle Hop. A cat on stepping stones in the rain; each stone says how far the next hop goes, straight up, down, left or right, and the cat can hop over a puddle but not land in one. Land on the basket. Every board can be done in the hops you are given. It is in Calm & Collect.',
   ] },
@@ -17772,9 +17778,9 @@ const MODES = {
         if (ms){ cat.classList.remove('jump'); void cat.offsetWidth; cat.classList.add('jump'); }
         cells[from].classList.add('been');
         paint();
-        sfx.tap();
+        sfx.hop();
         ctx.after(ms, () => {
-          busy = false;
+          busy = false; sfx.land();
           if (at === board.goal){
             done = true; paintHint(); paint();
             if (moves === board.min) save.hopExact = (save.hopExact | 0) + 1;
