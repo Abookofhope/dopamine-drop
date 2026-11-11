@@ -11,7 +11,7 @@ Target: WCAG 2.2 level AA. "Evidence" names the check that backs the status; "Op
 | 1.4.3 Contrast (minimum) | Pass by axe | axe's colour-contrast rule passes on every shell screen and board probed; High contrast raises contrast further. A hand measurement of every token pair is **Open** |
 | 1.4.4 Resize text | Pass for the app's own text; boards partial | Text size 100, 115, 130, 150 percent (v0.140.0): every font size is calc(Npx*var(--ts)), a gate check refuses a bare px size, and `textsize.mjs` finds no sideways scroll and no clipped or off-screen line on the shell, HUD, pause sheet, Game Over and welcome screen at 320x568 and 360x640. Puzzle boards keep their tile text at a fixed size (they are drawn to fit): scaling those is **Open** |
 | 1.4.10 Reflow | Pass at 320 CSS px | No horizontal scroll at 320x568 on any shell screen (`hudstates.mjs`, `settingsacc.mjs`, `panels.mjs`) |
-| 1.4.11 Non-text contrast | Not measured | Switch, focus ring and panel chevrons have not been measured by hand; **Open** |
+| 1.4.11 Non-text contrast | Pass (measured) | `nontext.mjs` (v0.177.0) measures the pixels on screen, default and High contrast: switch outlines, knobs and tracks, the focus ring, panel chevrons and tab icons are all 3:1 or more (lowest 4.3:1). It found an off switch's outline at 1.39:1, so an off switch read as a dot; now 4.3:1 (7.8:1 in High contrast) |
 | 1.4.12 Text spacing | Pass in Easy-read | Easy-read widens letter and word spacing and the layout holds (no sideways scroll at 320) |
 | 1.4.13 Content on hover or focus | Pass | No hover-only content |
 | 2.1.1 Keyboard | Pass for shell screens | Enter and Space open panels; every control is a button or input. Boards: keyboard play is **Open** (many modes are drag or tap only) |
