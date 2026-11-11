@@ -393,6 +393,17 @@ The intro itself, measured the same way, runs at a median of 33 ms per frame at 
 How the probe went wrong on the way, all in the probe, none in the game: a solver for Odd Skein that reads colours from the DOM must use only the board on top (a Daily round stacks boards), skip the tiles a wrong tap rules out, and judge "lightest" perceptually; a Daily round of several boards scores only when the last is solved; and a stage at ten solves asks the player to choose a charm, which a bot has to answer.
 
 
+## v0.161.1: the intro aims for 60 fps (the owner's request)
+
+| What | Before | After |
+|---|---|---|
+| When the intro lowers its detail | frames slower than about 30 a second (33 ms), for 24 frames | slower than about 50 a second (20 ms), for 20 frames: it aims for 60 |
+| The intro's page | the studio's web v8 | the same page with only that rule changed, byte for byte from the studio's copy (94,429 bytes) |
+| `splash.mjs` | 16 checks | 17; the new one (it aims for 60 fps) fails on v0.161.0 |
+
+The owner found the studio's intro choppy on a phone and asked for at least 60 frames a second. Nothing else in the
+page changed: the same animation, length and rules from v0.158.0. Not checked: the frame rate on a real phone.
+
 ## How to reproduce
 
 ```
