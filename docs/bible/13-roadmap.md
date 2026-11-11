@@ -48,7 +48,8 @@ nothing ships on a red probe.
 | v0.163.0 | ee87fbc | AAA, content: the first seasonal game, Pond Skate (winter), built to the same rules: a signature, four languages, a difficulty curve past level 20, a move budget from the true shortest route, keyboard and Reduce motion, and its own probe (`skate.mjs`) that solves every pond it is dealt. Kept all year, like the season sets |
 | v0.164.0 | b13e8de | the seasonal-game checklist as a build check (`check_site.py`): five quips, a signature, a kind, an icon and a probe naming every game, and a floor of 45; Peekaboo and Dye Pots probed for the first time; Dye Pots' mixed pots restored past level 18 |
 | v0.164.1 | 9c3f90a | the owner's request, "super smooth on anything": the intro plays as a recording (upright and widescreen, 60 fps, top quality); the live page is the fallback and lowers its detail below about 50 fps, not 30 (`splash.mjs`: 28 of 28) |
-| v0.165.0 | see the log | AAA, performance: the build lifts the game's 1.5 MB script into `app.js?v=<hash>`, compiled off the main thread and code-cached; the longest launch task at 4x falls from 325-416 ms to 170-251 (median 363 to 189); offline still works. Pond Skate: a Hint, and a round the ice has closed ends with a message |
+| v0.165.0 | c9fc373 | AAA, performance: the build lifts the game's 1.5 MB script into `app.js?v=<hash>`, compiled off the main thread and code-cached; the longest launch task at 4x falls from 325-416 ms to 170-251 (median 363 to 189); offline still works. Pond Skate: a Hint, and a round the ice has closed ends with a message |
+| v0.166.0 | see the log | economy, toward "things to buy through year 2": the bible's season sets of about six each (two more per season, at 750 and 1,200 yarn; a season's set went from 2,250 to 4,200); the sill shows six |
 
 ### Cut lists (what each release drops first if it runs long)
 

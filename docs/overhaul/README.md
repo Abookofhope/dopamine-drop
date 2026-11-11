@@ -51,6 +51,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.164.0 | Every game is complete or the build stops: quips, signature, kind, icon and a probe that names it; Peekaboo and Dye Pots get their first probes, and Dye Pots' mixed pots come back past level 18 |
 | v0.164.1 | The intro plays as a recording, so it is smooth on any device; the live intro is the fallback, and it now aims for 60 fps |
 | v0.165.0 | A start about half as long: the game's script is a file of its own; Pond Skate has a Hint and says when the ice has closed the way |
+| v0.166.0 | Six things a season for the window sill (24 in all); the sill holds six |
 
 ## Ground rules the work follows
 

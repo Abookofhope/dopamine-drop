@@ -1,6 +1,6 @@
 /* The living room (v0.153.0): seasons and the Archive, the week's pattern, the lucky skein, a friend's Daily.
  *
- * Seasons: the window shows the time of year; this season's four things are for sale and every other season's are
+ * Seasons: the window shows the time of year; this season's six things (four until v0.166.0) are for sale and every other season's are
  * in the Archive at the same price (nothing is ever gone). The week's pattern: one game and board, the same for
  * everyone, paying yarn ×1.5 in Marathon this week. The lucky skein: about one solve in forty pays double yarn,
  * never two within ten. A friend's Daily: a shared Daily carries its round-by-round score in its link, and the
@@ -39,7 +39,7 @@ async function open(state, hash = ''){
   await page.evaluate(() => { const h = document.getElementById('accH_r-decor'); if (h.getAttribute('aria-expanded') !== 'true') h.click(); });
   await page.waitForTimeout(300);
   const list = await page.evaluate(() => ({ heads: [...document.querySelectorAll('#seasonList .pxh')].map(x => x.textContent), n: document.querySelectorAll('#seasonList .accbtn').length }));
-  check(list.n === 16 && /This season/.test(list.heads[0]) && /Archive/.test(list.heads[1]), `this season's four things, and the Archive's twelve (${list.n}; ${list.heads.join(' | ')})`);
+  check(list.n === 24 && /This season/.test(list.heads[0]) && /Archive/.test(list.heads[1]), `this season's six things, and the Archive's eighteen (${list.n}; ${list.heads.join(' | ')})`);
   /* buy one from the Archive: two taps */
   const archived = () => page.evaluate(() => { const b = document.querySelectorAll('#seasonList .seasongrid')[1].querySelector('.accbtn'); b.click(); });
   await archived(); await archived(); await page.waitForTimeout(300);
@@ -47,6 +47,20 @@ async function open(state, hash = ''){
   check(own.length === 1, `a past season's thing can still be bought, at its price (${own.join()})`);
   const sill = await page.evaluate(() => document.querySelector('#roomScene svg.roomsvg').innerHTML.length);
   check(sill > 0, 'and it sits on the window sill');
+  await ctx.close();
+}
+/* ── 1b. six on the sill: everything bought this season can be seen (v0.166.0; the sill showed four) ── */
+{
+  const now = await (async () => { const m = new Date().getMonth(); return m === 11 || m < 2 ? 'winter' : m < 5 ? 'spring' : m < 8 ? 'summer' : 'autumn'; })();
+  const SIX = { winter: ['stocking', 'globe', 'star', 'mittens', 'cocoa', 'sled'], spring: ['pot', 'kite', 'bunting', 'boots', 'nest', 'umbrella'],
+    summer: ['fan', 'hat', 'melon', 'boat', 'shell', 'lemonade'], autumn: ['lantern', 'leaves', 'pumpkin', 'throw', 'acorn', 'scarf'] }[now];
+  const { page, ctx } = await open({ yarn: 50, owned: { season: Object.fromEntries(SIX.map(id => [id, 1])) } });
+  await goTab(page, 'Room'); await page.waitForTimeout(400);
+  const onSill = await page.evaluate(() => { const svg = document.querySelector('#roomScene svg.roomsvg'); return svg ? svg.querySelectorAll('g.sillitem').length : -1; });
+  check(onSill === 6, `all six of this season's things, owned, sit on the sill (${onSill})`);
+  const fit = await page.evaluate(() => { const g = [...document.querySelectorAll('#roomScene svg.roomsvg g.sillitem')].map(e => e.getBoundingClientRect());
+    return g.every((r, i) => i === 0 || r.left >= g[i - 1].right - 1); });
+  check(fit, 'and none of them overlaps the next');
   await ctx.close();
 }
 

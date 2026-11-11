@@ -470,6 +470,14 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | Pond Skate | no help; a pond the ice had closed ran the moves down | a Hint (two a round) lights the first arrow of a shortest way; a closed pond says "The ice has closed the way through" and ends |
 | `startup.mjs` (new) | 2 of 5 fail on v0.164.0 | 5 of 5 |
 
+## v0.166.0: six things a season (economy)
+
+| What | Before | After |
+|---|---|---|
+| Season sets | four things each (16 in all; 2,250 yarn a season) | six each, the bible's "about 6" (24 in all; 4,200 a season): cocoa, a sled; a bird's nest, an umbrella; a seashell, lemonade; acorns, a striped scarf, at 750 and 1,200 |
+| The window sill | showed four, so a fifth or sixth thing bought would never be seen | shows six; four or fewer keep their old size and places, five or six sit a little smaller round the same middle |
+| `seasons.mjs` | 16 things | 24, and six owned all on the sill without overlapping (that check fails on v0.165.0) |
+
 ## How to reproduce
 
 ```
