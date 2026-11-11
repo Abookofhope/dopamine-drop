@@ -78,7 +78,7 @@ nothing ships on a red probe.
 | Audio | recorded foley for the craft room (yarn, wood, cloth, purrs) layered under the synth; a composer's stems for Room Radio with the same layer and stinger rules | an audio designer |
 | Art | hand-drawn cat animation (Lottie or sprite sheets) for the Room; illustrated season sets | an illustrator |
 | Content | a new game each season, built to the same rules (stability, signature, four languages, probes) | design time |
-| Accessibility | an independent review: screen readers on iOS and Android, a photosensitivity analysis, a motor-impairment pass; keyboard play on every board | external testers |
+| Accessibility | an independent review: screen readers on iOS and Android, a photosensitivity analysis, a motor-impairment pass; keyboard play on every board (a photosensitivity measurement is automated: `flashes.mjs`, 2026-11-11; an independent analysis still needs external testers) | external testers |
 | Languages | +6 (pt, it, nl, pl, ja, ko) | translators |
 | Insight | opt-in analytics that stay on the device by default, aggregate-only: first-win time, session length, door chosen, Tuck in use; a one-tap mood check before and after a session (opt-in), to test the five-minute promise directly (the on-device part, session length, first point, door, Tuck in and the check-in, shipped in v0.174.0) | a privacy review |
 | Social | friend codes and a private weekly Daily league among friends only, still serverless where possible | design and a privacy review |

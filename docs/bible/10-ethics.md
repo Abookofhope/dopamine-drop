@@ -66,7 +66,13 @@ same dignity as anyone else. The full status is in
 - **Every new sense has a fallback.** Music has captions for its stingers ("♪
   rising"), haptics mirror a visual, and colour is never the only cue.
 - **Motion budgets are hard limits.** No flashing above 3 per second (WCAG
-  2.3.1); the frame budget probe also checks for large-area luminance flips.
+  2.3.1). This used to say the frame budget probe checked for luminance flips;
+  it never did. Since 2026-11-11 `flashes.mjs` does: it records every painted
+  frame, measures luminance and saturated red over the screen and each quarter,
+  and fires every effect at eight a second. All of them stay under WCAG's
+  thresholds by a wide margin (the largest whole-screen swing is about 0.06
+  against a threshold of 0.1), and a white strobe is caught as a check on the
+  measure itself.
 
 ## Review checklist (each release)
 

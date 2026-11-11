@@ -20433,6 +20433,7 @@ function flash(cls){
   el.surface.classList.add(cls);
   setTimeout(() => el.surface.classList.remove(cls), cls === 'flash-win' ? 200 : 260);
 }
+try { if (localStorage.getItem('dd.probe')) window.__flash = flash; } catch(e){}
 
 /* ═══ The Quilt ══════════════════════════════════════════════════════════
    One patch for each game, hanging on the Room's back wall and growing over a lifetime (docs/bible/04-progression.md).
