@@ -454,6 +454,16 @@ _voice_src = html[html.find("const VOICE = {"):]
 _voice_src = _voice_src[:_voice_src.find("\n};")]
 _novoice = [c for c in _cats if not re.search(r"\n  %s:\s*\{" % re.escape(c), _voice_src)]
 check("every family of games has a voice", len(_cats) >= 8 and not _novoice, "missing: " + ", ".join(_novoice[:5]))
+# Every game played by dragging can also be played with taps (0.176.0, WCAG 2.5.7): a game tagged input:'drag' must be in
+# taponly.mjs's TAP_PATHS, either won there by taps or with its tap path written down, so a new drag game cannot ship
+# without one.
+_drag = [n for n in _ids if "input:'drag'" in _bodies[n][:600]]
+_tp = (_probe_dir / "taponly.mjs").read_text(encoding="utf8") if (_probe_dir / "taponly.mjs").exists() else ""
+_tp = _tp[_tp.find("const TAP_PATHS = {"):]
+_tp = _tp[:_tp.find("\n};")]
+_notap = [n for n in _drag if not re.search(r"\n  %s:\s*'" % re.escape(n), _tp)]
+check("every game played by dragging can be played with taps", len(_drag) >= 6 and not _notap,
+      f"{len(_drag)} drag games" + ("" if not _notap else "; not in taponly.mjs TAP_PATHS: " + ", ".join(_notap[:6])))
 
 # The browser probes find a mode by its id, so they keep working in German.
 # Losing this line would send them back to matching on translated titles.

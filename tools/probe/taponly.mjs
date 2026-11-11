@@ -23,6 +23,26 @@
 import { chromium } from 'playwright';
 import { openApp, openMode } from './harness.mjs';
 
+/* Every game the code tags input:'drag', and how it is played with taps. tools/check_site.py refuses a build with a drag
+   game missing from this table. 'won here' means this probe wins it by taps; the rest were read in the code in the
+   mode-by-mode audit of 2026-11-11 (docs/overhaul/03-accessibility.md, 2.5.7) and are played by kbd.mjs, whose pointer
+   presses and releases in place. Patchwork is not tagged drag but needed one, and is won here too. */
+const TAP_PATHS = {
+  slack: 'won here: tap a peg, tap where it goes',
+  tidy: 'won here: tap a piece, tap its basket',
+  siphon: 'won here: tap a dye, tap its pot',
+  slice: 'won here: tap where the snip starts, tap where it ends',
+  chalk: 'won here: tap where a line starts, tap where it ends, then Drop',
+  tide: 'press and hold in place; nothing moves',
+  glimmer: 'a tap moves the light there, and a tap on a lamp lights it',
+  descent: 'a tap sets where the bobbin steers to, and it stays set',
+  gather: 'a tap moves the pail there',
+  trace: 'tapping the waypoints in order collects them',
+  lever: 'a tap places the wedge and tests it',
+  blast: 'a tap on a lane fires there',
+};
+void TAP_PATHS;
+
 let bad = 0;
 const stop = e => { console.log('FAIL the probe could not go on: ' + String((e && e.message) || e).split('\n')[0].slice(0, 140)); console.log('\n' + (bad + 1) + ' failed'); process.exit(1); };
 process.on('uncaughtException', stop); process.on('unhandledRejection', stop);

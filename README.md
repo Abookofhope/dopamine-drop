@@ -171,6 +171,10 @@ beatable and never endless. Fidget Loop is the deliberate exception.
    signature, a door, an icon, or a probe that names it, and the floor of
    games (raise `MODE_FLOOR` in the same commit). Its taps use its family's
    voice (`VOICE`) automatically; give its verb a sound of its own if it has one.
+   A game played by dragging (`input:'drag'`) must also be playable with taps
+   (WCAG 2.5.7): a tap to pick up and a tap to place, or a tap where a line
+   starts and one where it ends. Tell a tap by how far the finger moved. Add
+   it to `TAP_PATHS` in `tools/probe/taponly.mjs`, or the gate refuses it.
 6. Look at it on a 400px-wide screen, a 320px one (`sizes.mjs`), an upright
    tablet and a tablet on its side (`tablet.mjs`: two panes).
 7. Add a probe for what is new about it that reads what the player sees (for a
