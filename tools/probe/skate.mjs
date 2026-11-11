@@ -9,6 +9,7 @@
  *   2. A slide that goes nowhere costs no move; running out of moves loses the round.
  *   3. Thin ice: once the cat has crossed it, it is open water and stops the cat.
  *   4b. Skating a pond in exactly its shortest route is counted, and ten (and one with thin ice) earn its two achievements.
+ *   6. A slide plays its own swish (a sine) and a bump a low thud (a triangle), read off the oscillators the game starts.
  *   5. The Hint lights the first arrow of a shortest way from where the cat is, two a round; when thin ice closes the last
  *      way through, the round says so and ends instead of running the moves down.
  *   4. The arrows are full-size, named buttons that a keyboard reaches with Tab and works with Enter; a tap on a cell in
@@ -252,12 +253,14 @@ check(sawThin, 'past level 20 there is thin ice on the pond');
 {
   const page = await open({ xp: 900000, runs: 900, solved: 40000 });
   let found = false, said = '', lost = false;
-  for (let r = 0; r < 8 && !found; r++){
+  /* Whether a pond can be closed in a few slides depends on the deal, so look deep (four slides) and across many ponds
+     (sixteen): three slides over eight ponds found none on one run in five (2026-11-11). */
+  for (let r = 0; r < 16 && !found; r++){
     const p = await read(page); if (!p) break;
-    /* up to three slides after which, by the probe's own search, there is no way through (and none of them wins) */
+    /* up to four slides after which, by the probe's own search, there is no way through (and none of them wins) */
     const seq = (q, depth) => { for (let d = 0; d < 4; d++){ const nx = after(q, d); if (!nx || (nx.cat === nx.goal && !nx.yarn.length)) continue;
       if (!solve(nx)) return [d]; if (depth > 1){ const rest = seq(nx, depth - 1); if (rest) return [d].concat(rest); } } return null; };
-    const moves = seq(p, 3);
+    const moves = seq(p, 4);
     if (moves){
       found = true; const d0 = await done(page);
       for (const m of moves.slice(0, -1)){ await press(page, m); await page.waitForTimeout(150); }
@@ -273,6 +276,41 @@ check(sawThin, 'past level 20 there is thin ice on the pond');
   }
   check(found, 'past level 20, a slide that closes the last way through was found on a pond');
   check(found && /closed the way/i.test(said) && lost, `when the ice closes the way, the round says so ("${said}") and ends`);
+  await page.close();
+}
+
+/* ── 6. the sounds: a slide swishes (a falling sine), a bump thuds (a low triangle) ── */
+{
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true });
+  page.on('pageerror', e => errs.push(String(e).slice(0, 160)));
+  await page.addInitScript(() => {
+    localStorage.setItem('dd.probe', '1'); localStorage.setItem('dd.pool', 'skate');
+    /* every oscillator the game starts: its wave and its pitch as it starts */
+    window.__osc = [];
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    const make = AC.prototype.createOscillator;
+    /* the pitch is scheduled (setValueAtTime), so .value still reads the default; keep the first value scheduled */
+    AC.prototype.createOscillator = function(){ const o = make.call(this); const st = o.start.bind(o), sv = o.frequency.setValueAtTime.bind(o.frequency);
+      o.frequency.setValueAtTime = (v, t) => { if (o.__f === undefined) o.__f = v; return sv(v, t); };
+      o.start = (...a) => { window.__osc.push({ type: o.type, f: Math.round(o.__f !== undefined ? o.__f : o.frequency.value), t: performance.now() }); return st(...a); }; return o; };
+  });
+  await openApp(page, { reduceMotion: true, onboarded: true, seen: { skate: 1 }, sound: true, xp: 9000, runs: 40, solved: 600 });
+  await openModeList(page); await clickMode(page, 'skate'); await waitPond(page);
+  const isBlocked = (p, d) => { const x = p.cat % p.n + D[d][0], y = Math.floor(p.cat / p.n) + D[d][1]; return x < 0 || y < 0 || x >= p.n || y >= p.n || p.kind[y * p.n + x] === '#'; };
+  const p = await read(page);
+  const mover = [0, 1, 2, 3].find(d => !isBlocked(p, d));
+  const t0 = await page.evaluate(() => performance.now());
+  await press(page, mover); await page.waitForTimeout(250);
+  const slideOsc = await page.evaluate(t => window.__osc.filter(o => o.t >= t), t0);
+  check(slideOsc.some(o => o.type === 'sine'), `a slide swishes: a sine starts with it (${slideOsc.map(o => o.type + ' ' + o.f).join(', ') || 'nothing'})`);
+  const q = await read(page);
+  const blocked = [0, 1, 2, 3].find(d => isBlocked(q, d));
+  if (blocked !== undefined){
+    const t1 = await page.evaluate(() => performance.now());
+    await press(page, blocked); await page.waitForTimeout(200);
+    const bumpOsc = await page.evaluate(t => window.__osc.filter(o => o.t >= t), t1);
+    check(bumpOsc.some(o => o.type === 'triangle' && o.f < 300), `a bump thuds: a low triangle (${bumpOsc.map(o => o.type + ' ' + o.f).join(', ') || 'nothing'})`);
+  } else check(false, 'a bump thuds (the cat is not against anything after one slide; cannot test here)');
   await page.close();
 }
 

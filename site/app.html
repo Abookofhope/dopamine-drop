@@ -3937,6 +3937,8 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .pondcell.bank{background:radial-gradient(ellipse 46% 36% at 50% 62%,#fff3e6 0 70%,#cfe4f7 78%,transparent 82%),linear-gradient(160deg,#d6eeff33,#9fd8ff14)}
 .pondcell.thin{background:linear-gradient(118deg,transparent 46%,#e8f6ff99 47% 49%,transparent 50%),linear-gradient(62deg,transparent 58%,#e8f6ff80 59% 60.5%,transparent 61.5%),linear-gradient(160deg,#e9f6ff40,#bfe6ff26)}
 .pondcell.water{background:radial-gradient(circle at 40% 40%,#2c5b85,#0b1b2e 70%);box-shadow:inset 0 0 0 2px #4c7ea866}
+html[data-motion="on"] .pondcell.water{animation:pondsink 420ms ease-out}
+@keyframes pondsink{from{filter:brightness(1.8)}to{filter:none}}
 .pondicon{position:absolute;inset:14%;width:72%;height:72%}
 .pondcell.got .pondyarn{opacity:0;transform:scale(.4);transition:opacity 220ms ease,transform 220ms ease}
 .pondcat{position:absolute;left:0;top:0;width:calc(100% / var(--n));height:calc(100% / var(--n));display:grid;place-items:center;z-index:2;
@@ -5196,7 +5198,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.167.0';
+const VERSION_TAG = 'v0.168.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -5579,6 +5581,12 @@ const sfx = {
                 setTimeout(() => tone(2093 * toneShift, 0.5, 'sine', 0.025), 260); },
   /* A toast: two soft notes, a sixth apart, quieter than a solve. */
   note: () => { tone(1046, 0.09, 'sine', 0.03); setTimeout(() => tone(1568, 0.11, 'sine', 0.022), 70); },
+  /* Pond Skate (0.168.0): the slide is the verb, so it has its own sound, an icy swish that falls and lasts as long as the
+     slide; a bump into a snowbank is a soft thud; thin ice cracks; yarn picked up rings once. */
+  glide: cells => tone(1046 * toneShift, 0.07 + Math.min(8, cells) * 0.035, 'sine', 0.022, 0.6),
+  bump: () => tone(160, 0.07, 'triangle', 0.032, 0.8),
+  crack: () => { tone(2093, 0.03, 'square', 0.012, 0.5); setTimeout(() => tone(1568, 0.04, 'square', 0.01, 0.5), 35); },
+  pickup: () => tone(1319 * toneShift, 0.08, 'triangle', 0.03),
   /* good() plays on every solve and has to stay small — this plays only on
      the tap that actually crosses into a new multiplier tier (×3, ×4, ×5),
      which is a handful of times in a good run rather than every few seconds,
@@ -8174,6 +8182,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.168.0', date:'2026-11-11', items:[
+    'Pond Skate sounds like ice: a swish as the cat slides (longer for a longer slide), a soft thud against a snowbank, a crack as thin ice breaks, and a ring and a sparkle as yarn is picked up.',
+  ] },
   { v:'0.167.0', date:'2026-11-11', items:[
     'Two achievements for Pond Skate: Not a Slide Wasted (skate 10 ponds in exactly their shortest route) and Thin Ice Waltz (skate a pond with thin ice in exactly its shortest route).',
   ] },
@@ -17520,17 +17531,22 @@ const MODES = {
       function go(d){
         if (busy || done) return;
         const s = step(pond, at, d, mask, cracked);
-        if (!s){ ctx.slip(); cat.classList.remove('bump'); void cat.offsetWidth; cat.classList.add('bump'); buzz('step'); return; }
+        if (!s){ ctx.slip(); cat.classList.remove('bump'); void cat.offsetWidth; cat.classList.add('bump'); sfx.bump(); buzz('step'); return; }
         busy = true; moves++;
         const from = at; at = s.to;
         const dist = Math.max(1, s.path.length);
         const ms = motionOff() ? 0 : 70 + dist * 60;
         place(ms);
-        sfx.tap();
+        sfx.glide(dist);
         ctx.after(ms, () => {
           busy = false;
-          s.path.forEach(q => { if (pond.yarnAt[q] >= 0 && !((mask >> pond.yarnAt[q]) & 1)){ cellEl[q].classList.add('got'); ctx.points(20, cellEl[q]); } });
-          [from].concat(s.path.slice(0, -1)).forEach(q => { if (pond.thinAt[q] >= 0){ cellEl[q].classList.remove('thin'); cellEl[q].classList.add('water'); } });
+          s.path.forEach(q => { if (pond.yarnAt[q] >= 0 && !((mask >> pond.yarnAt[q]) & 1)){
+            cellEl[q].classList.add('got'); ctx.points(20, cellEl[q]); sfx.pickup();
+            if (!motionOff()){ const b = Vfx.box(cellEl[q]); Vfx.spray('radial', b.x, b.y, 7, { k: ['star', 'dot'], pal: ['#FF8AD8', '#FFF3E6', '#CFEFFF'] }); }
+          } });
+          let cracks = 0;
+          [from].concat(s.path.slice(0, -1)).forEach(q => { if (pond.thinAt[q] >= 0 && cellEl[q].classList.contains('thin')){ cellEl[q].classList.remove('thin'); cellEl[q].classList.add('water'); cracks++; } });
+          if (cracks) sfx.crack();
           mask = s.mask; cracked = s.cracked;
           say();
           if (at === pond.goal && mask === full){

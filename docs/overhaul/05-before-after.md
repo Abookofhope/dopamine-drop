@@ -485,6 +485,16 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | Achievements for Pond Skate | none (the earlier new games each had their own) | Not a Slide Wasted: 10 ponds in exactly their shortest route (80 yarn); Thin Ice Waltz: a pond with thin ice in exactly its shortest route (150 yarn); both reward skating well, not skating a lot |
 | `skate.mjs` | 18 checks | 22: the game counts each pond skated in its shortest route at three levels, and the counts earn both achievements |
 
+## v0.168.0: Pond Skate sounds like ice (juice on the verb)
+
+| What | Before | After |
+|---|---|---|
+| A slide | the generic tap | a swish: a falling sine, longer for a longer slide |
+| A bump into a snowbank | a buzz only | a soft thud (a low triangle) and the buzz |
+| Thin ice cracking | silent; the cell changed | a two-note crack; the water appears with a short flash (motion only) |
+| Yarn picked up | points only | a ring and a burst of stars and dots in the game's own signature (motion only) |
+| `skate.mjs` | 22 checks | 24: the probe wraps the page's oscillators and hears a sine on a slide and a low triangle on a bump (both fail on v0.167.0); its closed-pond search goes four slides deep over sixteen ponds, after three over eight missed once in five runs |
+
 ## How to reproduce
 
 ```
