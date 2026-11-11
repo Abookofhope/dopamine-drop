@@ -149,6 +149,10 @@ const movieState = page => page.evaluate(() => { const v = document.getElementBy
   const t0 = Date.now();
   await page.waitForTimeout(700);
   if (OUT) await page.screenshot({ path: `${OUT}/reduced.png` });
+  /* v0.177.2: the gold light round the finished name has settled (the page reports the share left: 1 is all of it) */
+  const fr = frameDoc(page);
+  const glow = fr ? await fr.evaluate(() => document.body.dataset.glow || '') : '';
+  check(glow !== '' && +glow > 0 && +glow <= 0.5, `with Reduce motion the name's gold light is under half of what it was (${glow || 'not reported'})`);
   const left = await page.waitForFunction(() => document.getElementById('bootSplash').hidden, null, { timeout: 8000, polling: 100 }).then(() => true, () => false);
   const took = (Date.now() - t0) / 1000;
   check(left && took < 4, `with Reduce motion it shows the finished name and leaves within a few seconds (${took.toFixed(1)} s)`);

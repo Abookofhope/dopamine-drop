@@ -60,6 +60,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.172.0 | A new game, Puddle Hop: the 46th |
 | v0.173.0 | Puddle Hop's own sounds |
 | v0.177.1 | The intro's cracks run to the edges, and it ends like a television being switched off, on black |
+| v0.177.2 | The gold light round the intro's finished name is dimmer: about a third |
 
 ## Ground rules the work follows
 
