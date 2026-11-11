@@ -1756,6 +1756,10 @@ html[data-motion="on"] .thread i.pop{animation:knotPop 420ms var(--e-spring)}
 /* Make it yours: accessories, the treat jar, a name, kits, stations, the style card. */
 .palextras{margin-top:14px;padding-top:12px;border-top:1px solid var(--edge-soft);display:flex;flex-direction:column;gap:10px}
 .pxh{font-size:calc(10px*var(--ts));font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--haze)}
+.sesfeel,.sesnote{margin-top:10px !important}
+.seshead{margin:16px 0 0;font-size:calc(13px*var(--ts))}
+.seshead b{font-weight:800}
+.seshead small{font-size:calc(12px*var(--ts));color:var(--haze)}
 .pxnote{margin:0;font-size:calc(11.5px*var(--ts));color:var(--haze)}
 .accrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .accbtn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;min-height:44px;border-radius:12px;
@@ -1820,6 +1824,15 @@ html[data-motion="on"] .qpatch.stitched{animation:stitchIn 900ms var(--e-spring)
 .resumeCard .rt b{font-size:calc(15px*var(--ts));font-weight:800}
 .resumeCard .rt small{font-size:calc(12px*var(--ts));color:var(--haze)}
 .resumeCard .resumeGo{grid-area:go;min-height:44px;padding:0 16px}
+/* The check-in (0.174.0): three words as full-size targets, on the menu before a session and on Game Over after
+   it. Off until the player switches it on, and never in the way of playing. */
+.feelrow{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;padding:10px 12px;margin:0 0 12px;border-radius:var(--r-lg);
+  border:1px solid color-mix(in srgb, #CDBCF7 45%, transparent);background:color-mix(in srgb, #CDBCF7 8%, var(--ink-2))}
+.feelrow[hidden]{display:none}
+.feelrow > b{flex:1 1 auto;font-size:calc(14px*var(--ts));font-weight:800}
+.feelbtns{display:flex;gap:6px;flex:1 1 220px}
+.feelbtns button{flex:1;min-height:44px;min-width:44px;border-radius:12px;border:1px solid var(--edge-soft);color:var(--haze);font-weight:800;font-size:calc(14px*var(--ts))}
+.feelbtns button[aria-pressed="true"]{background:#CDBCF7;border-color:#CDBCF7;color:#1A0A04}
 .resumeCard .resumeDrop{grid-area:drop;min-height:44px;padding:0 12px;font-size:calc(12px*var(--ts))}
 /* Tuck in: the room at night. */
 .tuck{position:fixed;inset:0;z-index:96;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
@@ -4257,6 +4270,14 @@ html[data-motion="off"] .pondcat.bump svg{animation:none}
             <button class="cta resumeGo" id="resumeGo" type="button" data-i18n="resume.go">Resume</button>
             <button class="ghost resumeDrop" id="resumeDrop" type="button" data-i18n="resume.drop">Let it go</button>
           </div>
+          <div class="feelrow" id="feelBefore" role="group" aria-labelledby="feelBeforeL" hidden>
+            <b id="feelBeforeL" data-i18n="feel.before">Right now I feel</b>
+            <span class="feelbtns">
+              <button type="button" data-feel="1" aria-pressed="false" data-i18n="feel.1">Low</button>
+              <button type="button" data-feel="2" aria-pressed="false" data-i18n="feel.2">Okay</button>
+              <button type="button" data-feel="3" aria-pressed="false" data-i18n="feel.3">Good</button>
+            </span>
+          </div>
           <button class="dailyCard" id="dailyStatus" type="button">
             <span class="di" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C12 3 6 10 6 14a6 6 0 0 0 12 0C18 10 12 3 12 3z"/></svg></span>
             <span class="dt"><b data-i18n="daily.title">Daily Drop</b><small id="dailyStatusLine"></small></span>
@@ -4520,6 +4541,20 @@ html[data-motion="off"] .pondcat.bump svg{animation:none}
         </div>
         <div class="statgrid" style="margin-top:8px;grid-template-columns:1fr">
           <div class="stat"><b id="sFavFam">—</b><small data-i18n="stats.favFam">Favourite family</small></div>
+        </div>
+        <!-- Your sessions (0.174.0): counted on this device, never sent anywhere. They live in this panel rather than a
+             fifth one (You stays four panels and about a screen); the check-in switch sits beside what it adds to. -->
+        <p class="seshead"><b data-i18n="ses.title">Your sessions</b> <small><u id="sesCount"></u></small></p>
+        <div class="statgrid" style="margin-top:6px">
+          <div class="stat"><b id="sesLen">—</b><small data-i18n="ses.len">Typical session</small></div>
+          <div class="stat"><b id="sesFirst">—</b><small data-i18n="ses.first">First point in</small></div>
+          <div class="stat"><b id="sesCozy">—</b><small data-i18n="ses.cozy">Runs through Cozy</small></div>
+        </div>
+        <p class="pxnote sesfeel" id="sesFeel" hidden></p>
+        <p class="pxnote sesnote" id="sesNote"></p>
+        <div class="setrow">
+          <span class="txt"><b data-i18n="feel.set">Check in before and after</b><small data-i18n="feel.setSub">One tap when a session starts and one when it ends: how you feel. Kept on this device.</small></span>
+          <button class="sw" id="swFeel" role="switch" aria-checked="false" data-i18n-aria="feel.set" aria-label="Check in before and after"></button>
         </div>
           </div></div>
         </section>
@@ -4986,6 +5021,14 @@ html[data-motion="off"] .pondcat.bump svg{animation:none}
         <span class="sp"></span><small id="yarnNote"></small>
       </div>
       <div class="recap" id="recap" hidden></div>
+      <div class="feelrow" id="feelAfter" role="group" aria-labelledby="feelAfterL" hidden>
+        <b id="feelAfterL" data-i18n="feel.after">And now?</b>
+        <span class="feelbtns">
+          <button type="button" data-feel="1" aria-pressed="false" data-i18n="feel.1">Low</button>
+          <button type="button" data-feel="2" aria-pressed="false" data-i18n="feel.2">Okay</button>
+          <button type="button" data-feel="3" aria-pressed="false" data-i18n="feel.3">Good</button>
+        </span>
+      </div>
       <div class="goalstrip" id="goalStrip" hidden><small data-i18n="goal.label">Next up</small><b id="goalLine"></b></div>
       <div class="heldlist" id="overHeld" hidden></div>
       <button class="perkcall over tuckcall" id="tuckBtn" type="button" style="--cink:#CDBCF7">
@@ -5233,7 +5276,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.173.0';
+const VERSION_TAG = 'v0.174.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -5253,6 +5296,8 @@ const defaults = {
   lifetime:0, perks:[], perkLv:{}, tokens:0, introSeen:false,
   dailyStreak:0, dailyLast:null, dailyBestStreak:0, dailyBonusAt:0, purrfects:0, bows:0, slog:{}, glog:'', quiltSeen:{}, miles:{}, bestPurrRun:0,
   lastMode:null, onboarded:false,
+  /* Your sessions and the check-in (0.174.0): kept here, never sent. */
+  sessions:[], feelCheck:false,
   tapes:[], tapeId:null,
   /* Which modes the player has ever met, so a first look can be taught
      once and then never mentioned again. */
@@ -6351,7 +6396,7 @@ const STRINGS = {
     'set.volume':'Volume', 'set.volumeSub':'How loud every sound is', 'set.contrast':'High contrast',
     'set.contrastSub':'Brighter text and clearer edges', 'set.flash':'Screen flashes', 'set.flashSub':'The colour wash on every solve and miss',
     /* stats, recap, share, welcome */
-    'wc.p4':'A cat rides along and does something for you', 'stats.activity':'Last 14 days', 'stats.actTotal':'{n} solved',
+    'wc.p4':'A cat rides along and does something for you', 'ses.title':'Your sessions', 'ses.count':'Sessions: {n}', 'ses.tucks':'{n} tucked in', 'ses.len':'Typical session', 'ses.first':'First point in', 'ses.cozy':'Runs through Cozy', 'ses.min':'{n} min', 'ses.sec':'{n} s', 'ses.none':'A session starts with your first run after half an hour away.', 'ses.local':'Counted on this device. Nothing here is ever sent anywhere.', 'feel.set':'Check in before and after', 'feel.setSub':'One tap when a session starts and one when it ends: how you feel. Kept on this device.', 'feel.before':'Right now I feel', 'feel.after':'And now?', 'feel.1':'Low', 'feel.2':'Okay', 'feel.3':'Good', 'feel.sum':'After playing, of {n} check-ins: {up} better, {same} the same, {down} lower. A note to yourself, not a measurement.', 'stats.activity':'Last 14 days', 'stats.actTotal':'{n} solved',
     'stats.yarnEver':'Yarn earned', 'stats.cats':'Cats', 'stats.roomGrade':'Room grade',
     'stats.favFam':'Favourite family', 'stats.topRanks':'Top ranks', 'stats.charms':'Charms tried',
     'stats.wishes':'Wishes granted', 'over.recapFast':'Fastest solve: {s}s · {name}', 'over.recapMost':'Most played: {name} ×{n}', 'share.text':'Dopamine Drop · {kind} · {score} points · {solved} solved · best streak {streak}',
@@ -6877,7 +6922,7 @@ const STRINGS = {
     'set.volume':'Volume', 'set.volumeSub':'Le niveau de tous les sons', 'set.contrast':'Contraste élevé',
     'set.contrastSub':'Texte plus clair et bords plus nets', 'set.flash':'Éclats d’écran', 'set.flashSub':'La lueur de couleur à chaque réussite et raté',
     /* stats, recap, share, welcome */
-    'wc.p4':'Un chat vous accompagne et vous aide', 'stats.activity':'Les 14 derniers jours', 'stats.actTotal':'{n} réussites',
+    'wc.p4':'Un chat vous accompagne et vous aide', 'ses.title':'Vos sessions', 'ses.count':'Sessions : {n}', 'ses.tucks':'{n} bordées', 'ses.len':'Session typique', 'ses.first':'Premier point en', 'ses.cozy':'Parties par Douillet', 'ses.min':'{n} min', 'ses.sec':'{n} s', 'ses.none':'Une session commence à votre première partie après une demi-heure d’absence.', 'ses.local':'Compté sur cet appareil. Rien ici n’est jamais envoyé.', 'feel.set':'Faire le point avant et après', 'feel.setSub':'Un toucher au début d’une session et un à la fin : comment vous vous sentez. Gardé sur cet appareil.', 'feel.before':'En ce moment, je me sens', 'feel.after':'Et maintenant ?', 'feel.1':'Bas', 'feel.2':'Correct', 'feel.3':'Bien', 'feel.sum':'Après avoir joué, sur {n} points faits : {up} mieux, {same} pareil, {down} moins bien. Une note pour vous, pas une mesure.', 'stats.activity':'Les 14 derniers jours', 'stats.actTotal':'{n} réussites',
     'stats.yarnEver':'Laine gagnée', 'stats.cats':'Chats', 'stats.roomGrade':'Niveau atelier',
     'stats.favFam':'Famille préférée', 'stats.topRanks':'Rangs suprêmes', 'stats.charms':'Charmes essayés',
     'stats.wishes':'Souhaits exaucés', 'over.recapFast':'Réussite la plus rapide : {s} s · {name}', 'over.recapMost':'Le plus joué : {name} ×{n}', 'share.text':'Dopamine Drop · {kind} · {score} points · {solved} réussites · meilleure série {streak}',
@@ -7402,7 +7447,7 @@ const STRINGS = {
     'set.volume':'Volumen', 'set.volumeSub':'Lo fuerte que suena todo', 'set.contrast':'Alto contraste',
     'set.contrastSub':'Texto más brillante y bordes más claros', 'set.flash':'Destellos de pantalla', 'set.flashSub':'El destello de color en cada acierto y fallo',
     /* stats, recap, share, welcome */
-    'wc.p4':'Un gato te acompaña y te ayuda', 'stats.activity':'Últimos 14 días', 'stats.actTotal':'{n} aciertos',
+    'wc.p4':'Un gato te acompaña y te ayuda', 'ses.title':'Tus sesiones', 'ses.count':'Sesiones: {n}', 'ses.tucks':'{n} a dormir', 'ses.len':'Sesión típica', 'ses.first':'Primer punto en', 'ses.cozy':'Partidas por Acogedor', 'ses.min':'{n} min', 'ses.sec':'{n} s', 'ses.none':'Una sesión empieza con tu primera partida tras media hora fuera.', 'ses.local':'Contado en este dispositivo. Nada de aquí se envía nunca.', 'feel.set':'Cómo estás, antes y después', 'feel.setSub':'Un toque al empezar una sesión y otro al acabar: cómo te sientes. Se guarda en este dispositivo.', 'feel.before':'Ahora mismo me siento', 'feel.after':'¿Y ahora?', 'feel.1':'Bajo', 'feel.2':'Regular', 'feel.3':'Bien', 'feel.sum':'Después de jugar, de {n} respuestas: {up} mejor, {same} igual, {down} peor. Una nota para ti, no una medición.', 'stats.activity':'Últimos 14 días', 'stats.actTotal':'{n} aciertos',
     'stats.yarnEver':'Lana ganada', 'stats.cats':'Gatos', 'stats.roomGrade':'Nivel del taller',
     'stats.favFam':'Familia favorita', 'stats.topRanks':'Rangos máximos', 'stats.charms':'Amuletos probados',
     'stats.wishes':'Deseos cumplidos', 'over.recapFast':'Acierto más rápido: {s} s · {name}', 'over.recapMost':'Más jugado: {name} ×{n}', 'share.text':'Dopamine Drop · {kind} · {score} puntos · {solved} aciertos · mejor racha {streak}',
@@ -7927,7 +7972,7 @@ const STRINGS = {
     'set.volume':'Lautstärke', 'set.volumeSub':'Wie laut alles klingt', 'set.contrast':'Hoher Kontrast',
     'set.contrastSub':'Hellerer Text und klarere Kanten', 'set.flash':'Bildschirmblitze', 'set.flashSub':'Das Farbaufblitzen bei jedem Treffer und Fehler',
     /* stats, recap, share, welcome */
-    'wc.p4':'Eine Katze begleitet dich und hilft dir', 'stats.activity':'Letzte 14 Tage', 'stats.actTotal':'{n} gelöst',
+    'wc.p4':'Eine Katze begleitet dich und hilft dir', 'ses.title':'Deine Sitzungen', 'ses.count':'Sitzungen: {n}', 'ses.tucks':'{n} zugedeckt', 'ses.len':'Typische Sitzung', 'ses.first':'Erster Punkt nach', 'ses.cozy':'Runden über Gemütlich', 'ses.min':'{n} Min.', 'ses.sec':'{n} s', 'ses.none':'Eine Sitzung beginnt mit deiner ersten Runde nach einer halben Stunde Pause.', 'ses.local':'Auf diesem Gerät gezählt. Nichts davon wird je gesendet.', 'feel.set':'Vorher und nachher nachfragen', 'feel.setSub':'Ein Tipp, wenn eine Sitzung beginnt, und einer, wenn sie endet: wie du dich fühlst. Bleibt auf diesem Gerät.', 'feel.before':'Gerade fühle ich mich', 'feel.after':'Und jetzt?', 'feel.1':'Mies', 'feel.2':'Okay', 'feel.3':'Gut', 'feel.sum':'Nach dem Spielen, bei {n} Antworten: {up} besser, {same} gleich, {down} schlechter. Eine Notiz für dich, keine Messung.', 'stats.activity':'Letzte 14 Tage', 'stats.actTotal':'{n} gelöst',
     'stats.yarnEver':'Wolle verdient', 'stats.cats':'Katzen', 'stats.roomGrade':'Werkstattstufe',
     'stats.favFam':'Lieblingsfamilie', 'stats.topRanks':'Höchste Ränge', 'stats.charms':'Glücksbringer probiert',
     'stats.wishes':'Erfüllte Wünsche', 'over.recapFast':'Schnellster Treffer: {s} s · {name}', 'over.recapMost':'Am häufigsten: {name} ×{n}', 'share.text':'Dopamine Drop · {kind} · {score} Punkte · {solved} gelöst · beste Serie {streak}',
@@ -8241,6 +8286,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.174.0', date:'2026-11-11', items:[
+    'Your sessions, in the Last 14 days panel under Progress: how long a session of play usually lasts, how soon its first point comes, how many runs go through the Cozy door and how many sessions end tucked in. It is counted on this device and never sent anywhere.',
+    'An optional check-in, off until you switch it on there: one tap when a session starts and one when it ends, Low, Okay or Good, and a line saying how often you finished feeling better, the same or lower. A note to yourself, not a measurement.',
+  ] },
   { v:'0.173.0', date:'2026-11-11', items:[
     'Puddle Hop has its own sounds: a hop springs up, and the cat lands softly on its stone.',
   ] },
@@ -20713,6 +20762,59 @@ function backupInfo(){ try { const o = JSON.parse(localStorage.getItem(BACKUP_KE
    dark, the cats riding along curl up asleep, a music box plays the home chord, and one line says what the session
    held. No offer, no countdown, nothing to collect. After half an hour of play in one sitting it is the first thing
    Game Over offers, once. */
+/* Your sessions (0.174.0): the roadmap's Insight row, the part that needs no server. What your sessions look like,
+   counted on this device and never sent anywhere. A session starts with a run after half an hour away (the half hour
+   Tuck in also waits for) and holds its play time, how long its first point took, its runs, how many of them went
+   through the Cozy door, and whether it ended tucked in. The last thirty are kept.
+   The check-in is off until switched on: one tap before a session and one after it, Low, Okay or Good, so a player can
+   see for themselves whether a few minutes here leaves them where they hoped. It is a note to yourself, not a
+   measurement of anything, and the summary says so. */
+const Sess = {
+  GAP: 30 * 60000, MAX: 30,
+  list(){ return Array.isArray(save.sessions) ? save.sessions : (save.sessions = []); },
+  cur(){ const l = this.list(), s = l[l.length - 1]; return s && Date.now() - (s.last || s.start) < this.GAP ? s : null; },
+  open(){
+    let s = this.cur();
+    if (!s){ s = { start: Date.now(), last: 0, ms: 0, first: null, runs: 0, cozy: 0, tuck: false, b: 0, a: 0 }; const l = this.list(); l.push(s); while (l.length > this.MAX) l.shift(); }
+    s.last = Date.now(); return s;
+  },
+  run(){ const s = this.open(); s.runs++; if (save.door === 'cozy') s.cozy++; },
+  solve(){ const s = this.open(); if (s.first == null) s.first = s.last - s.start; },
+  end(ms){ const s = this.open(); s.ms += Math.max(0, Math.round(ms || 0)); },
+  tuck(){ this.open().tuck = true; persist(); },
+  feel(which, v){ this.open()[which] = v; persist(); },
+  sum(){
+    const l = this.list().filter(s => s.runs > 0), runs = l.reduce((n, s) => n + s.runs, 0), pairs = l.filter(s => s.b && s.a);
+    const med = a => { if (!a.length) return null; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
+    return { n: l.length, len: med(l.map(s => s.ms)), first: med(l.filter(s => s.first != null).map(s => s.first)),
+      cozy: runs ? l.reduce((n, s) => n + s.cozy, 0) / runs : 0, tucks: l.filter(s => s.tuck).length,
+      pairs: pairs.length, up: pairs.filter(s => s.a > s.b).length, same: pairs.filter(s => s.a === s.b).length, down: pairs.filter(s => s.a < s.b).length };
+  },
+};
+function paintFeel(){
+  const on = !!save.feelCheck, s = Sess.cur(), pre = $('feelBefore'), post = $('feelAfter');
+  pre.hidden = !(on && (!s || s.runs === 0));
+  post.hidden = !(on && s && s.b);
+  [[pre, s && s.b], [post, s && s.a]].forEach(([box, v]) =>
+    box.querySelectorAll('[data-feel]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.feel === v))));
+}
+function paintSessions(){
+  const m = Sess.sum(), dash = '\u2014';
+  $('sesCount').textContent = t('ses.count', { n: fmt(m.n) }) + (m.tucks ? ' \u00b7 ' + t('ses.tucks', { n: fmt(m.tucks) }) : '');
+  $('sesLen').textContent = !m.n ? dash : t('ses.min', { n: m.len < 60000 ? '<1' : fmt(m.len / 60000) });
+  $('sesFirst').textContent = m.first == null ? dash : m.first < 90000 ? t('ses.sec', { n: fmt(Math.max(1, m.first / 1000)) }) : t('ses.min', { n: fmt(m.first / 60000) });
+  $('sesCozy').textContent = m.n ? fmt(m.cozy * 100) + '%' : dash;
+  $('sesNote').textContent = (m.n ? '' : t('ses.none') + ' ') + t('ses.local');
+  const f = $('sesFeel'); f.hidden = !m.pairs;
+  if (m.pairs) f.textContent = t('feel.sum', { n: fmt(m.pairs), up: fmt(m.up), same: fmt(m.same), down: fmt(m.down) });
+  $('swFeel').setAttribute('aria-checked', String(!!save.feelCheck));
+}
+/* For probes: age the current session past the half hour, or lay down a known history. */
+try { if (localStorage.getItem('dd.probe')) window.__sess = { age: ms => { const l = Sess.list(); if (l.length) l[l.length - 1].last -= ms; paintFeel(); },
+  set: list => { save.sessions = list; paintSessions(); paintFeel(); }, open: () => Sess.open(), count: () => Sess.list().length }; } catch(e){}
+document.querySelectorAll('.feelrow [data-feel]').forEach(b => b.addEventListener('click', () => {
+  Sess.feel(b.closest('.feelrow').id === 'feelBefore' ? 'b' : 'a', +b.dataset.feel); sfx.tap(); paintFeel(); paintSessions();
+}));
 let session = { ms: 0, solved: 0, tucked: false };
 function tuckIn(){
   const box = $('tuck'); if (!box) return;
@@ -20722,7 +20824,7 @@ function tuckIn(){
   box.hidden = false;
   if (!motionOff()) box.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 900, easing: 'ease-out' });
   if (save.sound) [523, 659, 784, 1047, 784].forEach((f, i) => setTimeout(() => tone(f, 0.9, 'sine', 0.028), 300 + i * 420));
-  session.tucked = true;
+  session.tucked = true; Sess.tuck();
   const close = () => {
     if (box.hidden) return;
     clearTimeout(box._t); box.onclick = null;
@@ -21830,6 +21932,7 @@ function resolve(ok, node){
     const before = Prog.levelForXp(save.xp);
     save.xp += Prog.xpForSolve(mult);
     save.solved = (save.solved || 0) + 1;
+    Sess.solve();
     persist();
     /* The first solve a player ever makes is the moment the game has been explaining. */
     if (save.solved === 1) announceToast({ ink:'#33E6C8',
@@ -22117,7 +22220,7 @@ function startRun(kind, modeId, twistId, poolIds, gate, resume){
   try { if (kind === 'daily' && localStorage.getItem('dd.probe') && localStorage.getItem('dd.pool')) run.bag = run.bag.map((_, i) => run.pool[i % run.pool.length]); } catch(e){}
   if (!save.runs && (kind === 'shuffle' || kind === 'endless'))
     run.opening = OPENING_MODES.filter(id => run.pool.indexOf(id) >= 0);
-  if (!resume) save.runs++;
+  if (!resume){ save.runs++; Sess.run(); }
   persist();
   pendingLevel = 0;
 
@@ -22496,6 +22599,7 @@ function endRun(){
     if (g) $('goalLine').textContent = t(g.key, g.args);
     paintHeld();
     session.ms += r.playMs || 0; session.solved += r.solved || 0;
+    Sess.end(r.playMs); persist(); paintFeel();
     const tb = $('tuckBtn');
     tb.classList.toggle('first', session.ms >= 30 * 60000 && !session.tucked);
     if (tb.classList.contains('first')) tb.parentNode.insertBefore(tb, tb.parentNode.firstChild.nextSibling);
@@ -22855,6 +22959,7 @@ function paintPlay(){
   $('playHome').hidden = playView !== 'home';
   $('playMyStuff').hidden = playView !== 'myStuff';
   $('playGate').hidden = playView !== 'gate';
+  paintFeel();
   if (playView === 'gate') paintGate();
 
   const chosen = tapeModes(), tape = activeTape();
@@ -23297,6 +23402,7 @@ function paintStats(){
   $('sMastered').textContent = masteredCount() + '/' + MODE_IDS.length;
   $('sStars').textContent = totalStars() + '/' + (MODE_IDS.length*3);
   paintActivity();
+  paintSessions();
   countTo($('sYarnEver'), save.yarnEver || 0);
   $('sCats').textContent = Object.keys(save.pals || {}).length + '/' + PALS.length;
   $('sRoomG').textContent = Room.level() + '/24';
@@ -23384,7 +23490,7 @@ function paintSettings(){
      made from another tab, this screen is hidden and every width measures zero.
      Painting happens when it is on screen. */
   levelSettingButtons();
-  [['swSound','sound'],['swMusic','music'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swEasy','easyRead'],['swAdapt','adaptive'],['swCaps','captions']]
+  [['swSound','sound'],['swMusic','music'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swEasy','easyRead'],['swAdapt','adaptive'],['swCaps','captions'],['swFeel','feelCheck']]
     .forEach(([id,key]) => $(id).setAttribute('aria-checked', String(!!save[key])));
   $('swFlashes').setAttribute('aria-checked', String(save.flashes !== false));
   $('swBig').setAttribute('aria-checked', String(save.bigFx !== false));
@@ -24168,7 +24274,7 @@ $('quitBtn').addEventListener('click', () => {
   run = null; clearBoard(); goTab('Play');
 });
 
-[['swSound','sound'],['swMusic','music'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swFlashes','flashes'],['swBig','bigFx'],['swEasy','easyRead'],['swAdapt','adaptive'],['swCaps','captions']]
+[['swSound','sound'],['swMusic','music'],['swHaptics','haptics'],['swMotion','reduceMotion'],['swAssist','colorAssist'],['swContrast','contrast'],['swFlashes','flashes'],['swBig','bigFx'],['swEasy','easyRead'],['swAdapt','adaptive'],['swCaps','captions'],['swFeel','feelCheck']]
   .forEach(([id, key]) => {
     const sw = $(id);
     const flip = () => {
@@ -24181,6 +24287,7 @@ $('quitBtn').addEventListener('click', () => {
       }
       if (key === 'contrast') applyContrast();
       if (key === 'easyRead') applyEasyRead();
+      if (key === 'feelCheck'){ paintSessions(); paintFeel(); }
       persist(); paintSettings();
       if (key === 'sound' && save.sound) sfx.tap();
       if (key === 'haptics' && save.haptics) buzz('good');

@@ -56,6 +56,7 @@ nothing ships on a red probe.
 | v0.170.0 | 0b1646e | accessibility: Pond Skate's board names where the cat, the basket and the yarn are (row and column) and which ways the cat can slide, after every slide, in four languages; the independent review still needs external testers |
 | v0.171.0 | 2c1c55c | platforms, tablets on their side: play in two panes (the score and the round's chips on the left, the board at nearly the full height on the right), menus, sheets and the header kept to the 640px column; all 45 boards checked in two panes |
 | v0.172.0 | 2c1c55c | content: Puddle Hop, the 46th game (numbers family; Calm door), built to the README checklist and stopped by the gate until its probe existed: fixed-distance hops, every board searched before it is dealt, budget from the true minimum, dead ends announced, Hint, read aloud, keyboard, an achievement |
+| v0.174.0 | see the log | AAA, Insight (the on-device part): Your sessions in the Last 14 days panel under Progress (typical session, time to a first point, the Cozy share, tuck-ins), counted on the device and never sent; an opt-in check-in before and after a session (Low, Okay, Good) with a before-and-after line labelled as a note, not a measurement; `sessions.mjs` checks that every request stays on the game's own server |
 | v0.173.0 | see the log | Puddle Hop's verb gets its own sound: a hop springs (a rising sine) and lands (a low triangle), heard by `puddle.mjs` through the page's oscillators |
 
 ### Cut lists (what each release drops first if it runs long)
@@ -79,7 +80,7 @@ nothing ships on a red probe.
 | Content | a new game each season, built to the same rules (stability, signature, four languages, probes) | design time |
 | Accessibility | an independent review: screen readers on iOS and Android, a photosensitivity analysis, a motor-impairment pass; keyboard play on every board | external testers |
 | Languages | +6 (pt, it, nl, pl, ja, ko) | translators |
-| Insight | opt-in analytics that stay on the device by default, aggregate-only: first-win time, session length, door chosen, Tuck in use; a one-tap mood check before and after a session (opt-in), to test the five-minute promise directly | a privacy review |
+| Insight | opt-in analytics that stay on the device by default, aggregate-only: first-win time, session length, door chosen, Tuck in use; a one-tap mood check before and after a session (opt-in), to test the five-minute promise directly (the on-device part, session length, first point, door, Tuck in and the check-in, shipped in v0.174.0) | a privacy review |
 | Social | friend codes and a private weekly Daily league among friends only, still serverless where possible | design and a privacy review |
 
 ## Measures of success at each stage

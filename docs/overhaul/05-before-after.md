@@ -542,6 +542,15 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | A hop | the numbers family's bell, like any tap | a spring (a sine rising by half) as the cat jumps, and a soft landing (a low triangle) on the stone, in the numbers key |
 | `puddle.mjs` | 21 checks | 22: hears a sine and then a low triangle on a hop (fails on v0.172.0, which plays the bell) |
 
+## v0.174.0: Your sessions, and a check-in you switch on (Insight, on the device)
+
+| What | Before | After |
+|---|---|---|
+| Session length, first point, door, Tuck in | not counted anywhere (the roadmap's Insight row waited on a backend and a privacy review) | counted on the device for the last thirty sessions and shown as medians in the Last 14 days panel under Progress (a fifth panel broke the four-panel, one-screen rule `panels.mjs` holds); nothing is sent, so no backend and no data leaves the phone |
+| Does a session leave you better? | no way to tell | an opt-in check-in: one tap before (on the menu) and one after (on Game Over), Low, Okay or Good; the card says how often you finished better, the same or lower, and that it is a note to yourself, not a measurement |
+| A session | — | the first run after half an hour away (the half hour Tuck in uses) starts one |
+| `sessions.mjs` (new) | — | 24 of 24; fails on v0.173.0 (no card) |
+
 ## How to reproduce
 
 ```
