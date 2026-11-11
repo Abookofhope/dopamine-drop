@@ -2642,7 +2642,9 @@ html[data-hand] .pausebox > :last-child{margin-bottom:0}
 .setrow .txt{flex:1;min-width:0}
 .setrow .txt b{display:block;font-size:calc(14px*var(--ts));font-weight:650}
 .setrow .txt small{display:block;font-size:calc(11.5px*var(--ts));color:var(--haze);line-height:1.4}
-.sw{width:46px;height:27px;border-radius:99px;flex:none;position:relative;background:var(--ink-3);border:1px solid var(--edge);transition:background var(--t-fast),border-color var(--t-fast)}
+/* An off switch's outline is what makes it read as a switch and not a dot: 3.9:1 against its card (WCAG 1.4.11; it was
+   --edge, 1.3:1, measured by nontext.mjs in 0.177.0). */
+.sw{width:46px;height:27px;border-radius:99px;flex:none;position:relative;background:var(--ink-3);border:1px solid #7B69CC;transition:background var(--t-fast),border-color var(--t-fast)}
 .sw::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--haze);transition:transform var(--t-fast),background var(--t-fast)}
 .sw[aria-checked="true"]{background:var(--cool);border-color:var(--cool)}
 .sw[aria-checked="true"]::after{transform:translateX(19px);background:var(--ink)}
@@ -3265,6 +3267,7 @@ html[data-motion="off"] .charm{animation:none}
 /* High contrast: the same room, with the faint things made plain. Only the tokens
    change, so nothing has to be restyled and nothing can be missed. */
 html.hc{--haze:#D6CEF0;--edge:#6553B8;--edge-soft:#4A3B90}
+html.hc .sw:not([aria-checked="true"]){border-color:#A99CE6}
 html.hc .note,html.hc small{color:#D6CEF0}
 html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html.hc .decor{border-color:#6553B8}
 .sliderrow{gap:14px}
@@ -5287,7 +5290,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.176.0';
+const VERSION_TAG = 'v0.177.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -8297,6 +8300,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.177.0', date:'2026-11-11', items:[
+    'A switch that is off now has an outline you can see, so it reads as a switch rather than a dot. Every part of a control that says what it is or whether it is on now stands out from what is around it.',
+  ] },
   { v:'0.176.0', date:'2026-11-11', items:[
     'Patchwork can be played without dragging: tap a patch in the tray to turn it, which also picks it (it is ringed), then tap a square of the quilt to lay it there. If it does not fit around that square, the square flashes and nothing is spent. Dragging works as before.',
     'Snip and Chalk Line can be played without swiping or drawing: tap where a line starts (a ring marks it), then tap where it ends. Snip cuts everything that straight line crosses; Chalk Line chalks it with the same ink a drawn line takes. Every game can now be played with taps alone.',

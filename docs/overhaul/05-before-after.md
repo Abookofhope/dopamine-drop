@@ -570,6 +570,14 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | `forge.mjs` | dragged every patch | TAP=1 lays every patch with taps: nine quilts finished, 49 of 50 patches where aimed |
 | `taponly.mjs` | 13 checks | 25: Patchwork's choose check, a hint-led quilt by taps, the TAP=1 run of `forge.mjs`, Snip won at two levels by two-tap snips, Chalk Line's answer laid by two-tap lines and won at two levels |
 
+## v0.177.0: an off switch you can see (WCAG 1.4.11)
+
+| What | Before | After |
+|---|---|---|
+| An off switch's outline against its card | 1.39:1 (`--edge`), so an off switch read as a knob on its own | 4.31:1 (#7B69CC); 7.82:1 in High contrast |
+| Knobs, tracks, focus ring, chevrons, tab icons | not measured | measured on the pixels: 5.80:1 to 13.06:1 |
+| `nontext.mjs` (new) | — | 14 of 14; fails on v0.176.0 (the off outline) |
+
 ## How to reproduce
 
 ```
