@@ -30,6 +30,17 @@ if not index.is_file():
     sys.exit(1)
 
 html = index.read_text(encoding="utf-8")
+# Since 0.165.0 the game's script is built into app.js. The page must load it and the worker must cache it; every check
+# below reads the page with the script put back where it came from, so none of them changes.
+app = OUT / "app.js"
+check("app.js exists", app.is_file())
+_app_tag = re.search(r'<script src="app\.js\?v=([0-9a-f]{12})"></script>', html)
+check("the page loads app.js, named by its content", bool(_app_tag))
+if app.is_file() and _app_tag:
+    import hashlib
+    _app_text = app.read_text(encoding="utf-8")
+    check("app.js's name is its own hash", hashlib.sha256(_app_text.encode("utf-8")).hexdigest()[:12] == _app_tag.group(1))
+    html = html.replace(_app_tag.group(0), "<script>" + _app_text + "</script>", 1)
 
 # Text size: the player can make every word in the app bigger, which only works if every font
 # size is written calc(Npx*var(--ts)). A bare px size is text that ignores the setting, so a
@@ -68,6 +79,7 @@ if sw.is_file():
     result = subprocess.run(["node", "--check", str(sw)], capture_output=True, text=True)
     check("sw.js parses", result.returncode == 0, result.stderr.strip()[:200])
     text = sw.read_text(encoding="utf-8")
+    check("the worker caches the app.js the page loads", bool(_app_tag) and f"'./app.js?v={_app_tag.group(1)}'" in text)
     # The cache name must be build-specific, or an update can never evict the
     # previous one and a phone keeps a stale copy forever.
     match = re.search(r"const CACHE = 'dopamine-drop-([0-9a-f]{12})'", text)

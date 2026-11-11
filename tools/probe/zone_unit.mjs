@@ -6,8 +6,9 @@
  *   node tools/probe/zone_unit.mjs
  */
 import { readFileSync } from 'fs';
+import { builtSource } from './built.mjs';
 const SITE = process.env.SITE || '/tmp/pw/_site';
-const html = readFileSync(SITE + '/index.html', 'utf8');
+const html = builtSource(SITE);
 const m = html.match(/const zoneOn = \(\) => \{[\s\S]*?\n\};/);
 let bad = 0;
 const check = (ok, msg) => { if (!ok) bad++; console.log((ok ? 'ok   ' : 'FAIL ') + msg); };

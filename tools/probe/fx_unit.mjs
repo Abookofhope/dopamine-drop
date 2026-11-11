@@ -15,10 +15,11 @@
  *   SITE=_site node tools/probe/fx_unit.mjs
  */
 import { readFileSync } from 'fs';
+import { builtSource } from './built.mjs';
 import vm from 'vm';
 
 const SITE = process.env.SITE || '/tmp/pw/_site';
-const html = readFileSync(SITE + '/index.html', 'utf8');
+const html = builtSource(SITE);
 const from = html.indexOf('/* ── Cat art ');
 const to = html.indexOf('/* ═══ The craft room, on screen');
 if (from < 0 || to < 0) { console.log('FAIL could not find the meta layer in the build'); process.exit(1); }

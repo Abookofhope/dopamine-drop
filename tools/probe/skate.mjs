@@ -8,6 +8,8 @@
  *      buttons wins the round.
  *   2. A slide that goes nowhere costs no move; running out of moves loses the round.
  *   3. Thin ice: once the cat has crossed it, it is open water and stops the cat.
+ *   5. The Hint lights the first arrow of a shortest way from where the cat is, two a round; when thin ice closes the last
+ *      way through, the round says so and ends instead of running the moves down.
  *   4. The arrows are full-size, named buttons that a keyboard reaches with Tab and works with Enter; a tap on a cell in
  *      line with the cat slides it that way; with Reduce motion the cat moves without a transition.
  *
@@ -71,6 +73,15 @@ function solve(p){
   }
   return null;
 }
+/* the pond after one slide, by the same rules: where the cat stops, yarn picked up, thin ice crossed turned to water */
+function after(p, d){
+  const n = p.n; let x = p.cat % n, y = Math.floor(p.cat / n); const path = [];
+  for (;;){ const nx = x + D[d][0], ny = y + D[d][1]; if (nx < 0 || ny < 0 || nx >= n || ny >= n) break; const q = ny * n + nx;
+    if (p.kind[q] === '#' || p.kind[q] === 'w') break; x = nx; y = ny; path.push(q); if (q === p.goal) break; }
+  const to = y * n + x; if (to === p.cat) return null;
+  const kind = p.kind.slice(); [p.cat].concat(path.slice(0, -1)).forEach(q => { if (kind[q] === 't') kind[q] = 'w'; });
+  return Object.assign({}, p, { cat: to, kind, yarn: p.yarn.filter(q => !path.includes(q)) });
+}
 const press = (page, d) => page.evaluate(lbl => { const b = [...document.querySelectorAll('#surface .ponddir')].find(x => x.getAttribute('aria-label') === lbl); b.click(); }, 'Slide ' + NAME[d]);
 const live = page => page.evaluate(() => document.getElementById('play').classList.contains('live'));
 async function waitPond(page){
@@ -119,14 +130,17 @@ check(sawThin, 'past level 20 there is thin ice on the pond');
 /* ── 2. a slide that goes nowhere is free; running out loses ── */
 {
   const page = await open({ xp: 9000, runs: 40, solved: 600 });
-  const p = await read(page);
-  /* find a direction that is blocked, and one that moves */
-  const blocked = [0, 1, 2, 3].find(d => { const x = p.cat % p.n + D[d][0], y = Math.floor(p.cat / p.n) + D[d][1]; return x < 0 || y < 0 || x >= p.n || y >= p.n || p.kind[y * p.n + x] === '#'; });
-  if (blocked !== undefined){
-    await press(page, blocked); await page.waitForTimeout(250);
-    const q = await read(page);
-    check(q.left === p.left && q.cat === p.cat, `a slide into a snowbank or the edge goes nowhere and costs no move (${p.left} then ${q.left})`);
-  } else check(true, 'a slide that goes nowhere costs no move (no blocked direction on this pond; not tested here)');
+  /* a pond where the cat starts against a snowbank or the edge (the next one, if not this one) */
+  const isBlocked = (p, d) => { const x = p.cat % p.n + D[d][0], y = Math.floor(p.cat / p.n) + D[d][1]; return x < 0 || y < 0 || x >= p.n || y >= p.n || p.kind[y * p.n + x] === '#'; };
+  let p = await read(page), blocked = [0, 1, 2, 3].find(d => isBlocked(p, d));
+  for (let r = 0; r < 8 && blocked === undefined; r++){
+    const route = solve(p); for (const m of route){ await press(page, m); await page.waitForTimeout(120); }
+    await page.waitForTimeout(1200); await waitPond(page);
+    p = await read(page); blocked = [0, 1, 2, 3].find(d => isBlocked(p, d));
+  }
+  await press(page, blocked); await page.waitForTimeout(250);
+  const q = await read(page);
+  check(blocked !== undefined && q.left === p.left && q.cat === p.cat, `a slide into a snowbank or the edge goes nowhere and costs no move (${p.left} then ${q.left})`);
   /* back and forth until the moves run out, avoiding the basket */
   const d0 = await done(page);
   let k = 0;
@@ -205,6 +219,47 @@ check(sawThin, 'past level 20 there is thin ice on the pond');
   const tr2 = await still.evaluate(() => getComputedStyle(document.querySelector('#surface .pondcat')).transitionProperty + ' ' + getComputedStyle(document.querySelector('#surface .pondcat')).transitionDuration);
   check(/none|^all 0s|0s$/.test(tr2), `with Reduce motion, it moves at once (${tr2})`);
   await still.close();
+}
+
+/* ── 5. the hint, and a pond the ice has closed ── */
+{
+  const page = await open({ xp: 9000, runs: 40, solved: 600 });
+  const p = await read(page), before = solve(p);
+  const label = () => page.evaluate(() => { const b = document.querySelector('#surface .pondtools .sumtool'); return b ? b.textContent : ''; });
+  const l0 = await label();
+  await page.evaluate(() => { const h = document.querySelector('#surface .pondtools .sumtool'); if (h) h.click(); }); await page.waitForTimeout(200);
+  const lit = await page.evaluate(() => { const b = document.querySelector('#surface .ponddir.hint'); return b ? b.getAttribute('aria-label') : null; });
+  const d = NAME.findIndex(x => lit === 'Slide ' + x);
+  const next = d >= 0 ? after(p, d) : null, rest = next ? solve(next) : null;
+  check(d >= 0 && !!rest && before && rest.length === before.length - 1, `the hint lights the first arrow of a shortest way (${lit}: ${before && before.length} moves, then ${rest && rest.length})`);
+  check(/2/.test(l0) && /1/.test(await label()), `and there are two a round ("${l0}" then "${await label()}")`);
+  await page.close();
+}
+{
+  const page = await open({ xp: 900000, runs: 900, solved: 40000 });
+  let found = false, said = '', lost = false;
+  for (let r = 0; r < 8 && !found; r++){
+    const p = await read(page); if (!p) break;
+    /* up to three slides after which, by the probe's own search, there is no way through (and none of them wins) */
+    const seq = (q, depth) => { for (let d = 0; d < 4; d++){ const nx = after(q, d); if (!nx || (nx.cat === nx.goal && !nx.yarn.length)) continue;
+      if (!solve(nx)) return [d]; if (depth > 1){ const rest = seq(nx, depth - 1); if (rest) return [d].concat(rest); } } return null; };
+    const moves = seq(p, 3);
+    if (moves){
+      found = true; const d0 = await done(page);
+      for (const m of moves.slice(0, -1)){ await press(page, m); await page.waitForTimeout(150); }
+      await press(page, moves[moves.length - 1]); await page.waitForTimeout(400);
+      said = (await read(page)).prompt;
+      for (let w = 0; w < 30 && (await done(page)) === d0; w++) await page.waitForTimeout(100);
+      lost = (await done(page)) > d0 && (await page.evaluate(() => document.getElementById('play').dataset.speed)) === 'miss';
+      break;
+    }
+    const route = solve(p); if (!route) break;
+    for (const m of route){ await press(page, m); await page.waitForTimeout(120); }
+    await page.waitForTimeout(1200); await waitPond(page);
+  }
+  check(found, 'past level 20, a slide that closes the last way through was found on a pond');
+  check(found && /closed the way/i.test(said) && lost, `when the ice closes the way, the round says so ("${said}") and ends`);
+  await page.close();
 }
 
 check(!errs.length, `no page errors (${errs.slice(0, 2).join(' | ') || 'none'})`);

@@ -33,7 +33,7 @@ shell, so the file contains no `<html>`, `<head>` or `<body>` of its own.
 ```
 site/app.html          the game — the only file that matters
 site/icons/            app icons, referenced by the manifest
-tools/build_site.py    wraps app.html into a real document; emits sw.js + manifest
+tools/build_site.py    wraps app.html into a real document; lifts the game's script into app.js?v=<hash>; emits sw.js + manifest
 tools/check_site.py    pre-deploy checks; the Action fails on any of them
 .github/workflows/     builds and deploys to GitHub Pages on every push to main
 ```
@@ -41,7 +41,7 @@ tools/check_site.py    pre-deploy checks; the Action fails on any of them
 ### Build it locally
 
 ```bash
-python3 tools/build_site.py _site     # writes index.html, sw.js, manifest, icons
+python3 tools/build_site.py _site     # writes index.html, app.js, sw.js, manifest, icons
 python3 tools/check_site.py _site     # must pass before anything is pushed
 cd _site && python3 -m http.server 8080
 ```
@@ -62,7 +62,7 @@ over and reloads. Nothing reloads under the player mid-run.
 `tools/check_site.py` is not a formality — several of these have caught real
 bugs that were about to ship:
 
-- every inline script parses, and `sw.js` parses
+- every inline script parses (the game's, put back from app.js), and `sw.js` parses; the page loads app.js by its own hash and the worker caches that same file
 - the cache name is a twelve-hex-digit build hash, not a constant
 - the manifest parses, is installable, and every icon it names exists
 - the page actually contains the game, not just a shell

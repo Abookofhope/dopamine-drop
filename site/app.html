@@ -3949,6 +3949,8 @@ html[data-motion="off"] .pondcat.bump svg{animation:none}
 .ponddir{min-width:56px;min-height:48px;border-radius:14px;border:1px solid var(--edge);background:var(--ink-2);color:var(--cream);display:grid;place-items:center;cursor:pointer}
 .ponddir svg{width:22px;height:22px}
 .ponddir:focus-visible{outline:2px solid var(--zap);outline-offset:2px}
+.pondtools{flex:none;justify-content:center}
+.ponddir.hint,.pondcell.hint{box-shadow:0 0 0 3px var(--zap),0 0 14px var(--zap)}
 .pondnote{margin:0;flex:none;font-size:calc(11.5px*var(--ts));color:var(--haze);text-align:center}
 /* ── Loaf Box: kittens asleep in a cardboard box, and loaves to fit round them ─────────────────── */
 .lbx{position:relative;gap:10px;--face:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 8.4 5.2 3.2 9.8 6.4M20 8.4 18.8 3.2 14.2 6.4' fill='%232a1f3a' fill-opacity='.55'/%3E%3Cellipse cx='8.2' cy='12.4' rx='1.5' ry='2.1' fill='%232a1f3a' fill-opacity='.8'/%3E%3Cellipse cx='15.8' cy='12.4' rx='1.5' ry='2.1' fill='%232a1f3a' fill-opacity='.8'/%3E%3Cpath d='M10.8 15.7h2.4l-1.2 1.4z' fill='%23E0607F'/%3E%3Cpath d='M12 17.1q-1.4 1.8-3 .8M12 17.1q1.4 1.8 3 .8' stroke='%232a1f3a' stroke-opacity='.7' fill='none' stroke-width='.9' stroke-linecap='round'/%3E%3C/svg%3E");--kit:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20c0-5.2 3-8.8 8-8.8s8 3.6 8 8.8z' fill='%23B7A9E0'/%3E%3Cpath d='M5.6 12.6 5.2 6.2l4.6 3M18.4 12.6l.4-6.4-4.6 3' fill='%23B7A9E0'/%3E%3Cpath d='M8.2 15.4q1.3 1.1 2.6 0M13.2 15.4q1.3 1.1 2.6 0' fill='none' stroke='%232a1f3a' stroke-width='1.1' stroke-linecap='round'/%3E%3Cpath d='M11.2 17.2h1.6l-.8.9z' fill='%23E88BA8'/%3E%3C/svg%3E")}
@@ -5194,7 +5196,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.164.1';
+const VERSION_TAG = 'v0.165.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6084,7 +6086,7 @@ const STRINGS = {
 
     
     'm.slide':'Let the Cat Out|Clear the way so the cat can get out',
-    'm.skate':'Pond Skate|Slide across the ice — a paw only stops at a snowbank', 'p.skate':'Slide into the basket', 'p.skateYarn':'Pick up {n} more, then the basket', 'skate.up':'Slide up', 'skate.down':'Slide down', 'skate.left':'Slide left', 'skate.right':'Slide right', 'skate.pond':'Frozen pond', 'skate.thin':'Thin ice cracks once the cat has crossed it', 'q.skate.w1':'Right into the basket', 'q.skate.w2':'Not a paw out of place', 'q.skate.w3':'Smooth skating', 'q.skate.m1':'Out of moves on the ice', 'q.skate.m2':'Still sliding about',
+    'm.skate':'Pond Skate|Slide across the ice — a paw only stops at a snowbank', 'p.skate':'Slide into the basket', 'p.skateYarn':'Pick up {n} more, then the basket', 'skate.up':'Slide up', 'skate.down':'Slide down', 'skate.left':'Slide left', 'skate.right':'Slide right', 'skate.pond':'Frozen pond', 'skate.thin':'Thin ice cracks once the cat has crossed it', 'skate.stuck':'The ice has closed the way through', 'q.skate.w1':'Right into the basket', 'q.skate.w2':'Not a paw out of place', 'q.skate.w3':'Smooth skating', 'q.skate.m1':'Out of moves on the ice', 'q.skate.m2':'Still sliding about',
 
     'm.wheel':'Stitch Sampler|Guess letters to finish the sampler',
 
@@ -6609,7 +6611,7 @@ const STRINGS = {
 
     
     'm.slide':'Laissez Sortir le Chat|Dégagez le passage pour que le chat sorte',
-    'm.skate':'Patin sur l’Étang|Glissez sur la glace — une patte ne s’arrête qu’à une congère', 'p.skate':'Glissez jusqu’au panier', 'p.skateYarn':'Encore {n} à ramasser, puis le panier', 'skate.up':'Glisser vers le haut', 'skate.down':'Glisser vers le bas', 'skate.left':'Glisser vers la gauche', 'skate.right':'Glisser vers la droite', 'skate.pond':'Étang gelé', 'skate.thin':'La glace fine cède une fois que le chat l’a traversée', 'q.skate.w1':'Pile dans le panier', 'q.skate.w2':'Pas une patte de travers', 'q.skate.w3':'Belle glissade', 'q.skate.m1':'Plus de coups sur la glace', 'q.skate.m2':'Encore à glisser',
+    'm.skate':'Patin sur l’Étang|Glissez sur la glace — une patte ne s’arrête qu’à une congère', 'p.skate':'Glissez jusqu’au panier', 'p.skateYarn':'Encore {n} à ramasser, puis le panier', 'skate.up':'Glisser vers le haut', 'skate.down':'Glisser vers le bas', 'skate.left':'Glisser vers la gauche', 'skate.right':'Glisser vers la droite', 'skate.pond':'Étang gelé', 'skate.thin':'La glace fine cède une fois que le chat l’a traversée', 'skate.stuck':'La glace a fermé le passage', 'q.skate.w1':'Pile dans le panier', 'q.skate.w2':'Pas une patte de travers', 'q.skate.w3':'Belle glissade', 'q.skate.m1':'Plus de coups sur la glace', 'q.skate.m2':'Encore à glisser',
 
     'm.wheel':'Abécédaire|Devinez les lettres pour finir la broderie',
 
@@ -7133,7 +7135,7 @@ const STRINGS = {
 
     
     'm.slide':'Deja Salir al Gato|Despeja el paso para que salga el gato',
-    'm.skate':'Patinaje en el Estanque|Desliza sobre el hielo — una pata solo se detiene en la nieve', 'p.skate':'Desliza hasta la cesta', 'p.skateYarn':'Recoge {n} más y luego la cesta', 'skate.up':'Deslizar arriba', 'skate.down':'Deslizar abajo', 'skate.left':'Deslizar a la izquierda', 'skate.right':'Deslizar a la derecha', 'skate.pond':'Estanque helado', 'skate.thin':'El hielo fino se rompe cuando el gato lo ha cruzado', 'q.skate.w1':'Directo a la cesta', 'q.skate.w2':'Ni una pata fuera de sitio', 'q.skate.w3':'Qué buen patinaje', 'q.skate.m1':'Sin movimientos sobre el hielo', 'q.skate.m2':'Sigue resbalando',
+    'm.skate':'Patinaje en el Estanque|Desliza sobre el hielo — una pata solo se detiene en la nieve', 'p.skate':'Desliza hasta la cesta', 'p.skateYarn':'Recoge {n} más y luego la cesta', 'skate.up':'Deslizar arriba', 'skate.down':'Deslizar abajo', 'skate.left':'Deslizar a la izquierda', 'skate.right':'Deslizar a la derecha', 'skate.pond':'Estanque helado', 'skate.thin':'El hielo fino se rompe cuando el gato lo ha cruzado', 'skate.stuck':'El hielo ha cerrado el paso', 'q.skate.w1':'Directo a la cesta', 'q.skate.w2':'Ni una pata fuera de sitio', 'q.skate.w3':'Qué buen patinaje', 'q.skate.m1':'Sin movimientos sobre el hielo', 'q.skate.m2':'Sigue resbalando',
 
     'm.wheel':'Dechado|Adivina letras para terminar el bordado',
 
@@ -7657,7 +7659,7 @@ const STRINGS = {
 
     
     'm.slide':'Lass die Katze Raus|Räume den Weg, damit die Katze rauskommt',
-    'm.skate':'Teich-Rutschpartie|Rutsch übers Eis — eine Pfote hält nur am Schneehaufen', 'p.skate':'Rutsch in den Korb', 'p.skateYarn':'Noch {n} einsammeln, dann in den Korb', 'skate.up':'Nach oben rutschen', 'skate.down':'Nach unten rutschen', 'skate.left':'Nach links rutschen', 'skate.right':'Nach rechts rutschen', 'skate.pond':'Zugefrorener Teich', 'skate.thin':'Dünnes Eis bricht, sobald die Katze darüber ist', 'q.skate.w1':'Direkt in den Korb', 'q.skate.w2':'Keine Pfote daneben', 'q.skate.w3':'Sauber gerutscht', 'q.skate.m1':'Keine Züge mehr auf dem Eis', 'q.skate.m2':'Rutscht noch herum',
+    'm.skate':'Teich-Rutschpartie|Rutsch übers Eis — eine Pfote hält nur am Schneehaufen', 'p.skate':'Rutsch in den Korb', 'p.skateYarn':'Noch {n} einsammeln, dann in den Korb', 'skate.up':'Nach oben rutschen', 'skate.down':'Nach unten rutschen', 'skate.left':'Nach links rutschen', 'skate.right':'Nach rechts rutschen', 'skate.pond':'Zugefrorener Teich', 'skate.thin':'Dünnes Eis bricht, sobald die Katze darüber ist', 'skate.stuck':'Das Eis hat den Weg versperrt', 'q.skate.w1':'Direkt in den Korb', 'q.skate.w2':'Keine Pfote daneben', 'q.skate.w3':'Sauber gerutscht', 'q.skate.m1':'Keine Züge mehr auf dem Eis', 'q.skate.m2':'Rutscht noch herum',
 
     'm.wheel':'Stickmustertuch|Errate Buchstaben, um das Tuch zu vollenden',
 
@@ -8172,6 +8174,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.165.0', date:'2026-11-11', items:[
+    'The game starts quicker: the longest pause while it opens is about 40 percent shorter, and shorter still from the second time you open it.',
+    'Pond Skate has a Hint (two a round), and if thin ice closes the last way through, the round says so instead of letting your moves run out.',
+  ] },
   { v:'0.164.1', date:'2026-11-11', items:[
     'The Books Entertainment intro now plays like a film: as smooth on a slow phone as on a fast one, and at its best quality. If it cannot start within a couple of seconds, or your browser is saving data, the intro is drawn live as before.',
   ] },
@@ -17394,20 +17400,22 @@ const MODES = {
         [p].concat(r.path.slice(0, -1)).forEach(q => { if (b.thinAt[q] >= 0) c |= 1 << b.thinAt[q]; });
         return { to: r.to, mask: m, cracked: c, path: r.path };
       };
-      /* Breadth-first over (where, which yarn, which ice is broken): the true shortest route, or -1. */
-      const shortest = b => {
+      /* Breadth-first over (where, which yarn, which ice is broken): the true shortest route, or -1. From any state, so
+         the hint can ask it mid-round; `first` is the move that route begins with. */
+      let first = -1;
+      const shortest = (b, p0 = b.cat, m0 = 0, c0 = 0) => {
         const full = (1 << b.yarn.length) - 1;
         const key = (p, m, c) => (p * 16 + m) * 16 + c;
-        const seen = new Set([key(b.cat, 0, 0)]);
-        let front = [[b.cat, 0, 0]];
+        const seen = new Set([key(p0, m0, c0)]);
+        let front = [[p0, m0, c0, -1]];
         for (let depth = 1; depth <= 16 && front.length; depth++){
           const next = [];
-          for (const [p, m, c] of front) for (let d = 0; d < 4; d++){
+          for (const [p, m, c, f] of front) for (let d = 0; d < 4; d++){
             const s = step(b, p, d, m, c); if (!s) continue;
-            if (s.to === b.goal && s.mask === full) return depth;
+            if (s.to === b.goal && s.mask === full){ first = f < 0 ? d : f; return depth; }
             /* in the basket without all the yarn: the cat stops there, and sliding out again is a move like any other */
             const k = key(s.to, s.mask, s.cracked);
-            if (!seen.has(k)){ seen.add(k); next.push([s.to, s.mask, s.cracked]); }
+            if (!seen.has(k)){ seen.add(k); next.push([s.to, s.mask, s.cracked, f < 0 ? d : f]); }
           }
           front = next;
         }
@@ -17465,11 +17473,25 @@ const MODES = {
         const b = mk('button', 'ponddir'); b.type = 'button'; b.innerHTML = ARROW(r); b.setAttribute('aria-label', t(key));
         b.addEventListener('click', () => go(d)); dirBtn[d] = b; pad.appendChild(b);
       });
-      wrap.append(board, pad);
+      /* Two hints a round, like the other route puzzles: the arrow that starts a shortest way from here lights up, and so does
+         the cell it takes the cat to. A hinted round can still be Swift, never Clean or Purrfect (the shared .aid rule). */
+      const tools = mk('div', 'sumtools pondtools'), hint = mk('button', 'sumtool aid'); hint.type = 'button';
+      let hints = 2;
+      const paintHint = () => { hint.textContent = t('slide.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
+      tools.appendChild(hint);
+      wrap.append(board, pad, tools);
       if (pond.thin.length){ const note = mk('p', 'pondnote'); note.textContent = t('skate.thin'); wrap.appendChild(note); }
       ctx.surface.appendChild(wrap);
 
       let at = pond.cat, mask = 0, cracked = 0, busy = false, done = false;
+      onTap(hint, () => {
+        if (done || busy || hints <= 0) return;
+        if (shortest(pond, at, mask, cracked) < 0) return;
+        hints--; paintHint(); sfx.tap();
+        const d = first, s = step(pond, at, d, mask, cracked);
+        dirBtn[d].classList.add('hint'); if (s) cellEl[s.to].classList.add('hint');
+        ctx.after(2600, () => { dirBtn.forEach(b => b && b.classList.remove('hint')); cellEl.forEach(c => c.classList.remove('hint')); });
+      });
       const full = (1 << pond.yarn.length) - 1;
       /* The whole transition is set here: setting only its duration beforehand was wiped by resetting the shorthand, and the
          cat jumped instead of gliding (skate.mjs). */
@@ -17505,7 +17527,10 @@ const MODES = {
           [from].concat(s.path.slice(0, -1)).forEach(q => { if (pond.thinAt[q] >= 0){ cellEl[q].classList.remove('thin'); cellEl[q].classList.add('water'); } });
           mask = s.mask; cracked = s.cracked;
           say();
-          if (at === pond.goal && mask === full){ done = true; cat.classList.add('home'); return ctx.win(cellEl[pond.goal]); }
+          if (at === pond.goal && mask === full){ done = true; paintHint(); cat.classList.add('home'); return ctx.win(cellEl[pond.goal]); }
+          /* Thin ice can close the last way through. Then the round says so and ends, rather than letting the moves run
+             down on a pond that can no longer be done. */
+          if (pond.thin.length && shortest(pond, at, mask, cracked) < 0){ done = true; paintHint(); ctx.prompt(t('skate.stuck')); return ctx.after(900, () => ctx.miss(cellEl[at])); }
           budget.spend(cellEl[at]);
         });
       }
@@ -17526,7 +17551,7 @@ const MODES = {
       });
       board.addEventListener('pointercancel', () => { down = false; });
 
-      say(); place(0); fit();
+      say(); paintHint(); place(0); fit();
       requestAnimationFrame(fit);
     }
   },

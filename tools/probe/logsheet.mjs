@@ -15,6 +15,7 @@
  */
 import { chromium } from 'playwright';
 import { BASE, save as seedSave, axeOn } from './harness.mjs';
+import { builtSource } from './built.mjs';
 
 let bad = 0;
 const stop = e => { console.log('FAIL the probe could not go on: ' + String((e && e.message) || e).split('\n')[0].slice(0, 120)); console.log('\n' + (bad + 1) + ' failed'); process.exit(1); };
@@ -43,7 +44,8 @@ const state = page => page.evaluate(() => {
 const versions = async page => page.evaluate(() => [...document.querySelectorAll('#logList .logv b')].map(b => b.textContent));
 
 /* the release list, read from the build itself so the probe never goes stale */
-const html = await (await fetch(BASE)).text();
+/* the page with its script (app.js since v0.165.0) put back */
+const html = process.env.SITE ? builtSource(process.env.SITE) : await (await fetch(BASE)).text();
 const V = [...html.slice(html.indexOf('const CHANGELOG = [')).matchAll(/^  \{ v:'([\d.]+)'/gm)].map(m => m[1]);
 if (V.length < 20) stop(`could not read the release list from the build (${V.length})`);
 

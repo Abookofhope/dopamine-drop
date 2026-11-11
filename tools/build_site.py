@@ -123,10 +123,25 @@ tail = """
 
 page = head + body + tail
 
+# The game's script goes in a file of its own (0.165.0). Inline, its 1.5 MB was parsed and compiled on the main thread at
+# every launch, the longest task of the start (about 330 ms at 4x CPU slowdown). As a file the browser can compile it off
+# the main thread as it arrives, and keep the compiled code for the next launch once the worker has cached it: about 200
+# ms. The source stays one file; only the build splits it. Readers of the build (check_site.py, the probes) put it back.
+_scripts = [m for m in re.finditer(r"<script>(.*?)</script>", page, re.S)]
+_game = max(_scripts, key=lambda m: len(m.group(1)))
+app_js = _game.group(1)
+# Named by its own content. A page load goes to the network first and every other file to the cache first, so during an
+# update an unversioned app.js could pair the new page with the old script. A new script is a new URL the old cache
+# cannot answer.
+app_id = hashlib.sha256(app_js.encode("utf-8")).hexdigest()[:12]
+app_src = f"app.js?v={app_id}"
+page = page[:_game.start()] + f'<script src="{app_src}"></script>' + page[_game.end():]
+
 # Hash everything the worker will cache, so any change to any of them produces
 # a new cache name.
 digest = hashlib.sha256()
 digest.update(page.encode("utf-8"))
+digest.update(app_js.encode("utf-8"))
 digest.update(manifest_text.encode("utf-8"))
 for icon in sorted(ICONS.glob("*.png")):
     digest.update(icon.read_bytes())
@@ -142,6 +157,7 @@ const CACHE = 'dopamine-drop-{build_id}';
 const ASSETS = [
   './',
   './index.html',
+  './{app_src}',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -210,6 +226,7 @@ if OUT.exists():
     shutil.rmtree(OUT)
 OUT.mkdir(parents=True)
 (OUT / "index.html").write_text(page, encoding="utf-8")
+(OUT / "app.js").write_text(app_js, encoding="utf-8")
 (OUT / "manifest.webmanifest").write_text(manifest_text, encoding="utf-8")
 (OUT / "sw.js").write_text(sw, encoding="utf-8")
 # Pages runs Jekyll by default, which would ignore anything starting with `_`.

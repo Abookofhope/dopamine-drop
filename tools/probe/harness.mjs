@@ -24,9 +24,11 @@ export const BASE = `http://127.0.0.1:${PORT}/`;
  * fires late, the sheet opens after it was "closed", and it sits on top of the
  * button the probe is about to click. Seeding the real version means it never
  * opens at all, so there is nothing to race. */
+export { builtSource } from './built.mjs';
+import { builtSource } from './built.mjs';
 const currentVersion = () => {
   try {
-    const src = readFileSync(join(process.env.SITE || '/tmp/pw/_site', 'index.html'), 'utf8');
+    const src = builtSource(process.env.SITE || '/tmp/pw/_site');
     const m = src.match(/const CHANGELOG = \[\s*\{ v:'([^']+)'/);
     return m ? m[1] : '9.9.9';
   } catch { return '9.9.9'; }
@@ -123,7 +125,7 @@ export async function modeList(page){
 /* Mode ids read out of the built file, for probes that need the roster before a
  * browser exists (seeding a save where every mode is mastered, say). */
 export function modeIdsFromBuild(dir){
-  const src = readFileSync(join(dir, 'index.html'), 'utf8');
+  const src = builtSource(dir);
   const i = src.indexOf('const MODES = {'), j = src.indexOf('const MODE_IDS', i);
   const ids = [...src.slice(i, j).matchAll(/\n  ([a-z][a-zA-Z0-9]*): \{\n/g)].map(m => m[1]);
   floorOrDie('modeIdsFromBuild', ids.length, 40);

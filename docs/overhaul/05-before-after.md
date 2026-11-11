@@ -456,6 +456,19 @@ The slowdown in rows two and three is of the page's own thread, where the live i
 outside it, which is why it holds. Not checked: on a real phone. A first visit now downloads the recording (7.2 MB
 on a phone) as it plays.
 
+## v0.165.0: a start about half as long (AAA, performance)
+
+Measured at 4x CPU slowdown, five visits in one persistent browser profile (so the worker and caches carry over).
+
+| What | Before | After |
+|---|---|---|
+| The game's script | 1.5 MB inline: parsed and compiled on the main thread at every launch | `app.js?v=<hash>`: compiled off the main thread as it arrives, and its compiled code kept once the worker has cached it; the source is still one file, only the build splits it |
+| The longest task of a launch | 325–416 ms (median of visits 2–5: 363) | 170–251 ms (median: 189) |
+| An update | one file, so page and script could never disagree | the script is named by its hash, so a new page can never be served an old cached script |
+| Offline after one visit | worked | still works (`startup.mjs` opens the game and plays a board offline) |
+| Readers of the build | read `index.html` | the gate and the probes read it with `app.js` put back (`builtSource()`, `built.mjs`), so no check changed; the gate also checks the page loads the script by its own hash and the worker caches that file |
+| Pond Skate | no help; a pond the ice had closed ran the moves down | a Hint (two a round) lights the first arrow of a shortest way; a closed pond says "The ice has closed the way through" and ends |
+| `startup.mjs` (new) | 2 of 5 fail on v0.164.0 | 5 of 5 |
 
 ## How to reproduce
 
