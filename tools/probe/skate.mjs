@@ -8,6 +8,7 @@
  *      buttons wins the round.
  *   2. A slide that goes nowhere costs no move; running out of moves loses the round.
  *   3. Thin ice: once the cat has crossed it, it is open water and stops the cat.
+ *   4b. Skating a pond in exactly its shortest route is counted, and ten (and one with thin ice) earn its two achievements.
  *   5. The Hint lights the first arrow of a shortest way from where the cat is, two a round; when thin ice closes the last
  *      way through, the round says so and ends instead of running the moves down.
  *   4. The arrows are full-size, named buttons that a keyboard reaches with Tab and works with Enter; a tap on a cell in
@@ -123,6 +124,10 @@ for (const [label, prof] of LEVELS){
     await page.waitForTimeout(900);
   }
   check(rows.length === 4 && rows.every(x => /of \d+$/.test(x)), `${label}: four ponds, each solved by the probe's own shortest route within the moves given (${rows.join('; ')})`);
+  /* each was skated in exactly its shortest route, which the game counts for its achievements (v0.167.0) */
+  const sv = await page.evaluate(() => { const s = JSON.parse(localStorage.getItem('dd.v1')); return { exact: s.skateExact | 0, thin: !!s.skateThin }; });
+  const thinHere = rows.some(x => /thin ice/.test(x));
+  check(sv.exact === 4 && sv.thin === thinHere, `${label}: the game counts the four ponds skated in their shortest route (${sv.exact})${thinHere ? ', one with thin ice' : ''}`);
   await page.close();
 }
 check(sawThin, 'past level 20 there is thin ice on the pond');
@@ -219,6 +224,15 @@ check(sawThin, 'past level 20 there is thin ice on the pond');
   const tr2 = await still.evaluate(() => getComputedStyle(document.querySelector('#surface .pondcat')).transitionProperty + ' ' + getComputedStyle(document.querySelector('#surface .pondcat')).transitionDuration);
   check(/none|^all 0s|0s$/.test(tr2), `with Reduce motion, it moves at once (${tr2})`);
   await still.close();
+}
+
+/* ── 4b. the two achievements, from what the save has counted ── */
+{
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await openApp(page, { skateExact: 10, skateThin: 1, onboarded: true });
+  const got = await page.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('dd.v1')).achieve || {}));
+  check(got.includes('skateline') && got.includes('skatethin'), `ten ponds in their shortest route and one with thin ice earn "Not a Slide Wasted" and "Thin Ice Waltz" (${got.filter(x => /skate/.test(x)).join(', ') || 'none'})`);
+  await page.close();
 }
 
 /* ── 5. the hint, and a pond the ice has closed ── */

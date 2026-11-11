@@ -52,6 +52,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.164.1 | The intro plays as a recording, so it is smooth on any device; the live intro is the fallback, and it now aims for 60 fps |
 | v0.165.0 | A start about half as long: the game's script is a file of its own; Pond Skate has a Hint and says when the ice has closed the way |
 | v0.166.0 | Six things a season for the window sill (24 in all); the sill holds six |
+| v0.167.0 | Two achievements for Pond Skate, for skating it well |
 
 ## Ground rules the work follows
 

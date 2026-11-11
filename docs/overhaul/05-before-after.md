@@ -478,6 +478,13 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | The window sill | showed four, so a fifth or sixth thing bought would never be seen | shows six; four or fewer keep their old size and places, five or six sit a little smaller round the same middle |
 | `seasons.mjs` | 16 things | 24, and six owned all on the sill without overlapping (that check fails on v0.165.0) |
 
+## v0.167.0: Pond Skate's achievements
+
+| What | Before | After |
+|---|---|---|
+| Achievements for Pond Skate | none (the earlier new games each had their own) | Not a Slide Wasted: 10 ponds in exactly their shortest route (80 yarn); Thin Ice Waltz: a pond with thin ice in exactly its shortest route (150 yarn); both reward skating well, not skating a lot |
+| `skate.mjs` | 18 checks | 22: the game counts each pond skated in its shortest route at three levels, and the counts earn both achievements |
+
 ## How to reproduce
 
 ```
