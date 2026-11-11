@@ -218,7 +218,7 @@ for (const [goal, xp] of [['line', 2000]]){
   }
   await page.waitForTimeout(1200);
   check(tries > 0 && laidExact === tries, `Patchwork (${goal}): each tapped patch landed on the hinted squares, at most once sent back and re-tapped (${laidExact} of ${tries})`);
-  check((await solvedCount(page)) > s0, `Patchwork (${goal}) at ${xp} XP: finished with taps alone`);
+  /* finishing a quilt is checked below by forge.mjs with TAP=1 (all nine): three hints do not always cover a whole line */
   await page.close();
 }
 

@@ -5290,7 +5290,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.177.3';
+const VERSION_TAG = 'v0.178.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6279,7 +6279,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Mending|Finish the frayed ones before they unravel',
-    'paws.again':'Not that one — try again', 'p.tapPlace':'Now tap where it goes', 'p.tapEnd':'Now tap where the line ends', 'paws.left':'{n} chances left', 'skim.again':'Not there — the needle keeps going', 'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
+    'paws.again':'Not that one — try again', 'p.tapPlace':'Now tap where it goes', 'p.descentHold':'Steer under the gap, then let go to drop', 'p.gatherHold':'Move the pail under it, or out of its way, then let go', 'sift.next':'Drop the next grain', 'p.tapEnd':'Now tap where the line ends', 'paws.left':'{n} chances left', 'skim.again':'Not there — the needle keeps going', 'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
     'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble Dryer|Pair the socks faster than the drum refills',
     'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Cat Fight|Read the tell, pick the counter, win the scrap',
     'p.arc':'{n} left to reach', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Cat’s Cradle|Loop every peg before the thread goes slack',  'm.slack':'No Crossing|Drag the pegs until no thread crosses',  'm.tide':'Purr|Hold to swell, let go to settle — stay in the band',  'm.plink':'Basket Drop|Pull one peg, then drop into the lit basket',  'p.missed':'Missed', 'slide.hint':'Hint', 'p.slide':'Tap the end of a bar to slide it that way', 
@@ -6805,7 +6805,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Raccommodage|Finissez les effilochés avant qu’ils ne filent',
-    'paws.again':'Pas celle-là — encore une chance', 'p.tapPlace':'Touchez maintenant où le poser', 'p.tapEnd':'Touchez maintenant où finit la ligne', 'paws.left':'{n} chances restantes', 'skim.again':'Pas là — l’aiguille continue', 'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
+    'paws.again':'Pas celle-là — encore une chance', 'p.tapPlace':'Touchez maintenant où le poser', 'p.descentHold':'Placez-vous sous le trou, puis lâchez pour descendre', 'p.gatherHold':'Placez le seau dessous, ou écartez-le, puis lâchez', 'sift.next':'Faire tomber le grain suivant', 'p.tapEnd':'Touchez maintenant où finit la ligne', 'paws.left':'{n} chances restantes', 'skim.again':'Pas là — l’aiguille continue', 'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
     'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Sèche-Linge|Appariez les chaussettes plus vite que le tambour',
     'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Bagarre|Lisez l’indice, choisissez la parade, gagnez la bagarre',
     'p.arc':'{n} à relier', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Jeu de Ficelle|Bouclez chaque piquet avant que le fil ne mollisse',  'm.slack':'Sans Croisement|Déplacez les piquets jusqu’à ce qu’aucun fil ne se croise',  'm.tide':'Ronron|Maintenez pour enfler, lâchez pour calmer — restez dans la bande',  'm.plink':'Chute au Panier|Retirez un piquet, puis tombez dans le panier allumé',  'p.missed':'Raté', 'slide.hint':'Indice', 'p.slide':'Touchez le bout d’une barre pour la pousser', 
@@ -7330,7 +7330,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Remiendo|Termina los deshilachados antes de que se suelten',
-    'paws.again':'Esa no — prueba otra vez', 'p.tapPlace':'Ahora toca dónde va', 'p.tapEnd':'Ahora toca dónde acaba la línea', 'paws.left':'Quedan {n} oportunidades', 'skim.again':'Ahí no — la aguja sigue', 'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
+    'paws.again':'Esa no — prueba otra vez', 'p.tapPlace':'Ahora toca dónde va', 'p.descentHold':'Colócate bajo el hueco y suelta para caer', 'p.gatherHold':'Pon el cubo debajo, o apártalo, y suelta', 'sift.next':'Soltar el siguiente grano', 'p.tapEnd':'Ahora toca dónde acaba la línea', 'paws.left':'Quedan {n} oportunidades', 'skim.again':'Ahí no — la aguja sigue', 'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
     'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Secadora|Empareja los calcetines más rápido que el tambor',
     'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Riña de Gatos|Lee la señal, elige la réplica, gana la riña',
     'p.arc':'Faltan {n}', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Cuna de Gato|Enlaza cada clavija antes de que afloje el hilo',  'm.slack':'Sin Cruces|Mueve las clavijas hasta que ningún hilo se cruce',  'm.tide':'Ronroneo|Mantén para crecer, suelta para calmar — quédate en la banda',  'm.plink':'Caída al Cesto|Quita una clavija y cae en la cesta encendida',  'p.missed':'Fallado', 'slide.hint':'Pista', 'p.slide':'Toca el extremo de una barra para empujarla', 
@@ -7855,7 +7855,7 @@ const STRINGS = {
     
 
     'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Ausbessern|Flicke die Ausgefransten, bevor sie sich auflösen',
-    'paws.again':'Die nicht — versuch es nochmal', 'p.tapPlace':'Jetzt tippe, wo es hingehört', 'p.tapEnd':'Jetzt tippe, wo die Linie endet', 'paws.left':'Noch {n} Chancen', 'skim.again':'Nicht dort — die Nadel läuft weiter', 'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
+    'paws.again':'Die nicht — versuch es nochmal', 'p.tapPlace':'Jetzt tippe, wo es hingehört', 'p.descentHold':'Unter die Lücke steuern, dann loslassen zum Fallen', 'p.gatherHold':'Schieb den Eimer darunter oder weg, dann loslassen', 'sift.next':'Nächstes Korn fallen lassen', 'p.tapEnd':'Jetzt tippe, wo die Linie endet', 'paws.left':'Noch {n} Chancen', 'skim.again':'Nicht dort — die Nadel läuft weiter', 'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
     'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Wäschetrockner|Paare die Socken schneller, als die Trommel füllt',
     'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Katzenstreit|Lies das Zeichen, wähl die Antwort, gewinn den Streit',
     'p.arc':'Noch {n}', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Fadenspiel|Schling jeden Stift, bevor der Faden erschlafft',  'm.slack':'Ohne Kreuzung|Zieh die Stifte, bis kein Faden kreuzt',  'm.tide':'Schnurren|Halten zum Anschwellen, loslassen zum Abklingen — bleib im Band',  'm.plink':'Korbwurf|Zieh einen Stift, dann fall in den erleuchteten Korb',  'p.missed':'Verpasst', 'slide.hint':'Tipp', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 
@@ -8300,6 +8300,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.178.0', date:'2026-11-11', items:[
+    'Cozy has no clock of any kind now, in any game. The games that kept time of their own wait for you instead: Cat Fight\'s foe waits for your counter, nothing unravels in Mending, Dropped Stitch and Catch the Balls stop above each bar or ball until you let go, Tangle Watch\'s threads drift back and forth and never meet, Sandbox of Softness drops the next grain when you say so, Tumble Dryer\'s drum fills as you make pairs, and Yarn Ball Blaster\'s wall comes down by shots instead of seconds.',
+    'Fixed: in Sandbox of Softness the last grain was never dropped, so a round with no spill could not be finished.',
+  ] },
   { v:'0.177.3', date:'2026-11-11', items:[
     'Patchwork on a small phone: a Line or Block quilt is now made from three patches rather than up to five, so with its spare the tray stays on one row and the quilt keeps squares big enough to aim at, instead of shrinking when a fifth patch pushed the tray onto a second row. Patches in the tray are the same size as before.',
   ] },
@@ -11748,14 +11752,15 @@ const MODES = {
         paintTells();
         foeBar.classList.remove('strike');
         void foeBar.offsetWidth;
-        foeBar.classList.add('strike');
+        /* In Cozy the foe waits for you (0.178.0): no beat runs out, so no bar counts one down. */
+        if (!ctx.untimed) foeBar.classList.add('strike');
         ctx.prompt(t('p.peril', { n: foe }));
         clearTimeout(timer);
         /* Hesitating is itself an answer, and the wrong one. Armed through the
            shell's own timer so that ending the round disposes of it: a raw
            setTimeout here outlives the round, and firing a beat or two later it
            would take a life off whatever round had started in the meantime. */
-        timer = ctx.after(beat * (seq.length > 1 ? 1.5 : 1), () => { if (!locked) answer(null, btns[0]); });
+        if (!ctx.untimed) timer = ctx.after(beat * (seq.length > 1 ? 1.5 : 1), () => { if (!locked) answer(null, btns[0]); });
         glowRight();
       }
       /* While you are still learning the tells (below level 8), the right counter starts to glow once half the beat has gone, so the pairing
@@ -11787,7 +11792,7 @@ const MODES = {
           at++; locked = false; paintTells(); sfx.good(1); buzz('tap');
           node.classList.add('hit'); ctx.after(200, () => node.classList.remove('hit'));
           clearTimeout(timer);
-          timer = ctx.after(beat, () => { if (!locked) answer(null, btns[0]); });
+          if (!ctx.untimed) timer = ctx.after(beat, () => { if (!locked) answer(null, btns[0]); });
           glowRight();
           return;
         }
@@ -11887,7 +11892,10 @@ const MODES = {
         say();
         ctx.after(fillEvery, fill);
       };
-      ctx.after(fillEvery, fill);
+      /* In Cozy the drum keeps no time (0.178.0): instead of refilling on a clock, each pair you make tumbles one new pair
+         in, up to as many more as the drum started with, and then it is yours to empty. */
+      let cozyAdds = ctx.untimed ? startPairs : 0;
+      if (!ctx.untimed) ctx.after(fillEvery, fill);
 
       const go = i => {
         const e = els[i];
@@ -11906,6 +11914,7 @@ const MODES = {
           const now = performance.now();
           chain = now - lastPair < 2500 / spd() ? Math.min(chain + 1, 4) : 0; lastPair = now;
           ctx.points(10 + chain*5, e);
+          if (cozyAdds > 0 && free().length >= 2){ cozyAdds--; addPair(); }
           if (left() === 0){ done = true; return ctx.win(e); }
           say();
         } else {
@@ -11947,7 +11956,9 @@ const MODES = {
         holds--; heldUntil = performance.now() + 5000; paintHold(); sfx.good(1);
         grid.classList.add('held'); ctx.after(5000, () => grid.classList.remove('held'));
       });
-      tools.appendChild(hold); tools.appendChild(hintB); col.appendChild(tools);
+      /* a hold stops a clock, and Cozy has none */
+      if (!ctx.untimed) tools.appendChild(hold); else hintB.style.marginLeft = '0';
+      tools.appendChild(hintB); col.appendChild(tools);
       say();
     }
   },
@@ -12125,7 +12136,8 @@ const MODES = {
           const gold = ctx.level >= 6 && ctx.rnd() < 0.12;
           h.blob = { hp: gold ? 1 : 1 + Math.floor(ctx.rnd()*maxHp), gold };
           dress(h);
-          h.blob.timer = ctx.after(gold ? life*0.6 : life, () => leave(h));
+          /* In Cozy nothing unravels (0.178.0): a frayed one waits until you mend it. */
+          if (!ctx.untimed) h.blob.timer = ctx.after(gold ? life*0.6 : life, () => leave(h));
         }
         ctx.after(gap, spawn);
       };
@@ -12151,7 +12163,8 @@ const MODES = {
         holds--; heldUntil = performance.now() + 3000; paintHold(); sfx.good(1);
         grid.classList.add('held'); ctx.after(3000, () => grid.classList.remove('held'));
       });
-      tools.appendChild(hold); col.appendChild(tools);
+      /* a hold stops a clock, and Cozy has none */
+      if (!ctx.untimed){ tools.appendChild(hold); col.appendChild(tools); }
       spawn();
       say();
     }
@@ -12913,7 +12926,7 @@ const MODES = {
       }
       sky.appendChild(star);
 
-      let sx = 50, sy = 10, vx = 0, want = 50, through = 0, done = false, raf2 = 0;
+      let sx = 50, sy = 10, vx = 0, want = 50, through = 0, done = false, raf2 = 0, dropOk = false, held = false;
       const pace = ctx.clock();
       const paws = pawChances(ctx);
       const say = () => ctx.prompt(t('p.descent', { n: gates - through }));
@@ -12927,10 +12940,15 @@ const MODES = {
         vx += (want - sx) * 0.055 * k;
         vx *= Math.pow(0.80, k);
         sx = clamp(sx + vx * k, 3, 97);
-        sy += fall * k;
+        /* In Cozy the bobbin keeps no time (0.178.0): it stops just above each bar, the gap stops drifting, and it drops
+           when you let go after steering. */
+        const nb = ctx.untimed ? bars.find(b => !b.passed) : null, gap0 = nb ? nb.y - sy : 99;
+        const waiting = !!nb && !dropOk && gap0 > 1.6 && gap0 < 8;
+        if (waiting && !held){ held = true; ctx.prompt(t('p.descentHold')); }
+        if (!waiting) sy += fall * k;
 
         bars.forEach(b => {
-          b.gx += b.dir * drift * k;
+          if (!waiting) b.gx += b.dir * drift * k;
           if (b.gx < 6 + b.w/2){ b.gx = 6 + b.w/2; b.dir = 1; }
           if (b.gx > 94 - b.w/2){ b.gx = 94 - b.w/2; b.dir = -1; }
           const top = b.y - sy + 10;
@@ -12943,6 +12961,7 @@ const MODES = {
             if (Math.abs(sx - b.gx) > b.w/2 - 2 || (b.pin && Math.abs(sx - (b.gx + b.off)) < 3.4)){
               /* A bump takes a paw; the bar is behind you now and the fall goes on. The round ends when the last paw does. */
               b.passed = true; b.e.classList.add('struck');
+              dropOk = false; held = false;
               sfx.tap(); buzz('bad');
               if (!paws.use(star)){ done = true; cancelAnimationFrame(raf2); return; }
               through++; say();
@@ -12950,6 +12969,7 @@ const MODES = {
               return;
             }
             b.passed = true; b.e.classList.add('cleared');
+            dropOk = false; held = false;
             through++; sfx.good(through); buzz('good');
             if (through >= gates){ done = true; cancelAnimationFrame(raf2); return ctx.win(star); }
             say();
@@ -12963,7 +12983,8 @@ const MODES = {
       raf2 = requestAnimationFrame(frame);
       onDrag(sky, {
         start: q => { want = clamp(q.x, 3, 97); },
-        move:  q => { want = clamp(q.x, 3, 97); }
+        move:  q => { want = clamp(q.x, 3, 97); },
+        end:   () => { if (held){ dropOk = true; say(); } }
       });
     }
   },
@@ -13309,6 +13330,13 @@ const MODES = {
       col.appendChild(field);
       ctx.surface.appendChild(col);
       let done = false, raf2 = 0, start = performance.now();
+      /* The board's own time. In Cozy it keeps none (0.178.0): it runs forward to four fifths of the way to the meeting, then
+         back, and forward again, so the lines can be read for as long as you like and the pair never meets. */
+      let turnAt = 0;
+      const boardMs = () => { const ms = performance.now() - start; if (!ctx.untimed) return ms;
+        /* turn back well before the pair first touch, which can be long before they meet when they close slowly */
+        if (!turnAt){ let tt = win; for (let t = 0; t <= win; t += 25){ const a = at(pa, t), b = at(pb, t); if (Math.hypot(a.x - b.x, a.y - b.y) < 2 * R * 1.4){ tt = t; break; } } turnAt = Math.max(800, tt * 0.85); }
+        const L = turnAt, p = ms % (2 * L); return p < L ? p : 2 * L - p; };
       /* Two looks a round at where everything is going: each thread is drawn from where the dot is to where it will be when
          the window closes. Straight lines, so two threads that cross at the same moment are the pair. */
       const svgNS = 'http://www.w3.org/2000/svg';
@@ -13322,7 +13350,7 @@ const MODES = {
       onTap(scout, () => {
         if (done || scouts <= 0) return;
         scouts--; paintScout(); sfx.tap();
-        const ms = performance.now() - start;
+        const ms = boardMs();
         trails.replaceChildren();
         dots.forEach(d => {
           const q = at(d, ms), r2 = at(d, win);
@@ -13360,7 +13388,7 @@ const MODES = {
       wire.setAttribute('viewBox', '0 0 100 100'); wire.setAttribute('preserveAspectRatio', 'none'); wire.setAttribute('class', 'drifttrails driftthread');
       const wline = document.createElementNS(svgNS, 'line'); wire.appendChild(wline); field.appendChild(wire);
       let drag = null;
-      const pin = () => { if (!drag || !drag.moved) return; const q = at(drag.from, performance.now() - start); wline.setAttribute('x1', q.x); wline.setAttribute('y1', q.y); };
+      const pin = () => { if (!drag || !drag.moved) return; const q = at(drag.from, boardMs()); wline.setAttribute('x1', q.x); wline.setAttribute('y1', q.y); };
       const dotAt = (x, y) => {
         for (const el of document.elementsFromPoint(x, y)){ const hit = dots.find(d => d.e === el); if (hit) return hit; }
         /* A thumb lets go a little off: the nearest dot within a dot and a half. */
@@ -13403,7 +13431,7 @@ const MODES = {
           if (done || ev.button || drag) return;
           drag = { id: ev.pointerId, from: d, x0: ev.clientX, y0: ev.clientY, moved: false, wasSel: sel.has(d) };
           try { field.setPointerCapture(ev.pointerId); } catch(err){}
-          const q = at(d, performance.now() - start);
+          const q = at(d, boardMs());
           wline.setAttribute('x1', q.x); wline.setAttribute('y1', q.y); wline.setAttribute('x2', q.x); wline.setAttribute('y2', q.y);
         });
         onTap(e, () => choose(d));
@@ -13412,7 +13440,7 @@ const MODES = {
       ctx.prompt(t('p.drift'));
       const frame = () => {
         if (done) return;
-        const ms = performance.now() - start;
+        const ms = boardMs();
         dots.forEach(d => {
           const q = at(d, ms);
           d.e.style.left = (q.x - R) + '%';
@@ -13972,15 +14000,27 @@ const MODES = {
       drops.forEach(spawnEl);
       let lastT = drops.reduce((m, d) => Math.max(m, d.t), 0);
 
+      /* In Cozy nothing falls on a clock (0.178.0): the scene stops when the lowest ball is most of the way down, and it
+         lets go when you let go of the pail, under it or out of its way. */
+      let tScene = 0, lastNow = performance.now(), dropOk = false, held = false;
       onDrag(field, {
         start: q => { if (!done){ px = clamp(q.x, MOUTH/2, 100 - MOUTH/2); movePail(); } },
-        move:  q => { if (!done){ px = clamp(q.x, MOUTH/2, 100 - MOUTH/2); movePail(); } }
+        move:  q => { if (!done){ px = clamp(q.x, MOUTH/2, 100 - MOUTH/2); movePail(); } },
+        end:   () => { if (held && !done){ dropOk = true; say(); } }
       });
 
       const t0 = performance.now();
       const frame = () => {
         if (done) return;
-        const ms = performance.now() - t0;
+        const now = performance.now(), dt = now - lastNow; lastNow = now;
+        let hold = false;
+        if (ctx.untimed && !dropOk){
+          const next = drops.reduce((m, d) => d.gone ? m : (!m || d.t < m.t ? d : m), null);
+          if (next && (tScene - next.t + fall) / fall >= 0.78) hold = true;
+        }
+        if (hold && !held){ held = true; ctx.prompt(t('p.gatherHold')); }
+        if (!hold) tScene += dt;
+        const ms = ctx.untimed ? tScene : now - t0;
         for (const d of drops){
           if (d.gone) continue;
           const age = ms - d.t + fall;           /* d.t is the landing moment */
@@ -13994,7 +14034,7 @@ const MODES = {
              (landed/fell/splat) ever restores opacity to 1. */
           if (!d.live){ d.live = true; d.e.classList.add('gfall'); }
           if (y >= RIM){
-            d.gone = true;
+            d.gone = true; dropOk = false; held = false;
             const caught = Math.abs(d.x - px) < CATCH/2;
             if (caught !== d.good){
               /* A keeper that got away, or a tangle that was caught, takes a paw. A keeper that got away is replaced by another a little
@@ -16741,7 +16781,7 @@ const MODES = {
         });
         queueEls.forEach((d, i) => {
           const v = queue[at + i];
-          d.className = 'grain' + (i === 0 ? ' next' : '') + (i === LEAD ? ' aim' : '');
+          d.className = 'grain' + (i === 0 ? ' next' : '') + (i === (ctx.untimed ? lane.filter(v => v !== null).length : LEAD) ? ' aim' : '');
           dress(d, v === undefined ? null : v, PIECE.sand);
           d.setAttribute('aria-hidden','true');
         });
@@ -16763,6 +16803,7 @@ const MODES = {
         slots[cap-1].classList.add('drop');
         ctx.after(260, () => slots[cap-1] && slots[cap-1].classList.remove('drop'));
         paint(); sfx.tap(); buzz('tap');
+        if (ctx.untimed) convey();
       };
 
       /* Knocking the front bucket off is the way out of a belt you have loaded
@@ -16816,14 +16857,27 @@ const MODES = {
 
       const tick = () => {
         if (done) return;
-        if (at >= queue.length - 1){ done = true; return ctx.miss(belt); }
+        /* Out of grains. This was 'queue.length - 1', which refused the last grain, so a round with no spill (nothing put
+           back in the queue) could never be finished (0.178.0). */
+        if (at >= queue.length){ done = true; return ctx.miss(belt); }
         dress(drop, queue[at], PIECE.sand);
         drop.classList.remove('go');
         void drop.offsetWidth;
         drop.style.setProperty('--fall', FALL + 'ms');
         drop.classList.add('go');
         ctx.after(FALL, land);
-        timer = ctx.after(beat, tick);
+        if (!ctx.untimed) timer = ctx.after(beat, tick);
+      };
+      /* In Cozy the belt keeps no time (0.178.0): the next grain falls when you say so (Drop the next grain), so the belt can
+         be loaded, a wrong bucket knocked off, and the queue read for as long as you like. The belt carries each bucket
+         straight up to the chute; a grain that falls on bare belt spills (a move) and comes round again later. */
+      const convey = () => { let moved = false; while (lane[0] === null && lane.some(v => v !== null)){ lane.shift(); lane.push(null); moved = true; } if (moved) paint(); };
+      let busy = false, queued = false;
+      const step = () => {
+        if (done) return;
+        if (busy){ queued = true; return; }
+        busy = true; tick();
+        ctx.after(FALL + 40, () => { busy = false; if (done) return; convey(); if (queued){ queued = false; ctx.after(160, step); } });
       };
 
       slots.forEach((b, x) => onTap(b, () => { if (x === 0) knock(); }));
@@ -16834,8 +16888,14 @@ const MODES = {
       carry(box, { grab: '.bkt', over: '.belt', host: box, tap: el => el._put && el._put(), land: from => from._put && from._put() });
 
       paint();
+      if (ctx.untimed){
+        const tools = mk('div','sumtools'), pass = mk('button','sumtool'); pass.type = 'button';
+        pass.textContent = t('sift.next');
+        onTap(pass, () => { if (!done){ sfx.tap(); step(); } });
+        tools.appendChild(pass); box.appendChild(tools);
+      }
       /* A beat of grace before the first grain, so the belt can be read. */
-      ctx.after(Math.min(900, beat), tick);
+      else ctx.after(Math.min(900, beat), tick);
     }
   },
 
@@ -17570,7 +17630,7 @@ const MODES = {
       const tick = () => {
         if (done) return;
         clock += TICK;
-        if (!ctx.relaxed){
+        if (!ctx.relaxed && !ctx.untimed){
           if (clock >= due){ stepDown(); if (done) return; last = clock; due = clock + period; }
           const f = clamp((clock - last) / Math.max(1, due - last), 0, 1);
           meterFill.style.transform = 'scaleX(' + f.toFixed(2) + ')';
@@ -17591,11 +17651,21 @@ const MODES = {
         return out;
       };
 
+      /* In Cozy the wall keeps no time (0.178.0): it comes down one ball every five shots instead, and a wrong colour counts
+         as two more. The meter fills by shots. */
+      const SHOTS = 5; let shots = 0;
+      const shotsTo = n => {
+        if (!ctx.untimed || ctx.relaxed || done) return;
+        shots += n;
+        while (shots >= SHOTS && !done){ shots -= SHOTS; stepDown(); }
+        meterFill.style.transform = 'scaleX(' + Math.min(1, shots / SHOTS).toFixed(2) + ')';
+      };
       /* A shot arrives: it pops its own colour, and anything else it just bounces off and costs time. */
       const land = (c, col) => {
         if (done) return;
         const r = front(c);
         if (r < 0) return;
+        shotsTo(1); if (done) return;
         if (grid[r][c] === col){
           const cluster = flood(r, c);
           cluster.forEach(([rr, cc]) => { grid[rr][cc] = -1; balls[rr][cc].classList.add('gone'); balls[rr][cc].classList.remove('aim'); });
@@ -17610,7 +17680,7 @@ const MODES = {
           ctx.after(420, () => b.classList.remove('wrong'));
           sfx.bad(); buzz('bad');
           if (!ctx.relaxed){
-            due -= RUSH;
+            if (ctx.untimed) shotsTo(2); else due -= RUSH;
             box.classList.add('rush');
             ctx.after(700, () => box.classList.remove('rush'));
             ctx.prompt(t('blast.rush'));
@@ -20621,6 +20691,8 @@ function flash(cls){
   setTimeout(() => el.surface.classList.remove(cls), cls === 'flash-win' ? 200 : 260);
 }
 try { if (localStorage.getItem('dd.probe')) window.__flash = flash; } catch(e){}
+/* For probes: every round's end (and every slip), as it happens. */
+try { if (localStorage.getItem('dd.probe')) window.__rounds = []; } catch(e){}
 
 /* ═══ The Quilt ══════════════════════════════════════════════════════════
    One patch for each game, hanging on the Room's back wall and growing over a lifetime (docs/bible/04-progression.md).
@@ -21943,6 +22015,9 @@ function beginRound(mode, firstMeet){
     clock: () => { let last = performance.now(); return () => { const now = performance.now(), dt = Math.min(50, now - last); last = now; return dt / (1000 / 60) * spd(); }; },
     /* Content that should not repeat goes through here rather than pick(). */
     relaxed: run.kind === 'zen',
+    /* Cozy has no clock of any kind (0.178.0, WCAG 2.2.1): a game that keeps its own time (a beat, a fall, a fade)
+       waits for the player instead of running out. Fidget Loop has none either. */
+    untimed: run.kind === 'cozy' || run.kind === 'zen',
     deal: (items, id) => run.kind === 'daily'
       ? items[Math.floor(run.rnd()*items.length)]
       : dealFrom(items, id),
@@ -21971,7 +22046,7 @@ function beginRound(mode, firstMeet){
     win: node => resolve(true, node),
     miss: node => resolve(false, node),
     /* A mistake that does not end the round (a wrong tile with tries left): no Clean, no Purrfect. */
-    slip: () => { if (roundLive && run) run.slips = (run.slips | 0) + 1; }
+    slip: () => { if (roundLive && run){ run.slips = (run.slips | 0) + 1; try { if (window.__rounds) window.__rounds.push({ id: modeIdOf(run.curMode), slip: true, kind: run.kind }); } catch(e){} } }
   };
   const want = mode.stages ? Math.max(1, mode.stages(run.lvl)) : 1;
   if (want > 1) staged(mode, ctx, want); else mode.build(ctx);
@@ -22030,6 +22105,7 @@ function resolve(ok, node){
   Array.from(el.surface.querySelectorAll('button')).forEach(b => { b.disabled = true; });
 
   if (run.log) run.log.push({ id: modeIdOf(mode), ok });
+  try { if (window.__rounds) window.__rounds.push({ id: modeIdOf(mode), ok, kind: run.kind }); } catch(e){}
   if (ok){
     const multBefore = multiplier();
     const elapsed = performance.now() - roundStart;

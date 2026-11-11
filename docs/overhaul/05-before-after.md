@@ -568,7 +568,7 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | Keyboard | Enter on a tray patch turned it | it turns and chooses it |
 | Snip, Chalk Line | a cut or a ramp only by swiping or drawing a path | a tap sets where the line starts (a ring, "Now tap where the line ends"), the next tap makes the straight line: Snip cuts what it crosses, Chalk Line chalks it with the same ink (stopping where the ink runs out) |
 | `forge.mjs` | dragged every patch | TAP=1 lays every patch with taps: nine quilts finished, 49 of 50 patches where aimed |
-| `taponly.mjs` | 13 checks | 25: Patchwork's choose check, a hint-led quilt by taps, the TAP=1 run of `forge.mjs`, Snip won at two levels by two-tap snips, Chalk Line's answer laid by two-tap lines and won at two levels |
+| `taponly.mjs` | 13 checks | 24: Patchwork's choose check, a hint-led quilt by taps, the TAP=1 run of `forge.mjs`, Snip won at two levels by two-tap snips, Chalk Line's answer laid by two-tap lines and won at two levels |
 
 ## v0.177.0: an off switch you can see (WCAG 1.4.11)
 
@@ -603,6 +603,21 @@ Not checked: on a real phone.
 | `splash.mjs` | 29 checks | 30: the new one (the live page reports how much gold light is left) fails on v0.177.1 |
 
 Not checked: on a real phone.
+
+## v0.178.0: Cozy is untimed in every game (WCAG 2.2.1)
+
+| Game | In Cozy before | In Cozy now |
+|---|---|---|
+| Cat Fight | hesitating past the foe's beat was a wrong answer | the foe waits; no beat bar |
+| Mending | a frayed one unravelled after a few seconds | it waits until mended; no hold button |
+| Dropped Stitch | the bobbin fell on its own | it stops above each bar; let go to drop |
+| Catch the Balls | balls fell on a clock | the scene stops above the pail; let go to drop |
+| Tangle Watch | the pair met after the window | the board runs to four fifths of the way and back |
+| Sandbox of Softness | a grain fell every beat | Drop the next grain when you are ready |
+| Tumble Dryer | the drum refilled on a clock | a new pair comes in as you make one; no hold |
+| Yarn Ball Blaster | the wall came down every few seconds | one ball down every five shots (a wrong colour counts two) |
+| Sandbox's last grain (every mode) | refused, so a round with no spill could not be won | dropped |
+| `untimed.mjs` (new) | 7 games beat an idle player | none does; the same games in Challenge still do; three reworked games won in Cozy |
 
 ## How to reproduce
 
