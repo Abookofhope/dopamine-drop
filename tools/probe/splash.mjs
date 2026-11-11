@@ -2,6 +2,8 @@
  *
  * It plays on every launch and can be skipped only after one full watch (save.introSeen, v0.158.0).
  * The page is the studio's web v8 (v0.159.0), aiming for 60 fps since v0.161.1.
+ * Since v0.162.0 the intro plays as a recording (intro/splash-phone.mp4 upright, intro/splash-wide.mp4 on a wide screen) and the
+ * page is the fallback: section 0 checks the recording; sections 1 to 5 block it, so they check the page as before.
  * Asked for with dd.splash (automated browsers skip it otherwise): it covers the screen, its frame is the studio's own page
  * (the wordmark "Books Entertainment"); the harness seeds Reduce motion on, so the full intro is asked for with it off, the Skip button is a full-size target and has focus; Escape skips it and the game
  * underneath is ready; left alone it leaves when the forging ends (the page's own data-end); with Reduce motion it leaves
@@ -20,10 +22,14 @@ const URL = `http://127.0.0.1:${process.env.PORT || 8275}/`;
 const OUT = process.env.OUT || '';
 const browser = await chromium.launch();
 const errs = [];
-async function open(state = {}, asked = true){
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
+async function open(state = {}, asked = true, movie = false, view = { width: 390, height: 844 }, saver = false){
+  const ctx = await browser.newContext({ viewport: view, hasTouch: true });
   const page = await ctx.newPage();
   page.on('pageerror', e => errs.push(String(e).slice(0, 160)));
+  /* unless a check asks for the recording it is blocked, so the studio's live page plays */
+  if (!movie) await ctx.route('**/intro/*.mp4', r => r.fulfill({ status: 404, body: '' }));
+  page.__asked = []; page.on('request', r => { const m = /intro\/([\w-]+\.mp4)/.exec(r.url()); if (m) page.__asked.push(m[1]); });
+  if (saver) await page.addInitScript(() => { Object.defineProperty(navigator, 'connection', { value: { saveData: true }, configurable: true }); });
   /* the top window only: the intro's own frame shares this storage, and seeding it again there would undo what the game saved */
   await page.addInitScript(([v, a]) => { if (window.top !== window) return; localStorage.setItem('dd.v1', v); localStorage.setItem('dd.probe', '1'); if (a) localStorage.setItem('dd.splash', '1'); },
     [seedSave(Object.assign({ onboarded: true, xp: 9000, runs: 40, solved: 600, lang: 'en', reduceMotion: false }, state)), asked]);
@@ -33,7 +39,58 @@ async function open(state = {}, asked = true){
 const shown = page => page.evaluate(() => { const h = document.getElementById('bootSplash'); return !!h && !h.hidden && !h.classList.contains('out'); });
 const frameDoc = page => page.frame({ url: /about:srcdoc/ });
 
-/* ── 1. it plays, it is the studio's page, and once it has been watched fully Escape skips it ── */
+const movieState = page => page.evaluate(() => { const v = document.getElementById('bootSplashVideo'), f = document.getElementById('bootSplashFrame'), h = document.getElementById('bootSplash'), q = v.getVideoPlaybackQuality(), r = v.getBoundingClientRect();
+  return { on: !v.hidden && !!v.getClientRects().length, w: v.videoWidth, h: v.videoHeight, t: v.currentTime, dur: v.duration, paused: v.paused, muted: v.muted, total: q.totalVideoFrames, dropped: q.droppedVideoFrames,
+    fit: getComputedStyle(v).objectFit, cover: r.width >= innerWidth - 1 && r.height >= innerHeight - 1, live: !!f.getAttribute('srcdoc'), frameHidden: f.hidden, name: h.dataset.movie || '', end: parseFloat(h.dataset.end) }; });
+
+/* ── 0. the recording (v0.162.0): it plays like a film, the same rules hold, and the page is not loaded ── */
+{
+  const { page, ctx } = await open({ introSeen: false }, true, true);
+  await page.waitForTimeout(1500);
+  const a = await movieState(page); await page.waitForTimeout(700); const m = await movieState(page);
+  check(await shown(page) && m.on && m.name === 'intro/splash-phone.mp4' && m.w === 864 && m.h === 1920 && m.dur > 13.5 && m.dur < 14.5 && m.t > a.t + 0.4 && !m.paused,
+    `the intro plays as a recording on an upright screen (${m.name}, ${m.w}x${m.h}, ${m.dur.toFixed(2)} s; ${a.t.toFixed(2)} s then ${m.t.toFixed(2)} s)`);
+  check(m.muted && m.fit === 'cover' && m.cover, 'silent, filling the screen, cropped not stretched');
+  check(!m.live && m.frameHidden, 'and the live page is not loaded');
+  const sk = await page.evaluate(() => { const b = document.getElementById('bootSkip'); return b.hidden || !b.getClientRects().length; });
+  await page.keyboard.press('Escape'); await page.mouse.click(195, 300); await page.keyboard.press('Enter');
+  await page.waitForTimeout(400);
+  check(sk && await shown(page) && !(await movieState(page)).paused, 'before a first full watch there is no Skip button, and Escape, Enter and a tap do not skip it');
+  const t0 = Date.now(), at = (await movieState(page)).t;
+  await page.waitForTimeout(Math.max(0, (m.dur - at) * 1000 - 1200));
+  const late = await movieState(page);
+  check(await shown(page) && late.total > 700 && late.dropped <= 10, `still playing just before its end: ${late.total} frames shown, ${late.dropped} dropped`);
+  const left = await page.waitForFunction(() => document.getElementById('bootSplash').hidden, null, { timeout: 8000, polling: 100 }).then(() => true, () => false);
+  const took = at + (Date.now() - t0) / 1000;
+  check(left && took >= m.dur - 0.3 && took <= m.dur + 2.5, `it leaves by itself when the recording ends (${took.toFixed(1)} s in)`);
+  check(await page.evaluate(() => JSON.parse(localStorage.getItem('dd.v1')).introSeen) === true, 'and that full watch is kept');
+  await ctx.close();
+}
+{
+  const { page, ctx } = await open({ introSeen: true }, true, true, { width: 1280, height: 720 });
+  await page.waitForTimeout(1500);
+  const m = await movieState(page);
+  check(m.on && m.name === 'intro/splash-wide.mp4' && m.w === 1920 && m.h === 1080 && m.cover, `a wide screen gets the widescreen recording (${m.name}, ${m.w}x${m.h})`);
+  await page.keyboard.press('Escape'); await page.waitForTimeout(800);
+  const after = await page.evaluate(() => ({ hidden: document.getElementById('bootSplash').hidden, paused: document.getElementById('bootSplashVideo').paused, play: !document.getElementById('tabPlay').hidden }));
+  check(after.hidden && after.paused && after.play, 'once watched, Escape skips it and stops it, and the game is there underneath');
+  await ctx.close();
+}
+{
+  const { page, ctx } = await open({ introSeen: true, reduceMotion: true }, true, true);
+  await page.waitForTimeout(900);
+  check(page.__asked.length === 0 && !(await movieState(page)).on, 'with Reduce motion no recording is fetched or played');
+  await ctx.close();
+}
+{
+  const { page, ctx } = await open({ introSeen: true }, true, true, { width: 390, height: 844 }, true);
+  await page.waitForTimeout(1500);
+  const m = await movieState(page);
+  check(page.__asked.length === 0 && !m.on && m.live, 'with the browser saving data no recording is fetched: the live page plays');
+  await ctx.close();
+}
+
+/* ── 1. the live page (the recording blocked): it plays, it is the studio's page, and once it has been watched fully Escape skips it ── */
 {
   const { page, ctx } = await open({ introSeen: true });
   await page.waitForTimeout(600);

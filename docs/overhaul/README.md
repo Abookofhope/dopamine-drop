@@ -47,6 +47,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.160.0 | What's new shows what is new to you, so the first launch after an update no longer freezes while it builds 218 releases |
 | v0.161.0 | The three promises the roadmap left unprobed are probed; the friend's Daily race now shows on your first Daily of the day |
 | v0.161.1 | The intro aims for 60 fps: it lowers its detail below about 50 fps, not 30 |
+| v0.162.0 | The intro plays as a recording, so it is smooth on any device; the live intro is the fallback |
 
 ## Ground rules the work follows
 

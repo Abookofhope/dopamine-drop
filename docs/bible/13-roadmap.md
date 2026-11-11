@@ -45,6 +45,7 @@ nothing ships on a red probe.
 | v0.160.0 | b1884c1 | AAA, performance: the busiest moment already holds 60 fps at 4x (and to 8x); the first launch after an update no longer freezes building What's new; the release history is gated |
 | v0.161.0 | see the log | AAA, the open probes: the lucky skein pays exactly double (probed); a friend's Daily raced on your first Daily of the day (fixed, probed); the first 90 s: a grade and the Thread on screen in 5 of 5 first runs (probed) |
 | v0.161.1 | see the log | the owner's 60-fps target: the studio's intro lowers its detail below about 50 fps (it waited for about 30); same page otherwise |
+| v0.162.0 | see the log | the owner's request, "super smooth on anything": the intro plays as a recording (upright and widescreen, 60 fps, top quality); the live page is the fallback (`splash.mjs`: 28 of 28) |
 
 ### Cut lists (what each release drops first if it runs long)
 
