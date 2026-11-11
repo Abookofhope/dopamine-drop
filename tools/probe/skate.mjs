@@ -166,28 +166,33 @@ check(sawThin, 'past level 20 there is thin ice on the pond');
 }
 
 /* ── 3. thin ice turns to water behind the cat ── */
+/* Whether a pond lets the cat cross thin ice in its first few slides depends on the deal: look up to three slides deep
+   over up to sixteen ponds (the first slide over six ponds found none once in a full chain, 2026-11-11). */
 {
   const page = await open({ xp: 900000, runs: 900, solved: 40000 });
   let seen = false, stopped = null;
-  for (let r = 0; r < 6 && !seen; r++){
+  /* slides (at most three, none winning) whose last one crosses thin ice: a cell that turns to water and is neither
+     where that slide began nor where it stopped */
+  const crossing = (p, depth, path) => { for (let d = 0; d < 4; d++){ const q = after(p, d); if (!q || (q.cat === q.goal && !q.yarn.length)) continue;
+    const cracked = q.kind.map((k, i) => k === 'w' && p.kind[i] === 't' && i !== p.cat && i !== q.cat ? i : -1).filter(i => i >= 0);
+    if (cracked.length) return { path: path.concat(d), cell: cracked[0], d };
+    if (depth > 1){ const r = crossing(q, depth - 1, path.concat(d)); if (r) return r; } } return null; };
+  for (let r = 0; r < 16 && !seen; r++){
     const p = await read(page); if (!p) break;
-    for (let d = 0; d < 4 && !seen; d++){
-      /* a slide whose path crosses thin ice (and does not end on it) */
-      let x = p.cat % p.n, y = Math.floor(p.cat / p.n), crossed = -1;
-      for (;;){ const nx = x + D[d][0], ny = y + D[d][1]; if (nx < 0 || ny < 0 || nx >= p.n || ny >= p.n) break; const q = ny * p.n + nx;
-        if (p.kind[q] === '#' || p.kind[q] === 'w') break; x = nx; y = ny; if (q === p.goal) break;
-        const nx2 = x + D[d][0], ny2 = y + D[d][1], q2 = ny2 * p.n + nx2;
-        if (p.kind[q] === 't' && nx2 >= 0 && ny2 >= 0 && nx2 < p.n && ny2 < p.n && p.kind[q2] !== '#' && p.kind[q2] !== 'w') crossed = q; }
-      if (crossed < 0) continue;
-      await press(page, d); await page.waitForTimeout(300);
+    const c = crossing(p, 3, []);
+    if (c){
+      for (const d of c.path){ await press(page, d); await page.waitForTimeout(220); }
       const q = await read(page);
-      seen = q.kind[crossed] === 'w';
-      /* and it stops the cat: slide back the way it came */
-      if (seen){ await press(page, (d + 2) % 4); await page.waitForTimeout(300); const b = await read(page);
-        const bx = b.cat % b.n, by = Math.floor(b.cat / b.n), cx = crossed % b.n, cy = Math.floor(crossed / b.n);
-        stopped = (bx === cx + D[d][0] && by === cy + D[d][1]) || b.cat === q.cat; }
+      seen = q.kind[c.cell] === 'w';
+      /* and it stops the cat: slide back the way it came; it stops just short of the water (or does not move) */
+      if (seen){ await press(page, (c.d + 2) % 4); await page.waitForTimeout(300); const b = await read(page);
+        const bx = b.cat % b.n, by = Math.floor(b.cat / b.n), cx = c.cell % b.n, cy = Math.floor(c.cell / b.n);
+        stopped = (bx === cx + D[c.d][0] && by === cy + D[c.d][1]) || b.cat === q.cat; }
+      break;
     }
-    if (!seen){ /* this pond had no such slide; play it out and try the next */ const route = solve(p); if (route) for (const d of route){ await press(page, d); await page.waitForTimeout(120); } await page.waitForTimeout(1200); await waitPond(page); }
+    const route = solve(p); if (!route) break;
+    for (const d of route){ await press(page, d); await page.waitForTimeout(120); }
+    await page.waitForTimeout(1200); await waitPond(page);
   }
   check(seen, 'thin ice the cat has crossed is open water');
   check(seen && stopped === true, 'and open water stops the cat like a snowbank');
