@@ -48,6 +48,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.161.0 | The three promises the roadmap left unprobed are probed; the friend's Daily race now shows on your first Daily of the day |
 | v0.162.0 | Tablets: every screen is 640px wide instead of a phone strip; Patchwork fits a short, wide screen |
 | v0.163.0 | A winter game, Pond Skate: the 45th |
+| v0.164.0 | Every game is complete or the build stops: quips, signature, kind, icon and a probe that names it; Peekaboo and Dye Pots get their first probes, and Dye Pots' mixed pots come back past level 18 |
 
 ## Ground rules the work follows
 

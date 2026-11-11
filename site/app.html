@@ -5191,7 +5191,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.163.0';
+const VERSION_TAG = 'v0.164.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -8169,6 +8169,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.164.0', date:'2026-11-11', items:[
+    'Fixed: in Dye Pots, the pots that want a mix of two dyes stopped appearing once you were good enough to see every colour on the board. They come back at every level from 10 up.',
+  ] },
   { v:'0.163.0', date:'2026-11-10', items:[
     'A new game for winter: Pond Skate. Send a cat sliding across a frozen pond; it only stops at a snowbank, the edge or the basket. Get it into the basket with every ball of yarn picked up on the way. Every pond can be done in the moves you are given. Later on, thin ice cracks once the cat has crossed it. It is in Calm & Collect, and it stays all year.',
   ] },
@@ -12723,14 +12726,16 @@ const MODES = {
     build(ctx){
       const n = clamp(3 + Math.floor(ctx.level/6), 3, 6);
       const paws = pawChances(ctx);
-      const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, n);
+      let pal = shuffle(INKS.slice(), ctx.rnd).slice(0, n);
       /* From level 10 a pot sometimes wants a mix: purple is red and blue, green is blue and yellow, orange is red and yellow.
-         Two of the dyes go into that pot, in either order, and neither of them has a pot of its own. */
+         Two of the dyes go into that pot, in either order, and neither of them has a pot of its own. The mix's own colour
+         leaves the dyes when it is chosen: a mix used to be offered only when its colour was not among them, and from
+         level 18 all six colours are, so the mix never came at the top of the game (dyepots.mjs, v0.164.0). */
       let mixInk = null, parts = null;
       if (ctx.level >= 10 && ctx.rnd() < 0.6){
         const RECIPES = [['PURPLE','RED','BLUE'],['GREEN','BLUE','YELLOW'],['ORANGE','RED','YELLOW']];
-        const okR = RECIPES.filter(r => pal.some(q => q.name === r[1]) && pal.some(q => q.name === r[2]) && !pal.some(q => q.name === r[0]));
-        if (okR.length){ const r = pick(okR, ctx.rnd); mixInk = INKS.find(i => i.name === r[0]); parts = [r[1], r[2]]; }
+        const okR = RECIPES.filter(r => pal.some(q => q.name === r[1]) && pal.some(q => q.name === r[2]));
+        if (okR.length){ const r = pick(okR, ctx.rnd); mixInk = INKS.find(i => i.name === r[0]); parts = [r[1], r[2]]; pal = pal.filter(q => q.name !== r[0]); }
       }
       const order = shuffle((mixInk ? pal.filter(i => !parts.includes(i.name)).concat([mixInk]) : pal).slice(), ctx.rnd);
 

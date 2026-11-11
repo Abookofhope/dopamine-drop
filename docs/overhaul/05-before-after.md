@@ -423,6 +423,16 @@ The bible's AAA content line is "a new game each season, built to the same rules
 
 Found by its own probe before shipping: the cat never glided (setting the transition's duration and then resetting the shorthand wiped it). Fixed by setting the whole transition in one place.
 
+## v0.164.0: every game complete, or the build stops
+
+| What | Before | After |
+|---|---|---|
+| What a game needs besides its board | a README checklist, followed by hand | `check_site.py` refuses a build where any game lacks its five quips, a signature, a kind, a card icon, or a probe that names it; the floor of games is 45 (it was left at 44 when Pond Skate shipped) |
+| Games no probe had ever named | Peekaboo, Dye Pots (covered only by the all-games walks) | each has its own probe |
+| Peekaboo | not probed | the probe follows every marked swap itself; at three levels the cats are where it followed them, and every swap moves a cat |
+| Dye Pots' mixed pots | offered only when the mix's colour was not among the dyes; from level 18 all six are, so they never came | the mix's colour leaves the dyes when a mix is chosen; `dyepots.mjs`' two mix checks fail on v0.163.0 |
+| `peekaboo.mjs`, `dyepots.mjs` (new) | — | 12 of 12, 8 of 8 |
+
 ## How to reproduce
 
 ```
