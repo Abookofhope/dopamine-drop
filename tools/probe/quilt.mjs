@@ -8,7 +8,9 @@
  *   PORT=8502 SITE=/path/to/built node tools/probe/quilt.mjs
  */
 import { chromium } from 'playwright';
-import { openApp, goTab } from './harness.mjs';
+import { openApp, goTab, modeIdsFromBuild } from './harness.mjs';
+/* the number of games, read from the build: it grows (45 from v0.163.0) */
+const GAMES = modeIdsFromBuild(process.env.SITE || '/tmp/pw/_site').length;
 
 let bad = 0;
 /* On a build without these features the page has none of their elements: say so as a failure rather than a stack trace. */
@@ -44,12 +46,12 @@ const lion = {}; ['blitz', 'fog', 'frenzy', 'iron'].forEach(tw => lion['sum:' + 
       return { cls: b.className, stars: b.querySelectorAll('.qs i').length, label: b.getAttribute('aria-label'), w: r.width, h: r.height }; };
     return { n: document.querySelectorAll('#quiltGrid .qpatch').length, odd: p('odd'), order: p('order'), wheel: p('wheel'), sum: p('sum'), count: document.getElementById('quiltCount').textContent };
   });
-  check(q.n === 44, `one patch for every game (${q.n})`);
+  check(q.n === GAMES, `one patch for every game (${q.n} of ${GAMES})`);
   check(/tried/.test(q.odd.cls) && q.odd.stars === 3, `a game played with three stars is knitted with three rows (${q.odd.cls}, ${q.odd.stars})`);
   check(/tried/.test(q.order.cls) && q.order.stars === 0, 'a game played without stars is knitted plain');
   check(!/tried/.test(q.wheel.cls) && /not played/i.test(q.wheel.label), `a game never played is an outline, and says so ("${q.wheel.label}")`);
   check(/gold/.test(q.sum.cls) && /r5/.test(q.sum.cls), `a Lion solved Purrfect 14 times in 20 has the Gold Thread (${q.sum.cls})`);
-  check(q.count === '3/44', `the panel counts the patches knitted (${q.count})`);
+  check(q.count === '3/' + GAMES, `the panel counts the patches knitted (${q.count})`);
   check(q.odd.w >= 44 && q.odd.h >= 44, `each patch is a full-size target (${Math.round(q.odd.w)}x${Math.round(q.odd.h)})`);
   /* a patch opens its game */
   await page.evaluate(() => document.querySelector('#quiltGrid .qpatch[data-id="odd"]').click());

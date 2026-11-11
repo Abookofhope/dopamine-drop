@@ -88,7 +88,7 @@ if manifest.is_file():
     except json.JSONDecodeError as e:
         check("manifest parses", False, str(e))
 
-# The studio intro plays as a recording beside the page (v0.162.0). The page names both files; they
+# The studio intro plays as a recording beside the page (v0.164.1). The page names both files; they
 # must be there, be videos (an MP4 starts with an `ftyp` box), and not be cached by the worker.
 for name in ("intro/splash-phone.mp4", "intro/splash-wide.mp4"):
     p = OUT / name
@@ -403,7 +403,7 @@ _starts = [(m.start(), m.group(1)) for m in re.finditer(r"\n  ([a-zA-Z0-9_]+): \
 # quietly drops and every other check still passes. The floor is the only thing
 # that can catch it. RAISE IT when a mode is added. Lower it ONLY in the same
 # commit that deliberately retires modes — never to turn a red check green.
-MODE_FLOOR = 44
+MODE_FLOOR = 45
 check(f"the game still has at least {MODE_FLOOR} modes",
       len(_starts) >= MODE_FLOOR,
       f"found {len(_starts)}" + ("" if len(_starts) >= MODE_FLOOR else
@@ -412,6 +412,30 @@ check(f"the game still has at least {MODE_FLOOR} modes",
 _missing = [n for _, n in _starts if f"'m.{n}':" not in html]
 check("every mode has a name and blurb string",
       not _missing, "missing: " + ", ".join(_missing[:5]) if _missing else "")
+
+# A game is more than its board. Pond Skate (0.163.0), the first seasonal game, was built against a checklist; this is
+# that checklist as a check, so the next one cannot ship missing a piece: its five quips (the other languages are held
+# to English by the string-table check), its own way of saying yes (SIG), a door it belongs to (GATES), its card's
+# icon, and a probe in tools/probe that names it. The last found two games no probe had ever named (Peekaboo and Dye
+# Pots); each got one in 0.164.0, and Dye Pots' found that its mixed pots never came past level 18.
+_ids = [n for _, n in _starts]
+_quips = [n for n in _ids if any(f"'q.{n}.{q}':" not in html for q in ("w1", "w2", "w3", "m1", "m2"))]
+check("every mode has its five quips", not _quips, "missing: " + ", ".join(_quips[:5]))
+_sig_src = html[html.find("const SIG = {"):]
+_sig_src = _sig_src[:_sig_src.find("\n  };")]
+_nosig = [n for n in _ids if not re.search(r"\n    %s:\s*\{" % re.escape(n), _sig_src)]
+check("every mode has a signature of its own", not _nosig, "missing: " + ", ".join(_nosig[:5]))
+_gates_src = html[html.find("const GATES = {"):]
+_gates_src = _gates_src[:_gates_src.find("\n};")]
+_nogate = [n for n in _ids if f"'{n}'" not in _gates_src]
+check("every mode belongs to a kind", not _nogate, "missing: " + ", ".join(_nogate[:5]))
+_bodies = {n: modes_src[a0:(_starts[k + 1][0] if k + 1 < len(_starts) else len(modes_src))] for k, (a0, n) in enumerate(_starts)}
+_noglyph = [n for n in _ids if "glyph:" not in _bodies[n]]
+check("every mode has a card icon", not _noglyph, "missing: " + ", ".join(_noglyph[:5]))
+_probe_dir = Path(__file__).resolve().parent / "probe"
+_probe_txt = "\n".join(f.read_text(encoding="utf8") for f in _probe_dir.glob("*.mjs") if not f.name.startswith("_"))
+_unprobed = [n for n in _ids if not re.search(r"['\"`]%s['\"`]" % re.escape(n), _probe_txt)]
+check("every mode is named by a probe", not _unprobed, "missing: " + ", ".join(_unprobed[:5]))
 
 # The browser probes find a mode by its id, so they keep working in German.
 # Losing this line would send them back to matching on translated titles.

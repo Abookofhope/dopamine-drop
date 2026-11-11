@@ -46,8 +46,10 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.159.0 | The intro is the studio's web v8 |
 | v0.160.0 | What's new shows what is new to you, so the first launch after an update no longer freezes while it builds 218 releases |
 | v0.161.0 | The three promises the roadmap left unprobed are probed; the friend's Daily race now shows on your first Daily of the day |
-| v0.161.1 | The intro aims for 60 fps: it lowers its detail below about 50 fps, not 30 |
-| v0.162.0 | The intro plays as a recording, so it is smooth on any device; the live intro is the fallback |
+| v0.162.0 | Tablets: every screen is 640px wide instead of a phone strip; Patchwork fits a short, wide screen |
+| v0.163.0 | A winter game, Pond Skate: the 45th |
+| v0.164.0 | Every game is complete or the build stops: quips, signature, kind, icon and a probe that names it; Peekaboo and Dye Pots get their first probes, and Dye Pots' mixed pots come back past level 18 |
+| v0.164.1 | The intro plays as a recording, so it is smooth on any device; the live intro is the fallback, and it now aims for 60 fps |
 
 ## Ground rules the work follows
 

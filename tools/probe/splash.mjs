@@ -1,8 +1,8 @@
 /* The load-up (v0.156.0): the Books Entertainment intro plays over the game as it starts.
  *
  * It plays on every launch and can be skipped only after one full watch (save.introSeen, v0.158.0).
- * The page is the studio's web v8 (v0.159.0), aiming for 60 fps since v0.161.1.
- * Since v0.162.0 the intro plays as a recording (intro/splash-phone.mp4 upright, intro/splash-wide.mp4 on a wide screen) and the
+ * The page is the studio's web v8 (v0.159.0), aiming for 60 fps since v0.164.1.
+ * Since v0.164.1 the intro plays as a recording (intro/splash-phone.mp4 upright, intro/splash-wide.mp4 on a wide screen) and the
  * page is the fallback: section 0 checks the recording; sections 1 to 5 block it, so they check the page as before.
  * Asked for with dd.splash (automated browsers skip it otherwise): it covers the screen, its frame is the studio's own page
  * (the wordmark "Books Entertainment"); the harness seeds Reduce motion on, so the full intro is asked for with it off, the Skip button is a full-size target and has focus; Escape skips it and the game
@@ -43,7 +43,7 @@ const movieState = page => page.evaluate(() => { const v = document.getElementBy
   return { on: !v.hidden && !!v.getClientRects().length, w: v.videoWidth, h: v.videoHeight, t: v.currentTime, dur: v.duration, paused: v.paused, muted: v.muted, total: q.totalVideoFrames, dropped: q.droppedVideoFrames,
     fit: getComputedStyle(v).objectFit, cover: r.width >= innerWidth - 1 && r.height >= innerHeight - 1, live: !!f.getAttribute('srcdoc'), frameHidden: f.hidden, name: h.dataset.movie || '', end: parseFloat(h.dataset.end) }; });
 
-/* ── 0. the recording (v0.162.0): it plays like a film, the same rules hold, and the page is not loaded ── */
+/* ── 0. the recording (v0.164.1): it plays like a film, the same rules hold, and the page is not loaded ── */
 {
   const { page, ctx } = await open({ introSeen: false }, true, true);
   await page.waitForTimeout(1500);
@@ -105,7 +105,7 @@ const movieState = page => page.evaluate(() => { const v = document.getElementBy
   /* v0.159.0: the studio's web v8 — the only version with a fog layer and a quality level it writes for itself */
   const v8 = f ? await f.evaluate(() => ({ fog: !!document.getElementById('bgfx'), q: document.body.dataset.q || '' })) : null;
   check(!!v8 && v8.fog && /^(full|high|medium|light)$/.test(v8.q), `and it is the studio's web v8 (fog layer ${v8 && v8.fog}, quality "${v8 && v8.q}")`);
-  /* v0.161.1: it aims for 60 fps, lowering its detail when frames average over 20 ms (about 50 a second); until then it waited for 33 ms */
+  /* v0.164.1: it aims for 60 fps, lowering its detail when frames average over 20 ms (about 50 a second); until then it waited for 33 ms */
   const gov = f ? await f.evaluate(() => { const js = [...document.scripts].map(x => x.textContent).join('\n'); return { at60: js.includes('frameAvg > 20)'), at30: js.includes('frameAvg > 33)') }; }) : null;
   check(!!gov && gov.at60 && !gov.at30, `and it aims for 60 fps (lowers its detail past 20 ms a frame: ${gov && gov.at60})`);
   /* frames along the way, for a person to look at (OUT) */

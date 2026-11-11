@@ -393,18 +393,47 @@ The intro itself, measured the same way, runs at a median of 33 ms per frame at 
 How the probe went wrong on the way, all in the probe, none in the game: a solver for Odd Skein that reads colours from the DOM must use only the board on top (a Daily round stacks boards), skip the tiles a wrong tap rules out, and judge "lightest" perceptually; a Daily round of several boards scores only when the last is solved; and a stage at ten solves asks the player to choose a charm, which a bot has to answer.
 
 
-## v0.161.1: the intro aims for 60 fps (the owner's request)
+## v0.162.0: tablets (AAA, platforms)
 
 | What | Before | After |
 |---|---|---|
-| When the intro lowers its detail | frames slower than about 30 a second (33 ms), for 24 frames | slower than about 50 a second (20 ms), for 20 frames: it aims for 60 |
-| The intro's page | the studio's web v8 | the same page with only that rule changed, byte for byte from the studio's copy (94,429 bytes) |
-| `splash.mjs` | 16 checks | 17; the new one (it aims for 60 fps) fails on v0.161.0 |
+| The screens on a tablet (768x1024 to 1180x820) | a 460px phone column; 154–360px empty on each side | a 640px column, centred with a margin; phones unchanged (`--colw`, one variable for the column and the sheets) |
+| A board on an upright tablet (820x1180, Patchwork) | 6x6 cells about 66px | about 96px |
+| Every board at 820x1180 and 1024x768 (`sweep`, `geometry`) | — | 44 of 44 clean at both |
+| Patchwork on a short, wide screen | its note sat on the grid's top row, and Undo and Hint ran off the bottom (also at 460px, and on phones on their side) | the note keeps a strip of its own; the quilt is sized from the board's own inner height, not the surface's (which counted the surface's padding) |
+| `tablet.mjs` (new) | before the Patchwork fix, its board check fails at 1024x768 (the note over the grid) | 23 of 23 |
 
-The owner found the studio's intro choppy on a phone and asked for at least 60 frames a second. Nothing else in the
-page changed: the same animation, length and rules from v0.158.0. Not checked: the frame rate on a real phone.
+Not done here: native Android and iOS shells (they need store accounts) and a two-pane layout for sideways tablets (the boards are drawn upright, so a sideways tablet still shows one centred column).
 
-## v0.162.0: the intro plays as a recording (the owner's request)
+## v0.163.0: Pond Skate, the winter game (AAA, content)
+
+The bible's AAA content line is "a new game each season, built to the same rules". This is the first.
+
+| Rule | How Pond Skate keeps it |
+|---|---|
+| A loop in one sentence | slide the cat, to reach the basket with the yarn, to get the next pond |
+| A real choice with a cost | every slide spends a move; the budget is the pond's true shortest route (found by search before the pond is dealt) plus a slack that shrinks with level; run out and the round is lost |
+| Scales past level 20 | pond 5x5 to 8x8; yarn 0 to 3; target route length from 2-3 moves to 7-12; from level 20, thin ice that turns to water once crossed |
+| Never unfair | a pond is dealt only if it can be done; the probe solves every pond it sees with its own search and wins it with the arrows |
+| Four languages | name, blurb, prompts, arrow names, the thin-ice note and five quips in en, fr, es, de |
+| A signature | snow: stars and dots drifting, in ice blue (no other game uses that style with those shapes) |
+| Keyboard and Reduce motion | four named 44px arrows (Tab, Enter); a tap in line with the cat; the keyboard pointer's Enter works through the same tap; the cat glides, or moves at once with Reduce motion |
+| No rush | in Calm & Collect; kept all year, like the season sets in the Archive |
+| `skate.mjs` (new) | 14 of 14 |
+
+Found by its own probe before shipping: the cat never glided (setting the transition's duration and then resetting the shorthand wiped it). Fixed by setting the whole transition in one place.
+
+## v0.164.0: every game complete, or the build stops
+
+| What | Before | After |
+|---|---|---|
+| What a game needs besides its board | a README checklist, followed by hand | `check_site.py` refuses a build where any game lacks its five quips, a signature, a kind, a card icon, or a probe that names it; the floor of games is 45 (it was left at 44 when Pond Skate shipped) |
+| Games no probe had ever named | Peekaboo, Dye Pots (covered only by the all-games walks) | each has its own probe |
+| Peekaboo | not probed | the probe follows every marked swap itself; at three levels the cats are where it followed them, and every swap moves a cat |
+| Dye Pots' mixed pots | offered only when the mix's colour was not among the dyes; from level 18 all six are, so they never came | the mix's colour leaves the dyes when a mix is chosen; `dyepots.mjs`' two mix checks fail on v0.163.0 |
+| `peekaboo.mjs`, `dyepots.mjs` (new) | — | 12 of 12, 8 of 8 |
+
+## v0.164.1: the intro plays as a recording (the owner's request)
 
 The owner found the intro still lagging and asked why a film on a television does not: a film's frames are already
 drawn, and the intro was being drawn live. So it is now recorded once, every frame at the top quality setting, and
@@ -419,12 +448,14 @@ played back.
 | Reduce motion | the live page shows the finished name | the same; no recording is fetched |
 | The rules from v0.158.0 | every launch; skippable only after one full watch | the same: the recording's own ending is the full watch |
 | The service worker | caches what it fetches | leaves the recording to the browser (a video is fetched in pieces); offline, the live page plays |
-| `splash.mjs` | 17 checks | 28: eleven for the recording (the first fails on v0.161.1); the page's own 17 now run with the recording blocked |
+| The live page's own quality rule | it lowered its detail when frames ran slower than about 30 a second (33 ms), for 24 frames | slower than about 50 a second (20 ms), for 20 frames: it aims for 60. The page is otherwise the studio's web v8, byte for byte |
+| `splash.mjs` | 16 checks | 28: eleven for the recording (the first fails on v0.164.0) and one for the 60-fps rule; the page's own checks now run with the recording blocked |
 | `check_site.py` | — | both recordings present and MP4s, named by the page; the worker leaves them alone |
 
 The slowdown in rows two and three is of the page's own thread, where the live intro is drawn; a recording is decoded
 outside it, which is why it holds. Not checked: on a real phone. A first visit now downloads the recording (7.2 MB
 on a phone) as it plays.
+
 
 ## How to reproduce
 
