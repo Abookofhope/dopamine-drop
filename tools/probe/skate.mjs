@@ -9,6 +9,8 @@
  *   2. A slide that goes nowhere costs no move; running out of moves loses the round.
  *   3. Thin ice: once the cat has crossed it, it is open water and stops the cat.
  *   4b. Skating a pond in exactly its shortest route is counted, and ten (and one with thin ice) earn its two achievements.
+ *   7. The board's name reads the pond aloud: the cat's, the basket's and the yarn's row and column, and the ways the cat
+ *      can slide, kept true after each slide; the board passes axe.
  *   6. A slide plays its own swish (a sine) and a bump a low thud (a triangle), read off the oscillators the game starts.
  *   5. The Hint lights the first arrow of a shortest way from where the cat is, two a round; when thin ice closes the last
  *      way through, the round says so and ends instead of running the moves down.
@@ -19,7 +21,7 @@
  *   OUT=/dir   saves a picture of each level's first pond
  */
 import { chromium } from 'playwright';
-import { openApp, openModeList, clickMode, quitToHome } from './harness.mjs';
+import { openApp, openModeList, clickMode, quitToHome, axeOn } from './harness.mjs';
 
 let bad = 0;
 const stop = e => { console.log('FAIL the probe could not go on: ' + String((e && e.message) || e).split('\n')[0].slice(0, 140)); console.log('\n' + (bad + 1) + ' failed'); process.exit(1); };
@@ -276,6 +278,25 @@ check(sawThin, 'past level 20 there is thin ice on the pond');
   }
   check(found, 'past level 20, a slide that closes the last way through was found on a pond');
   check(found && /closed the way/i.test(said) && lost, `when the ice closes the way, the round says so ("${said}") and ends`);
+  await page.close();
+}
+
+/* ── 7. the pond, read aloud: the board's name says where everything is and which ways the cat can go ── */
+{
+  const page = await open({ xp: 9000, runs: 40, solved: 600 });
+  const said = async () => page.evaluate(() => document.querySelector('#surface .pondgrid').getAttribute('aria-label'));
+  const expectFor = p => { const at = q => `row ${Math.floor(q / p.n) + 1}, column ${q % p.n + 1}`;
+    const ways = [0, 1, 2, 3].filter(d => after(p, d)).map(d => 'slide ' + NAME[d]);
+    return { cat: `The cat: ${at(p.cat)}`, basket: `The basket: ${at(p.goal)}`, yarn: p.yarn.map(at), ways }; };
+  for (let k = 0; k < 2; k++){
+    const p = await read(page), e = expectFor(p), lbl = await said();
+    const ok = lbl.includes(e.cat) && lbl.includes(e.basket) && e.yarn.every(y => lbl.includes(y)) && e.ways.every(w => lbl.includes(w))
+      && ['up', 'right', 'down', 'left'].filter(x => lbl.includes('slide ' + x)).length === e.ways.length;
+    check(ok, `${k ? 'after a slide' : 'at the start'}, the board's name says where the cat, the basket and the yarn are and which ways it can go ("${lbl}")`);
+    if (!k){ const d = [0, 1, 2, 3].find(d => after(p, d) && !(after(p, d).cat === p.goal && !after(p, d).yarn.length)); if (d === undefined) break; await press(page, d); await page.waitForTimeout(300); }
+  }
+  const ax = await axeOn(page, '#surface');
+  check(!ax.length, `the board passes axe (${ax.map(x => x.id).join(', ') || 'clean'})`);
   await page.close();
 }
 

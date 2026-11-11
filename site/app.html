@@ -5198,7 +5198,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.169.0';
+const VERSION_TAG = 'v0.170.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6111,7 +6111,7 @@ const STRINGS = {
 
     
     'm.slide':'Let the Cat Out|Clear the way so the cat can get out',
-    'm.skate':'Pond Skate|Slide across the ice — a paw only stops at a snowbank', 'p.skate':'Slide into the basket', 'p.skateYarn':'Pick up {n} more, then the basket', 'skate.up':'Slide up', 'skate.down':'Slide down', 'skate.left':'Slide left', 'skate.right':'Slide right', 'skate.pond':'Frozen pond', 'skate.thin':'Thin ice cracks once the cat has crossed it', 'skate.stuck':'The ice has closed the way through', 'q.skate.w1':'Right into the basket', 'q.skate.w2':'Not a paw out of place', 'q.skate.w3':'Smooth skating', 'q.skate.m1':'Out of moves on the ice', 'q.skate.m2':'Still sliding about',
+    'm.skate':'Pond Skate|Slide across the ice — a paw only stops at a snowbank', 'p.skate':'Slide into the basket', 'p.skateYarn':'Pick up {n} more, then the basket', 'skate.rc':'row {r}, column {c}', 'skate.catAt':'The cat: {p}', 'skate.basketAt':'The basket: {p}', 'skate.yarnAt':'Yarn: {p}', 'skate.ways':'Can {w}', 'skate.up':'Slide up', 'skate.down':'Slide down', 'skate.left':'Slide left', 'skate.right':'Slide right', 'skate.pond':'Frozen pond', 'skate.thin':'Thin ice cracks once the cat has crossed it', 'skate.stuck':'The ice has closed the way through', 'q.skate.w1':'Right into the basket', 'q.skate.w2':'Not a paw out of place', 'q.skate.w3':'Smooth skating', 'q.skate.m1':'Out of moves on the ice', 'q.skate.m2':'Still sliding about',
 
     'm.wheel':'Stitch Sampler|Guess letters to finish the sampler',
 
@@ -6636,7 +6636,7 @@ const STRINGS = {
 
     
     'm.slide':'Laissez Sortir le Chat|Dégagez le passage pour que le chat sorte',
-    'm.skate':'Patin sur l’Étang|Glissez sur la glace — une patte ne s’arrête qu’à une congère', 'p.skate':'Glissez jusqu’au panier', 'p.skateYarn':'Encore {n} à ramasser, puis le panier', 'skate.up':'Glisser vers le haut', 'skate.down':'Glisser vers le bas', 'skate.left':'Glisser vers la gauche', 'skate.right':'Glisser vers la droite', 'skate.pond':'Étang gelé', 'skate.thin':'La glace fine cède une fois que le chat l’a traversée', 'skate.stuck':'La glace a fermé le passage', 'q.skate.w1':'Pile dans le panier', 'q.skate.w2':'Pas une patte de travers', 'q.skate.w3':'Belle glissade', 'q.skate.m1':'Plus de coups sur la glace', 'q.skate.m2':'Encore à glisser',
+    'm.skate':'Patin sur l’Étang|Glissez sur la glace — une patte ne s’arrête qu’à une congère', 'p.skate':'Glissez jusqu’au panier', 'p.skateYarn':'Encore {n} à ramasser, puis le panier', 'skate.rc':'rangée {r}, colonne {c}', 'skate.catAt':'Le chat : {p}', 'skate.basketAt':'Le panier : {p}', 'skate.yarnAt':'Pelotes : {p}', 'skate.ways':'Peut {w}', 'skate.up':'Glisser vers le haut', 'skate.down':'Glisser vers le bas', 'skate.left':'Glisser vers la gauche', 'skate.right':'Glisser vers la droite', 'skate.pond':'Étang gelé', 'skate.thin':'La glace fine cède une fois que le chat l’a traversée', 'skate.stuck':'La glace a fermé le passage', 'q.skate.w1':'Pile dans le panier', 'q.skate.w2':'Pas une patte de travers', 'q.skate.w3':'Belle glissade', 'q.skate.m1':'Plus de coups sur la glace', 'q.skate.m2':'Encore à glisser',
 
     'm.wheel':'Abécédaire|Devinez les lettres pour finir la broderie',
 
@@ -7160,7 +7160,7 @@ const STRINGS = {
 
     
     'm.slide':'Deja Salir al Gato|Despeja el paso para que salga el gato',
-    'm.skate':'Patinaje en el Estanque|Desliza sobre el hielo — una pata solo se detiene en la nieve', 'p.skate':'Desliza hasta la cesta', 'p.skateYarn':'Recoge {n} más y luego la cesta', 'skate.up':'Deslizar arriba', 'skate.down':'Deslizar abajo', 'skate.left':'Deslizar a la izquierda', 'skate.right':'Deslizar a la derecha', 'skate.pond':'Estanque helado', 'skate.thin':'El hielo fino se rompe cuando el gato lo ha cruzado', 'skate.stuck':'El hielo ha cerrado el paso', 'q.skate.w1':'Directo a la cesta', 'q.skate.w2':'Ni una pata fuera de sitio', 'q.skate.w3':'Qué buen patinaje', 'q.skate.m1':'Sin movimientos sobre el hielo', 'q.skate.m2':'Sigue resbalando',
+    'm.skate':'Patinaje en el Estanque|Desliza sobre el hielo — una pata solo se detiene en la nieve', 'p.skate':'Desliza hasta la cesta', 'p.skateYarn':'Recoge {n} más y luego la cesta', 'skate.rc':'fila {r}, columna {c}', 'skate.catAt':'El gato: {p}', 'skate.basketAt':'La cesta: {p}', 'skate.yarnAt':'Ovillos: {p}', 'skate.ways':'Puede {w}', 'skate.up':'Deslizar arriba', 'skate.down':'Deslizar abajo', 'skate.left':'Deslizar a la izquierda', 'skate.right':'Deslizar a la derecha', 'skate.pond':'Estanque helado', 'skate.thin':'El hielo fino se rompe cuando el gato lo ha cruzado', 'skate.stuck':'El hielo ha cerrado el paso', 'q.skate.w1':'Directo a la cesta', 'q.skate.w2':'Ni una pata fuera de sitio', 'q.skate.w3':'Qué buen patinaje', 'q.skate.m1':'Sin movimientos sobre el hielo', 'q.skate.m2':'Sigue resbalando',
 
     'm.wheel':'Dechado|Adivina letras para terminar el bordado',
 
@@ -7684,7 +7684,7 @@ const STRINGS = {
 
     
     'm.slide':'Lass die Katze Raus|Räume den Weg, damit die Katze rauskommt',
-    'm.skate':'Teich-Rutschpartie|Rutsch übers Eis — eine Pfote hält nur am Schneehaufen', 'p.skate':'Rutsch in den Korb', 'p.skateYarn':'Noch {n} einsammeln, dann in den Korb', 'skate.up':'Nach oben rutschen', 'skate.down':'Nach unten rutschen', 'skate.left':'Nach links rutschen', 'skate.right':'Nach rechts rutschen', 'skate.pond':'Zugefrorener Teich', 'skate.thin':'Dünnes Eis bricht, sobald die Katze darüber ist', 'skate.stuck':'Das Eis hat den Weg versperrt', 'q.skate.w1':'Direkt in den Korb', 'q.skate.w2':'Keine Pfote daneben', 'q.skate.w3':'Sauber gerutscht', 'q.skate.m1':'Keine Züge mehr auf dem Eis', 'q.skate.m2':'Rutscht noch herum',
+    'm.skate':'Teich-Rutschpartie|Rutsch übers Eis — eine Pfote hält nur am Schneehaufen', 'p.skate':'Rutsch in den Korb', 'p.skateYarn':'Noch {n} einsammeln, dann in den Korb', 'skate.rc':'Reihe {r}, Spalte {c}', 'skate.catAt':'Die Katze: {p}', 'skate.basketAt':'Der Korb: {p}', 'skate.yarnAt':'Wolle: {p}', 'skate.ways':'Kann {w}', 'skate.up':'Nach oben rutschen', 'skate.down':'Nach unten rutschen', 'skate.left':'Nach links rutschen', 'skate.right':'Nach rechts rutschen', 'skate.pond':'Zugefrorener Teich', 'skate.thin':'Dünnes Eis bricht, sobald die Katze darüber ist', 'skate.stuck':'Das Eis hat den Weg versperrt', 'q.skate.w1':'Direkt in den Korb', 'q.skate.w2':'Keine Pfote daneben', 'q.skate.w3':'Sauber gerutscht', 'q.skate.m1':'Keine Züge mehr auf dem Eis', 'q.skate.m2':'Rutscht noch herum',
 
     'm.wheel':'Stickmustertuch|Errate Buchstaben, um das Tuch zu vollenden',
 
@@ -8199,6 +8199,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.170.0', date:'2026-11-11', items:[
+    'Pond Skate reads the pond aloud for a screen reader: where the cat, the basket and the yarn are, by row and column, and which ways the cat can slide, after every move.',
+  ] },
   { v:'0.169.0', date:'2026-11-11', items:[
     'Every kind of game has its own voice now: a tap in a game for looking closely chimes, a quick-hands game clicks bright, a thinking game knocks like wood, a counting game rings like a small bell, a words game taps like a typewriter key, a calm game hums softly, a physics game plucks and a making game rises. The menus sound as they always did.',
   ] },
@@ -17539,7 +17542,13 @@ const MODES = {
       const say = () => {
         const left = pond.yarn.length - [...Array(pond.yarn.length).keys()].filter(i => (mask >> i) & 1).length;
         ctx.prompt(left ? t('p.skateYarn', { n: left }) : t('p.skate'));
-        board.setAttribute('aria-label', t('skate.pond') + '. ' + (left ? t('p.skateYarn', { n: left }) : t('p.skate')));
+        /* The pond, read aloud: where the cat, the basket and the yarn still out are, and which ways the cat can slide.
+           A screen reader has the arrows; this is what it needs to choose one (0.170.0). */
+        const rc = q => t('skate.rc', { r: ((q / n) | 0) + 1, c: q % n + 1 });
+        const yarnLeft = pond.yarn.filter((q, i) => !((mask >> i) & 1)).map(rc);
+        const ways = [0, 1, 2, 3].filter(d => step(pond, at, d, mask, cracked)).map(d => t(['skate.up', 'skate.right', 'skate.down', 'skate.left'][d]).toLowerCase());
+        board.setAttribute('aria-label', [t('skate.pond'), t('skate.catAt', { p: rc(at) }), t('skate.basketAt', { p: rc(pond.goal) }),
+          yarnLeft.length ? t('skate.yarnAt', { p: yarnLeft.join('; ') }) : '', t('skate.ways', { w: ways.join(', ') || '—' })].filter(Boolean).join('. '));
       };
       const fit = () => {
         const cs = getComputedStyle(wrap), room = (wrap.clientHeight || ctx.surface.clientHeight) - parseFloat(cs.paddingTop || 0) - parseFloat(cs.paddingBottom || 0);

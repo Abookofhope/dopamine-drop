@@ -55,6 +55,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.167.0 | Two achievements for Pond Skate, for skating it well |
 | v0.168.0 | Pond Skate sounds like ice |
 | v0.169.0 | Every family of games has a voice for its taps |
+| v0.170.0 | Pond Skate reads the pond aloud for a screen reader |
 
 ## Ground rules the work follows
 

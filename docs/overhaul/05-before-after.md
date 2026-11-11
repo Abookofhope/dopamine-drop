@@ -505,6 +505,13 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | The gate | — | refuses a family without a voice |
 | `voices.mjs` (new) | 3 of 6 fail on v0.168.0 | 6 of 6 |
 
+## v0.170.0: Pond Skate, read aloud (accessibility)
+
+| What | Before | After |
+|---|---|---|
+| The pond for a screen reader | "Frozen pond" and the prompt: the arrows were named, but nothing said where anything was | the board's name reads the pond: the cat's, the basket's and the yarn's row and column, and the ways the cat can slide; updated after every slide; en, fr, es, de |
+| `skate.mjs` | 24 checks | 27: the name matches what the probe reads off the pond, before and after a slide (both fail on v0.169.0), and the board passes axe |
+
 ## How to reproduce
 
 ```

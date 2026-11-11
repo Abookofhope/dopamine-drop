@@ -52,7 +52,8 @@ nothing ships on a red probe.
 | v0.166.0 | 8bc8374 | economy, toward "things to buy through year 2": the bible's season sets of about six each (two more per season, at 750 and 1,200 yarn; a season's set went from 2,250 to 4,200); the sill shows six |
 | v0.167.0 | 055b24a | Pond Skate's achievements, as the earlier new games had: Not a Slide Wasted (10 ponds in exactly their shortest route), Thin Ice Waltz (one with thin ice); counted by the game at the solve, checked by `skate.mjs` |
 | v0.168.0 | f0168c6 | juice on the verb (bible 03): Pond Skate's slide swishes (a falling sine as long as the slide), a bump thuds, thin ice cracks, yarn rings and sparkles in the game's own shapes; the closed-pond check in `skate.mjs` made robust (four slides deep, sixteen ponds) |
-| v0.169.0 | see the log | AV (bible 09): an audit found 44 of 45 games used only the generic tap, good and bad; a voice per family (wave, register, length, slide) now plays every tap in a live round, in the family's key; menus keep the plain tap; the gate requires a voice for every family |
+| v0.169.0 | 47e252b | AV (bible 09): an audit found 44 of 45 games used only the generic tap, good and bad; a voice per family (wave, register, length, slide) now plays every tap in a live round, in the family's key; menus keep the plain tap; the gate requires a voice for every family |
+| v0.170.0 | see the log | accessibility: Pond Skate's board names where the cat, the basket and the yarn are (row and column) and which ways the cat can slide, after every slide, in four languages; the independent review still needs external testers |
 
 ### Cut lists (what each release drops first if it runs long)
 
