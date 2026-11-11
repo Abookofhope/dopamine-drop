@@ -48,7 +48,7 @@ const movieState = page => page.evaluate(() => { const v = document.getElementBy
   const { page, ctx } = await open({ introSeen: false }, true, true);
   await page.waitForTimeout(1500);
   const a = await movieState(page); await page.waitForTimeout(700); const m = await movieState(page);
-  check(await shown(page) && m.on && m.name === 'intro/splash-phone.mp4' && m.w === 864 && m.h === 1920 && m.dur > 13.5 && m.dur < 14.5 && m.t > a.t + 0.4 && !m.paused,
+  check(await shown(page) && m.on && m.name === 'intro/splash-phone.mp4' && m.w === 864 && m.h === 1920 && m.dur > 14.2 && m.dur < 15.2 && m.t > a.t + 0.4 && !m.paused,
     `the intro plays as a recording on an upright screen (${m.name}, ${m.w}x${m.h}, ${m.dur.toFixed(2)} s; ${a.t.toFixed(2)} s then ${m.t.toFixed(2)} s)`);
   check(m.muted && m.fit === 'cover' && m.cover, 'silent, filling the screen, cropped not stretched');
   check(!m.live && m.frameHidden, 'and the live page is not loaded');
