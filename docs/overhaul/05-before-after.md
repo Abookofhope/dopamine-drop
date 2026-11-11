@@ -405,6 +405,24 @@ How the probe went wrong on the way, all in the probe, none in the game: a solve
 
 Not done here: native Android and iOS shells (they need store accounts) and a two-pane layout for sideways tablets (the boards are drawn upright, so a sideways tablet still shows one centred column).
 
+## v0.163.0: Pond Skate, the winter game (AAA, content)
+
+The bible's AAA content line is "a new game each season, built to the same rules". This is the first.
+
+| Rule | How Pond Skate keeps it |
+|---|---|
+| A loop in one sentence | slide the cat, to reach the basket with the yarn, to get the next pond |
+| A real choice with a cost | every slide spends a move; the budget is the pond's true shortest route (found by search before the pond is dealt) plus a slack that shrinks with level; run out and the round is lost |
+| Scales past level 20 | pond 5x5 to 8x8; yarn 0 to 3; target route length from 2-3 moves to 7-12; from level 20, thin ice that turns to water once crossed |
+| Never unfair | a pond is dealt only if it can be done; the probe solves every pond it sees with its own search and wins it with the arrows |
+| Four languages | name, blurb, prompts, arrow names, the thin-ice note and five quips in en, fr, es, de |
+| A signature | snow: stars and dots drifting, in ice blue (no other game uses that style with those shapes) |
+| Keyboard and Reduce motion | four named 44px arrows (Tab, Enter); a tap in line with the cat; the keyboard pointer's Enter works through the same tap; the cat glides, or moves at once with Reduce motion |
+| No rush | in Calm & Collect; kept all year, like the season sets in the Archive |
+| `skate.mjs` (new) | 14 of 14 |
+
+Found by its own probe before shipping: the cat never glided (setting the transition's duration and then resetting the shorthand wiped it). Fixed by setting the whole transition in one place.
+
 ## How to reproduce
 
 ```

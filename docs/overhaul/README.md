@@ -47,6 +47,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.160.0 | What's new shows what is new to you, so the first launch after an update no longer freezes while it builds 218 releases |
 | v0.161.0 | The three promises the roadmap left unprobed are probed; the friend's Daily race now shows on your first Daily of the day |
 | v0.162.0 | Tablets: every screen is 640px wide instead of a phone strip; Patchwork fits a short, wide screen |
+| v0.163.0 | A winter game, Pond Skate: the 45th |
 
 ## Ground rules the work follows
 

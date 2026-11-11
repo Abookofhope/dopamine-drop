@@ -3927,6 +3927,27 @@ html.hc .mcard,html.hc .setrow,html.hc .wish,html.hc .seat,html.hc .palcard,html
 .forgewrap:has(> .fnote){padding-top:calc(13px*var(--ts) + 12px)}
 .fnote{position:absolute;right:2px;top:-2px;z-index:3;padding:3px 9px;border-radius:99px;border:1px solid var(--edge);background:#0d0918d9;
   color:var(--haze);font-family:var(--f-data);font-size:calc(9.5px*var(--ts));font-weight:700;letter-spacing:.07em;text-transform:uppercase;pointer-events:none}
+/* ── Pond Skate: a cat sliding on a frozen pond (v0.163.0) ─────────────────────────────────────── */
+.pondwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;height:100%;min-height:0}
+.pondgrid{flex:none;padding:6px;border-radius:16px;background:linear-gradient(160deg,#1f3a57,#152a40);box-shadow:inset 0 0 0 2px #9fd8ff33;touch-action:none;box-sizing:border-box}
+.pondboard{position:relative;display:grid;grid-template-columns:repeat(var(--n),1fr);grid-template-rows:repeat(var(--n),1fr);width:100%;height:100%}
+.pondcell{position:relative;border-radius:6px;background:linear-gradient(160deg,#d6eeff33,#9fd8ff14);box-shadow:inset 0 0 0 1.5px #10223a}
+.pondcell.bank{background:radial-gradient(ellipse 46% 36% at 50% 62%,#fff3e6 0 70%,#cfe4f7 78%,transparent 82%),linear-gradient(160deg,#d6eeff33,#9fd8ff14)}
+.pondcell.thin{background:linear-gradient(118deg,transparent 46%,#e8f6ff99 47% 49%,transparent 50%),linear-gradient(62deg,transparent 58%,#e8f6ff80 59% 60.5%,transparent 61.5%),linear-gradient(160deg,#e9f6ff40,#bfe6ff26)}
+.pondcell.water{background:radial-gradient(circle at 40% 40%,#2c5b85,#0b1b2e 70%);box-shadow:inset 0 0 0 2px #4c7ea866}
+.pondicon{position:absolute;inset:14%;width:72%;height:72%}
+.pondcell.got .pondyarn{opacity:0;transform:scale(.4);transition:opacity 220ms ease,transform 220ms ease}
+.pondcat{position:absolute;left:0;top:0;width:calc(100% / var(--n));height:calc(100% / var(--n));display:grid;place-items:center;z-index:2;
+  pointer-events:none}
+.pondcat svg{width:78%;height:78%;filter:drop-shadow(0 2px 2px #0006)}
+.pondcat.bump svg{animation:pondbump 180ms ease}
+@keyframes pondbump{50%{transform:scale(.9)}}
+html[data-motion="off"] .pondcat.bump svg{animation:none}
+.pondpad{display:flex;gap:10px;flex:none}
+.ponddir{min-width:56px;min-height:48px;border-radius:14px;border:1px solid var(--edge);background:var(--ink-2);color:var(--cream);display:grid;place-items:center;cursor:pointer}
+.ponddir svg{width:22px;height:22px}
+.ponddir:focus-visible{outline:2px solid var(--zap);outline-offset:2px}
+.pondnote{margin:0;flex:none;font-size:calc(11.5px*var(--ts));color:var(--haze);text-align:center}
 /* ── Loaf Box: kittens asleep in a cardboard box, and loaves to fit round them ─────────────────── */
 .lbx{position:relative;gap:10px;--face:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 8.4 5.2 3.2 9.8 6.4M20 8.4 18.8 3.2 14.2 6.4' fill='%232a1f3a' fill-opacity='.55'/%3E%3Cellipse cx='8.2' cy='12.4' rx='1.5' ry='2.1' fill='%232a1f3a' fill-opacity='.8'/%3E%3Cellipse cx='15.8' cy='12.4' rx='1.5' ry='2.1' fill='%232a1f3a' fill-opacity='.8'/%3E%3Cpath d='M10.8 15.7h2.4l-1.2 1.4z' fill='%23E0607F'/%3E%3Cpath d='M12 17.1q-1.4 1.8-3 .8M12 17.1q1.4 1.8 3 .8' stroke='%232a1f3a' stroke-opacity='.7' fill='none' stroke-width='.9' stroke-linecap='round'/%3E%3C/svg%3E");--kit:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20c0-5.2 3-8.8 8-8.8s8 3.6 8 8.8z' fill='%23B7A9E0'/%3E%3Cpath d='M5.6 12.6 5.2 6.2l4.6 3M18.4 12.6l.4-6.4-4.6 3' fill='%23B7A9E0'/%3E%3Cpath d='M8.2 15.4q1.3 1.1 2.6 0M13.2 15.4q1.3 1.1 2.6 0' fill='none' stroke='%232a1f3a' stroke-width='1.1' stroke-linecap='round'/%3E%3Cpath d='M11.2 17.2h1.6l-.8.9z' fill='%23E88BA8'/%3E%3C/svg%3E")}
 .lbx .fgrid{position:relative;gap:3px;padding:6px;border-radius:14px;
@@ -5170,7 +5191,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.162.0';
+const VERSION_TAG = 'v0.163.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6060,6 +6081,7 @@ const STRINGS = {
 
     
     'm.slide':'Let the Cat Out|Clear the way so the cat can get out',
+    'm.skate':'Pond Skate|Slide across the ice — a paw only stops at a snowbank', 'p.skate':'Slide into the basket', 'p.skateYarn':'Pick up {n} more, then the basket', 'skate.up':'Slide up', 'skate.down':'Slide down', 'skate.left':'Slide left', 'skate.right':'Slide right', 'skate.pond':'Frozen pond', 'skate.thin':'Thin ice cracks once the cat has crossed it', 'q.skate.w1':'Right into the basket', 'q.skate.w2':'Not a paw out of place', 'q.skate.w3':'Smooth skating', 'q.skate.m1':'Out of moves on the ice', 'q.skate.m2':'Still sliding about',
 
     'm.wheel':'Stitch Sampler|Guess letters to finish the sampler',
 
@@ -6584,6 +6606,7 @@ const STRINGS = {
 
     
     'm.slide':'Laissez Sortir le Chat|Dégagez le passage pour que le chat sorte',
+    'm.skate':'Patin sur l’Étang|Glissez sur la glace — une patte ne s’arrête qu’à une congère', 'p.skate':'Glissez jusqu’au panier', 'p.skateYarn':'Encore {n} à ramasser, puis le panier', 'skate.up':'Glisser vers le haut', 'skate.down':'Glisser vers le bas', 'skate.left':'Glisser vers la gauche', 'skate.right':'Glisser vers la droite', 'skate.pond':'Étang gelé', 'skate.thin':'La glace fine cède une fois que le chat l’a traversée', 'q.skate.w1':'Pile dans le panier', 'q.skate.w2':'Pas une patte de travers', 'q.skate.w3':'Belle glissade', 'q.skate.m1':'Plus de coups sur la glace', 'q.skate.m2':'Encore à glisser',
 
     'm.wheel':'Abécédaire|Devinez les lettres pour finir la broderie',
 
@@ -7107,6 +7130,7 @@ const STRINGS = {
 
     
     'm.slide':'Deja Salir al Gato|Despeja el paso para que salga el gato',
+    'm.skate':'Patinaje en el Estanque|Desliza sobre el hielo — una pata solo se detiene en la nieve', 'p.skate':'Desliza hasta la cesta', 'p.skateYarn':'Recoge {n} más y luego la cesta', 'skate.up':'Deslizar arriba', 'skate.down':'Deslizar abajo', 'skate.left':'Deslizar a la izquierda', 'skate.right':'Deslizar a la derecha', 'skate.pond':'Estanque helado', 'skate.thin':'El hielo fino se rompe cuando el gato lo ha cruzado', 'q.skate.w1':'Directo a la cesta', 'q.skate.w2':'Ni una pata fuera de sitio', 'q.skate.w3':'Qué buen patinaje', 'q.skate.m1':'Sin movimientos sobre el hielo', 'q.skate.m2':'Sigue resbalando',
 
     'm.wheel':'Dechado|Adivina letras para terminar el bordado',
 
@@ -7630,6 +7654,7 @@ const STRINGS = {
 
     
     'm.slide':'Lass die Katze Raus|Räume den Weg, damit die Katze rauskommt',
+    'm.skate':'Teich-Rutschpartie|Rutsch übers Eis — eine Pfote hält nur am Schneehaufen', 'p.skate':'Rutsch in den Korb', 'p.skateYarn':'Noch {n} einsammeln, dann in den Korb', 'skate.up':'Nach oben rutschen', 'skate.down':'Nach unten rutschen', 'skate.left':'Nach links rutschen', 'skate.right':'Nach rechts rutschen', 'skate.pond':'Zugefrorener Teich', 'skate.thin':'Dünnes Eis bricht, sobald die Katze darüber ist', 'q.skate.w1':'Direkt in den Korb', 'q.skate.w2':'Keine Pfote daneben', 'q.skate.w3':'Sauber gerutscht', 'q.skate.m1':'Keine Züge mehr auf dem Eis', 'q.skate.m2':'Rutscht noch herum',
 
     'm.wheel':'Stickmustertuch|Errate Buchstaben, um das Tuch zu vollenden',
 
@@ -8144,6 +8169,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.163.0', date:'2026-11-10', items:[
+    'A new game for winter: Pond Skate. Send a cat sliding across a frozen pond; it only stops at a snowbank, the edge or the basket. Get it into the basket with every ball of yarn picked up on the way. Every pond can be done in the moves you are given. Later on, thin ice cracks once the cat has crossed it. It is in Calm & Collect, and it stays all year.',
+  ] },
   { v:'0.162.0', date:'2026-11-10', items:[
     'On a tablet the game uses the room: every screen is 640 pixels wide instead of a phone-sized strip, so the boards are bigger and easier to play. Phones are unchanged.',
     'Fixed: on a short, wide screen (a tablet or a phone on its side) Patchwork’s note sat on top of its grid, and its Undo and Hint buttons could slip off the bottom. The quilt now sizes itself to the room it really has.',
@@ -17311,6 +17339,186 @@ const MODES = {
       ctx.after(TICK, tick);
     }
   },
+  /* ── 45. Pond Skate — the winter game (v0.163.0). Planning a route on ice ───────────────────────
+     A cat on a frozen pond slides the way you send it until something stops it: a snowbank, the pond's edge, open water,
+     or the basket, which always catches it. Stop in the basket with every ball of yarn picked up on the way. Every pond
+     is searched before it is dealt, so it can always be done, and the moves you are given are its shortest route plus a
+     little slack: running out is the way to lose. From level 20 some ice is thin: once the cat has crossed it, it is
+     open water, and water stops a cat as surely as a snowbank. Kept all year, like a season's things in the Archive. */
+  skate: {
+    name:'Pond Skate', blurb:'Slide across the ice — a paw only stops at a snowbank', cat:'logic', par:12000, bonus:3200,
+    glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="#9FD8FF" fill-opacity=".18" stroke="#9FD8FF" stroke-width="1.6"/><path d="M6.5 14.5h7" fill="none" stroke="#FFF3E6" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 2.2"/><circle cx="16.6" cy="14.5" r="2.7" fill="#F2B47A"/><path d="M6.5 8.5h4" fill="none" stroke="#9FD8FF" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    build(ctx){
+      const n = ctx.level < 6 ? 5 : ctx.level < 14 ? 6 : ctx.level < 22 ? 7 : 8;
+      const yarnK = ctx.level < 5 ? 0 : ctx.level < 11 ? 1 : ctx.level < 18 ? 2 : 3;
+      const thinK = ctx.level < 20 ? 0 : ctx.level < 28 ? 2 : 3;
+      /* Difficulty is the length of the shortest route, never how fast you can swipe. */
+      const want = ctx.level < 3 ? [2, 3] : ctx.level < 8 ? [3, 5] : ctx.level < 14 ? [4, 6] : ctx.level < 20 ? [5, 8] : ctx.level < 28 ? [6, 10] : [7, 12];
+      const banks = ctx.level < 10 ? 0.16 : 0.19;
+      const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+      const N2 = n * n;
+
+      /* One slide from p in direction d: where it stops, and the cells it crossed on the way. `open` says whether the cat may
+         enter a cell (not a snowbank, not water). The basket always stops it. */
+      const slide = (bank, thinAt, cracked, p, d, goal) => {
+        let x = p % n, y = (p / n) | 0; const path = [];
+        for (;;){
+          const nx = x + DIRS[d][0], ny = y + DIRS[d][1];
+          if (nx < 0 || ny < 0 || nx >= n || ny >= n) break;
+          const q = ny * n + nx;
+          if (bank[q]) break;
+          if (thinAt[q] >= 0 && (cracked >> thinAt[q]) & 1) break;
+          x = nx; y = ny; path.push(q);
+          if (q === goal) break;
+        }
+        return { to: y * n + x, path };
+      };
+      /* The state after a slide: yarn picked up on the way (the stop included), and thin ice cracked behind the cat (the
+         cell it left and every cell it crossed, but not the one it stopped on). */
+      const step = (b, p, d, mask, cracked) => {
+        const r = slide(b.bank, b.thinAt, cracked, p, d, b.goal);
+        if (r.to === p) return null;
+        let m = mask, c = cracked;
+        r.path.forEach(q => { if (b.yarnAt[q] >= 0) m |= 1 << b.yarnAt[q]; });
+        [p].concat(r.path.slice(0, -1)).forEach(q => { if (b.thinAt[q] >= 0) c |= 1 << b.thinAt[q]; });
+        return { to: r.to, mask: m, cracked: c, path: r.path };
+      };
+      /* Breadth-first over (where, which yarn, which ice is broken): the true shortest route, or -1. */
+      const shortest = b => {
+        const full = (1 << b.yarn.length) - 1;
+        const key = (p, m, c) => (p * 16 + m) * 16 + c;
+        const seen = new Set([key(b.cat, 0, 0)]);
+        let front = [[b.cat, 0, 0]];
+        for (let depth = 1; depth <= 16 && front.length; depth++){
+          const next = [];
+          for (const [p, m, c] of front) for (let d = 0; d < 4; d++){
+            const s = step(b, p, d, m, c); if (!s) continue;
+            if (s.to === b.goal && s.mask === full) return depth;
+            /* in the basket without all the yarn: the cat stops there, and sliding out again is a move like any other */
+            const k = key(s.to, s.mask, s.cracked);
+            if (!seen.has(k)){ seen.add(k); next.push([s.to, s.mask, s.cracked]); }
+          }
+          front = next;
+        }
+        return -1;
+      };
+      /* Deal ponds until one's shortest route is in range; keep the nearest in case none is. */
+      const deal = () => {
+        const R = k => Math.floor(ctx.rnd() * k);
+        const free = () => { for (let t = 0; t < 99; t++){ const q = R(N2); if (!used.has(q)) { used.add(q); return q; } } return -1; };
+        const used = new Set();
+        const bank = Array.from({ length: N2 }, () => ctx.rnd() < banks);
+        bank.forEach((v, q) => { if (v) used.add(q); });
+        const cat = free(), goal = free();
+        const yarn = Array.from({ length: yarnK }, free), thin = Array.from({ length: thinK }, free);
+        if ([cat, goal].concat(yarn, thin).some(q => q < 0)) return null;
+        const yarnAt = Array(N2).fill(-1), thinAt = Array(N2).fill(-1);
+        yarn.forEach((q, i) => { yarnAt[q] = i; }); thin.forEach((q, i) => { thinAt[q] = i; });
+        const b = { bank, cat, goal, yarn, thin, yarnAt, thinAt };
+        b.min = shortest(b);
+        return b;
+      };
+      let pond = null, near = null;
+      for (let tries = 0; tries < 500 && !pond; tries++){
+        const b = deal(); if (!b || b.min < 1) continue;
+        if (b.min >= want[0] && b.min <= want[1]) pond = b;
+        else if (!near || Math.abs(b.min - want[0]) < Math.abs(near.min - want[0])) near = b;
+      }
+      pond = pond || near;
+      if (!pond){
+        /* Never reached in testing; a pond that is always fine, so a round is never lost to the dealer. */
+        const bank = Array(N2).fill(false), yarnAt = Array(N2).fill(-1), thinAt = Array(N2).fill(-1);
+        pond = { bank, cat: 0, goal: N2 - 1, yarn: [], thin: [], yarnAt, thinAt, min: 2 };
+      }
+      const budget = moveBudget(ctx, pond.min);
+
+      /* ── DOM ── */
+      const wrap = mk('div', 'pondwrap');
+      const board = mk('div', 'pondgrid'); board.setAttribute('role', 'img');
+      const inner = mk('div', 'pondboard'); inner.style.setProperty('--n', n);
+      const cellEl = [];
+      for (let q = 0; q < N2; q++){
+        const c = mk('div', 'pondcell' + (pond.bank[q] ? ' bank' : pond.thinAt[q] >= 0 ? ' thin' : ''));
+        if (q === pond.goal) c.innerHTML = '<svg class="pondicon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10h17l-2 9.5h-13z" fill="#C98A4B"/><path d="M7 10a5 5 0 0 1 10 0" fill="none" stroke="#C98A4B" stroke-width="1.8"/><path d="M6 13.5h12M6.6 16.5h10.8" stroke="#8A5A2B" stroke-width="1.1"/></svg>';
+        if (pond.yarnAt[q] >= 0) c.insertAdjacentHTML('beforeend', '<svg class="pondicon pondyarn" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="#FF8AD8"/><path d="M7 9.5c3 1 7 1 10 0M6.2 13c3.5 1.4 8 1.4 11.6 0" stroke="#FFF3E6" stroke-opacity=".6" stroke-width="1.3" fill="none"/></svg>');
+        cellEl.push(c); inner.appendChild(c);
+      }
+      const cat = mk('div', 'pondcat');
+      cat.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9 6 3.5 10 6.5h4L18 3.5 19 9a7.5 7 0 1 1-14 0z" fill="#F2B47A"/><circle cx="9.3" cy="12.5" r="1.1" fill="#2A1A20"/><circle cx="14.7" cy="12.5" r="1.1" fill="#2A1A20"/><path d="M11 15.2h2l-1 1z" fill="#2A1A20"/></svg>';
+      inner.appendChild(cat);
+      board.appendChild(inner);
+      const pad = mk('div', 'pondpad');
+      const ARROW = r => '<svg viewBox="0 0 24 24" aria-hidden="true" style="transform:rotate(' + r + 'deg)"><path d="M12 5v14M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      const dirBtn = [];
+      [['skate.left', 3, -90], ['skate.up', 0, 0], ['skate.down', 2, 180], ['skate.right', 1, 90]].forEach(([key, d, r]) => {
+        const b = mk('button', 'ponddir'); b.type = 'button'; b.innerHTML = ARROW(r); b.setAttribute('aria-label', t(key));
+        b.addEventListener('click', () => go(d)); dirBtn[d] = b; pad.appendChild(b);
+      });
+      wrap.append(board, pad);
+      if (pond.thin.length){ const note = mk('p', 'pondnote'); note.textContent = t('skate.thin'); wrap.appendChild(note); }
+      ctx.surface.appendChild(wrap);
+
+      let at = pond.cat, mask = 0, cracked = 0, busy = false, done = false;
+      const full = (1 << pond.yarn.length) - 1;
+      /* The whole transition is set here: setting only its duration beforehand was wiped by resetting the shorthand, and the
+         cat jumped instead of gliding (skate.mjs). */
+      const place = ms => {
+        cat.style.transition = ms > 0 && !motionOff() ? 'transform ' + ms + 'ms cubic-bezier(.25,.8,.35,1)' : 'none';
+        cat.style.transform = 'translate(' + (at % n) * 100 + '%,' + ((at / n) | 0) * 100 + '%)';
+      };
+      const say = () => {
+        const left = pond.yarn.length - [...Array(pond.yarn.length).keys()].filter(i => (mask >> i) & 1).length;
+        ctx.prompt(left ? t('p.skateYarn', { n: left }) : t('p.skate'));
+        board.setAttribute('aria-label', t('skate.pond') + '. ' + (left ? t('p.skateYarn', { n: left }) : t('p.skate')));
+      };
+      const fit = () => {
+        const cs = getComputedStyle(wrap), room = (wrap.clientHeight || ctx.surface.clientHeight) - parseFloat(cs.paddingTop || 0) - parseFloat(cs.paddingBottom || 0);
+        const rest = [...wrap.children].filter(e => e !== board).reduce((a, e) => a + e.offsetHeight, 0) + (wrap.children.length - 1) * (parseFloat(cs.rowGap) || 12);
+        const side = Math.max(150, Math.min(wrap.clientWidth || ctx.surface.clientWidth, room - rest, 560));
+        board.style.width = board.style.height = side + 'px';
+      };
+
+      function go(d){
+        if (busy || done) return;
+        const s = step(pond, at, d, mask, cracked);
+        if (!s){ ctx.slip(); cat.classList.remove('bump'); void cat.offsetWidth; cat.classList.add('bump'); buzz('step'); return; }
+        busy = true;
+        const from = at; at = s.to;
+        const dist = Math.max(1, s.path.length);
+        const ms = motionOff() ? 0 : 70 + dist * 60;
+        place(ms);
+        sfx.tap();
+        ctx.after(ms, () => {
+          busy = false;
+          s.path.forEach(q => { if (pond.yarnAt[q] >= 0 && !((mask >> pond.yarnAt[q]) & 1)){ cellEl[q].classList.add('got'); ctx.points(20, cellEl[q]); } });
+          [from].concat(s.path.slice(0, -1)).forEach(q => { if (pond.thinAt[q] >= 0){ cellEl[q].classList.remove('thin'); cellEl[q].classList.add('water'); } });
+          mask = s.mask; cracked = s.cracked;
+          say();
+          if (at === pond.goal && mask === full){ done = true; cat.classList.add('home'); return ctx.win(cellEl[pond.goal]); }
+          budget.spend(cellEl[at]);
+        });
+      }
+
+      /* A swipe on the pond slides that way; a tap on a cell in line with the cat slides towards it (which is also what the
+         keyboard pointer's Enter does). */
+      let sx = 0, sy = 0, down = false;
+      board.addEventListener('pointerdown', ev => { down = true; sx = ev.clientX; sy = ev.clientY; try { board.setPointerCapture(ev.pointerId); } catch(e){} });
+      board.addEventListener('pointerup', ev => {
+        if (!down) return; down = false;
+        const dx = ev.clientX - sx, dy = ev.clientY - sy, r = inner.getBoundingClientRect(), cell = r.width / n;
+        if (Math.max(Math.abs(dx), Math.abs(dy)) > Math.max(18, cell * 0.35)){ go(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0)); return; }
+        const cx = Math.floor((ev.clientX - r.left) / cell), cy = Math.floor((ev.clientY - r.top) / cell);
+        if (cx < 0 || cy < 0 || cx >= n || cy >= n) return;
+        const ax = at % n, ay = (at / n) | 0;
+        if (cx === ax && cy !== ay) go(cy < ay ? 0 : 2);
+        else if (cy === ay && cx !== ax) go(cx < ax ? 3 : 1);
+      });
+      board.addEventListener('pointercancel', () => { down = false; });
+
+      say(); place(0); fit();
+      requestAnimationFrame(fit);
+    }
+  },
 };
 
 /* ═══ Phrase bank ═════════════════════════════════════════════════════════
@@ -19602,6 +19810,7 @@ const Vfx = (() => {
     sum:     { st: 'fountain', k: ['text'],                 pal: ['#FFC53D', '#FFF3E6'],            gh: 'stamp', text: '+', n: .6, s0: 4, s1: 6 },
     count:   { st: 'twinkle',  k: ['dot', 'glow'],          pal: ['#33E6C8', '#FFF3E6', '#FFC53D'], gh: 'pulse', add: true },
     mirror:  { st: 'mirror',   k: ['glint', 'star'],        pal: ['#CDBCF7', '#FFF3E6', '#33E6C8'], gh: 'halo', add: true },
+    skate:   { st: 'drift',    k: ['star', 'dot'],          pal: ['#CFEFFF', '#FFF3E6', '#9FD8FF'], gh: 'halo', add: true },
     slide:   { st: 'line',     k: ['paw'],                  pal: ['#F2B47A', '#FFF3E6'],            gh: 'stamp', n: .7, s0: 4, s1: 5.5 },
     wheel:   { st: 'orbit',    k: ['star', 'stitch'],       pal: ['#FFC53D', '#FF8AD8', '#FFF3E6'], gh: 'halo' },
     beat:    { st: 'drift',    k: ['text'],                 pal: ['#FF8AD8', '#33E6C8', '#FFF3E6'], gh: 'pulse', text: '♪', n: .6, s0: 5, s1: 7, ring: 'double' },
@@ -22292,7 +22501,7 @@ function setPlayView(v){
 /* Every game belongs to one of three kinds, and the kind says how it feels to play. The headline games come first; the rest follow in the
    order they were made. */
 const GATES = {
-  calm:  { ids: ['meld','sift','tide','glimmer','trace','forge','bridge','latch','splice','rewire','slack','mirror','cairn','lever','halve'], pool: () => GATES.calm.ids },
+  calm:  { ids: ['meld','sift','tide','glimmer','trace','forge','bridge','latch','splice','rewire','slack','mirror','cairn','lever','halve','skate'], pool: () => GATES.calm.ids },
   quick: { ids: ['blast','forage','beat','arc','skim','bruise','slice','descent','gather','tumble','odd','stroop','count','order'],            pool: () => GATES.quick.ids },
   full:  { ids: ['meld','sift','blast','forage','loaf','volley','chalk','tidy','siphon','plink','ripple','peril','haunt','sort','sum','wheel','slide','heft','drift'], pool: () => MODE_IDS.slice() }
 };
