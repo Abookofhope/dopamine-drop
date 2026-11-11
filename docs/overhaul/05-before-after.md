@@ -495,6 +495,16 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | Yarn picked up | points only | a ring and a burst of stars and dots in the game's own signature (motion only) |
 | `skate.mjs` | 22 checks | 24: the probe wraps the page's oscillators and hears a sine on a slide and a low triangle on a bump (both fail on v0.167.0); its closed-pond search goes four slides deep over sixteen ponds, after three over eight missed once in five runs |
 
+## v0.169.0: a voice for every family of games (AV)
+
+| What | Before | After |
+|---|---|---|
+| The sounds each game uses (audit of every game's code) | 44 of 45 used only the generic `tap`, `good` and `bad`: a tile, a peg and a letter clicked alike | — |
+| A tap inside a live round | a square blip at 520 Hz × the family's key, whatever the game | the family's voice: focus a clear triangle chime, reflex a short bright square, logic a woody triangle knock, numbers a small sine bell, words a low typewriter square, calm a soft long sine, physics a falling pluck, make a soft rising sine; in the family's key, detuned as before |
+| A tap in the menus | the plain tap | unchanged |
+| The gate | — | refuses a family without a voice |
+| `voices.mjs` (new) | 3 of 7 fail on v0.168.0 | 7 of 7 |
+
 ## How to reproduce
 
 ```

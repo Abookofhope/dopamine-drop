@@ -54,6 +54,7 @@ Working documents for the "master overhaul" of Dopamine Drop: Brain Snacks. They
 | v0.166.0 | Six things a season for the window sill (24 in all); the sill holds six |
 | v0.167.0 | Two achievements for Pond Skate, for skating it well |
 | v0.168.0 | Pond Skate sounds like ice |
+| v0.169.0 | Every family of games has a voice for its taps |
 
 ## Ground rules the work follows
 

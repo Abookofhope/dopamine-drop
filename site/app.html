@@ -5198,7 +5198,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.168.0';
+const VERSION_TAG = 'v0.169.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -5555,12 +5555,29 @@ function meow(){
     mk2(520, 900, 620, 0.05); mk2(780, 1350, 930, 0.012);
   } catch(e){}
 }
+/* Each family of games has a voice for its taps: a wave, a register, a length, and a slide for the ones that move.
+   Quiet as the plain tap; in the run's key (toneShift) like everything else. */
+const VOICE = {
+  focus:   { w: 'triangle', f: 660, d: 0.05,  g: 0.028 },            /* a clear chime: looking closely */
+  reflex:  { w: 'square',   f: 740, d: 0.035, g: 0.022 },            /* short and bright: quick hands */
+  logic:   { w: 'triangle', f: 523, d: 0.06,  g: 0.028, s: 0.97 },   /* a woody knock: thinking it through */
+  numbers: { w: 'sine',     f: 880, d: 0.05,  g: 0.03 },             /* a small bell: counting */
+  words:   { w: 'square',   f: 392, d: 0.04,  g: 0.018, s: 0.98 },   /* a typewriter's low key */
+  calm:    { w: 'sine',     f: 440, d: 0.09,  g: 0.024 },            /* soft and long: no hurry */
+  physics: { w: 'triangle', f: 587, d: 0.06,  g: 0.026, s: 0.8 },    /* a pluck that falls */
+  make:    { w: 'sine',     f: 698, d: 0.06,  g: 0.026, s: 1.04 }    /* a soft rise: putting together */
+};
+const voiceNow = () => { try { if (!run || !roundLive || !run.curMode) return null; const m = run.curMode; return VOICE[m.cat] || null; } catch(e){ return null; } };
 const sfx = {
   /* A tap is the most repeated sound in the app by an order of magnitude, and
      thirty identical blips in ten seconds is a machine, not an instrument. A
      couple of percent of detune per tap is under the threshold for hearing a
      wrong note and over the threshold for hearing a human. */
-  tap:  () => tone(520 * toneShift * (0.985 + Math.random()*0.03), 0.05, 'square', 0.026),
+  /* Inside a live round the tap speaks in the game's family's voice (0.169.0): every game used to click the same square
+     blip, so a tile, a peg and a letter all sounded alike. Menus keep the plain tap. */
+  tap:  () => { const v = voiceNow(), d = 0.985 + Math.random()*0.03;
+    if (v) return tone(v.f * toneShift * d, v.d, v.w, v.g, v.s);
+    tone(520 * toneShift * d, 0.05, 'square', 0.026); },
   good: n => { const s = toneShift;
     tone((600 + Math.min(n,10)*42) * s, 0.085, 'triangle', 0.05);
     setTimeout(()=>tone((900 + Math.min(n,10)*52) * s, 0.075, 'triangle', 0.035), 55); },
@@ -8182,6 +8199,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.169.0', date:'2026-11-11', items:[
+    'Every kind of game has its own voice now: a tap in a game for looking closely chimes, a quick-hands game clicks bright, a thinking game knocks like wood, a counting game rings like a small bell, a words game taps like a typewriter key, a calm game hums softly, a physics game plucks and a making game rises. The menus sound as they always did.',
+  ] },
   { v:'0.168.0', date:'2026-11-11', items:[
     'Pond Skate sounds like ice: a swish as the cat slides (longer for a longer slide), a soft thud against a snowbank, a crack as thin ice breaks, and a ring and a sparkle as yarn is picked up.',
   ] },

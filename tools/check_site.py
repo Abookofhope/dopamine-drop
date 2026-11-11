@@ -448,6 +448,12 @@ _probe_dir = Path(__file__).resolve().parent / "probe"
 _probe_txt = "\n".join(f.read_text(encoding="utf8") for f in _probe_dir.glob("*.mjs") if not f.name.startswith("_"))
 _unprobed = [n for n in _ids if not re.search(r"['\"`]%s['\"`]" % re.escape(n), _probe_txt)]
 check("every mode is named by a probe", not _unprobed, "missing: " + ", ".join(_unprobed[:5]))
+# Every family of games has a voice for its taps (0.169.0): a family added without one would fall back to the menu tap.
+_cats = re.findall(r"id:'(\w+)'", html[html.find("const CATS = ["):html.find("\n];", html.find("const CATS = ["))])
+_voice_src = html[html.find("const VOICE = {"):]
+_voice_src = _voice_src[:_voice_src.find("\n};")]
+_novoice = [c for c in _cats if not re.search(r"\n  %s:\s*\{" % re.escape(c), _voice_src)]
+check("every family of games has a voice", len(_cats) >= 8 and not _novoice, "missing: " + ", ".join(_novoice[:5]))
 
 # The browser probes find a mode by its id, so they keep working in German.
 # Losing this line would send them back to matching on translated titles.
