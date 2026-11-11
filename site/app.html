@@ -769,6 +769,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .vial{height:62px;background:linear-gradient(180deg, var(--vk), color-mix(in srgb, var(--vk) 55%, #000));
   box-shadow:inset 0 -4px 0 #00000033}
 .vial.pouring{transform:rotate(-14deg) translateY(-4px)}
+/* Picked up with a tap (0.175.0): tilted and ringed until a pot is tapped. */
+.vial.armed{transform:rotate(-14deg) translateY(-4px);box-shadow:0 0 0 3px var(--text, #fff), inset 0 -4px 0 #00000033}
 .vial.empty{opacity:.18;transform:none}
 .jar{height:70px;background:#ffffff08;border:2px dashed color-mix(in srgb, var(--vk) 60%, transparent)}
 .jar.aim{border-style:solid;background:color-mix(in srgb, var(--vk) 22%, transparent)}
@@ -860,6 +862,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .tidyitem.held{transform:translate(-50%,-50%) scale(1.18);box-shadow:0 6px 18px #00000066;z-index:3;
   /* Carried, it is under the finger, not catching up with it: the easing is for the way back after a short drop. */
   transition:transform var(--t-fast),opacity var(--t-med)}
+/* Picked up with a tap (0.175.0): lifted and ringed until a basket is tapped. */
+.tidyitem.armed{transform:translate(-50%,-50%) scale(1.18);box-shadow:0 0 0 3px var(--text, #fff),0 6px 18px #00000066;z-index:3}
 .tidyitem.binned{opacity:0;transform:translate(-50%,-50%) scale(.35)}
 .tidyitem.wrong{box-shadow:0 0 0 3px var(--bad)}
 .tidybins{position:absolute;left:4%;right:4%;bottom:4%;height:22%;display:flex;gap:8px}
@@ -985,6 +989,8 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .slacknode{position:absolute;width:12%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
   background:var(--cool);border:2px solid var(--ink);cursor:grab;transition:transform var(--t-fast)}
 .slacknode.held{transform:translate(-50%,-50%) scale(1.25)}
+/* Picked up with a tap (0.175.0): ringed until an open spot is tapped. */
+.slacknode.armed{transform:translate(-50%,-50%) scale(1.25);box-shadow:0 0 0 3px var(--text, #fff)}
 
 /* ── Forage ───────────────────────────────────────────────────────────── */
 /* ── Forage ───────────────────────────────────────────────────────────── */
@@ -5276,7 +5282,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.174.0';
+const VERSION_TAG = 'v0.175.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -6265,7 +6271,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Mending|Finish the frayed ones before they unravel',
-    'paws.again':'Not that one — try again', 'paws.left':'{n} chances left', 'skim.again':'Not there — the needle keeps going', 'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
+    'paws.again':'Not that one — try again', 'p.tapPlace':'Now tap where it goes', 'paws.left':'{n} chances left', 'skim.again':'Not there — the needle keeps going', 'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
     'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble Dryer|Pair the socks faster than the drum refills',
     'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Cat Fight|Read the tell, pick the counter, win the scrap',
     'p.arc':'{n} left to reach', 'p.slack':'{n} crossings left', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Cat’s Cradle|Loop every peg before the thread goes slack',  'm.slack':'No Crossing|Drag the pegs until no thread crosses',  'm.tide':'Purr|Hold to swell, let go to settle — stay in the band',  'm.plink':'Basket Drop|Pull one peg, then drop into the lit basket',  'p.missed':'Missed', 'slide.hint':'Hint', 'p.slide':'Tap the end of a bar to slide it that way', 
@@ -6791,7 +6797,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Raccommodage|Finissez les effilochés avant qu’ils ne filent',
-    'paws.again':'Pas celle-là — encore une chance', 'paws.left':'{n} chances restantes', 'skim.again':'Pas là — l’aiguille continue', 'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
+    'paws.again':'Pas celle-là — encore une chance', 'p.tapPlace':'Touchez maintenant où le poser', 'paws.left':'{n} chances restantes', 'skim.again':'Pas là — l’aiguille continue', 'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
     'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Sèche-Linge|Appariez les chaussettes plus vite que le tambour',
     'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Bagarre|Lisez l’indice, choisissez la parade, gagnez la bagarre',
     'p.arc':'{n} à relier', 'p.slack':'{n} croisements restants', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Jeu de Ficelle|Bouclez chaque piquet avant que le fil ne mollisse',  'm.slack':'Sans Croisement|Déplacez les piquets jusqu’à ce qu’aucun fil ne se croise',  'm.tide':'Ronron|Maintenez pour enfler, lâchez pour calmer — restez dans la bande',  'm.plink':'Chute au Panier|Retirez un piquet, puis tombez dans le panier allumé',  'p.missed':'Raté', 'slide.hint':'Indice', 'p.slide':'Touchez le bout d’une barre pour la pousser', 
@@ -7316,7 +7322,7 @@ const STRINGS = {
     
 
     'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Remiendo|Termina los deshilachados antes de que se suelten',
-    'paws.again':'Esa no — prueba otra vez', 'paws.left':'Quedan {n} oportunidades', 'skim.again':'Ahí no — la aguja sigue', 'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
+    'paws.again':'Esa no — prueba otra vez', 'p.tapPlace':'Ahora toca dónde va', 'paws.left':'Quedan {n} oportunidades', 'skim.again':'Ahí no — la aguja sigue', 'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
     'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Secadora|Empareja los calcetines más rápido que el tambor',
     'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Riña de Gatos|Lee la señal, elige la réplica, gana la riña',
     'p.arc':'Faltan {n}', 'p.slack':'{n} cruces restantes', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Cuna de Gato|Enlaza cada clavija antes de que afloje el hilo',  'm.slack':'Sin Cruces|Mueve las clavijas hasta que ningún hilo se cruce',  'm.tide':'Ronroneo|Mantén para crecer, suelta para calmar — quédate en la banda',  'm.plink':'Caída al Cesto|Quita una clavija y cae en la cesta encendida',  'p.missed':'Fallado', 'slide.hint':'Pista', 'p.slide':'Toca el extremo de una barra para empujarla', 
@@ -7841,7 +7847,7 @@ const STRINGS = {
     
 
     'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Ausbessern|Flicke die Ausgefransten, bevor sie sich auflösen',
-    'paws.again':'Die nicht — versuch es nochmal', 'paws.left':'Noch {n} Chancen', 'skim.again':'Nicht dort — die Nadel läuft weiter', 'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
+    'paws.again':'Die nicht — versuch es nochmal', 'p.tapPlace':'Jetzt tippe, wo es hingehört', 'paws.left':'Noch {n} Chancen', 'skim.again':'Nicht dort — die Nadel läuft weiter', 'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
     'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Wäschetrockner|Paare die Socken schneller, als die Trommel füllt',
     'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Katzenstreit|Lies das Zeichen, wähl die Antwort, gewinn den Streit',
     'p.arc':'Noch {n}', 'p.slack':'Noch {n} Kreuzungen', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Fadenspiel|Schling jeden Stift, bevor der Faden erschlafft',  'm.slack':'Ohne Kreuzung|Zieh die Stifte, bis kein Faden kreuzt',  'm.tide':'Schnurren|Halten zum Anschwellen, loslassen zum Abklingen — bleib im Band',  'm.plink':'Korbwurf|Zieh einen Stift, dann fall in den erleuchteten Korb',  'p.missed':'Verpasst', 'slide.hint':'Tipp', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 
@@ -8286,6 +8292,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.175.0', date:'2026-11-11', items:[
+    'Tidy Up, Dye Pots and No Crossing can be played without dragging: tap a piece to pick it up (it is ringed), then tap where it goes. Tap it again to put it down. Dragging works as before.',
+  ] },
   { v:'0.174.0', date:'2026-11-11', items:[
     'Your sessions, in the Last 14 days panel under Progress: how long a session of play usually lasts, how soon its first point comes, how many runs go through the Cozy door and how many sessions end tucked in. It is counted on this device and never sent anywhere.',
     'An optional check-in, off until you switch it on there: one tap when a session starts and one when it ends, Low, Okay or Good, and a line saying how often you finished feeling better, the same or lower. A note to yourself, not a measurement.',
@@ -11381,21 +11390,45 @@ const MODES = {
         if (c === 0 && !done){ done = true; ctx.win(knobs[0]); }
       };
       let held = -1;
+      /* Without dragging (0.175.0, WCAG 2.5.7): a tap on a peg picks it up, ringed, and a tap on an open spot sets it
+         down there; a drag works as it always did. A spot too close to another peg is refused, as a drag would be. */
+      let armed = -1, moved = false, q0 = null;
+      const arm = i => {
+        if (armed >= 0){ knobs[armed].classList.remove('armed'); knobs[armed].setAttribute('aria-pressed', 'false'); }
+        armed = i;
+        if (i >= 0){ knobs[i].classList.add('armed'); knobs[i].setAttribute('aria-pressed', 'true'); ctx.prompt(t('p.tapPlace')); sfx.tap(); }
+      };
+      knobs.forEach(k => k.setAttribute('aria-pressed', 'false'));
+      const placeAt = (i, q) => {
+        const nx = clamp(q.x, 6, 94), ny = clamp(q.y, 6, 94);
+        const ar = aspectOf(box);
+        const clash = pos.some((o,k) => k !== i && gap(o, { x:nx, y:ny }, ar) < MINGAP*0.7);
+        if (!clash){ pos[i].x = nx; pos[i].y = ny; repaint(); return true; }
+        return false;
+      };
       onDrag(box, {
         start: q => {
-          held = -1; let best = 9e9;
+          held = -1; moved = false; q0 = q; let best = 9e9;
+          if (done) return;
           const ar = aspectOf(box);
           pos.forEach((p,i) => { const d = gap(p, q, ar); if (d < 11 && d < best){ best = d; held = i; } });
-          if (held >= 0) knobs[held].classList.add('held');
+          if (held >= 0){ if (held !== armed) arm(-1); knobs[held].classList.add('held'); return; }
+          /* an open spot: a picked-up peg goes there */
+          if (armed >= 0){ const i = armed; arm(-1); if (!placeAt(i, q)){ sfx.tap(); repaint(); } }
         },
         move: q => {
           if (held < 0 || done) return;
-          const nx = clamp(q.x, 6, 94), ny = clamp(q.y, 6, 94);
-          const ar = aspectOf(box);
-          const clash = pos.some((o,i) => i !== held && gap(o, { x:nx, y:ny }, ar) < MINGAP*0.7);
-          if (!clash){ pos[held].x = nx; pos[held].y = ny; repaint(); }
+          if (!moved && Math.hypot(q.x - q0.x, q.y - q0.y) < 2.5) return;
+          moved = true;
+          placeAt(held, q);
         },
-        end: () => { if (held >= 0) knobs[held].classList.remove('held'); held = -1; }
+        end: () => {
+          if (held < 0) return;
+          knobs[held].classList.remove('held');
+          const i = held; held = -1;
+          if (done) return;
+          if (!moved){ if (armed === i){ arm(-1); repaint(); } else arm(i); }
+        }
       });
       const col = mk('div','sumcol');
       col.appendChild(box);
@@ -12289,19 +12322,69 @@ const MODES = {
       const say = () => ctx.prompt(t('p.tidy', { n: left }));
       say();
 
+      /* Without dragging (0.175.0, WCAG 2.5.7): a tap on a piece picks it up and it stays picked up, ringed, until a
+         basket is tapped; a drag works as it always did. Tapping another piece picks that one instead, and tapping
+         the floor puts it down. Either way, the same rules decide where it lands. */
+      let armed = null, moved = false, q0 = null;
+      const arm = it => {
+        if (armed){ armed.el.classList.remove('armed'); armed.el.setAttribute('aria-pressed', 'false'); }
+        armed = it;
+        if (it){ it.el.classList.add('armed'); it.el.setAttribute('aria-pressed', 'true'); ctx.prompt(t('p.tapPlace')); sfx.tap(); }
+        else say();
+      };
+      items.forEach(it => it.el.setAttribute('aria-pressed', 'false'));
+      const binAt = q => {
+        const hr = box.getBoundingClientRect();
+        return bins.find(bn => { const r = bn.el.getBoundingClientRect();
+          const x = (r.left - hr.left) / hr.width * 100, y = (r.top - hr.top) / hr.height * 100;
+          return q.x >= x && q.x <= x + r.width / hr.width * 100 && q.y >= y && q.y <= y + r.height / hr.height * 100; });
+      };
+      const sortInto = (it, bn) => {
+        if (!bn){
+          /* Dropped on the floor: put it back, cost nothing. */
+          it.x = it.home.x; it.y = it.home.y;
+          it.el.style.left = it.x+'%'; it.el.style.top = it.y+'%';
+          return;
+        }
+        if (bn.ink !== it.ink){
+          /* The wrong basket takes a paw and the piece goes back where it was, to be tried again. */
+          it.el.classList.add('wrong');
+          sfx.tap(); buzz('bad');
+          if (!paws.use(it.el)){ done = true; return; }
+          it.x = it.home.x; it.y = it.home.y;
+          it.el.style.left = it.x+'%'; it.el.style.top = it.y+'%';
+          ctx.after(420, () => it.el.classList.remove('wrong'));
+          ctx.prompt(t('paws.again'));
+          return;
+        }
+        it.gone = true;
+        it.el.classList.add('binned');
+        bn.el.classList.remove('thud'); void bn.el.offsetWidth; bn.el.classList.add('thud');
+        sfx.good(count-left+1); buzz('good');
+        left--;
+        if (left <= 0){ done = true; return ctx.win(bn.el); }
+        say();
+      };
+
       onDrag(box, {
         start: q => {
-          held = null;
+          held = null; moved = false; q0 = q;
+          if (done) return;
           let best = 9e9;
           items.forEach(it => {
             if (it.gone) return;
             const d = Math.hypot(it.x-q.x, it.y-q.y);
             if (d < R*1.6 && d < best){ best = d; held = it; }
           });
-          if (held) held.el.classList.add('held');
+          if (held){ if (held !== armed) arm(null); held.el.classList.add('held'); return; }
+          /* nothing under the finger: a picked-up piece goes where the tap is */
+          if (armed){ const it = armed; arm(null); sortInto(it, binAt(q)); }
         },
         move: q => {
           if (!held || done) return;
+          /* a finger that shakes a little is still a tap */
+          if (!moved && Math.hypot(q.x - q0.x, q.y - q0.y) < 2.5) return;
+          moved = true;
           held.x = clamp(q.x, 3, 97); held.y = clamp(q.y, 3, 97);
           held.el.style.left = held.x+'%'; held.el.style.top = held.y+'%';
           const over = bins.find(bn => hits(bn, held));
@@ -12312,31 +12395,10 @@ const MODES = {
           const it = held; held = null;
           it.el.classList.remove('held');
           bins.forEach(bn => bn.el.classList.remove('over'));
-          const bn = bins.find(x => hits(x, it));
-          if (!bn){
-            /* Dropped on the floor: put it back, cost nothing. */
-            it.x = it.home.x; it.y = it.home.y;
-            it.el.style.left = it.x+'%'; it.el.style.top = it.y+'%';
-            return;
-          }
-          if (bn.ink !== it.ink){
-            /* The wrong basket takes a paw and the piece goes back where it was, to be tried again. */
-            it.el.classList.add('wrong');
-            sfx.tap(); buzz('bad');
-            if (!paws.use(it.el)){ done = true; return; }
-            it.x = it.home.x; it.y = it.home.y;
-            it.el.style.left = it.x+'%'; it.el.style.top = it.y+'%';
-            ctx.after(420, () => it.el.classList.remove('wrong'));
-            ctx.prompt(t('paws.again'));
-            return;
-          }
-          it.gone = true;
-          it.el.classList.add('binned');
-          bn.el.classList.remove('thud'); void bn.el.offsetWidth; bn.el.classList.add('thud');
-          sfx.good(count-left+1); buzz('good');
-          left--;
-          if (left <= 0){ done = true; return ctx.win(bn.el); }
-          say();
+          /* a tap, not a drag: pick it up (or put it down, if it was already picked up) */
+          if (!moved){ arm(armed === it ? null : it); return; }
+          arm(null);
+          sortInto(it, bins.find(x => hits(x, it)));
         }
       });
 
@@ -12931,14 +12993,56 @@ const MODES = {
       });
 
       const stream = mk('div','sipstream'); wrap.appendChild(stream);
+      /* Without dragging (0.175.0, WCAG 2.5.7): a tap on a dye picks it up (tilted and ringed) until a pot is tapped;
+         a drag pours as it always did. The same rules decide what a pour does either way. */
+      let armed = null, moved = false, q0 = null;
+      const arm = s => {
+        if (armed){ armed.e.classList.remove('armed'); armed.e.setAttribute('aria-pressed', 'false'); }
+        armed = s;
+        if (s){ s.e.classList.add('armed'); s.e.setAttribute('aria-pressed', 'true'); ctx.prompt(t('p.tapPlace')); sfx.tap(); }
+        else say();
+      };
+      const pour = (src, j) => {
+        /* Letting go over nothing costs nothing — an imprecise drag is not a
+           wrong answer, the same rule Tidy settled on. */
+        if (!j || j.filled) return;
+        if (!j.needs.has(src.ink.name)){
+          /* The wrong pot takes a paw; the dye is still in its jar, so it can be poured again. */
+          j.e.classList.add('reject');
+          sfx.tap(); buzz('bad');
+          if (!paws.use(j.e)){ done = true; return; }
+          ctx.after(520, () => j.e.classList.remove('reject'));
+          ctx.prompt(t('paws.again'));
+          return;
+        }
+        j.needs.delete(src.ink.name); src.spent = true;
+        src.e.classList.add('empty');
+        src.e.setAttribute('aria-label', inkName(src.ink) + ' ' + t('sip.empty'));
+        sfx.tap();
+        if (j.needs.size){ j.e.classList.add('half'); j.e.innerHTML = PIECE.jar({ hex: src.ink.hex, shape: j.ink.shape }, false); return; }        /* the first of two dyes */
+        j.filled = true;
+        j.e.classList.add('full');
+        j.e.innerHTML = PIECE.jar(j.ink, false);
+        j.e.setAttribute('aria-label', inkName(j.ink) + ' ' + t('sip.done'));
+        src.e.classList.add('empty');
+        src.e.setAttribute('aria-label', inkName(src.ink) + ' ' + t('sip.empty'));
+        filled++; sfx.good(filled); buzz('good');
+        if (filled >= jars.length){ done = true; return ctx.win(j.e); }
+        say();
+      };
       onDrag(wrap, {
         start: q => {
-          from = null;
+          from = null; moved = false; q0 = q;
+          if (done) return;
           const s = hitOf(sources, q);
-          if (s && !s.spent){ from = s; s.e.classList.add('pouring'); }
+          if (s && !s.spent){ from = s; if (s !== armed) arm(null); s.e.classList.add('pouring'); return; }
+          /* not on a dye: a picked-up dye pours into the pot tapped */
+          if (armed){ const src = armed; arm(null); pour(src, hitOf(jars, q)); }
         },
         move: q => {
           if (!from || done) return;
+          if (!moved && Math.hypot(q.x - q0.x, q.y - q0.y) < 2.5) return;
+          moved = true;
           const j = hitOf(jars, q);
           jars.forEach(o => o.e.classList.toggle('aim', o === j && !o.filled));
           stream.style.setProperty('--vk', from.ink.hex);
@@ -12952,35 +13056,13 @@ const MODES = {
           if (!from || done){ from = null; return; }
           const src = from; from = null;
           src.e.classList.remove('pouring');
-          const j = q ? hitOf(jars, q) : null;
-          /* Letting go over nothing costs nothing — an imprecise drag is not a
-             wrong answer, the same rule Tidy settled on. */
-          if (!j || j.filled) return;
-          if (!j.needs.has(src.ink.name)){
-            /* The wrong pot takes a paw; the dye is still in its jar, so it can be poured again. */
-            j.e.classList.add('reject');
-            sfx.tap(); buzz('bad');
-            if (!paws.use(j.e)){ done = true; return; }
-            ctx.after(520, () => j.e.classList.remove('reject'));
-            ctx.prompt(t('paws.again'));
-            return;
-          }
-          j.needs.delete(src.ink.name); src.spent = true;
-          src.e.classList.add('empty');
-          src.e.setAttribute('aria-label', inkName(src.ink) + ' ' + t('sip.empty'));
-          sfx.tap();
-          if (j.needs.size){ j.e.classList.add('half'); j.e.innerHTML = PIECE.jar({ hex: src.ink.hex, shape: j.ink.shape }, false); return; }        /* the first of two dyes */
-          j.filled = true;
-          j.e.classList.add('full');
-          j.e.innerHTML = PIECE.jar(j.ink, false);
-          j.e.setAttribute('aria-label', inkName(j.ink) + ' ' + t('sip.done'));
-          src.e.classList.add('empty');
-          src.e.setAttribute('aria-label', inkName(src.ink) + ' ' + t('sip.empty'));
-          filled++; sfx.good(filled); buzz('good');
-          if (filled >= jars.length){ done = true; return ctx.win(j.e); }
-          say();
+          /* a tap, not a drag: pick the dye up, or put it down if it was already picked up */
+          if (!moved){ arm(armed === src ? null : src); return; }
+          arm(null);
+          pour(src, q ? hitOf(jars, q) : null);
         }
       });
+      sources.forEach(o => o.e.setAttribute('aria-pressed', 'false'));
     }
   },
 

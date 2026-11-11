@@ -551,6 +551,15 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | A session | — | the first run after half an hour away (the half hour Tuck in uses) starts one |
 | `sessions.mjs` (new) | — | 24 of 24; fails on v0.173.0 (no card) |
 
+## v0.175.0: three games played without dragging (WCAG 2.5.7)
+
+| What | Before | After |
+|---|---|---|
+| The audit | 2.5.1 and 2.5.7 marked Partial, never checked mode by mode | read mode by mode: 24 drag games already had a tap path; Tidy Up, Dye Pots, No Crossing, Patchwork, Slice and Chalk Line did not |
+| Tidy Up, Dye Pots, No Crossing | a piece moved only by dragging it | a tap picks it up (ringed, announced as pressed, "Now tap where it goes"), a tap places it; a shaky tap still counts as a tap; dragging unchanged |
+| Keyboard play | a press and release on the spot did nothing in these three | a pick-up or a place, as for a finger (the keyboard pointer sends a finger's events) |
+| `taponly.mjs` (new) | — | 13 of 13: each of the three won at a low and a high level with taps alone; fails on v0.174.0 |
+
 ## How to reproduce
 
 ```
