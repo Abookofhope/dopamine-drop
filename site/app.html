@@ -5290,7 +5290,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.177.2';
+const VERSION_TAG = 'v0.177.3';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -8300,6 +8300,9 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.177.3', date:'2026-11-11', items:[
+    'Patchwork on a small phone: a Line or Block quilt is now made from three patches rather than up to five, so with its spare the tray stays on one row and the quilt keeps squares big enough to aim at, instead of shrinking when a fifth patch pushed the tray onto a second row. Patches in the tray are the same size as before.',
+  ] },
   { v:'0.177.2', date:'2026-11-11', items:[
     'The Books Entertainment intro: the gold light round the finished name is gentler. The name stays as gold as it was; the glow around it settles to about a third.',
   ] },
@@ -14083,7 +14086,7 @@ const MODES = {
       const ruleOn = goal === 'fill' && ctx.level >= 12;
       /* A short screen has no room for a long tray, so it gets fewer spares rather than a smaller quilt. */
       const tight = (ctx.surface.clientHeight || 560) < 520;
-      const spareN = goal === 'clear' ? 0 : Math.min(tight ? 1 : 3, goal === 'fill' ? clamp(3 - Math.floor(ctx.level/8), 1, 3) : clamp(3 - Math.floor(ctx.level/10), 1, 3));
+      let spareN = goal === 'clear' ? 0 : Math.min(tight ? 1 : 3, goal === 'fill' ? clamp(3 - Math.floor(ctx.level/8), 1, 3) : clamp(3 - Math.floor(ctx.level/10), 1, 3));
 
       const norm = cs => { const mx = Math.min(...cs.map(c=>c[0])), my = Math.min(...cs.map(c=>c[1]));
         return cs.map(c=>[c[0]-mx, c[1]-my]).sort((a,b)=> a[1]-b[1] || a[0]-b[0]); };
@@ -14164,8 +14167,11 @@ const MODES = {
         } else {
           cands = Array.from({ length: g }, (_, k) => rowOf(k)).concat(Array.from({ length: g }, (_, k) => colOf(k)));
         }
+        /* On a short screen a tray of five wraps to a second row and squeezes the quilt to 28px squares, so the plan is held to three
+           patches there (four with the spare, one row); if three cannot cover it, four, and then there is no spare. */
         let plan = null;
-        for (let attempt = 0; attempt < 12 && !plan; attempt++){
+        for (let attempt = 0; attempt < (tight ? 24 : 12) && !plan; attempt++){
+          const maxParts = !tight ? 5 : attempt < 12 ? 3 : 4;
           const R = cands[Math.floor(ctx.rnd()*cands.length)];
           const order = R.slice().sort((a, b) => a - b), cov = new Set(), list = [];
           let nodes = 0;
@@ -14173,7 +14179,7 @@ const MODES = {
             if (nodes++ > 20000) return false;
             const first = order.find(c => !cov.has(c));
             if (first === undefined) return true;
-            if (list.length >= 5) return false;
+            if (list.length >= maxParts) return false;
             for (const sh of shuffle(SMALLER.slice(), ctx.rnd)){
               const a0 = sh[0], ax = (first % g) - a0[0], ay = Math.floor(first / g) - a0[1];
               if (sh.some(c => ax + c[0] < 0 || ax + c[0] >= g || ay + c[1] < 0 || ay + c[1] >= g)) continue;
@@ -14195,6 +14201,7 @@ const MODES = {
           while (left > 0){ const n = left === 4 || left === 2 ? 2 : 3; list.push({ sh: bar(n), at: bar(n).map(c => at(x0 + c[0], 0)) }); x0 += n; left -= n; }
           plan = { list, R: rowOf(0), cov: new Set(list.flatMap(q => q.at)) };
         }
+        if (tight) spareN = Math.min(spareN, Math.max(0, 4 - plan.list.length));
         const nKnot = ctx.level < 5 ? 0 : clamp(Math.floor((ctx.level - 3)/4), 1, 5);
         const free = [];
         for (let i = 0; i < g*g; i++) if (!plan.cov.has(i) && !plan.R.includes(i)) free.push(i);
