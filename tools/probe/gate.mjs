@@ -71,6 +71,30 @@ const kinds = {};
   await page.close();
 }
 
+/* ── the title card: the name, the picture, and one tap to a run ──────────────────────────────────────────────────────── */
+{
+  const page = await open('en');
+  const h = await page.evaluate(() => {
+    const hero = document.getElementById('hero'), play = document.getElementById('heroPlay'), hr = hero.getBoundingClientRect(), pr = play.getBoundingClientRect();
+    const art = [...hero.querySelectorAll('.heroArt, .heroArt *')].filter(n => { const r = n.getBoundingClientRect(); return r.width && (r.left < hr.left - 1 || r.right > hr.right + 1); }).length;
+    const daily = document.getElementById('dailyStatus').getBoundingClientRect();
+    return { name: hero.querySelector('.heroName').textContent.replace(/\s+/g, ' ').trim(), tap: Math.round(Math.min(pr.width, pr.height)), label: play.getAttribute('aria-label') || '',
+      first: hr.top < daily.top, art, hdr: getComputedStyle(document.querySelector('#chrome .wtext')).display, mark: !!document.querySelector('#chrome .logomark svg') };
+  });
+  check(h.name === 'DopamineDrop' && h.first && h.art === 0, `the menu opens on a title card: the name and its picture, above Daily Drop, nothing hanging outside it (${h.name}, ${h.art} outside)`);
+  check(h.tap >= 44 && /Play/.test(h.label) && /Full Purr/.test(h.label), `with a Play button a thumb can hit, that says what it starts (${h.tap}px, "${h.label}")`);
+  check(h.hdr === 'none' && h.mark, 'the header keeps its mark and lets the card say the name, so it is not written twice');
+  await page.locator('#heroPlay').click();
+  await page.waitForFunction(() => { const k = document.getElementById('hudKind').textContent.trim(); return k && k !== 'Shuffle'; }, null, { timeout: 9000, polling: 100 }).catch(() => {});
+  const kind = await page.evaluate(() => (document.getElementById('hudKind') || {}).textContent.trim());
+  check(new Set(kinds.full.cards.map(c => c.name)).has(kind), `Play on the card starts a run from the whole mix in one tap (${kind})`);
+  await page.close();
+  const tabs = await open('en');
+  await tabs.locator('.tab[data-tab="Modes"]').click(); await tabs.waitForTimeout(400);
+  check(await tabs.evaluate(() => getComputedStyle(document.querySelector('#chrome .wtext')).display !== 'none'), 'on every other screen the header says the name as before');
+  await tabs.close();
+}
+
 /* ── Play a mix draws from the kind; a game starts on its own ─────────────────────────────────────────────────────────── */
 for (const id of ['calm', 'quick']){
   const names = new Set(kinds[id].cards.map(c => c.name));

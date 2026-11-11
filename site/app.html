@@ -1865,7 +1865,7 @@ html[data-motion="on"] .qpatch.stitched{animation:stitchIn 900ms var(--e-spring)
 .collectall{width:100%;margin:0 0 10px}
 .collectall[hidden]{display:none}
 /* The doors: Cozy or Challenge, under the gate's question. */
-.doors{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 10px;padding:4px;border-radius:var(--r-lg);
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 8px;padding:4px;border-radius:var(--r-lg);
   background:#ffffff08;border:1px solid var(--edge-soft)}
 .door{min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 8px;
   border-radius:calc(var(--r-lg) - 4px);border:0;background:transparent;color:var(--haze);cursor:pointer;
@@ -4176,7 +4176,35 @@ html[data-motion="off"] .pondcat.bump svg{animation:none}
 .avatar .face{width:28px;height:28px;border-radius:50%;background:#2F2350;display:grid;place-items:center}
 .avatar .face svg{width:22px;height:22px;display:block}
 .meChip b{font-family:var(--f-disp);font-weight:800;font-size:calc(14px*var(--ts));letter-spacing:.02em}
-.dailyCard{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;padding:0 14px;margin-bottom:18px;border-radius:20px;
+/* The title card: the game's name and its picture, and one button that starts a run. It is the top of the Play menu, not a screen
+   in front of it, so launch to playing is still one tap, and it is short enough that the menu under it still fits one screen
+   (gate.mjs). The picture keeps to its own box at the right, so nothing in it hangs outside the card (home.mjs). The header's
+   small name steps aside while this one is showing. */
+.hero{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;min-height:108px;
+  box-sizing:border-box;padding:8px 14px 10px;margin-bottom:8px;border-radius:24px;overflow:hidden;isolation:isolate;
+  background:linear-gradient(165deg,#43297F 0%,#2A1B57 46%,#1A1136 100%);border:1.5px solid #5B3FA855;box-shadow:0 8px 20px #0007}
+.hero .heroArt{position:absolute;right:0;bottom:0;height:100%;aspect-ratio:210/108;z-index:-1;display:block}
+.hero .heroName{font-family:var(--f-disp);font-weight:800;font-size:23px;   /* fixed: the logotype keeps its size at every text size */
+  line-height:.92;letter-spacing:.02em;text-transform:uppercase;color:#FFF6E8;text-shadow:0 2px 0 #1A1136,0 4px 14px #000a;margin:0}
+.hero .heroName i{display:block;font-style:normal;color:var(--flare);text-shadow:0 2px 0 #1A1136,0 0 18px #ff5b3966}
+.hero .heroPlay{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px 0 14px;border-radius:999px;
+  background:linear-gradient(168deg,var(--flare),var(--flare-deep));color:#1A0A04;font-family:var(--f-disp);font-weight:800;
+  font-size:calc(17px*var(--ts));text-transform:uppercase;letter-spacing:.04em;box-shadow:0 4px 0 #7A1F0C,0 8px 14px #0007;
+  transition:transform var(--t-fast),box-shadow var(--t-fast)}
+.hero .heroPlay:active{transform:translateY(3px);box-shadow:0 1px 0 #7A1F0C,0 3px 8px #0007}
+.hero .heroPlay svg{width:18px;height:18px;flex:none}
+html[data-motion="on"] .hero .hTail{transform-origin:318px 150px;animation:heroTail 3.6s ease-in-out infinite}
+html[data-motion="on"] .hero .hDrop{animation:heroDrop 5.5s ease-in infinite}
+html[data-motion="on"] .hero .hDrop:nth-of-type(2){animation-delay:-1.8s}
+html[data-motion="on"] .hero .hDrop:nth-of-type(3){animation-delay:-3.6s}
+html[data-motion="on"] .hero .hStar{animation:heroStar 3.2s ease-in-out infinite}
+html[data-motion="on"] .hero .hStar:nth-of-type(2n){animation-delay:-1.3s}
+html[data-motion="on"] .hero .hStar:nth-of-type(3n){animation-delay:-2.2s}
+@keyframes heroTail{0%,100%{transform:rotate(0)}50%{transform:rotate(8deg)}}
+@keyframes heroDrop{0%{transform:translateY(-10px);opacity:0}15%{opacity:1}75%{opacity:1}100%{transform:translateY(22px);opacity:0}}
+@keyframes heroStar{0%,100%{opacity:.9}50%{opacity:.25}}
+body:has(#tabPlay:not([hidden]) #playHome:not([hidden])) .chrome .wtext{display:none}
+.dailyCard{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;padding:0 14px;margin-bottom:8px;border-radius:20px;
   border:1.5px solid color-mix(in srgb, var(--flare) 40%, transparent);background:var(--ink-2);color:var(--cream);text-align:left}
 .dailyCard .di{flex:none;width:36px;height:36px;border-radius:12px;background:color-mix(in srgb, var(--flare) 16%, transparent);color:var(--flare);display:grid;place-items:center}
 .dailyCard .di svg{width:22px;height:22px}
@@ -4186,18 +4214,18 @@ html[data-motion="off"] .pondcat.bump svg{animation:none}
 .dailyCard .ggo{width:18px;height:18px;color:var(--haze);flex:none}
 .dailyCard.streaking{border-color:var(--zap)}
 .gate{margin-bottom:8px}
-.gateTitle{font-family:var(--f-disp);font-weight:800;font-size:calc(20px*var(--ts));line-height:1.1;text-transform:uppercase;color:var(--cream);margin-bottom:10px}
-.gatelist{display:flex;flex-direction:column;gap:10px}
-.gateBtn{display:flex;align-items:center;gap:14px;width:100%;box-sizing:border-box;padding:13px 14px;border-radius:26px;text-align:left;
+.gateTitle{font-family:var(--f-disp);font-weight:800;font-size:calc(20px*var(--ts));line-height:1.1;text-transform:uppercase;color:var(--cream);margin-bottom:8px}
+.gatelist{display:flex;flex-direction:column;gap:6px}
+.gateBtn{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:7px 14px;border-radius:26px;text-align:left;
   background:var(--gbg);color:var(--gfg);box-shadow:0 12px 26px -16px var(--gbg),inset 0 -4px 0 #00000014;transition:transform var(--t-fast)}
 .gateBtn:active{transform:scale(.98)}
-.gateBtn .g,.gateHead .g{flex:none;width:64px;height:64px;border-radius:50%;background:#00000014;display:grid;place-items:center}
-.gateBtn .g svg,.gateHead .g svg{width:46px;height:46px;display:block}
+.gateBtn .g,.gateHead .g{flex:none;width:56px;height:56px;border-radius:50%;background:#00000014;display:grid;place-items:center}
+.gateBtn .g svg,.gateHead .g svg{width:42px;height:42px;display:block}
 .gateBtn .gtxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .gateBtn b{font-family:var(--f-disp);font-weight:800;font-size:calc(22px*var(--ts));line-height:1.05}
 .gateBtn small{font-size:calc(12px*var(--ts));font-weight:800;color:var(--gsub)}
-.gateBtn em{font-style:normal;font-size:calc(14px*var(--ts));font-weight:700;line-height:1.3;margin-top:2px}
-.gateBtn .gcount{text-decoration:none;font-size:calc(12px*var(--ts));font-weight:800;color:var(--gsub);margin-top:4px}
+.gateBtn em{font-style:normal;font-size:calc(14px*var(--ts));font-weight:700;line-height:1.25;margin-top:1px}
+.gateBtn .gcount{text-decoration:none;font-size:calc(12px*var(--ts));font-weight:800;color:var(--gsub);margin-top:1px}
 .gateBtn .ggo{width:20px;height:20px}
 .customCard{display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:0 16px;border-radius:22px;border:1.5px dashed var(--edge);color:var(--cream);text-align:left}
 .customCard .g{flex:none;width:40px;height:40px;border-radius:50%;background:#ffffff0d;color:var(--haze);display:grid;place-items:center}
@@ -4279,6 +4307,47 @@ html[data-motion="off"] .pondcat.bump svg{animation:none}
         <!-- Home: exactly three choices, ever, on this screen. Each leads to
              its own focused sub-screen instead of showing everything at once. -->
         <div id="playHome">
+          <div class="hero" id="hero">
+            <svg class="heroArt" viewBox="150 68 210 108" aria-hidden="true">
+              <g fill="#FFF6E8">
+                <circle class="hStar" cx="166" cy="70" r="1.3"/><circle class="hStar" cx="204" cy="84" r="1.1"/><circle class="hStar" cx="238" cy="68" r="1.4"/>
+                <circle class="hStar" cx="188" cy="112" r="1"/><circle class="hStar" cx="262" cy="76" r="1.1"/><circle class="hStar" cx="350" cy="118" r="1.2"/>
+              </g>
+              <!-- the moon is a ball of yarn -->
+              <circle cx="334" cy="84" r="24" fill="#FFC53D" opacity=".14"/>
+              <circle cx="334" cy="84" r="18.5" fill="#FFC53D"/>
+              <g fill="none" stroke="#E08A12" stroke-width="1.5" stroke-linecap="round" opacity=".85">
+                <path d="M318 77c10 5 22 5 32 0"/><path d="M317 87c11 5 23 5 34-1"/><path d="M321 95c8 3 18 3 26-1"/>
+                <path d="M324 70c-3 10 0 22 7 30"/><path d="M339 67c5 9 5 23-1 34"/>
+              </g>
+              <g>
+                <path class="hDrop" d="M222 92c0 0-4 6-4 8.5a4 4 0 0 0 8 0c0-2.5-4-8.5-4-8.5z" fill="#FF5B39"/>
+                <path class="hDrop" d="M250 100c0 0-3.5 5-3.5 7.5a3.5 3.5 0 0 0 7 0c0-2.5-3.5-7.5-3.5-7.500z" fill="#4BC0FF"/>
+                <path class="hDrop" d="M196 124c0 0-3 4.5-3 6.500a3 3 0 0 0 6 0c0-2-3-6.5-3-6.500z" fill="#5BD98C"/>
+              </g>
+              <path d="M150 176c56-34 150-40 210-22v22z" fill="#150D2E"/>
+              <path d="M186 176c40-20 120-24 174-10v10z" fill="#21154A"/>
+              <!-- a loose ball of yarn, and the strand it left -->
+              <path d="M226 162c-14 7-22-7-36 0s-20 4-28 0" fill="none" stroke="#FF6E9E" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="236" cy="158" r="11" fill="#FF6E9E" stroke="#2A1B4D" stroke-width="2"/>
+              <path d="M227 153c6 4 12 4 18 0M227 162c6 3 12 3 18-1M232 148c-2 6 0 15 5 20" fill="none" stroke="#2A1B4D" stroke-width="1.3" stroke-linecap="round" opacity=".6"/>
+              <!-- the cat -->
+              <g class="hTail"><path d="M316 152c24 0 30-26 14-36" fill="none" stroke="#2A1B4D" stroke-width="11" stroke-linecap="round"/><path d="M316 152c24 0 30-26 14-36" fill="none" stroke="#F6EBD9" stroke-width="6.5" stroke-linecap="round"/></g>
+              <path d="M261 175c-5-30 8-53 29-53s34 23 29 53z" fill="#F6EBD9" stroke="#2A1B4D" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M268 100l-4-25 20 12zM312 100l4-25-20 12z" fill="#F6EBD9" stroke="#2A1B4D" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M269 92l-1.5-9 7 4zM311 92l1.5-9-7 4z" fill="#FF9FB0"/>
+              <circle cx="290" cy="106" r="25" fill="#F6EBD9" stroke="#2A1B4D" stroke-width="2.5"/>
+              <path d="M290 81.500c-3 4-3 8 0 11M282 83c-1 3-1 6 1 8M298 83c1 3 1 6-1 8" fill="none" stroke="#E7B98A" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="275" cy="112" r="4.5" fill="#FF9FB0" opacity=".55"/><circle cx="305" cy="112" r="4.5" fill="#FF9FB0" opacity=".55"/>
+              <path d="M277 104q4.5 4.5 9 0M294 104q4.5 4.5 9 0" fill="none" stroke="#2A1B4D" stroke-width="2.4" stroke-linecap="round"/>
+              <path d="M287.5 110.500h5l-2.5 3z" fill="#FF7E96" stroke="#2A1B4D" stroke-width="1" stroke-linejoin="round"/>
+              <path d="M290 113.500q-3 4-6.5 1.500M290 113.500q3 4 6.5 1.5" fill="none" stroke="#2A1B4D" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M268 109l-10-2M268 114l-10 2M312 109l10-2M312 114l10 2" stroke="#2A1B4D" stroke-width="1.3" stroke-linecap="round" opacity=".7"/>
+              <ellipse cx="280" cy="169" rx="8" ry="4.5" fill="#FFFDF7" stroke="#2A1B4D" stroke-width="2"/><ellipse cx="300" cy="169" rx="8" ry="4.5" fill="#FFFDF7" stroke="#2A1B4D" stroke-width="2"/>
+            </svg>
+            <p class="heroName">Dopamine<i>Drop</i></p>
+            <button class="heroPlay" id="heroPlay" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span data-i18n="tab.Play">Play</span></button>
+          </div>
           <div class="resumeCard" id="resumeCard" hidden>
             <span class="rt"><b data-i18n="resume.title">Your run is waiting</b><small id="resumeLine"></small></span>
             <button class="cta resumeGo" id="resumeGo" type="button" data-i18n="resume.go">Resume</button>
@@ -5290,7 +5359,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.178.0';
+const VERSION_TAG = 'v0.179.0';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -8300,6 +8369,10 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.179.0', date:'2026-11-11', items:[
+    'The Play menu opens on a title card: the game\u2019s name, a cat under a yarn-ball moon, and a Play button that starts a run from the whole mix in one tap, by whichever of Cozy or Challenge is chosen. With motion on, the tail sways and the drops fall.',
+    'The three kinds of game under it are a little tighter, so the whole menu still fits one screen without scrolling. The header shows only its mark while the title card is saying the name.',
+  ] },
   { v:'0.178.0', date:'2026-11-11', items:[
     'Cozy has no clock of any kind now, in any game. The games that kept time of their own wait for you instead: Cat Fight\'s foe waits for your counter, nothing unravels in Mending, Dropped Stitch and Catch the Balls stop above each bar or ball until you let go, Tangle Watch\'s threads drift back and forth and never meet, Sandbox of Softness drops the next grain when you say so, Tumble Dryer\'s drum fills as you make pairs, and Yarn Ball Blaster\'s wall comes down by shots instead of seconds.',
     'Fixed: in Sandbox of Softness the last grain was never dropped, so a round with no spill could not be finished.',
@@ -23213,6 +23286,7 @@ function paintGate(){
 /* How many games each kind holds, and what a screen reader says about the card. */
 function paintMoods(){
   document.querySelectorAll('.gcount').forEach(u => { u.textContent = t('gate.count', { n: GATES[u.dataset.count].ids.length }); });
+  $('heroPlay').setAttribute('aria-label', t('tab.Play') + '. ' + t('gate.full') + ', ' + t(save.door === 'cozy' ? 'door.cozy' : 'door.challenge'));
   document.querySelectorAll('.gateBtn').forEach(b => {
     const g = b.dataset.gate;
     b.setAttribute('aria-label', [t('gate.' + g), t('gate.' + g + 'Who'), t('gate.' + g + 'Vibe'), t('gate.count', { n: GATES[g].ids.length })].join('. '));
@@ -24254,6 +24328,8 @@ document.querySelectorAll('.gateBtn').forEach(b => b.addEventListener('click', (
   const sc = $('tabPlay').querySelector('.scroll'); if (sc) sc.scrollTop = 0;
 }));
 $('gateBack').addEventListener('click', () => { setPlayView('home'); sfx.tap(); });
+/* The title card's Play is the shortest way in: the whole mix (The Full Purr), played by whichever door is set. */
+$('heroPlay').addEventListener('click', () => startRun(save.door === 'cozy' ? 'cozy' : 'shuffle', null, null, GATES.full.pool(), 'full'));
 /* The door decides how a mix is played: Cozy (no clock, nothing to lose) or Challenge (the clock, and a best). */
 $('moodPlay').addEventListener('click', () => startRun(save.door === 'cozy' ? 'cozy' : 'shuffle', null, null,
   (GATES[gateOn] || GATES.full).pool(), GATES[gateOn] ? gateOn : 'full'));
