@@ -48,7 +48,7 @@ const movieState = page => page.evaluate(() => { const v = document.getElementBy
   const { page, ctx } = await open({ introSeen: false }, true, true);
   await page.waitForTimeout(1500);
   const a = await movieState(page); await page.waitForTimeout(700); const m = await movieState(page);
-  check(await shown(page) && m.on && m.name === 'intro/splash-phone.mp4' && m.w === 864 && m.h === 1920 && m.dur > 13.5 && m.dur < 14.5 && m.t > a.t + 0.4 && !m.paused,
+  check(await shown(page) && m.on && m.name === 'intro/splash-phone.mp4' && m.w === 864 && m.h === 1920 && m.dur > 14.2 && m.dur < 15.2 && m.t > a.t + 0.4 && !m.paused,
     `the intro plays as a recording on an upright screen (${m.name}, ${m.w}x${m.h}, ${m.dur.toFixed(2)} s; ${a.t.toFixed(2)} s then ${m.t.toFixed(2)} s)`);
   check(m.muted && m.fit === 'cover' && m.cover, 'silent, filling the screen, cropped not stretched');
   check(!m.live && m.frameHidden, 'and the live page is not loaded');
@@ -108,6 +108,10 @@ const movieState = page => page.evaluate(() => { const v = document.getElementBy
   /* v0.164.1: it aims for 60 fps, lowering its detail when frames average over 20 ms (about 50 a second); until then it waited for 33 ms */
   const gov = f ? await f.evaluate(() => { const js = [...document.scripts].map(x => x.textContent).join('\n'); return { at60: js.includes('frameAvg > 20)'), at30: js.includes('frameAvg > 33)') }; }) : null;
   check(!!gov && gov.at60 && !gov.at30, `and it aims for 60 fps (lowers its detail past 20 ms a frame: ${gov && gov.at60})`);
+  /* the cracks: every main crack runs from the blow to the frame (the page counts them: reached/all) */
+  const reach = f ? await f.evaluate(() => document.body.dataset.reach || '') : '';
+  const [got, all] = reach.split('/').map(Number);
+  check(all >= 7 && got === all, `and every main crack reaches the frame (${reach || 'not reported'})`);
   /* frames along the way, for a person to look at (OUT) */
   if (OUT){ let at = 600; for (const t of [2000, 3400, 4600, 6400, 9200]){ await page.waitForTimeout(t - at); at = t; await page.screenshot({ path: `${OUT}/intro_${t}.png` }); } }
   await page.keyboard.press('Escape');
