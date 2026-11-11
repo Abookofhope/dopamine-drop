@@ -578,6 +578,20 @@ Measured at 4x CPU slowdown, five visits in one persistent browser profile (so t
 | Knobs, tracks, focus ring, chevrons, tab icons | not measured | measured on the pixels: 5.80:1 to 13.06:1 |
 | `nontext.mjs` (new) | — | 14 of 14; fails on v0.176.0 (the off outline) |
 
+## v0.177.1: the intro's cracks reach the edges, and it switches off (the owner's requests)
+
+| What | Before | After |
+|---|---|---|
+| The cracks before the shatter | the first crack crossed the pane; the others stopped where they met another | seven to nine main cracks run from the blow all the way to the edges, each aimed at its own point on the frame |
+| How the intro ends | it held on the gold name, and the game faded in over it | the name is held for 0.6 s, the last 0.4 s under static; the power cuts; the picture collapses to a line, then a dot; the afterglow dies; black. The game fades in from black |
+| The recordings | 13.95 s; 7.2 MB upright, 9.2 MB widescreen | 14.7 s; 8.9 MB upright, 9.8 MB widescreen |
+| The live page (the fallback) | ended on the name; `data-end` was that moment | the same ending; `data-end` is the moment the screen is black, and `data-named` the moment the name is done |
+| Reduce motion | the finished name | the same: no static, no switch-off |
+| The shards, the burst, the forging | unchanged | unchanged |
+| `splash.mjs` | 28 checks | 29: the new one (every main crack reaches the frame) fails on v0.177.0 |
+
+Not checked: on a real phone.
+
 ## How to reproduce
 
 ```
