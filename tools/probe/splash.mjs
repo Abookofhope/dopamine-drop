@@ -108,6 +108,10 @@ const movieState = page => page.evaluate(() => { const v = document.getElementBy
   /* v0.164.1: it aims for 60 fps, lowering its detail when frames average over 20 ms (about 50 a second); until then it waited for 33 ms */
   const gov = f ? await f.evaluate(() => { const js = [...document.scripts].map(x => x.textContent).join('\n'); return { at60: js.includes('frameAvg > 20)'), at30: js.includes('frameAvg > 33)') }; }) : null;
   check(!!gov && gov.at60 && !gov.at30, `and it aims for 60 fps (lowers its detail past 20 ms a frame: ${gov && gov.at60})`);
+  /* the cracks: every main crack runs from the blow to the frame (the page counts them: reached/all) */
+  const reach = f ? await f.evaluate(() => document.body.dataset.reach || '') : '';
+  const [got, all] = reach.split('/').map(Number);
+  check(all >= 7 && got === all, `and every main crack reaches the frame (${reach || 'not reported'})`);
   /* frames along the way, for a person to look at (OUT) */
   if (OUT){ let at = 600; for (const t of [2000, 3400, 4600, 6400, 9200]){ await page.waitForTimeout(t - at); at = t; await page.screenshot({ path: `${OUT}/intro_${t}.png` }); } }
   await page.keyboard.press('Escape');
