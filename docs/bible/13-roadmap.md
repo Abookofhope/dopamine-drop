@@ -47,6 +47,7 @@ nothing ships on a red probe.
 | v0.162.0 | fd79e9d | AAA, platforms: tablet layouts. The column widens from 460 to 640px on a screen at least 700px each way; all 44 boards checked at an upright and a sideways tablet (`tablet.mjs`); Patchwork's quilt now sizes to its real room. Native shells and store builds still need store accounts |
 | v0.163.0 | ee87fbc | AAA, content: the first seasonal game, Pond Skate (winter), built to the same rules: a signature, four languages, a difficulty curve past level 20, a move budget from the true shortest route, keyboard and Reduce motion, and its own probe (`skate.mjs`) that solves every pond it is dealt. Kept all year, like the season sets |
 | v0.164.0 | see the log | the seasonal-game checklist as a build check (`check_site.py`): five quips, a signature, a kind, an icon and a probe naming every game, and a floor of 45; Peekaboo and Dye Pots probed for the first time; Dye Pots' mixed pots restored past level 18 |
+| v0.164.1 | see the log | the owner's request, "super smooth on anything": the intro plays as a recording (upright and widescreen, 60 fps, top quality); the live page is the fallback and lowers its detail below about 50 fps, not 30 (`splash.mjs`: 28 of 28) |
 
 ### Cut lists (what each release drops first if it runs long)
 

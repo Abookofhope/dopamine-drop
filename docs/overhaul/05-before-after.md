@@ -433,6 +433,30 @@ Found by its own probe before shipping: the cat never glided (setting the transi
 | Dye Pots' mixed pots | offered only when the mix's colour was not among the dyes; from level 18 all six are, so they never came | the mix's colour leaves the dyes when a mix is chosen; `dyepots.mjs`' two mix checks fail on v0.163.0 |
 | `peekaboo.mjs`, `dyepots.mjs` (new) | — | 12 of 12, 8 of 8 |
 
+## v0.164.1: the intro plays as a recording (the owner's request)
+
+The owner found the intro still lagging and asked why a film on a television does not: a film's frames are already
+drawn, and the intro was being drawn live. So it is now recorded once, every frame at the top quality setting, and
+played back.
+
+| What | Before | After |
+|---|---|---|
+| How the intro is shown | the studio's page, drawn live in a frame | a recording beside the page (`intro/splash-phone.mp4`, 864x1920, 7.2 MB; `intro/splash-wide.mp4`, 1920x1080, 9.2 MB on a wide screen): 60 fps, the top quality level |
+| With the page's processor slowed 4x (phone-sized, headless Chromium) | 25 to 34 fps through the burst, freeze and forge, at the lowest quality level | 3 of 837 frames dropped |
+| The same, 6x | 17 to 23 fps | 0 frames dropped |
+| When the recording cannot play | — | not ready to play through within 2.5 s, missing, or the browser saving data: the live page plays, as before |
+| Reduce motion | the live page shows the finished name | the same; no recording is fetched |
+| The rules from v0.158.0 | every launch; skippable only after one full watch | the same: the recording's own ending is the full watch |
+| The service worker | caches what it fetches | leaves the recording to the browser (a video is fetched in pieces); offline, the live page plays |
+| The live page's own quality rule | it lowered its detail when frames ran slower than about 30 a second (33 ms), for 24 frames | slower than about 50 a second (20 ms), for 20 frames: it aims for 60. The page is otherwise the studio's web v8, byte for byte |
+| `splash.mjs` | 16 checks | 28: eleven for the recording (the first fails on v0.164.0) and one for the 60-fps rule; the page's own checks now run with the recording blocked |
+| `check_site.py` | — | both recordings present and MP4s, named by the page; the worker leaves them alone |
+
+The slowdown in rows two and three is of the page's own thread, where the live intro is drawn; a recording is decoded
+outside it, which is why it holds. Not checked: on a real phone. A first visit now downloads the recording (7.2 MB
+on a phone) as it plays.
+
+
 ## How to reproduce
 
 ```

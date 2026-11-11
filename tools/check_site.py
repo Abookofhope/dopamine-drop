@@ -88,6 +88,17 @@ if manifest.is_file():
     except json.JSONDecodeError as e:
         check("manifest parses", False, str(e))
 
+# The studio intro plays as a recording beside the page (v0.164.1). The page names both files; they
+# must be there, be videos (an MP4 starts with an `ftyp` box), and not be cached by the worker.
+for name in ("intro/splash-phone.mp4", "intro/splash-wide.mp4"):
+    p = OUT / name
+    head = p.read_bytes()[:12] if p.is_file() else b""
+    check(f"intro recording {name} present and an MP4", head[4:8] == b"ftyp" and name in html,
+          f"exists={p.is_file()} named in page={name in html}")
+sw_file = OUT / "sw.js"
+check("the worker leaves the intro's recording to the browser",
+      sw_file.is_file() and ".mp4" in sw_file.read_text(encoding="utf-8"))
+
 # The page must contain the game, not just a shell that loads one.
 # Anchored on things that do not churn with UI work: the play surface, the
 # mode registry, and the fact that the registry is non-trivial. A check tied

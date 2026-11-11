@@ -8,7 +8,8 @@ files from the first commit.
 
     python3 tools/build_site.py [outdir]
 
-`site/app.html` is the only source. It is written as page content — no
+`site/app.html` is the only source of the game (the studio intro's recording in
+`site/intro/` is copied beside it as it is). It is written as page content — no
 document shell — because the same file is also published as an Artifact, where
 the host supplies the head. This script wraps it into a real document, adds the
 manifest and icon links, and emits a service worker.
@@ -173,6 +174,9 @@ self.addEventListener('fetch', (event) => {{
   const request = event.request;
   if (request.method !== 'GET') return;
   if (new URL(request.url).origin !== self.location.origin) return;
+  // The intro's recording is left to the browser: a video is asked for in pieces,
+  // which this cache does not keep. Offline, the page plays its built-in intro.
+  if (/\.mp4$/.test(new URL(request.url).pathname)) return;
 
   // A navigation offline must still land on the game, not a browser error page.
   if (request.mode === 'navigate') {{
@@ -211,6 +215,8 @@ OUT.mkdir(parents=True)
 # Pages runs Jekyll by default, which would ignore anything starting with `_`.
 (OUT / ".nojekyll").write_text("", encoding="utf-8")
 shutil.copytree(ICONS, OUT / "icons")
+# The studio intro as a recording (upright and widescreen), played beside the page.
+shutil.copytree(ROOT / "site" / "intro", OUT / "intro")
 
 total = sum(f.stat().st_size for f in OUT.rglob("*") if f.is_file())
 try:
