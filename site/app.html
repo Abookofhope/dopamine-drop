@@ -5359,7 +5359,7 @@ const streakLine = n => n === 1 ? t('daily.streak1') : t('daily.streak', { n });
 /* The roster count is counted, not typed. It has been wrong twice — the
    welcome screen said fifty-two when there were fifty-eight — and a number
    written into a string is a number nobody updates. */
-const VERSION_TAG = 'v0.179.0';
+const VERSION_TAG = 'v0.179.1';
 const version = () => VERSION_TAG + ' (' + MODE_IDS.length + ')';
 
 /* ═══ Persistence ═════════════════════════════════════════════════════════
@@ -8369,6 +8369,7 @@ const PHRASE_BANKS = {
    player who opens the app to find the whole menu rearranged deserves to be
    told why, in one screen, without leaving the game.                       */
 const CHANGELOG = [
+  { v:'0.179.1', date:'2026-11-12', items:[ 'No more crosshair in the middle of the board on a phone. It is the keyboard pointer, and it now shows only when you play with keys.' ] },
   { v:'0.179.0', date:'2026-11-11', items:[
     'The Play menu opens on a title card: the game\u2019s name, a cat under a yarn-ball moon, and a Play button that starts a run from the whole mix in one tap, by whichever of Cozy or Challenge is chosen. With motion on, the tail sways and the drops fall.',
     'The three kinds of game under it are a little tighter, so the whole menu still fits one screen without scrolling. The header shows only its mark while the title card is saying the name.',
@@ -25143,7 +25144,12 @@ const KbPtr = (() => {
     if (ev.key === 'Enter'){ ev.preventDefault(); ev.stopPropagation(); if (ev.repeat) return; show(true); release(); down = true; send('pointerdown'); down = false; send('pointerup'); paint(); }
   });
   el.surface.addEventListener('keyup', ev => { if (ev.key === ' ' && ev.target === el.surface){ ev.preventDefault(); ev.stopPropagation(); release(); } });
-  el.surface.addEventListener('focus', () => show(true));
+  /* Shown on focus only when the focus came from the keyboard. The board takes focus from a tap too (it has a tabIndex), and a
+     crosshair sitting in the middle of a phone's screen after the first touch is noise for someone who has never used a key. */
+  let keyed = false;
+  document.addEventListener('keydown', () => { keyed = true; }, true);
+  document.addEventListener('pointerdown', ev => { if (ev.pointerId !== ID) keyed = false; }, true);
+  el.surface.addEventListener('focus', () => { if (keyed) show(true); });
   el.surface.addEventListener('blur', () => { release(); show(false); });
   window.addEventListener('resize', () => { if (mark && !mark.hidden) paint(); });
   document.addEventListener('scroll', () => { if (mark && !mark.hidden) paint(); }, true);
