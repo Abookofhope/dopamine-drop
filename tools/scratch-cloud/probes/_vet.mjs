@@ -1,0 +1,11 @@
+import { chromium } from 'playwright';
+import { openApp, modeIdsFromBuild, openMyStuff } from './harness.mjs';
+const ids = modeIdsFromBuild(process.env.SITE);
+const mastered = Object.fromEntries(ids.map(id => [id, 4000]));
+const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 400, height: 820 } }); const page = await ctx.newPage();
+const errs = []; page.on('pageerror', e => errs.push(String(e.stack || e).slice(0, 400)));
+await openApp(page, { xp: 400000, solved: 20000, runs: 900, lastMode: 'forge', pbBlitz: 9400, marathon: mastered, mix: ['odd','order'], dailyStreak: 31, favs: ['forge'], lang: 'en' });
+console.log('after open', errs.length);
+await openMyStuff(page); await page.waitForTimeout(400);
+console.log('after stuff', errs, await page.evaluate(() => ({ home: document.getElementById('playHome').hidden, stuff: document.getElementById('playMyStuff').hidden, tab: !document.getElementById('tabPlay').hidden })));
+await b.close();

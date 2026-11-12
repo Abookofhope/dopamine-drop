@@ -1,0 +1,18 @@
+import { chromium } from 'playwright';
+import { openApp, goTab } from './harness.mjs';
+const OUT = process.env.OUT;
+const b = await chromium.launch();
+const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, deviceScaleFactor: 1 });
+const page = await ctx.newPage();
+await page.addInitScript(() => localStorage.setItem('dd.probe', '1'));
+await openApp(page, { reduceMotion: true, xp: 9000, runs: 40, solved: 600, onboarded: true, yarn: 3000, yarnEver: 3000, owned: { season: { leaves: 1, lantern: 1, stocking: 1 } }, pals: { biscuit: { bond: 100, pet: null, bow: '' } }, palsOn: ['biscuit'], room: { rug: 3, window: 3, wall: 3, shelf: 1 } });
+await page.waitForTimeout(500);
+await page.evaluate(() => document.querySelectorAll('.toast').forEach(t => t.click())); await page.waitForTimeout(800);
+await page.evaluate(() => document.querySelector('#tabPlay .scroll, #tabPlay').scrollTo(0, 0)); await page.waitForTimeout(300);
+await page.screenshot({ path: OUT + '/play.png' });
+await goTab(page, 'Room'); await page.waitForTimeout(500);
+await page.screenshot({ path: OUT + '/scene.png' });
+await page.evaluate(() => { const h = document.getElementById('accH_r-decor'); if (h.getAttribute('aria-expanded') !== 'true') h.click(); }); await page.waitForTimeout(500);
+await page.evaluate(() => document.getElementById('seasonList').scrollIntoView({ block: 'center' })); await page.waitForTimeout(300);
+await page.screenshot({ path: OUT + '/seasons.png' });
+await b.close();
