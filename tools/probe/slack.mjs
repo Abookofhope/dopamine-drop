@@ -4,6 +4,9 @@
  *     crossings
  *   - moving that peg off to one side changes the crossing count (it is not a decoration): dragging it away from where it was moves it
  *
+ *   - 0.181.0: a par chip; a pinned peg (level 8) that will not drag; a cat (14) no peg can be set on; a short gold thread (20); the
+ *     prompt teaches the newest; and the ring the board was built from is always a way out, by taps alone
+ *
  *   node tools/probe/slack.mjs
  */
 import { chromium } from 'playwright';
@@ -58,6 +61,62 @@ for (const [xp, label] of [[0, 'a new player'], [60000, 'a high level']]){
   const page = await open(0, 'fr', { width: 320, height: 568 }); const s = await read(page);
   check(!!s.tool && /Indice/.test(s.tool.text), `fr: Hint is in French (${s.tool && s.tool.text})`);
   await page.close();
+}
+
+/* The rules of its own (0.181.0): a par, then a pinned peg (level 8), a napping cat (14), a short gold thread (20). */
+for (const [xp, label, want] of [[0, 'level 2', { pins: 0, cat: false, short: false }], [4000, 'level 11', { pins: 1, cat: false, short: false, word: /pins/ }],
+  [30000, 'level 19', { pins: 2, cat: true, short: false, word: /cat/ }], [60000, 'level 23', { pins: 2, cat: true, short: true, word: /gold/ }]]){
+  for (const vp of [{ width: 400, height: 820 }, { width: 320, height: 568 }]){
+    const page = await open(xp, 'en', vp); const tag = `${label} at ${vp.width}`;
+    const st = () => page.evaluate(() => { const b = document.querySelector('.arcbox'); if (!b) return { gone: true };
+      const r = b.getBoundingClientRect(), C = e => { const q = e.getBoundingClientRect(); return [q.left + q.width / 2, q.top + q.height / 2]; };
+      const cat = b.querySelector('.slackcat'), chip = document.querySelector('.parchip');
+      return { lv: +b.dataset.lv, pins: b.dataset.pins ? b.dataset.pins.split(',').map(Number) : [], cat: cat ? C(cat) : null, catW: cat ? cat.getBoundingClientRect().width : 0,
+        short: +b.dataset.short, par: +b.dataset.par, wrong: +b.dataset.wrong, moves: +b.dataset.moves, chip: chip ? chip.textContent : '', chipFits: chip ? chip.scrollWidth <= chip.clientWidth + 1 : false,
+        box: { x: r.left, y: r.top, w: r.width, h: r.height }, pegs: [...b.querySelectorAll('.slacknode')].map(C), pinCls: [...b.querySelectorAll('.slacknode')].map(e => e.classList.contains('pin')),
+        clean: b.querySelector('.slackwire').classList.contains('clean'), neat: b.querySelector('.slackwire').classList.contains('neat'),
+        shortLines: b.querySelectorAll('.slackwire line.short').length, prompt: document.getElementById('prompt').textContent.trim() }; });
+    let s = await st();
+    check(s.pins.length === want.pins && !!s.cat === want.cat && (s.short >= 0) === want.short && s.shortLines === (want.short ? 1 : 0),
+      `${tag}: the rules on the board are the ones for the level (level ${s.lv}: ${s.pins.length} pinned, cat ${!!s.cat}, short thread ${s.short >= 0})`);
+    check(s.pinCls.filter(Boolean).length === want.pins, `${tag}: a pinned peg looks pinned`);
+    check(s.par >= 1 && s.par <= s.pegs.length - want.pins && new RegExp(`0\\D+${s.par}$`).test(s.chip) && s.chipFits, `${tag}: the chip shows no moves yet and a par (${s.chip})`);
+    check(s.wrong > 0 && parseInt(s.prompt, 10) === s.wrong && (!want.word || want.word.test(s.prompt)), `${tag}: the prompt counts what is wrong and teaches the newest rule (${s.prompt})`);
+    const tap = async q => { await page.mouse.click(q[0], q[1]); await page.waitForTimeout(60); };
+    if (want.pins){
+      const i = s.pins[0], at = s.pegs[i];
+      await page.mouse.move(at[0], at[1]); await page.mouse.down(); await page.mouse.move(at[0] + 50, at[1] + 30, { steps: 5 }); await page.mouse.up(); await page.waitForTimeout(120);
+      const a = await st();
+      check(Math.hypot(a.pegs[i][0] - at[0], a.pegs[i][1] - at[1]) < 1 && /pinned/.test(a.prompt) && a.moves === 0, `${tag}: a pinned peg does not drag, says so, and costs no move (${a.prompt})`);
+    }
+    if (want.cat){
+      const i = s.pegs.findIndex((q, k) => !s.pins.includes(k));
+      await tap(s.pegs[i]); await tap(s.cat);
+      const a = await st();
+      check(Math.hypot(a.pegs[i][0] - s.pegs[i][0], a.pegs[i][1] - s.pegs[i][1]) < 1, `${tag}: a peg cannot be set down on the cat`);
+      check(a.pegs.every(q => Math.hypot(q[0] - s.cat[0], q[1] - s.cat[1]) > s.catW / 2), `${tag}: no peg is dealt on the cat`);
+    }
+    /* out by the ring it was built from: every free peg to its place on it, by taps */
+    s = await st(); const n = s.pegs.length, B = s.box;
+    const spot = i => { const a = 2 * Math.PI * i / n - Math.PI / 2; return [B.x + B.w * (0.5 + 0.36 * Math.cos(a)), B.y + B.h * (0.5 + 0.36 * Math.sin(a))]; };
+    const dw = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]) / B.w * 100, spots = [...Array(n).keys()].map(spot);
+    const park = w => { for (let gy = 0.2; gy <= 0.8; gy += 0.05) for (let gx = 0.12; gx <= 0.88; gx += 0.04){ const q = [B.x + B.w * gx, B.y + B.h * gy];
+      if (w.every(o => dw(q, o) > 16) && spots.every(o => dw(q, o) > 14) && (!s.cat || dw(q, s.cat) > 18)) return q; } return null; };
+    check(s.pins.every(i => dw(s.pegs[i], spots[i]) < 1.5), `${tag}: a pinned peg already sits at its place on the ring`);
+    let last = s;
+    for (let pass = 0; pass < 4 && !last.gone && !last.clean; pass++) for (let i = 0; i < n; i++){
+      let w = (await st()); if (w.gone || w.clean){ last = w; break; } last = w; w = w.pegs;
+      if (s.pins.includes(i) || dw(w[i], spots[i]) < 3) continue;
+      const k = w.findIndex((q, j) => j !== i && dw(q, spots[i]) < 13);
+      if (k >= 0){ const q = park(w); if (q){ await tap(w[k]); await tap(q); w = (await st()).pegs; if (!w) break; } }
+      await tap(w[i]); await tap(spots[i]);
+      const a = await st(); if (!a.gone) last = a; else { last = { ...last, gone: true }; break; }
+    }
+    const won = await page.evaluate(() => !document.querySelector('.arcbox') || document.querySelector('.slackwire').classList.contains('clean'));
+    check(won, `${tag}: the ring is a way out, by taps alone (${last.wrong} wrong after ${last.moves} moves, par ${last.par})`);
+    if (!last.gone && last.clean) check(last.neat === (last.moves <= last.par), `${tag}: finishing in par is marked, and only then (${last.moves} moves, par ${last.par}, marked ${last.neat})`);
+    await page.close();
+  }
 }
 
 check(errs.length === 0, 'no script errors' + (errs.length ? ': ' + errs[0] : ''));
