@@ -620,6 +620,17 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
   transition:background var(--t-fast),border-color var(--t-fast),transform var(--t-med);
 }
 .trcmark.start{background:#7BE38A;border-color:#7BE38A}
+/* Follow the Thread's own rules (0.187.0): beads, knots, a frayed stretch, a burr. */
+.trcbead{position:absolute;width:2.8%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:#FFC53D;box-shadow:0 0 0 1.5px #7A4A00,0 0 8px #ffc53d88;transition:transform var(--t-fast),opacity var(--t-med)}
+.trcbead.got{opacity:0;transform:translate(-50%,-50%) scale(1.8)}
+.trcmark.knot{width:4.2%;background:conic-gradient(#FF7E96 calc(var(--k,0)*360deg),#ff7e9633 0);border-color:#FF7E96;border-radius:30%}
+.trcmark.knot.untied{background:#7BE38A;border-color:#7BE38A;border-radius:50%}
+.trcmask{fill:none;stroke:var(--ink-2);stroke-linecap:butt;stroke-linejoin:round}
+.trcfray{stroke:#ffc53d26;stroke-dasharray:2 1.4}
+.trcburr{position:absolute;width:4.4%;aspect-ratio:1;transform:translate(-50%,-50%) rotate(20deg);pointer-events:none;
+  background:#C08BFF;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+html[data-motion="on"] .trcburr.ow{animation:ltcNope .3s ease-in-out}
 .trcmark.end{width:17px;height:17px;margin:-8.5px 0 0 -8.5px;border-width:3px}
 .trcmark.got{background:var(--cool);border-color:var(--cool);transform:scale(1.15)}
 .trcdot{
@@ -877,6 +888,16 @@ html[data-motion="on"] .hlvwrap.exact .hlvtot{animation:arcWeave .7s ease-out}
   transition:opacity 160ms linear,filter var(--t-med)}
 .glimlamp::after{display:none}
 .glimlamp.peek{opacity:.8}
+/* Cat's Eyes' own rules (0.186.0): the oil, gold twins, shy eyes, glowworms. */
+.glimoil{display:flex;align-items:center;gap:7px}
+.glimbar{display:block;width:44px;height:6px;border-radius:3px;background:#ffffff1a;overflow:hidden}
+.glimbar b{display:block;height:100%;background:#7BE38A;transition:width var(--t-med)}
+.glimoil.low .glimbar b{background:var(--bad)}
+.glimlamp.twin{filter:sepia(1) saturate(4) hue-rotate(-12deg) brightness(1.15)}
+.glimlamp.hid{transition:none}
+.glimworm{position:absolute;width:3.2%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:#FF7E96;box-shadow:0 0 10px 3px #ff7e9688;transition:opacity 160ms linear;opacity:0}
+html[data-motion="on"] .glimlight.bright{animation:arcWeave .7s ease-out}
 .glimlamp.lit.look{background:none}
 .glimlamp svg{display:block;width:100%;height:100%}
 .glimlamp.lit{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 24'%3E%3Cpath d='M2 12 Q11.5 1.5 21 12 Q11.5 22.5 2 12Z' fill='%23C8FFD2'/%3E%3Cpath d='M27 12 Q36.5 1.5 46 12 Q36.5 22.5 27 12Z' fill='%23C8FFD2'/%3E%3Cellipse cx='11.5' cy='12' rx='2' ry='8.6' fill='%2307140a'/%3E%3Cellipse cx='36.5' cy='12' rx='2' ry='8.6' fill='%2307140a'/%3E%3C/svg%3E");filter:drop-shadow(0 0 7px #7be38acc) drop-shadow(0 0 16px #7be38a66)}
@@ -6375,7 +6396,7 @@ const STRINGS = {
 
     'latch.undo':'Undo', 'latch.hint':'Hint', 'latch.meet':'Line them up on the marked column', 'p.latch':'{n} rows still off the line', 'p.latchLink':'{n} off · a chained row turns the one below', 'p.latchTwin':'{n} off · the gold row has two hooks', 'p.latchRat':'{n} off · the dashed row turns one way', 'p.latchRatNo':'That row only turns the other way', 'latch.least':'Turns {m} · Least {p}', 'fx.latchExact':'Least turns!', 'latch.row':'Row {n}, notch at position {c}', 'latch.left':'Turn row {n} left', 'latch.right':'Turn row {n} right', 'm.latch':'Latch Hook|Turn the rows until every hook lines up',
     'splice.hint':'Hint', 'p.splice':'{n} words still in pieces', 'splice.head':'Beginning: {s}', 'splice.tail':'Ending: {s}', 'm.splice':'Splice|Join each loose end to the right beginning',
-    'p.trace':'{n} more to reach — stay on the line', 'trace.back':'Drifting — ease back onto the thread', 'trace.box':'Drag along the line from the bright dot to the ring', 'm.trace':'Follow the Thread|Follow the thread to its end — no hurry',
+    'p.trace':'{n} more to reach — stay on the line', 'p.traceBead':'{n} to reach · take the beads if you dare', 'p.traceKnot':'{n} to reach · rest on a knot to untie it', 'p.traceFray':'{n} to reach · the frayed stretch is narrow', 'p.traceBurr':'{n} to reach · go round the burr', 'p.traceUntie':'Rest here to untie the knot', 'p.traceOw':'Ow, a burr', 'fx.traceSteady':'Steady hand!', 'trace.back':'Drifting — ease back onto the thread', 'trace.box':'Drag along the line from the bright dot to the ring', 'm.trace':'Follow the Thread|Follow the thread to its end — no hurry',
     'set.version':'Version', 'set.checkUpd':'Check', 'set.checking':'Checking…', 'set.upToDate':'Up to date', 'set.updating':'Updating…',
     'halve.hint':'Hint', 'p.halve':'{n} apart', 'p.halveTie':'{n} apart · tied skeins go together', 'p.halveCat':'{n} apart · the cat weighs {w}', 'p.halvePin':'{n} apart · the dashed skein stays', 'p.halvePinned':'That skein is pinned', 'halve.least':'Moves {m} · Least {p}', 'fx.halveExact':'Fewest moves!', 'a.halveCat':'The cat, weighing {w}, in basket 1', 'a.halvePin':'pinned', 'a.halveTied':'tied to another', 'halve.chip':'{v}, in basket {s}', 'm.halve':'Even Skeins|Move skeins until both baskets weigh the same',
     'lever.hint':'Hint', 'p.lever':'Slide the wedge, let go to test', 'lever.wedge':'The wedge — drag it along the beam', 'lever.loadL':'Weight {w}, {d} to the left', 'lever.loadR':'Weight {w}, {d} to the right', 'm.lever':'Balance|Find the balance point by eye, then test it',
@@ -6413,7 +6434,7 @@ const STRINGS = {
     'p.slice':'{n} more to cut', 'slice.good':'Ripe', 'slice.rotten':'Rotten — do not cut', 'm.slice':'Snip|One snip cuts every thread it crosses — miss the knots',
 
     
-    'p.glimmer':'{n} pairs of eyes still shut', 'm.glimmer':'Cat’s Eyes|Carry the light until every pair of eyes is open',
+    'p.glimmer':'{n} pairs of eyes still shut', 'p.glimOil':'{n} to find · the light burns oil', 'p.glimTwin':'{n} to find · gold eyes come in twos', 'p.glimShy':'{n} to find · creep up on shy eyes', 'p.glimWorm':'{n} to find · pink glints eat oil', 'p.glimHid':'Too quick: they hid', 'p.glimAte':'A glowworm ate some oil', 'glimmer.oil':'Oil {n}%', 'fx.glimTwins':'Twins!', 'fx.glimBright':'Bright finish!', 'a.glimWorm':'A glowworm', 'm.glimmer':'Cat’s Eyes|Carry the light until every pair of eyes is open',
     'p.tidy':'{n} left on the floor', 'm.tidy':'Tidy Up|Drag the mess into the right baskets',
     'p.hauntLook':'{n} cats — watch closely', 'p.hauntTwin':'{n} cats · two can move at once', 'p.hauntBell':'{n} cats · find the belled one first', 'p.hauntDark':'{n} cats · one move is in the dark', 'p.hauntCall':'Keep watching for more, or call it', 'haunt.call':'Call it +{p}', 'fx.hauntBell':'Ding!', 'p.hauntTrack':'Follow them', 'p.hauntPick':'{n} still to find', 'm.haunt':'Peekaboo|Watch the baskets — where did the cats end up?',
 
@@ -6901,7 +6922,7 @@ const STRINGS = {
 
     'latch.undo':'Annuler', 'latch.hint':'Indice', 'latch.meet':'Alignez-les sur la colonne marquée', 'p.latch':'Encore {n} rangées hors de l’axe', 'p.latchLink':'{n} décalés · un rang enchaîné tourne celui du dessous', 'p.latchTwin':'{n} décalés · le rang doré a deux crochets', 'p.latchRat':'{n} décalés · le rang pointillé tourne dans un sens', 'p.latchRatNo':'Ce rang ne tourne que dans l’autre sens', 'latch.least':'Tours {m} · Mini {p}', 'fx.latchExact':'Le moins de tours !', 'latch.row':'Rangée {n}, encoche en position {c}', 'latch.left':'Tourner la rangée {n} vers la gauche', 'latch.right':'Tourner la rangée {n} vers la droite', 'm.latch':'Crochet|Tournez les rangs jusqu’à aligner tous les crochets',
     'splice.hint':'Indice', 'p.splice':'Encore {n} mots en morceaux', 'splice.head':'Début : {s}', 'splice.tail':'Fin : {s}', 'm.splice':'Raccord|Reliez chaque bout libre au bon début',
-    'p.trace':'Encore {n} à atteindre — restez sur la ligne', 'trace.back':'Vous dérivez — revenez doucement sur le fil', 'trace.box':'Glissez le long de la ligne, du point lumineux jusqu’à l’anneau', 'm.trace':'Suivre le Fil|Suivez le fil jusqu’au bout — sans hâte',
+    'p.trace':'Encore {n} à atteindre — restez sur la ligne', 'p.traceBead':'{n} points · prenez les perles si vous osez', 'p.traceKnot':'{n} points · restez sur un nœud pour le défaire', 'p.traceFray':'{n} points · le passage effiloché est étroit', 'p.traceBurr':'{n} points · contournez la bardane', 'p.traceUntie':'Restez ici pour défaire le nœud', 'p.traceOw':'Aïe, une bardane', 'fx.traceSteady':'Main sûre !', 'trace.back':'Vous dérivez — revenez doucement sur le fil', 'trace.box':'Glissez le long de la ligne, du point lumineux jusqu’à l’anneau', 'm.trace':'Suivre le Fil|Suivez le fil jusqu’au bout — sans hâte',
     'set.version':'Version', 'set.checkUpd':'Vérifier', 'set.checking':'Vérification…', 'set.upToDate':'À jour', 'set.updating':'Mise à jour…',
     'halve.hint':'Indice', 'p.halve':'Écart de {n}', 'p.halveTie':'Écart de {n} · pelotes liées ensemble', 'p.halveCat':'Écart de {n} · le chat pèse {w}', 'p.halvePin':'Écart de {n} · la pelote pointillée reste', 'p.halvePinned':'Cette pelote est épinglée', 'halve.least':'Coups {m} · Mini {p}', 'fx.halveExact':'Le moins de coups !', 'a.halveCat':'Le chat, qui pèse {w}, dans le panier 1', 'a.halvePin':'épinglée', 'a.halveTied':'liée à une autre', 'halve.chip':'{v}, dans le panier {s}', 'm.halve':'Pelotes Égales|Déplacez les pelotes jusqu’à équilibrer les paniers',
     'lever.hint':'Indice', 'p.lever':'Glissez le coin, lâchez pour tester', 'lever.wedge':'Le coin — glissez-le le long de la barre', 'lever.loadL':'Poids {w}, {d} à gauche', 'lever.loadR':'Poids {w}, {d} à droite', 'm.lever':'Équilibre|Trouvez le point d’équilibre à l’œil, puis testez',
@@ -6939,7 +6960,7 @@ const STRINGS = {
     'p.slice':'Encore {n} à trancher', 'slice.good':'Mûr', 'slice.rotten':'Pourri — à éviter', 'm.slice':'Coup de Ciseaux|Un coup coupe tous les fils croisés — évitez les nœuds',
 
     
-    'p.glimmer':'{n} paires d’yeux encore fermées', 'm.glimmer':'Yeux de Chat|Portez la lueur jusqu’à ouvrir chaque paire d’yeux',
+    'p.glimmer':'{n} paires d’yeux encore fermées', 'p.glimOil':'{n} à trouver · la lumière brûle l’huile', 'p.glimTwin':'{n} à trouver · les yeux dorés vont par deux', 'p.glimShy':'{n} à trouver · approchez doucement', 'p.glimWorm':'{n} à trouver · les lueurs roses mangent l’huile', 'p.glimHid':'Trop vite : ils se cachent', 'p.glimAte':'Un ver luisant a mangé de l’huile', 'glimmer.oil':'Huile {n} %', 'fx.glimTwins':'Jumeaux !', 'fx.glimBright':'Fin lumineuse !', 'a.glimWorm':'Un ver luisant', 'm.glimmer':'Yeux de Chat|Portez la lueur jusqu’à ouvrir chaque paire d’yeux',
     'p.tidy':'{n} encore au sol', 'm.tidy':'Rangement|Glissez le désordre dans les bons paniers',
     'p.hauntLook':'{n} chats — regardez bien', 'p.hauntTwin':'{n} chats · deux peuvent bouger ensemble', 'p.hauntBell':'{n} chats · trouvez d’abord celui à clochette', 'p.hauntDark':'{n} chats · un mouvement dans le noir', 'p.hauntCall':'Regardez encore pour plus, ou annoncez', 'haunt.call':'Annoncer +{p}', 'fx.hauntBell':'Ding !', 'p.hauntTrack':'Suivez-les', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Cache-cache|Suivez les paniers — où sont passés les chats ?',
 
@@ -7426,7 +7447,7 @@ const STRINGS = {
 
     'latch.undo':'Deshacer', 'latch.hint':'Pista', 'latch.meet':'Aliníalas en la columna marcada', 'p.latch':'Quedan {n} filas fuera de la línea', 'p.latchLink':'{n} fuera · una fila encadenada gira la de abajo', 'p.latchTwin':'{n} fuera · la fila dorada tiene dos ganchos', 'p.latchRat':'{n} fuera · la fila punteada gira en un sentido', 'p.latchRatNo':'Esa fila solo gira al otro lado', 'latch.least':'Giros {m} · Mínimo {p}', 'fx.latchExact':'¡Mínimo de giros!', 'latch.row':'Fila {n}, muesca en la posición {c}', 'latch.left':'Girar la fila {n} a la izquierda', 'latch.right':'Girar la fila {n} a la derecha', 'm.latch':'Ganchillo|Gira las filas hasta alinear cada gancho',
     'splice.hint':'Pista', 'p.splice':'Quedan {n} palabras partidas', 'splice.head':'Principio: {s}', 'splice.tail':'Final: {s}', 'm.splice':'Empalme|Une cada cabo suelto con su principio',
-    'p.trace':'Quedan {n} por alcanzar — no te salgas de la línea', 'trace.back':'Te desvías — vuelve despacio al hilo', 'trace.box':'Arrastra por la línea desde el punto brillante hasta el anillo', 'm.trace':'Sigue el Hilo|Sigue el hilo hasta el final — sin prisa',
+    'p.trace':'Quedan {n} por alcanzar — no te salgas de la línea', 'p.traceBead':'{n} puntadas · toma las cuentas si te atreves', 'p.traceKnot':'{n} puntadas · quédate en un nudo para soltarlo', 'p.traceFray':'{n} puntadas · el tramo deshilachado es estrecho', 'p.traceBurr':'{n} puntadas · rodea el abrojo', 'p.traceUntie':'Quédate aquí para soltar el nudo', 'p.traceOw':'¡Ay, un abrojo!', 'fx.traceSteady':'¡Pulso firme!', 'trace.back':'Te desvías — vuelve despacio al hilo', 'trace.box':'Arrastra por la línea desde el punto brillante hasta el anillo', 'm.trace':'Sigue el Hilo|Sigue el hilo hasta el final — sin prisa',
     'set.version':'Versión', 'set.checkUpd':'Comprobar', 'set.checking':'Comprobando…', 'set.upToDate':'Actualizado', 'set.updating':'Actualizando…',
     'halve.hint':'Pista', 'p.halve':'{n} de diferencia', 'p.halveTie':'{n} de diferencia · atadas van juntas', 'p.halveCat':'{n} de diferencia · el gato pesa {w}', 'p.halvePin':'{n} de diferencia · la punteada queda', 'p.halvePinned':'Esa madeja está fija', 'halve.least':'Jugadas {m} · Mínimo {p}', 'fx.halveExact':'¡Mínimo de jugadas!', 'a.halveCat':'El gato, que pesa {w}, en la cesta 1', 'a.halvePin':'fija', 'a.halveTied':'atada a otra', 'halve.chip':'{v}, en la cesta {s}', 'm.halve':'Ovillos Iguales|Mueve ovillos hasta igualar las cestas',
     'lever.hint':'Pista', 'p.lever':'Desliza la cuña y suelta para probar', 'lever.wedge':'La cuña — deslízala por la barra', 'lever.loadL':'Peso {w}, {d} a la izquierda', 'lever.loadR':'Peso {w}, {d} a la derecha', 'm.lever':'Equilibrio|Encuentra el punto de equilibrio a ojo y pruébalo',
@@ -7464,7 +7485,7 @@ const STRINGS = {
     'p.slice':'Corta {n} más', 'slice.good':'Maduro', 'slice.rotten':'Podrido — no cortar', 'm.slice':'Tijeretazo|Un corte siega todo hilo que cruza — evita los nudos',
 
     
-    'p.glimmer':'{n} pares de ojos aún cerrados', 'm.glimmer':'Ojos de Gato|Lleva la luz hasta abrir cada par de ojos',
+    'p.glimmer':'{n} pares de ojos aún cerrados', 'p.glimOil':'{n} por encontrar · la luz gasta aceite', 'p.glimTwin':'{n} por encontrar · los ojos dorados van en pareja', 'p.glimShy':'{n} por encontrar · acércate despacio', 'p.glimWorm':'{n} por encontrar · los brillos rosas comen aceite', 'p.glimHid':'Muy rápido: se escondieron', 'p.glimAte':'Una luciérnaga comió aceite', 'glimmer.oil':'Aceite {n} %', 'fx.glimTwins':'¡Gemelos!', 'fx.glimBright':'¡Final brillante!', 'a.glimWorm':'Una luciérnaga', 'm.glimmer':'Ojos de Gato|Lleva la luz hasta abrir cada par de ojos',
     'p.tidy':'Quedan {n} en el suelo', 'm.tidy':'A Recoger|Arrastra el desorden a las cestas correctas',
     'p.hauntLook':'{n} gatos — fíjate bien', 'p.hauntTwin':'{n} gatos · dos pueden moverse a la vez', 'p.hauntBell':'{n} gatos · primero el del cascabel', 'p.hauntDark':'{n} gatos · un movimiento a oscuras', 'p.hauntCall':'Sigue mirando por más, o dilo ya', 'haunt.call':'¡Ya! +{p}', 'fx.hauntBell':'¡Tilín!', 'p.hauntTrack':'Síguelos', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Escondite|Sigue las cestas — ¿dónde acabaron los gatos?',
 
@@ -7951,7 +7972,7 @@ const STRINGS = {
 
     'latch.undo':'Zurück', 'latch.hint':'Tipp', 'latch.meet':'Richte sie an der markierten Spalte aus', 'p.latch':'Noch {n} Reihen neben der Linie', 'p.latchLink':'{n} daneben · eine verkettete Reihe dreht die darunter', 'p.latchTwin':'{n} daneben · die goldene Reihe hat zwei Haken', 'p.latchRat':'{n} daneben · die gestrichelte Reihe dreht nur in eine Richtung', 'p.latchRatNo':'Diese Reihe dreht nur andersherum', 'latch.least':'Drehungen {m} · Minimum {p}', 'fx.latchExact':'Wenigste Drehungen!', 'latch.row':'Reihe {n}, Kerbe an Position {c}', 'latch.left':'Reihe {n} nach links drehen', 'latch.right':'Reihe {n} nach rechts drehen', 'm.latch':'Knüpfhaken|Dreh die Reihen, bis jeder Haken passt',
     'splice.hint':'Tipp', 'p.splice':'Noch {n} Wörter in Teilen', 'splice.head':'Anfang: {s}', 'splice.tail':'Ende: {s}', 'm.splice':'Spleißen|Verbinde jedes lose Ende mit dem richtigen Anfang',
-    'p.trace':'Noch {n} zu erreichen — bleib auf der Linie', 'trace.back':'Du driftest ab — geh sanft zurück zum Faden', 'trace.box':'Zieh entlang der Linie vom hellen Punkt bis zum Ring', 'm.trace':'Dem Faden Folgen|Folge dem Faden bis zum Ende — ohne Eile',
+    'p.trace':'Noch {n} zu erreichen — bleib auf der Linie', 'p.traceBead':'{n} Stiche · nimm die Perlen, wenn du dich traust', 'p.traceKnot':'{n} Stiche · auf einem Knoten verweilen löst ihn', 'p.traceFray':'{n} Stiche · das ausgefranste Stück ist schmal', 'p.traceBurr':'{n} Stiche · um die Klette herum', 'p.traceUntie':'Hier verweilen löst den Knoten', 'p.traceOw':'Au, eine Klette', 'fx.traceSteady':'Ruhige Hand!', 'trace.back':'Du driftest ab — geh sanft zurück zum Faden', 'trace.box':'Zieh entlang der Linie vom hellen Punkt bis zum Ring', 'm.trace':'Dem Faden Folgen|Folge dem Faden bis zum Ende — ohne Eile',
     'set.version':'Version', 'set.checkUpd':'Prüfen', 'set.checking':'Prüfe…', 'set.upToDate':'Aktuell', 'set.updating':'Aktualisiere…',
     'halve.hint':'Tipp', 'p.halve':'{n} Unterschied', 'p.halveTie':'{n} Unterschied · gebundene gehen zusammen', 'p.halveCat':'{n} Unterschied · die Katze wiegt {w}', 'p.halvePin':'{n} Unterschied · der gestrichelte bleibt', 'p.halvePinned':'Dieser Strang ist festgesteckt', 'halve.least':'Züge {m} · Minimum {p}', 'fx.halveExact':'Wenigste Züge!', 'a.halveCat':'Die Katze, {w} schwer, in Korb 1', 'a.halvePin':'festgesteckt', 'a.halveTied':'an einen anderen gebunden', 'halve.chip':'{v}, in Korb {s}', 'm.halve':'Gleiche Knäuel|Verschiebe Knäuel, bis beide Körbe gleich sind',
     'lever.hint':'Tipp', 'p.lever':'Keil schieben, loslassen zum Prüfen', 'lever.wedge':'Der Keil — schieb ihn über den Balken', 'lever.loadL':'Gewicht {w}, {d} nach links', 'lever.loadR':'Gewicht {w}, {d} nach rechts', 'm.lever':'Gleichgewicht|Finde den Punkt nach Augenmaß und teste ihn',
@@ -7989,7 +8010,7 @@ const STRINGS = {
     'p.slice':'Noch {n} schneiden', 'slice.good':'Reif', 'slice.rotten':'Faul — nicht schneiden', 'm.slice':'Schnipp|Ein Schnitt trennt jeden Faden — meide die Knoten',
 
     
-    'p.glimmer':'Noch {n} Augenpaare geschlossen', 'm.glimmer':'Katzenaugen|Trag das Licht, bis jedes Augenpaar offen ist',
+    'p.glimmer':'Noch {n} Augenpaare geschlossen', 'p.glimOil':'{n} zu finden · das Licht verbrennt Öl', 'p.glimTwin':'{n} zu finden · goldene Augen kommen zu zweit', 'p.glimShy':'{n} zu finden · schleich dich an', 'p.glimWorm':'{n} zu finden · rosa Glimmer frisst Öl', 'p.glimHid':'Zu schnell: versteckt', 'p.glimAte':'Ein Glühwurm hat Öl gefressen', 'glimmer.oil':'Öl {n} %', 'fx.glimTwins':'Zwillinge!', 'fx.glimBright':'Helles Ende!', 'a.glimWorm':'Ein Glühwurm', 'm.glimmer':'Katzenaugen|Trag das Licht, bis jedes Augenpaar offen ist',
     'p.tidy':'Noch {n} am Boden', 'm.tidy':'Aufräumen|Zieh die Unordnung in die richtigen Körbe',
     'p.hauntLook':'{n} Katzen — gut hinsehen', 'p.hauntTwin':'{n} Katzen · zwei können gleichzeitig ziehen', 'p.hauntBell':'{n} Katzen · zuerst die mit Glöckchen', 'p.hauntDark':'{n} Katzen · ein Zug im Dunkeln', 'p.hauntCall':'Weiter zusehen für mehr, oder ansagen', 'haunt.call':'Ansagen +{p}', 'fx.hauntBell':'Kling!', 'p.hauntTrack':'Folge ihnen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Versteckspiel|Verfolge die Körbe — wo sind die Katzen gelandet?',
 
@@ -12893,9 +12914,19 @@ const MODES = {
   glimmer: {
     name:'Cat’s Eyes', blurb:'Carry the light until every lamp is lit', input:'drag', cat:'calm', par:13000, bonus:3200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#7BE38A" stroke-width="2" stroke-linejoin="round"><path d="M2.5 10 Q7 5.6 11.5 10 Q7 14.4 2.5 10Z"/><path d="M12.5 10 Q17 5.6 21.5 10 Q17 14.4 12.5 10Z"/></g><circle cx="7" cy="10" r="1.7" fill="#7BE38A"/><circle cx="17" cy="10" r="1.7" fill="#7BE38A"/><path d="M4.5 18.5h15" stroke="#6C6191" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    /* Since 0.186.0 the light is a thing you spend. It burns oil as it moves, and its pool shrinks as the oil runs down (never
+       to nothing: you can always finish); every pair of eyes you open pours some back, and finishing with a quarter of the oil
+       or more pays extra. So the order you take the eyes in is the game. From level 6 two pairs are gold and come as twins:
+       open one and the other glints, and opening both close together pays. From 12 one pair is shy and hides somewhere new if
+       the light jumps onto it: creep up. From 20 glowworms glint pink in the dark, and one touched eats oil. */
     build(ctx){
+      const lv = ctx.level;
       const lamps = clamp(4 + Math.floor(ctx.level/3), 4, 12);
-      let reach = 26;
+      const hasTwins = lv >= 6, hasShy = lv >= 12, hasWorms = lv >= 20;
+      let oil = 100, base = 26, stepLen = 0, twinAt = 0, hops = 0;
+      const burn = 0.26 + Math.min(0.12, lv*0.005);
+      const SHY = 10;
+      let reach = base;
       const box = mk('div','glimbox');
       const light = mk('div','glimlight');
       const bug = mk('div','glimbug');
@@ -12908,7 +12939,11 @@ const MODES = {
       let glows = ctx.level < 8 ? 3 : 2, glowUntil = 0;
       const tools = mk('div','sumtools'), glow = mk('button','sumtool'); glow.type = 'button';
       const paintGlow = () => { glow.textContent = t('glimmer.glow') + ' ' + glows; glow.disabled = glows <= 0 || done; };
-      tools.appendChild(glow); col.appendChild(tools);
+      /* The oil gauge: a short bar and the share left. */
+      const gauge = mk('div','parchip glimoil'), bar = mk('i','glimbar'), fillBar = mk('b'), num = mk('span');
+      bar.appendChild(fillBar); gauge.appendChild(bar); gauge.appendChild(num);
+      const paintOil = () => { const v = Math.round(oil); fillBar.style.width = v + '%'; num.textContent = t('glimmer.oil', { n: v }); gauge.classList.toggle('low', v < 25); box.dataset.oil = v; };
+      tools.appendChild(gauge); tools.appendChild(glow); col.appendChild(tools);
 
       const pts = [];
       for (let i=0;i<lamps;i++){
@@ -12921,13 +12956,31 @@ const MODES = {
           }
         }
       }
+      /* Which pairs are the gold twins and which is shy: never the same pair. */
+      const twins = hasTwins && pts.length >= 4 ? [0, 1] : [];
+      const shy = hasShy && pts.length >= 3 ? 2 : -1;
+      twins.forEach(i => { pts[i].twin = true; });
+      if (shy >= 0) pts[shy].shy = true;
+      /* Glowworms, placed like eyes but never on them. */
+      const worms = [];
+      if (hasWorms) for (let k = 0; k < 2; k++) for (let a2=0;a2<240;a2++){
+        const x = 12 + ctx.rnd()*76, y = 12 + ctx.rnd()*76;
+        if (Math.hypot(x-50, y-50) > 22 && pts.concat(worms).every(p => Math.hypot(p.x-x, p.y-y) > 15)){ worms.push({ x, y }); break; }
+      }
       const els = pts.map((p,i) => {
         const e = mk('div','glimlamp');
         e.style.left = p.x+'%'; e.style.top = p.y+'%';
         e.setAttribute('role','img');
         e.setAttribute('aria-label', t('a.lampOff', { n: i+1 }));
+        if (p.twin) e.classList.add('twin');
+        if (p.shy) e.classList.add('shy');
         box.appendChild(e);
         return e;
+      });
+      const wormEls = worms.map(w => {
+        const e = mk('div','glimworm'); e.style.left = w.x+'%'; e.style.top = w.y+'%';
+        e.setAttribute('role','img'); e.setAttribute('aria-label', t('a.glimWorm'));
+        box.appendChild(e); return e;
       });
       box.appendChild(light);
       box.appendChild(bug);
@@ -12957,13 +13010,28 @@ const MODES = {
         });
       };
       paintGlow();
-      const say = () => ctx.prompt(t('p.glimmer', { n: lamps - lit }));
+      /* The newest rule rides on the count until the first pair opens: taught in the prompt, never in a tutorial. */
+      const teach = hasWorms ? 'p.glimWorm' : hasShy ? 'p.glimShy' : hasTwins ? 'p.glimTwin' : 'p.glimOil';
+      const say = () => ctx.prompt(t(lit ? 'p.glimmer' : teach, { n: lamps - lit }));
 
       const paint = () => {
         bug.style.left = bx+'%'; bug.style.top = by+'%';
         light.style.left = bx+'%'; light.style.top = by+'%';
-        if (reach !== shownReach){ shownReach = reach; light.style.width = reach*2.2 + '%'; }
         const a = aspect(), now = performance.now();
+        /* Oil burns with the way the light has come, and the pool of light is as big as the oil left lets it be. */
+        if (!done && !ctx.relaxed){ oil = Math.max(0, oil - Math.hypot(bx - px, (by - py) * a) * burn); }
+        reach = Math.round(base * (0.55 + 0.45 * oil / 100) * 10) / 10;
+        if (reach !== shownReach){ shownReach = reach; light.style.width = reach*2.2 + '%'; }
+        paintOil();
+        worms.forEach((w, k) => {
+          if (w.gone) return;
+          const d = Math.hypot(w.x-bx, (w.y-by) * a);
+          wormEls[k].style.opacity = Math.max(clamp(1 - (d - reach*0.35) / (reach*0.9), 0, 1), now < glowUntil ? 0.7 : 0).toFixed(2);
+          if (segDist(w, px, py, bx, by) < 7){
+            w.gone = true; wormEls[k].remove();
+            oil = Math.max(0, oil - 30); paintOil(); sfx.bad(); buzz('bad'); ctx.prompt(t('p.glimAte'));
+          }
+        });
         pts.forEach((p,i) => {
           if (p.lit) return;
           const d = Math.hypot(p.x-bx, (p.y-by) * a);
@@ -12972,14 +13040,41 @@ const MODES = {
           els[i].style.opacity = Math.max(clamp(1 - (d - reach*0.35) / (reach*0.9), 0, 1), now < glowUntil || now < (p.peekUntil || 0) ? 0.7 : 0).toFixed(2);
           /* The whole stroke from where the finger was counts, so a quick swipe cannot jump over an eye. */
           if (segDist(p, px, py, bx, by) < 9){
+            /* Shy eyes, jumped on, shut and open somewhere else (twice at most: then they give in). */
+            if (p.shy && stepLen > SHY && hops < 2){
+              hops++;
+              let q = null;
+              for (let a2=0;a2<240 && !q;a2++){
+                const x = 12 + ctx.rnd()*76, y = 12 + ctx.rnd()*76;
+                if (Math.hypot(x-bx, (y-by)*a) > 30 && pts.concat(worms).every(o => o === p || Math.hypot(o.x-x, o.y-y) > 15)) q = { x, y };
+              }
+              if (q){
+                p.x = q.x; p.y = q.y; els[i].style.left = q.x+'%'; els[i].style.top = q.y+'%'; els[i].style.opacity = 0;
+                els[i].classList.add('hid'); ctx.after(500, () => els[i].classList.remove('hid'));
+                sfx.tap(); ctx.prompt(t('p.glimHid')); box.dataset.hops = hops;
+                return;
+              }
+            }
             p.lit = true; lit++; progressAt = now;
+            oil = Math.min(100, oil + 14); paintOil();
+            /* a gold pair: its twin glints, and opening the two close together pays */
+            if (p.twin){
+              const other = pts.find(o => o !== p && o.twin);
+              if (other && other.lit && now - twinAt < 6000){ ctx.points(20 + Math.min(30, lv), els[i]); floatPts(els[i], t('fx.glimTwins'), 3); box.dataset.twins = '1'; }
+              else if (other && !other.lit){ twinAt = now; other.peekUntil = now + 1600; ctx.after(1700, () => { if (!done) paint(); }); }
+            }
             els[i].classList.add('lit', 'look');
             els[i].innerHTML = EYES;
             els[i].style.opacity = 1;
             els[i].setAttribute('aria-label', t('a.lampOn', { n: i+1 }));
-            reach = Math.min(46, reach + 3.5);
+            base = Math.min(46, base + 3.5);
             sfx.good(lit); buzz('good');
-            if (lit >= lamps){ done = true; paintGlow(); return ctx.win(bug); }
+            if (lit >= lamps){
+              done = true; paintGlow();
+              /* A bright finish: a quarter of the oil or more still in the lamp. */
+              if (oil >= 25 && !ctx.relaxed){ light.classList.add('bright'); ctx.points(20 + Math.min(40, lv*2), bug); floatPts(bug, t('fx.glimBright'), 3); box.dataset.bright = '1'; }
+              return ctx.win(bug);
+            }
             say();
           }
         });
@@ -13009,9 +13104,15 @@ const MODES = {
       });
 
       onDrag(box, {
-        start: q => { if (!done){ bx = clamp(q.x,4,96); by = clamp(q.y,4,96); px = bx; py = by; paint(); } },
-        move:  q => { if (!done){ bx = clamp(q.x,4,96); by = clamp(q.y,4,96); paint(); } }
+        /* A touch puts the light where it lands. The jump burns oil like the way round would, and is how far it came at once. */
+        start: q => { if (!done){
+          const nx = clamp(q.x,4,96), ny = clamp(q.y,4,96), a = aspect();
+          stepLen = Math.hypot(nx - bx, (ny - by) * a);
+          if (!ctx.relaxed) oil = Math.max(0, oil - stepLen * burn);
+          bx = nx; by = ny; px = bx; py = by; paint(); } },
+        move:  q => { if (!done){ bx = clamp(q.x,4,96); by = clamp(q.y,4,96); stepLen = Math.hypot(bx - px, (by - py) * aspect()); paint(); } }
       });
+      box._state = () => ({ oil, lamps: pts.map(p => ({ x: p.x, y: p.y, lit: !!p.lit, twin: !!p.twin, shy: !!p.shy })), worms: worms.map(w => ({ x: w.x, y: w.y, gone: !!w.gone })), hops });
     }
   },
 
@@ -15894,7 +15995,13 @@ const MODES = {
   trace: {
     name:'Follow the Thread', blurb:'Follow the thread to its end — no hurry', input:'drag', cat:'calm', par:15000, bonus:3600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18.5 Q8 4 12 12 T21 7" fill="none" stroke="#7BE38A" stroke-width="2.1" stroke-linecap="round"/><circle cx="3" cy="18.5" r="1.9" fill="#7BE38A"/><circle cx="21" cy="7" r="1.9" fill="#6C6191"/></svg>',
+    /* Since 0.187.0 the thread has things on it. Beads sit near the edge of the band, worth having and worth the wobble they
+       risk; a thread followed without ever straying, every bead taken, pays for a steady hand. From level 6 a stitch can be a
+       knot: rest on it a moment (or touch it twice) to untie it before going on. From 12 one stretch is frayed and its band is
+       narrow. From 20 a burr sits on the thread: brushing it pricks, so go round it inside the band. */
     build(ctx){
+      const lv = ctx.level;
+      const hasKnots = lv >= 6, hasFray = lv >= 12, hasBurr = lv >= 20;
       /* Calm had three modes and all three are about holding something steady.
          This one is about going somewhere: a line, a finger, and no clock on
          the finger. Lifting costs nothing and you carry on from where you are —
@@ -15925,6 +16032,24 @@ const MODES = {
       }
       curve.push(pts[pts.length-1]);
       const pathOf = n => 'M ' + curve.slice(0, n).map(p => p.x.toFixed(2) + ' ' + p.y.toFixed(2)).join(' L ');
+      const pathFrom = (i0, i1) => 'M ' + curve.slice(i0, i1).map(p => p.x.toFixed(2) + ' ' + p.y.toFixed(2)).join(' L ');
+      /* The frayed stretch: the curve between two waypoints in the middle, held to six tenths of the band. */
+      const fray = hasFray ? (() => { const w = 2 + Math.floor(ctx.rnd() * Math.max(1, steps - 4)); return { i0: w * SAMP, i1: (w + 1) * SAMP + 1 }; })() : null;
+      const tolAt = i => fray && i >= fray.i0 && i < fray.i1 ? tol * 0.6 : tol;
+      /* Knots: one or two waypoints in the middle, never the start or the end. */
+      const knots = new Set();
+      if (hasKnots){ const k = lv >= 16 ? 2 : 1; for (let g2 = 0; knots.size < k && g2 < 40; g2++) knots.add(1 + Math.floor(ctx.rnd() * (pts.length - 2))); }
+      /* Beads: on the curve, pushed out toward the edge of the band. */
+      const beads = [];
+      const nBeads = 3 + Math.min(2, Math.floor(lv/8));
+      for (let k = 0; k < nBeads; k++){
+        const i = Math.floor((k + 0.5) / nBeads * (curve.length - 2)) + 1;
+        const a2 = curve[i-1], b2 = curve[i+1], dx = b2.x - a2.x, dy = b2.y - a2.y, L = Math.hypot(dx, dy) || 1;
+        const side = k % 2 ? 1 : -1, off = tolAt(i) * 0.72;
+        beads.push({ x: clamp(curve[i].x - dy / L * off * side, 3, 97), y: clamp(curve[i].y + dx / L * off * side, 3, 97) });
+      }
+      /* The burr sits on the thread itself, a little past half way. */
+      const burr = hasBurr ? curve[Math.floor(curve.length * (0.55 + ctx.rnd() * 0.15))] : null;
 
       const box = mk('div','trcbox');
       const ns = 'http://www.w3.org/2000/svg';
@@ -15941,7 +16066,14 @@ const MODES = {
       /* the part of the thread you have already followed turns bright */
       const trail = document.createElementNS(ns, 'path');
       trail.setAttribute('d', pathOf(1)); trail.setAttribute('class', 'trcdone');
-      svg.appendChild(band); svg.appendChild(line); svg.appendChild(trail);
+      svg.appendChild(band);
+      if (fray){
+        /* the frayed stretch: the wide band masked off and a narrow one laid on it */
+        const mask = document.createElementNS(ns, 'path'); mask.setAttribute('d', pathFrom(fray.i0, fray.i1)); mask.setAttribute('class', 'trcmask'); mask.setAttribute('stroke-width', String(tol * 2 + 0.6));
+        const thin = document.createElementNS(ns, 'path'); thin.setAttribute('d', pathFrom(fray.i0, fray.i1)); thin.setAttribute('class', 'trcband trcfray'); thin.setAttribute('stroke-width', String(tol * 1.2));
+        svg.appendChild(mask); svg.appendChild(thin);
+      }
+      svg.appendChild(line); svg.appendChild(trail);
       box.appendChild(svg);
 
       const marks = pts.map((p, i) => {
@@ -15949,6 +16081,10 @@ const MODES = {
         e.style.left = p.x + '%'; e.style.top = p.y + '%';
         box.appendChild(e); return e;
       });
+      knots.forEach(i => marks[i].classList.add('knot'));
+      const beadEls = beads.map(b => { const e = mk('i','trcbead'); e.style.left = b.x + '%'; e.style.top = b.y + '%'; box.appendChild(e); return e; });
+      let burrEl = null;
+      if (burr){ burrEl = mk('i','trcburr'); burrEl.style.left = burr.x + '%'; burrEl.style.top = burr.y + '%'; box.appendChild(burrEl); }
       const dot = mk('i','trcdot');
       box.appendChild(dot);
       const slip = mk('i','trcslip');
@@ -15959,7 +16095,11 @@ const MODES = {
 
       let done = false, next = 1, off = 0, holding = false, raf2 = 0, astray = false, shown = 0;
       let px = pts[0].x, py = pts[0].y;
-      const say = () => ctx.prompt(astray ? t('trace.back') : t('p.trace', { n: pts.length - next }));
+      let strayed = false, got = 0, knotMs = 0, knotTaps = 0, untied = new Set(), pricked = 0;
+      const teach = hasBurr ? 'p.traceBurr' : hasFray ? 'p.traceFray' : hasKnots ? 'p.traceKnot' : 'p.traceBead';
+      const say = () => ctx.prompt(astray ? t('trace.back') : next < pts.length && knots.has(next) && !untied.has(next) && Math.hypot(px - pts[next].x, py - pts[next].y) <= tol * 1.25 ? t('p.traceUntie')
+        : t(next === 1 ? teach : 'p.trace', { n: pts.length - next }));
+      const untie = i => { untied.add(i); marks[i].classList.add('untied'); sfx.good(1); buzz('good'); box.dataset.untied = untied.size; };
       say();
 
       /* Distance from the finger to the nearest point of the line, so the band
@@ -15973,7 +16113,8 @@ const MODES = {
           let u = len ? ((px - a.x)*vx + (py - a.y)*vy) / len : 0;
           u = clamp(u, 0, 1);
           const dx = px - (a.x + vx*u), dy = py - (a.y + vy*u);
-          best = Math.min(best, Math.sqrt(dx*dx + dy*dy));
+          /* measured against the band where it is: a frayed stretch counts as farther away by as much as it is narrower */
+          best = Math.min(best, Math.sqrt(dx*dx + dy*dy) * tol / tolAt(i));
         }
         return best;
       };
@@ -15984,13 +16125,23 @@ const MODES = {
         dot.style.left = x + '%'; dot.style.top = y + '%';
         dot.classList.add('show');
         const out = away(x, y) > tol;
-        if (out !== astray){ astray = out; box.classList.toggle('astray', out); say(); }
+        if (out !== astray){ astray = out; box.classList.toggle('astray', out); if (out) strayed = true; say(); }
+        beads.forEach((b, k) => {
+          if (b.got || Math.hypot(x - b.x, y - b.y) > 3.4) return;
+          b.got = true; got++; beadEls[k].classList.add('got'); sfx.good(got); box.dataset.beads = got;
+          ctx.points(8 + Math.floor(lv/2), beadEls[k]);
+        });
+        /* the burr: a brush with it pricks, once a second at most, and fills a third of the meter */
+        if (burr && Math.hypot(x - burr.x, y - burr.y) < 3.6 && performance.now() - pricked > 1000){
+          pricked = performance.now(); strayed = true; off = Math.min(slack, off + slack * 0.35); burrEl.classList.add('ow');
+          ctx.after(300, () => burrEl.classList.remove('ow')); sfx.bad(); buzz('bad'); ctx.prompt(t('p.traceOw')); box.dataset.pricked = '1';
+        }
         /* Waypoints have to be collected in order, so the line cannot be cut
            across — and the last one is the finish. Every one the finger is
            already on is taken in the same move, so a quick drag is not slowed
            down by having to arrive at each in turn. */
         let took = false;
-        while (next < pts.length && Math.hypot(x - pts[next].x, y - pts[next].y) <= tol * 1.25){
+        while (next < pts.length && Math.hypot(x - pts[next].x, y - pts[next].y) <= tol * 1.25 && (!knots.has(next) || untied.has(next))){
           marks[next].classList.add('got');
           next++; took = true;
           if (next >= pts.length) break;
@@ -16002,6 +16153,8 @@ const MODES = {
             done = true;
             cancelAnimationFrame(raf2);
             box.classList.add('won');
+            /* A steady hand: never off the thread, never pricked, every bead taken. */
+            if (!strayed && got === beads.length && !ctx.relaxed){ box.classList.add('steady'); ctx.points(25 + Math.min(40, lv*2), dot); floatPts(dot, t('fx.traceSteady'), 3); box.dataset.steady = '1'; }
             return ctx.win(dot);
           }
           say();
@@ -16017,6 +16170,11 @@ const MODES = {
         const now = performance.now();
         const ms = Math.min(120, now - prev);
         prev = now;
+        /* Resting on a knot unties it. */
+        if (holding && next < pts.length && knots.has(next) && !untied.has(next) && Math.hypot(px - pts[next].x, py - pts[next].y) <= tol * 1.25){
+          knotMs += ms; marks[next].style.setProperty('--k', Math.min(1, knotMs / 550).toFixed(2));
+          if (knotMs >= 550){ untie(next); knotMs = 0; at(px, py); if (done) return; }
+        } else knotMs = 0;
         if (holding){
           /* Wandering off fills the meter; being back on the thread empties it, a little slower than it filled. A wobble is forgiven: only
              staying away loses. (Fidget Loop has no losing, so there it just stays full.) */
@@ -16038,8 +16196,15 @@ const MODES = {
       };
       raf2 = requestAnimationFrame(frame);
 
+      box._state = () => ({ pts, curve, tol, knots: [...knots], untied: [...untied], beads, burr, fray, next, got, strayed });
       onDrag(box, {
-        start(p){ holding = true; prev = performance.now(); at(p.x, p.y); },
+        start(p){
+          holding = true; prev = performance.now();
+          /* touched twice, a knot comes undone too: for a hand that cannot rest still */
+          if (next < pts.length && knots.has(next) && !untied.has(next) && Math.hypot(p.x - pts[next].x, p.y - pts[next].y) <= tol * 1.25){ if (++knotTaps >= 2){ untie(next); knotTaps = 0; } }
+          else knotTaps = 0;
+          at(p.x, p.y); say();
+        },
         move(p){ if (holding) at(p.x, p.y); },
         end(){
           holding = false;

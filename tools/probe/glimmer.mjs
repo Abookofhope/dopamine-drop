@@ -46,7 +46,8 @@ for (const [xp, label, vp, glows] of [[0, 'a new player', { width: 400, height: 
     todo.sort((a, b) => Math.hypot(a.x - at.x, (a.y - at.y) * s.h / s.w) - Math.hypot(b.x - at.x, (b.y - at.y) * s.h / s.w));
     const t = todo.shift(); const [tx, ty] = px(s, t);
     if (first){ const [sx, sy] = px(s, at); await page.mouse.move(sx, sy); await page.mouse.down(); first = false; }
-    await page.mouse.move(tx, ty, { steps: 8 }); at = t;
+    /* creeping, a few widths a step, so shy eyes (0.186.0) stay put */
+    await page.mouse.move(tx, ty, { steps: Math.max(8, Math.ceil(Math.hypot(t.x - at.x, (t.y - at.y) * s.h / s.w) / 3)) }); at = t;
   }
   await page.mouse.up(); await page.waitForTimeout(700);
   check(await score(page) > 0, `${label}: carrying the light over every pair of eyes (${s.lamps.length}) wins the round`);
@@ -87,6 +88,77 @@ for (const [xp, label, vp, glows] of [[0, 'a new player', { width: 400, height: 
   let max = 0;
   for (let k = 0; k < 20; k++){ await page.waitForTimeout(500); const r = await read(page); if (k < 10) max = Math.max(max, r.lamps[near.i].op); else max = Math.max(max, r.lamps[near.i].op); if (k === 9) var early = max; }
   check(early < 0.69 && max >= 0.69, `left alone, the nearest closed pair stirs after a few seconds (${early.toFixed(2)} in the first five, ${max.toFixed(2)} by ten)`);
+  await page.close();
+}
+
+/* ── its own rules (0.186.0): oil, gold twins, shy eyes, glowworms ─────────────────────────────────────────────────────── */
+const st = page => page.evaluate(() => { const b = document.querySelector('.glimbox'); if (!b) return null; const q = b._state();
+  return { ...q, light: document.querySelector('.glimlight').getBoundingClientRect().width, twins: b.dataset.twins === '1', bright: b.dataset.bright === '1',
+    gauge: (document.querySelector('.glimoil') || {}).textContent || '', prompt: document.getElementById('prompt').textContent.trim(), worms: q.worms, hops: q.hops }; });
+for (const [xp, label, want] of [[0, 'level 2', { word: /oil/, twins: false, shy: false, worms: false }], [4000, 'level 11', { word: /gold/, twins: true, shy: false, worms: false }],
+  [30000, 'level 19', { word: /creep/, twins: true, shy: true, worms: false }], [60000, 'level 23', { word: /pink/, twins: true, shy: true, worms: true }]]){
+  const page = await open(xp); const s = await read(page); let q = await st(page);
+  check(want.word.test(q.prompt) && /100/.test(q.gauge), `${label}: the prompt teaches the newest rule and the lamp starts full (${q.prompt}; ${q.gauge})`);
+  check(q.lamps.some(l => l.twin) === want.twins && q.lamps.some(l => l.shy) === want.shy && (q.worms.length > 0) === want.worms, `${label}: gold twins ${want.twins}, shy eyes ${want.shy}, glowworms ${want.worms}`);
+  const P = l => px(s, l), w0 = q.light;
+  /* moving burns oil and the pool of light shrinks with it */
+  const far = { x: 50 + (q.lamps.every(l => Math.abs(l.x - 85) > 12 || Math.abs(l.y - 50) > 12) ? 35 : -35), y: 50 };
+  const [cx, cy] = P({ x: 50, y: 50 }), [fx, fy] = P(far);
+  await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(fx, fy, { steps: 14 }); await page.mouse.move(cx, cy, { steps: 14 }); await page.mouse.up(); await page.waitForTimeout(120);
+  q = await st(page);
+  check(q.oil < 100 && (q.light < w0 || q.lamps.some(l => l.lit)), `${label}: carrying the light burns oil and its pool shrinks (${Math.round(q.oil)}% left, ${Math.round(w0)} -> ${Math.round(q.light)}px)`);
+  /* the glowworm first, while there is oil to lose */
+  if (want.worms){
+    const w = q.worms[0], o0 = q.oil, [wx, wy] = P(w);
+    await page.mouse.click(wx, wy); await page.waitForTimeout(120); q = await st(page);
+    check(q.worms[0].gone && q.oil < o0 && (q.oil === 0 || o0 - q.oil >= 29), `${label}: touching a glowworm eats oil (${Math.round(o0)} -> ${Math.round(q.oil)})`);
+  }
+  /* (unless the oil test above happened to creep over the shy pair and open it) */
+  if (want.shy && !q.lamps.find(l => l.shy).lit){
+    const sh = q.lamps.find(l => l.shy), was = { x: sh.x, y: sh.y };
+    /* a tap far away, then a tap right on the shy pair: a jump */
+    let away = { x: sh.x > 50 ? 15 : 85, y: sh.y > 50 ? 15 : 85 };
+    /* not onto a glowworm or an unopened pair */
+    for (const c of [[15, 15], [85, 85], [15, 85], [85, 15], [50, 15], [50, 85]]){ const o = { x: c[0], y: c[1] };
+      if (Math.hypot(o.x - sh.x, o.y - sh.y) > 30 && q.worms.concat(q.lamps).every(w => w.gone || w.lit || Math.hypot(w.x - o.x, (w.y - o.y) * s.h / s.w) > 14)){ away = o; break; } }
+    const [ax, ay] = P(away); await page.mouse.click(ax, ay); await page.waitForTimeout(60);
+    const [sx, sy] = P(was); await page.mouse.click(sx, sy); await page.waitForTimeout(120);
+    q = await st(page); const now = q.lamps.find(l => l.shy);
+    check(!now.lit && (now.x !== was.x || now.y !== was.y) && (/quick|hid/i.test(q.prompt) || q.worms.some(w => w.gone)), `${label}: jumped on, the shy eyes hide somewhere else (${q.prompt})`);
+  }
+  /* open every pair, creeping, twins back to back */
+  let at = await page.evaluate(() => { const b = document.querySelector('.glimbug'); return { x: parseFloat(b.style.left), y: parseFloat(b.style.top) }; });
+  const asp = s.h / s.w; const d = (a2, b2) => Math.hypot(a2.x - b2.x, (a2.y - b2.y) * asp);
+  const [bx0, by0] = P(at); await page.mouse.move(bx0, by0); await page.mouse.down();
+  for (let pass = 0; pass < 3; pass++){
+    q = await st(page); if (!q) break; let todo = q.lamps.map((l, i) => ({ ...l, i })).filter(l => !l.lit);
+    const tw = todo.filter(l => l.twin); todo = todo.filter(l => !l.twin);
+    while (todo.length || tw.length){
+      let tgt;
+      if (tw.length && (!todo.length || d(at, tw[0]) < d(at, todo[0]) + 30)){ tgt = tw.shift(); }
+      else { todo.sort((a2, b2) => d(a2, at) - d(b2, at)); tgt = todo.shift(); }
+      const [tx, ty] = P(tgt); await page.mouse.move(tx, ty, { steps: Math.max(6, Math.ceil(d(at, tgt) / 3)) }); at = tgt;
+      if (!(await st(page))) break;
+    }
+  }
+  await page.mouse.up(); await page.waitForTimeout(150);
+  const end = await page.evaluate(() => { const b = [...document.querySelectorAll('.glimbox')].pop(); return b ? { gone: false } : { gone: true }; });
+  check(await score(page) > 0, `${label}: every pair opened, the round is won`);
+  await page.close();
+}
+/* twins and a bright finish: read off the finished board */
+{
+  const page = await open(4000); const s = await read(page);
+  await page.evaluate(() => { window.__b = document.querySelector('.glimbox'); });
+  const q = await st(page); const asp = s.h / s.w; const P = l => px(s, l);
+  const tw = q.lamps.filter(l => l.twin), rest = q.lamps.filter(l => !l.twin);
+  let at = { x: 50, y: 50 }; const [x0, y0] = P(at); await page.mouse.move(x0, y0); await page.mouse.down();
+  const route = [...tw, ...rest.sort((a, b) => Math.hypot(a.x - tw[1].x, (a.y - tw[1].y) * asp) - Math.hypot(b.x - tw[1].x, (b.y - tw[1].y) * asp))];
+  for (const l of route){ const [tx, ty] = P(l); await page.mouse.move(tx, ty, { steps: Math.max(6, Math.ceil(Math.hypot(l.x - at.x, (l.y - at.y) * asp) / 3)) }); at = l; }
+  await page.mouse.up(); await page.waitForTimeout(150);
+  const r = await page.evaluate(() => ({ twins: window.__b.dataset.twins === '1', bright: window.__b.dataset.bright === '1', oil: +window.__b.dataset.oil }));
+  check(r.twins, 'opening the two gold pairs one after the other pays the twins');
+  check(r.bright === (r.oil >= 25), `a bright finish is paid when a quarter of the oil is left, and only then (${r.oil}% left, paid ${r.bright})`);
   await page.close();
 }
 
