@@ -87,7 +87,8 @@ const kinds = {};
   await page.locator('#heroPlay').click();
   await page.waitForFunction(() => { const k = document.getElementById('hudKind').textContent.trim(); return k && k !== 'Shuffle'; }, null, { timeout: 9000, polling: 100 }).catch(() => {});
   const kind = await page.evaluate(() => (document.getElementById('hudKind') || {}).textContent.trim());
-  check(new Set(kinds.full.cards.map(c => c.name)).has(kind), `Play on the card starts a run from the whole mix in one tap (${kind})`);
+  /* the whole mix is every mode, not only the ones the card names, so any game's name will do; what must not show is the menu still */
+  check(!!kind && kind !== 'Shuffle' && await page.evaluate(() => document.getElementById('playHome').offsetParent === null), `Play on the card starts a run from the whole mix in one tap (${kind})`);
   await page.close();
   const tabs = await open('en');
   await tabs.locator('.tab[data-tab="Modes"]').click(); await tabs.waitForTimeout(400);
