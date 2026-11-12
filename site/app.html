@@ -726,6 +726,22 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 }
 .hlvtray.level .hlvtot{color:var(--cool)}
 .hlvwrap.good .hlvchip{border-color:var(--cool)}
+/* Even Skeins' own rules (0.183.0): tied skeins, the cat's weight, a pinned skein. */
+.hlvchip.tie0{border-color:#FFC53D;background:#ffc53d1f;color:#FFE29A}
+.hlvchip.tie0::after{border-color:#FFC53D;border-style:solid}
+.hlvchip.tie1{border-color:#FF7E96;background:#ff7e961f;color:#FFC2CE}
+.hlvchip.tie1::after{border-color:#FF7E96;border-style:solid}
+.hlvchip.pin{border-style:dashed;border-color:#CDBCF7;color:#CDBCF7;cursor:not-allowed;
+  background:repeating-linear-gradient(45deg,#cdbcf726 0 4px,transparent 4px 9px)}
+/* Three skeins to a row in a narrow basket (a 320px phone), so a crowded basket still fits above the tools. */
+@media (max-width:360px){.hlvtray{padding:6px}.hlvgrid{gap:3px}.hlvchip{width:40px;height:40px}.hlvcat svg{width:24px;height:24px}}
+html[data-motion="on"] .hlvchip.nope{animation:ltcNope .3s ease-in-out}
+.hlvcat{flex:none;display:flex;align-items:center;gap:6px;align-self:flex-start;padding:3px 10px 3px 4px;border-radius:999px;
+  background:#f6ebd914;border:1px solid #f6ebd955}
+.hlvcat svg{width:30px;height:30px;display:block}
+.hlvcat b{font-family:var(--f-data);font-size:calc(15px*var(--ts));font-weight:700;color:var(--cream)}
+.hlvwrap + .sumtools .parchip,.sumcol .parchip{margin-right:10px}
+html[data-motion="on"] .hlvwrap.exact .hlvtot{animation:arcWeave .7s ease-out}
 
 /* ── Bridge ───────────────────────────────────────────────────────────── */
 /* A column, so the square board's main axis is the one that runs out: as a row
@@ -749,6 +765,14 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
 .sumcol > .vbox{flex:1 1 0;min-height:0}
 .duelbtn.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88}
 .cell.sock.hint{outline:3px solid #ffc53d;outline-offset:-3px;box-shadow:0 0 14px #ffc53d88}
+/* Tumble Dryer's own rules (0.185.0): the run, a striped sock, lint, a sock inside out. */
+.tumrun{display:flex;align-items:center;gap:6px}
+.tumdot{display:block;width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 1.5px #0006}
+.cell.sock.wild{background:repeating-linear-gradient(135deg,#ff3d4e33 0 6px,#ffc53d33 6px 12px,#2ed66f33 12px 18px,#3d7bff33 18px 24px)!important;border-radius:var(--r-sm)}
+.cell.sock.inside .art{opacity:.75}
+.cell.sock.inside{background:repeating-linear-gradient(45deg,#ffffff0d 0 4px,transparent 4px 8px)!important}
+.cell.sock.lint{display:grid;place-items:center}
+.cell.sock.lint .lintsvg{width:62%;height:62%;display:block}
 .hdisc{position:absolute;border-radius:50%;pointer-events:none;background:#ffc53d33;border:2px solid #ffc53d;box-shadow:0 0 14px #ffc53d66}
 .slacknode.hot{box-shadow:0 0 0 4px #ffc53d,0 0 16px #ffc53d}
 .brcell.hint{border-color:#ffc53d;box-shadow:0 0 14px #ffc53d88;background:#ffc53d22}
@@ -899,6 +923,13 @@ button{font:inherit;color:inherit;background:none;border:none;margin:0;padding:0
    card, which is position:absolute;inset:0. A cell wearing it inherited
    both and stretched to cover the whole board on every shuffle. */
 .cell.crypt.crswap{animation:cryptSwap .34s ease}
+/* Peekaboo's own rules (0.184.0): a cat with a bell, and a move made in the dark. */
+.cell.crypt .gh .collar{fill:none;stroke:#FFC53D;stroke-width:1.5;stroke-linecap:round;display:none}
+.cell.crypt .gh .bellball{fill:#FFC53D;stroke:#7A4A00;stroke-width:.6;display:none}
+.cell.crypt.bell .gh .collar,.cell.crypt.bell .gh .bellball{display:inline}
+.ghostdrift .collar,.ghostdrift .bellball{display:none}
+.grid.crypts .cell.crypt{transition:filter var(--t-med)}
+.grid.crypts.dark .cell.crypt:not(.crswap){filter:brightness(.42)}
 @keyframes cryptSwap{0%{transform:none}45%{transform:scale(.88) rotate(-4deg)}100%{transform:none}}
 /* The ghost in transit. Absolute inside the grid, so it travels over the tiles
    rather than between them, and lit so it stays the brightest thing on a board
@@ -4089,6 +4120,19 @@ html[data-motion="off"] .pondcat.bump svg{animation:none}
 .ltccell{border-radius:999px;background:linear-gradient(#ffffff14,#ffffff08)}
 .ltccell.meet{box-shadow:inset 0 0 0 2px #c08bffcc,0 0 14px #c08bff77}
 .ltcwrap > .sumtools{margin-top:2px}
+/* Latch Hook's own rules (0.182.0): a link to the row below, a double hook, a ratchet row, and the least turns. */
+.ltcrow{position:relative}
+.ltclink{position:absolute;left:50%;bottom:-13px;width:18px;height:18px;margin-left:-9px;z-index:2;pointer-events:none;
+  border-radius:50%;background:var(--ink-2);box-shadow:0 0 0 2px var(--ink-2)}
+.ltclink svg{display:block;width:100%;height:100%}
+.ltcrow.twin .ltcstrip{border-color:#ffc53d66}
+.ltcrow.twin .ltccell.notch{background:#FFC53D;box-shadow:0 0 12px #ffc53d66}
+.ltcrow.ratchet .ltcstrip{border-style:dashed;border-color:#ff7e9688}
+.ltcturn.stuck{opacity:.28;border-style:dashed;cursor:not-allowed}
+html[data-motion="on"] .ltcrow.nope .ltcstrip{animation:ltcNope .3s ease-in-out}
+@keyframes ltcNope{0%,100%{transform:none}30%{transform:translateX(-5px)}70%{transform:translateX(5px)}}
+.ltcwrap .parchip{margin-right:10px}
+html[data-motion="on"] .ltcwrap.exact .ltccell.notch{animation:arcWeave .7s ease-out}
 .driftthread{opacity:0;transition:opacity var(--t-fast)}
 .driftthread.on{opacity:1}
 .driftthread line{stroke:var(--cream);stroke-width:2.4;stroke-dasharray:none;stroke-linecap:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 2px #000a)}
@@ -6329,11 +6373,11 @@ const STRINGS = {
 
     
 
-    'latch.undo':'Undo', 'latch.hint':'Hint', 'latch.meet':'Line them up on the marked column', 'p.latch':'{n} rows still off the line', 'latch.row':'Row {n}, notch at position {c}', 'latch.left':'Turn row {n} left', 'latch.right':'Turn row {n} right', 'm.latch':'Latch Hook|Turn the rows until every hook lines up',
+    'latch.undo':'Undo', 'latch.hint':'Hint', 'latch.meet':'Line them up on the marked column', 'p.latch':'{n} rows still off the line', 'p.latchLink':'{n} off · a chained row turns the one below', 'p.latchTwin':'{n} off · the gold row has two hooks', 'p.latchRat':'{n} off · the dashed row turns one way', 'p.latchRatNo':'That row only turns the other way', 'latch.least':'Turns {m} · Least {p}', 'fx.latchExact':'Least turns!', 'latch.row':'Row {n}, notch at position {c}', 'latch.left':'Turn row {n} left', 'latch.right':'Turn row {n} right', 'm.latch':'Latch Hook|Turn the rows until every hook lines up',
     'splice.hint':'Hint', 'p.splice':'{n} words still in pieces', 'splice.head':'Beginning: {s}', 'splice.tail':'Ending: {s}', 'm.splice':'Splice|Join each loose end to the right beginning',
     'p.trace':'{n} more to reach — stay on the line', 'trace.back':'Drifting — ease back onto the thread', 'trace.box':'Drag along the line from the bright dot to the ring', 'm.trace':'Follow the Thread|Follow the thread to its end — no hurry',
     'set.version':'Version', 'set.checkUpd':'Check', 'set.checking':'Checking…', 'set.upToDate':'Up to date', 'set.updating':'Updating…',
-    'halve.hint':'Hint', 'p.halve':'{n} apart', 'halve.chip':'{v}, in basket {s}', 'm.halve':'Even Skeins|Move skeins until both baskets weigh the same',
+    'halve.hint':'Hint', 'p.halve':'{n} apart', 'p.halveTie':'{n} apart · tied skeins go together', 'p.halveCat':'{n} apart · the cat weighs {w}', 'p.halvePin':'{n} apart · the dashed skein stays', 'p.halvePinned':'That skein is pinned', 'halve.least':'Moves {m} · Least {p}', 'fx.halveExact':'Fewest moves!', 'a.halveCat':'The cat, weighing {w}, in basket 1', 'a.halvePin':'pinned', 'a.halveTied':'tied to another', 'halve.chip':'{v}, in basket {s}', 'm.halve':'Even Skeins|Move skeins until both baskets weigh the same',
     'lever.hint':'Hint', 'p.lever':'Slide the wedge, let go to test', 'lever.wedge':'The wedge — drag it along the beam', 'lever.loadL':'Weight {w}, {d} to the left', 'lever.loadR':'Weight {w}, {d} to the right', 'm.lever':'Balance|Find the balance point by eye, then test it',
     'perk.callSlot1':'A slot is free — pick a perk', 'perk.callSlot':'{n} slots free — pick a perk', 'perk.callToken1':'A token to spend — make a perk stronger', 'perk.callToken':'{n} tokens to spend — make a perk stronger',
 
@@ -6371,13 +6415,13 @@ const STRINGS = {
     
     'p.glimmer':'{n} pairs of eyes still shut', 'm.glimmer':'Cat’s Eyes|Carry the light until every pair of eyes is open',
     'p.tidy':'{n} left on the floor', 'm.tidy':'Tidy Up|Drag the mess into the right baskets',
-    'p.hauntLook':'{n} cats — watch closely', 'p.hauntTrack':'Follow them', 'p.hauntPick':'{n} still to find', 'm.haunt':'Peekaboo|Watch the baskets — where did the cats end up?',
+    'p.hauntLook':'{n} cats — watch closely', 'p.hauntTwin':'{n} cats · two can move at once', 'p.hauntBell':'{n} cats · find the belled one first', 'p.hauntDark':'{n} cats · one move is in the dark', 'p.hauntCall':'Keep watching for more, or call it', 'haunt.call':'Call it +{p}', 'fx.hauntBell':'Ding!', 'p.hauntTrack':'Follow them', 'p.hauntPick':'{n} still to find', 'm.haunt':'Peekaboo|Watch the baskets — where did the cats end up?',
 
     
 
     'p.bruise':'{n} to pop · {e} may still slip', 'm.bruise':'Mending|Finish the frayed ones before they unravel',
     'paws.again':'Not that one — try again', 'p.tapPlace':'Now tap where it goes', 'p.descentHold':'Steer under the gap, then let go to drop', 'p.gatherHold':'Move the pail under it, or out of its way, then let go', 'sift.next':'Drop the next grain', 'p.tapEnd':'Now tap where the line ends', 'paws.left':'{n} chances left', 'skim.again':'Not there — the needle keeps going', 'p.skim':'{n} skips to go', 'm.skim':'Needle Pass|Tap as the needle crosses — the gap narrows each time',
-    'p.tumble':'{n} still in the drum', 'm.tumble':'Tumble Dryer|Pair the socks faster than the drum refills',
+    'p.tumble':'{n} still in the drum', 'p.tumbleRun':'{n} in the drum · same colour again pays more', 'p.tumbleWild':'{n} in the drum · striped socks take any pair', 'p.tumbleLint':'{n} in the drum · tap lint away', 'p.tumbleInside':'{n} in the drum · tap a grey one to turn it', 'tumble.run':'Run ×{n}', 'fx.tumbleRun':'Run ×{n}', 'a.tumbleWild':'Striped sock: takes any pair', 'a.tumbleLint':'Lint', 'a.tumbleInside':'Sock inside out', 'm.tumble':'Tumble Dryer|Pair the socks faster than the drum refills',
     'p.peril':'{n} left on the foe', 'duel.strike':'Strike', 'duel.parry':'Parry', 'duel.wait':'Wait', 'm.peril':'Cat Fight|Read the tell, pick the counter, win the scrap',
     'p.arc':'{n} left to reach', 'p.arcBead':'The gold bead lets the thread back out', 'p.arcCat':'Loop the napping cat’s peg last', 'p.arcCross':'The thread must not cross itself', 'p.arcPull':'Long pull! {n} left', 'p.arcOut':'Nothing in reach: the thread is let out', 'fx.arcWeave':'Clean weave', 'a.arcCat':'Napping cat’s peg, loop it last', 'a.arcBead':'Gold bead peg', 'p.slack':'{n} crossings left', 'p.slackPin':'{n} crossings · pins stay put', 'p.slackCat':'{n} crossings · not over the cat', 'p.slackShort':'{n} crossings · short gold thread', 'p.slackPinned':'That peg is pinned', 'slack.par':'Moves {m} · Par {p}', 'fx.slackPar':'Under par!', 'a.slackPin':'Peg {n}, pinned', 'p.tide':'Hold and release — {n} to go', 'p.plinkPeg':'Pull one peg out', 'p.plinkDrop':'Now drag to aim, let go to drop', 'm.arc':'Cat’s Cradle|Loop every peg before the thread goes slack',  'm.slack':'No Crossing|Drag the pegs until no thread crosses',  'm.tide':'Purr|Hold to swell, let go to settle — stay in the band',  'm.plink':'Basket Drop|Pull one peg, then drop into the lit basket',  'p.missed':'Missed', 'slide.hint':'Hint', 'p.slide':'Tap the end of a bar to slide it that way', 
     'p.wheel':'Guess the phrase', 
@@ -6855,11 +6899,11 @@ const STRINGS = {
 
     
 
-    'latch.undo':'Annuler', 'latch.hint':'Indice', 'latch.meet':'Alignez-les sur la colonne marquée', 'p.latch':'Encore {n} rangées hors de l’axe', 'latch.row':'Rangée {n}, encoche en position {c}', 'latch.left':'Tourner la rangée {n} vers la gauche', 'latch.right':'Tourner la rangée {n} vers la droite', 'm.latch':'Crochet|Tournez les rangs jusqu’à aligner tous les crochets',
+    'latch.undo':'Annuler', 'latch.hint':'Indice', 'latch.meet':'Alignez-les sur la colonne marquée', 'p.latch':'Encore {n} rangées hors de l’axe', 'p.latchLink':'{n} décalés · un rang enchaîné tourne celui du dessous', 'p.latchTwin':'{n} décalés · le rang doré a deux crochets', 'p.latchRat':'{n} décalés · le rang pointillé tourne dans un sens', 'p.latchRatNo':'Ce rang ne tourne que dans l’autre sens', 'latch.least':'Tours {m} · Mini {p}', 'fx.latchExact':'Le moins de tours !', 'latch.row':'Rangée {n}, encoche en position {c}', 'latch.left':'Tourner la rangée {n} vers la gauche', 'latch.right':'Tourner la rangée {n} vers la droite', 'm.latch':'Crochet|Tournez les rangs jusqu’à aligner tous les crochets',
     'splice.hint':'Indice', 'p.splice':'Encore {n} mots en morceaux', 'splice.head':'Début : {s}', 'splice.tail':'Fin : {s}', 'm.splice':'Raccord|Reliez chaque bout libre au bon début',
     'p.trace':'Encore {n} à atteindre — restez sur la ligne', 'trace.back':'Vous dérivez — revenez doucement sur le fil', 'trace.box':'Glissez le long de la ligne, du point lumineux jusqu’à l’anneau', 'm.trace':'Suivre le Fil|Suivez le fil jusqu’au bout — sans hâte',
     'set.version':'Version', 'set.checkUpd':'Vérifier', 'set.checking':'Vérification…', 'set.upToDate':'À jour', 'set.updating':'Mise à jour…',
-    'halve.hint':'Indice', 'p.halve':'Écart de {n}', 'halve.chip':'{v}, dans le panier {s}', 'm.halve':'Pelotes Égales|Déplacez les pelotes jusqu’à équilibrer les paniers',
+    'halve.hint':'Indice', 'p.halve':'Écart de {n}', 'p.halveTie':'Écart de {n} · pelotes liées ensemble', 'p.halveCat':'Écart de {n} · le chat pèse {w}', 'p.halvePin':'Écart de {n} · la pelote pointillée reste', 'p.halvePinned':'Cette pelote est épinglée', 'halve.least':'Coups {m} · Mini {p}', 'fx.halveExact':'Le moins de coups !', 'a.halveCat':'Le chat, qui pèse {w}, dans le panier 1', 'a.halvePin':'épinglée', 'a.halveTied':'liée à une autre', 'halve.chip':'{v}, dans le panier {s}', 'm.halve':'Pelotes Égales|Déplacez les pelotes jusqu’à équilibrer les paniers',
     'lever.hint':'Indice', 'p.lever':'Glissez le coin, lâchez pour tester', 'lever.wedge':'Le coin — glissez-le le long de la barre', 'lever.loadL':'Poids {w}, {d} à gauche', 'lever.loadR':'Poids {w}, {d} à droite', 'm.lever':'Équilibre|Trouvez le point d’équilibre à l’œil, puis testez',
     'perk.callSlot1':'Un emplacement libre — choisissez un atout', 'perk.callSlot':'{n} emplacements libres — choisissez un atout', 'perk.callToken1':'Un jeton à dépenser — renforcez un atout', 'perk.callToken':'{n} jetons à dépenser — renforcez un atout',
 
@@ -6897,13 +6941,13 @@ const STRINGS = {
     
     'p.glimmer':'{n} paires d’yeux encore fermées', 'm.glimmer':'Yeux de Chat|Portez la lueur jusqu’à ouvrir chaque paire d’yeux',
     'p.tidy':'{n} encore au sol', 'm.tidy':'Rangement|Glissez le désordre dans les bons paniers',
-    'p.hauntLook':'{n} chats — regardez bien', 'p.hauntTrack':'Suivez-les', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Cache-cache|Suivez les paniers — où sont passés les chats ?',
+    'p.hauntLook':'{n} chats — regardez bien', 'p.hauntTwin':'{n} chats · deux peuvent bouger ensemble', 'p.hauntBell':'{n} chats · trouvez d’abord celui à clochette', 'p.hauntDark':'{n} chats · un mouvement dans le noir', 'p.hauntCall':'Regardez encore pour plus, ou annoncez', 'haunt.call':'Annoncer +{p}', 'fx.hauntBell':'Ding !', 'p.hauntTrack':'Suivez-les', 'p.hauntPick':'Encore {n} à trouver', 'm.haunt':'Cache-cache|Suivez les paniers — où sont passés les chats ?',
 
     
 
     'p.bruise':'{n} à éclater · {e} peuvent fuir', 'm.bruise':'Raccommodage|Finissez les effilochés avant qu’ils ne filent',
     'paws.again':'Pas celle-là — encore une chance', 'p.tapPlace':'Touchez maintenant où le poser', 'p.descentHold':'Placez-vous sous le trou, puis lâchez pour descendre', 'p.gatherHold':'Placez le seau dessous, ou écartez-le, puis lâchez', 'sift.next':'Faire tomber le grain suivant', 'p.tapEnd':'Touchez maintenant où finit la ligne', 'paws.left':'{n} chances restantes', 'skim.again':'Pas là — l’aiguille continue', 'p.skim':'Encore {n} ricochets', 'm.skim':'Passage d’Aiguille|Touchez au passage de l’aiguille — l’écart se resserre',
-    'p.tumble':'{n} encore dans le tambour', 'm.tumble':'Sèche-Linge|Appariez les chaussettes plus vite que le tambour',
+    'p.tumble':'{n} encore dans le tambour', 'p.tumbleRun':'{n} dans le tambour · même couleur, plus de points', 'p.tumbleWild':'{n} dans le tambour · la rayée prend toute paire', 'p.tumbleLint':'{n} dans le tambour · touchez les peluches', 'p.tumbleInside':'{n} dans le tambour · touchez une grise', 'tumble.run':'Série ×{n}', 'fx.tumbleRun':'Série ×{n}', 'a.tumbleWild':'Chaussette rayée : prend toute paire', 'a.tumbleLint':'Peluche', 'a.tumbleInside':'Chaussette à l’envers', 'm.tumble':'Sèche-Linge|Appariez les chaussettes plus vite que le tambour',
     'p.peril':'Encore {n}', 'duel.strike':'Frapper', 'duel.parry':'Parer', 'duel.wait':'Attendre', 'm.peril':'Bagarre|Lisez l’indice, choisissez la parade, gagnez la bagarre',
     'p.arc':'{n} à relier', 'p.arcBead':'La perle dorée redonne du fil', 'p.arcCat':'Bouclez le piquet du chat endormi en dernier', 'p.arcCross':'Le fil ne doit pas se croiser', 'p.arcPull':'Grand tirage ! Encore {n}', 'p.arcOut':'Rien à portée : on redonne du fil', 'fx.arcWeave':'Tissage net', 'a.arcCat':'Piquet du chat endormi, à boucler en dernier', 'a.arcBead':'Piquet à perle dorée', 'p.slack':'{n} croisements restants', 'p.slackPin':'{n} croisements · piquets cloués', 'p.slackCat':'{n} croisements · pas sur le chat', 'p.slackShort':'{n} croisements · fil doré court', 'p.slackPinned':'Ce piquet est cloué', 'slack.par':'Coups {m} · Par {p}', 'fx.slackPar':'Sous le par !', 'a.slackPin':'Piquet {n}, cloué', 'p.tide':'Tenez puis relâchez — encore {n}', 'p.plinkPeg':'Retirez un clou', 'p.plinkDrop':'Visez en glissant, lâchez pour lancer', 'm.arc':'Jeu de Ficelle|Bouclez chaque piquet avant que le fil ne mollisse',  'm.slack':'Sans Croisement|Déplacez les piquets jusqu’à ce qu’aucun fil ne se croise',  'm.tide':'Ronron|Maintenez pour enfler, lâchez pour calmer — restez dans la bande',  'm.plink':'Chute au Panier|Retirez un piquet, puis tombez dans le panier allumé',  'p.missed':'Raté', 'slide.hint':'Indice', 'p.slide':'Touchez le bout d’une barre pour la pousser', 
     'p.wheel':'Devinez la phrase', 
@@ -7380,11 +7424,11 @@ const STRINGS = {
 
     
 
-    'latch.undo':'Deshacer', 'latch.hint':'Pista', 'latch.meet':'Aliníalas en la columna marcada', 'p.latch':'Quedan {n} filas fuera de la línea', 'latch.row':'Fila {n}, muesca en la posición {c}', 'latch.left':'Girar la fila {n} a la izquierda', 'latch.right':'Girar la fila {n} a la derecha', 'm.latch':'Ganchillo|Gira las filas hasta alinear cada gancho',
+    'latch.undo':'Deshacer', 'latch.hint':'Pista', 'latch.meet':'Aliníalas en la columna marcada', 'p.latch':'Quedan {n} filas fuera de la línea', 'p.latchLink':'{n} fuera · una fila encadenada gira la de abajo', 'p.latchTwin':'{n} fuera · la fila dorada tiene dos ganchos', 'p.latchRat':'{n} fuera · la fila punteada gira en un sentido', 'p.latchRatNo':'Esa fila solo gira al otro lado', 'latch.least':'Giros {m} · Mínimo {p}', 'fx.latchExact':'¡Mínimo de giros!', 'latch.row':'Fila {n}, muesca en la posición {c}', 'latch.left':'Girar la fila {n} a la izquierda', 'latch.right':'Girar la fila {n} a la derecha', 'm.latch':'Ganchillo|Gira las filas hasta alinear cada gancho',
     'splice.hint':'Pista', 'p.splice':'Quedan {n} palabras partidas', 'splice.head':'Principio: {s}', 'splice.tail':'Final: {s}', 'm.splice':'Empalme|Une cada cabo suelto con su principio',
     'p.trace':'Quedan {n} por alcanzar — no te salgas de la línea', 'trace.back':'Te desvías — vuelve despacio al hilo', 'trace.box':'Arrastra por la línea desde el punto brillante hasta el anillo', 'm.trace':'Sigue el Hilo|Sigue el hilo hasta el final — sin prisa',
     'set.version':'Versión', 'set.checkUpd':'Comprobar', 'set.checking':'Comprobando…', 'set.upToDate':'Actualizado', 'set.updating':'Actualizando…',
-    'halve.hint':'Pista', 'p.halve':'{n} de diferencia', 'halve.chip':'{v}, en la cesta {s}', 'm.halve':'Ovillos Iguales|Mueve ovillos hasta igualar las cestas',
+    'halve.hint':'Pista', 'p.halve':'{n} de diferencia', 'p.halveTie':'{n} de diferencia · atadas van juntas', 'p.halveCat':'{n} de diferencia · el gato pesa {w}', 'p.halvePin':'{n} de diferencia · la punteada queda', 'p.halvePinned':'Esa madeja está fija', 'halve.least':'Jugadas {m} · Mínimo {p}', 'fx.halveExact':'¡Mínimo de jugadas!', 'a.halveCat':'El gato, que pesa {w}, en la cesta 1', 'a.halvePin':'fija', 'a.halveTied':'atada a otra', 'halve.chip':'{v}, en la cesta {s}', 'm.halve':'Ovillos Iguales|Mueve ovillos hasta igualar las cestas',
     'lever.hint':'Pista', 'p.lever':'Desliza la cuña y suelta para probar', 'lever.wedge':'La cuña — deslízala por la barra', 'lever.loadL':'Peso {w}, {d} a la izquierda', 'lever.loadR':'Peso {w}, {d} a la derecha', 'm.lever':'Equilibrio|Encuentra el punto de equilibrio a ojo y pruébalo',
     'perk.callSlot1':'Una ranura libre — elige una ventaja', 'perk.callSlot':'{n} ranuras libres — elige una ventaja', 'perk.callToken1':'Una ficha por gastar — mejora una ventaja', 'perk.callToken':'{n} fichas por gastar — mejora una ventaja',
 
@@ -7422,13 +7466,13 @@ const STRINGS = {
     
     'p.glimmer':'{n} pares de ojos aún cerrados', 'm.glimmer':'Ojos de Gato|Lleva la luz hasta abrir cada par de ojos',
     'p.tidy':'Quedan {n} en el suelo', 'm.tidy':'A Recoger|Arrastra el desorden a las cestas correctas',
-    'p.hauntLook':'{n} gatos — fíjate bien', 'p.hauntTrack':'Síguelos', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Escondite|Sigue las cestas — ¿dónde acabaron los gatos?',
+    'p.hauntLook':'{n} gatos — fíjate bien', 'p.hauntTwin':'{n} gatos · dos pueden moverse a la vez', 'p.hauntBell':'{n} gatos · primero el del cascabel', 'p.hauntDark':'{n} gatos · un movimiento a oscuras', 'p.hauntCall':'Sigue mirando por más, o dilo ya', 'haunt.call':'¡Ya! +{p}', 'fx.hauntBell':'¡Tilín!', 'p.hauntTrack':'Síguelos', 'p.hauntPick':'Faltan {n} por encontrar', 'm.haunt':'Escondite|Sigue las cestas — ¿dónde acabaron los gatos?',
 
     
 
     'p.bruise':'{n} por reventar · pueden huir {e}', 'm.bruise':'Remiendo|Termina los deshilachados antes de que se suelten',
     'paws.again':'Esa no — prueba otra vez', 'p.tapPlace':'Ahora toca dónde va', 'p.descentHold':'Colócate bajo el hueco y suelta para caer', 'p.gatherHold':'Pon el cubo debajo, o apártalo, y suelta', 'sift.next':'Soltar el siguiente grano', 'p.tapEnd':'Ahora toca dónde acaba la línea', 'paws.left':'Quedan {n} oportunidades', 'skim.again':'Ahí no — la aguja sigue', 'p.skim':'Faltan {n} rebotes', 'm.skim':'Paso de Aguja|Toca al pasar la aguja — el hueco se estrecha',
-    'p.tumble':'Quedan {n} en el tambor', 'm.tumble':'Secadora|Empareja los calcetines más rápido que el tambor',
+    'p.tumble':'Quedan {n} en el tambor', 'p.tumbleRun':'{n} en el tambor · el mismo color paga más', 'p.tumbleWild':'{n} en el tambor · la rayada toma cualquier par', 'p.tumbleLint':'{n} en el tambor · toca la pelusa', 'p.tumbleInside':'{n} en el tambor · toca una gris', 'tumble.run':'Racha ×{n}', 'fx.tumbleRun':'Racha ×{n}', 'a.tumbleWild':'Calcetín rayado: toma cualquier par', 'a.tumbleLint':'Pelusa', 'a.tumbleInside':'Calcetín del revés', 'm.tumble':'Secadora|Empareja los calcetines más rápido que el tambor',
     'p.peril':'Le quedan {n}', 'duel.strike':'Golpear', 'duel.parry':'Parar', 'duel.wait':'Esperar', 'm.peril':'Riña de Gatos|Lee la señal, elige la réplica, gana la riña',
     'p.arc':'Faltan {n}', 'p.arcBead':'La cuenta dorada suelta más hilo', 'p.arcCat':'Enlaza la clavija del gato dormido al final', 'p.arcCross':'El hilo no debe cruzarse', 'p.arcPull':'¡Tirón largo! Faltan {n}', 'p.arcOut':'Nada al alcance: se suelta hilo', 'fx.arcWeave':'Tejido limpio', 'a.arcCat':'Clavija del gato dormido, enlázala al final', 'a.arcBead':'Clavija con cuenta dorada', 'p.slack':'{n} cruces restantes', 'p.slackPin':'{n} cruces · clavijas fijas', 'p.slackCat':'{n} cruces · no sobre el gato', 'p.slackShort':'{n} cruces · hilo dorado corto', 'p.slackPinned':'Esa clavija está fija', 'slack.par':'Jugadas {m} · Par {p}', 'fx.slackPar':'¡Bajo par!', 'a.slackPin':'Clavija {n}, fija', 'p.tide':'Mantén y suelta — faltan {n}', 'p.plinkPeg':'Quita un clavo', 'p.plinkDrop':'Arrastra para apuntar y suelta', 'm.arc':'Cuna de Gato|Enlaza cada clavija antes de que afloje el hilo',  'm.slack':'Sin Cruces|Mueve las clavijas hasta que ningún hilo se cruce',  'm.tide':'Ronroneo|Mantén para crecer, suelta para calmar — quédate en la banda',  'm.plink':'Caída al Cesto|Quita una clavija y cae en la cesta encendida',  'p.missed':'Fallado', 'slide.hint':'Pista', 'p.slide':'Toca el extremo de una barra para empujarla', 
     'p.wheel':'Adivina la frase', 
@@ -7905,11 +7949,11 @@ const STRINGS = {
 
     
 
-    'latch.undo':'Zurück', 'latch.hint':'Tipp', 'latch.meet':'Richte sie an der markierten Spalte aus', 'p.latch':'Noch {n} Reihen neben der Linie', 'latch.row':'Reihe {n}, Kerbe an Position {c}', 'latch.left':'Reihe {n} nach links drehen', 'latch.right':'Reihe {n} nach rechts drehen', 'm.latch':'Knüpfhaken|Dreh die Reihen, bis jeder Haken passt',
+    'latch.undo':'Zurück', 'latch.hint':'Tipp', 'latch.meet':'Richte sie an der markierten Spalte aus', 'p.latch':'Noch {n} Reihen neben der Linie', 'p.latchLink':'{n} daneben · eine verkettete Reihe dreht die darunter', 'p.latchTwin':'{n} daneben · die goldene Reihe hat zwei Haken', 'p.latchRat':'{n} daneben · die gestrichelte Reihe dreht nur in eine Richtung', 'p.latchRatNo':'Diese Reihe dreht nur andersherum', 'latch.least':'Drehungen {m} · Minimum {p}', 'fx.latchExact':'Wenigste Drehungen!', 'latch.row':'Reihe {n}, Kerbe an Position {c}', 'latch.left':'Reihe {n} nach links drehen', 'latch.right':'Reihe {n} nach rechts drehen', 'm.latch':'Knüpfhaken|Dreh die Reihen, bis jeder Haken passt',
     'splice.hint':'Tipp', 'p.splice':'Noch {n} Wörter in Teilen', 'splice.head':'Anfang: {s}', 'splice.tail':'Ende: {s}', 'm.splice':'Spleißen|Verbinde jedes lose Ende mit dem richtigen Anfang',
     'p.trace':'Noch {n} zu erreichen — bleib auf der Linie', 'trace.back':'Du driftest ab — geh sanft zurück zum Faden', 'trace.box':'Zieh entlang der Linie vom hellen Punkt bis zum Ring', 'm.trace':'Dem Faden Folgen|Folge dem Faden bis zum Ende — ohne Eile',
     'set.version':'Version', 'set.checkUpd':'Prüfen', 'set.checking':'Prüfe…', 'set.upToDate':'Aktuell', 'set.updating':'Aktualisiere…',
-    'halve.hint':'Tipp', 'p.halve':'{n} Unterschied', 'halve.chip':'{v}, in Korb {s}', 'm.halve':'Gleiche Knäuel|Verschiebe Knäuel, bis beide Körbe gleich sind',
+    'halve.hint':'Tipp', 'p.halve':'{n} Unterschied', 'p.halveTie':'{n} Unterschied · gebundene gehen zusammen', 'p.halveCat':'{n} Unterschied · die Katze wiegt {w}', 'p.halvePin':'{n} Unterschied · der gestrichelte bleibt', 'p.halvePinned':'Dieser Strang ist festgesteckt', 'halve.least':'Züge {m} · Minimum {p}', 'fx.halveExact':'Wenigste Züge!', 'a.halveCat':'Die Katze, {w} schwer, in Korb 1', 'a.halvePin':'festgesteckt', 'a.halveTied':'an einen anderen gebunden', 'halve.chip':'{v}, in Korb {s}', 'm.halve':'Gleiche Knäuel|Verschiebe Knäuel, bis beide Körbe gleich sind',
     'lever.hint':'Tipp', 'p.lever':'Keil schieben, loslassen zum Prüfen', 'lever.wedge':'Der Keil — schieb ihn über den Balken', 'lever.loadL':'Gewicht {w}, {d} nach links', 'lever.loadR':'Gewicht {w}, {d} nach rechts', 'm.lever':'Gleichgewicht|Finde den Punkt nach Augenmaß und teste ihn',
     'perk.callSlot1':'Ein Platz ist frei — wähl einen Vorteil', 'perk.callSlot':'{n} Plätze frei — wähl einen Vorteil', 'perk.callToken1':'Eine Marke übrig — mach einen Vorteil stärker', 'perk.callToken':'{n} Marken übrig — mach einen Vorteil stärker',
 
@@ -7947,13 +7991,13 @@ const STRINGS = {
     
     'p.glimmer':'Noch {n} Augenpaare geschlossen', 'm.glimmer':'Katzenaugen|Trag das Licht, bis jedes Augenpaar offen ist',
     'p.tidy':'Noch {n} am Boden', 'm.tidy':'Aufräumen|Zieh die Unordnung in die richtigen Körbe',
-    'p.hauntLook':'{n} Katzen — gut hinsehen', 'p.hauntTrack':'Folge ihnen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Versteckspiel|Verfolge die Körbe — wo sind die Katzen gelandet?',
+    'p.hauntLook':'{n} Katzen — gut hinsehen', 'p.hauntTwin':'{n} Katzen · zwei können gleichzeitig ziehen', 'p.hauntBell':'{n} Katzen · zuerst die mit Glöckchen', 'p.hauntDark':'{n} Katzen · ein Zug im Dunkeln', 'p.hauntCall':'Weiter zusehen für mehr, oder ansagen', 'haunt.call':'Ansagen +{p}', 'fx.hauntBell':'Kling!', 'p.hauntTrack':'Folge ihnen', 'p.hauntPick':'Noch {n} zu finden', 'm.haunt':'Versteckspiel|Verfolge die Körbe — wo sind die Katzen gelandet?',
 
     
 
     'p.bruise':'Noch {n} · {e} dürfen entkommen', 'm.bruise':'Ausbessern|Flicke die Ausgefransten, bevor sie sich auflösen',
     'paws.again':'Die nicht — versuch es nochmal', 'p.tapPlace':'Jetzt tippe, wo es hingehört', 'p.descentHold':'Unter die Lücke steuern, dann loslassen zum Fallen', 'p.gatherHold':'Schieb den Eimer darunter oder weg, dann loslassen', 'sift.next':'Nächstes Korn fallen lassen', 'p.tapEnd':'Jetzt tippe, wo die Linie endet', 'paws.left':'Noch {n} Chancen', 'skim.again':'Nicht dort — die Nadel läuft weiter', 'p.skim':'Noch {n} Sprünge', 'm.skim':'Nadeldurchgang|Tippe, wenn die Nadel kreuzt — die Lücke wird enger',
-    'p.tumble':'Noch {n} in der Trommel', 'm.tumble':'Wäschetrockner|Paare die Socken schneller, als die Trommel füllt',
+    'p.tumble':'Noch {n} in der Trommel', 'p.tumbleRun':'{n} in der Trommel · gleiche Farbe zahlt mehr', 'p.tumbleWild':'{n} in der Trommel · gestreifte nehmen jedes Paar', 'p.tumbleLint':'{n} in der Trommel · Fussel wegtippen', 'p.tumbleInside':'{n} in der Trommel · graue umdrehen', 'tumble.run':'Serie ×{n}', 'fx.tumbleRun':'Serie ×{n}', 'a.tumbleWild':'Gestreifte Socke: nimmt jedes Paar', 'a.tumbleLint':'Fussel', 'a.tumbleInside':'Socke auf links', 'm.tumble':'Wäschetrockner|Paare die Socken schneller, als die Trommel füllt',
     'p.peril':'Noch {n}', 'duel.strike':'Schlag', 'duel.parry':'Parade', 'duel.wait':'Warten', 'm.peril':'Katzenstreit|Lies das Zeichen, wähl die Antwort, gewinn den Streit',
     'p.arc':'Noch {n}', 'p.arcBead':'Die goldene Perle gibt wieder Faden', 'p.arcCat':'Den Stift der schlafenden Katze zuletzt', 'p.arcCross':'Der Faden darf sich nicht kreuzen', 'p.arcPull':'Weiter Zug! Noch {n}', 'p.arcOut':'Nichts in Reichweite: Faden wird nachgelassen', 'fx.arcWeave':'Sauber gewebt', 'a.arcCat':'Stift der schlafenden Katze, zuletzt umschlingen', 'a.arcBead':'Stift mit goldener Perle', 'p.slack':'Noch {n} Kreuzungen', 'p.slackPin':'{n} Kreuzungen · feste Stifte', 'p.slackCat':'{n} Kreuzungen · Katze frei lassen', 'p.slackShort':'{n} Kreuzungen · kurzer Goldfaden', 'p.slackPinned':'Dieser Stift sitzt fest', 'slack.par':'Züge {m} · Par {p}', 'fx.slackPar':'Unter Par!', 'a.slackPin':'Stift {n}, fest', 'p.tide':'Halten und loslassen — noch {n}', 'p.plinkPeg':'Zieh einen Stift heraus', 'p.plinkDrop':'Zum Zielen ziehen, loslassen zum Fallen', 'm.arc':'Fadenspiel|Schling jeden Stift, bevor der Faden erschlafft',  'm.slack':'Ohne Kreuzung|Zieh die Stifte, bis kein Faden kreuzt',  'm.tide':'Schnurren|Halten zum Anschwellen, loslassen zum Abklingen — bleib im Band',  'm.plink':'Korbwurf|Zieh einen Stift, dann fall in den erleuchteten Korb',  'p.missed':'Verpasst', 'slide.hint':'Tipp', 'p.slide':'Tippe auf das Ende eines Balkens, um ihn zu schieben', 
     'p.wheel':'Errate den Satz', 
@@ -12113,8 +12157,16 @@ const MODES = {
   tumble: {
     name:'Tumble Dryer', blurb:'Pair the socks faster than the drum refills', cat:'focus', par:9000, bonus:2600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#6C6191" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#FF5B39" stroke-width="2"/><circle cx="12" cy="3.6" r="1.4" fill="#FF5B39"/></svg>',
+    /* Since 0.185.0 the drum asks for more than speed. Pairs of the colour you paired last make a run, and a run pays more each
+       time: take the pair in front of you, or hunt for the one that keeps the run going. From level 6 striped socks tumble in, two
+       at a time, and a striped sock takes a whole pair of any colour with it (that colour carries the run on). From 12 lint
+       blows in and sits in a space until you tap it away. From 20 some pairs land inside out, grey, and a tap turns one round. */
     build(ctx){
-      const g = ctx.level < 6 ? 5 : ctx.level < 14 ? 6 : 7;
+      const lv = ctx.level;
+      const hasWild = lv >= 6, hasLint = lv >= 12, hasInside = lv >= 20;
+      const WILD = { name:'WILD', hex:'#F6EBD9', shape:'yarn' }, GREY = { name:'GREY', hex:'#6C6191', shape:'yarn' };
+      const LINT = '<svg viewBox="0 0 24 24" aria-hidden="true" class="lintsvg"><path d="M6 13c-2-3 1-7 4-5 1-3 6-3 6 1 3-1 5 3 2 5 2 2-1 5-3 3-1 2-5 2-6 0-3 1-5-2-3-4z" fill="#CDBCF7" fill-opacity=".55" stroke="#CDBCF7" stroke-width="1.2" stroke-linejoin="round"/><path d="M9 12q2-2 4 0M11 15q2-1 3 1" fill="none" stroke="#2A1B4D" stroke-opacity=".5" stroke-width="1"/></svg>';
+      const g = ctx.level ? 5 : ctx.level < 14 ? 6 : 7;
       const cells = g*g;
       const kinds = clamp(3 + Math.floor(ctx.level/5), 3, INKS.length);
       const pal = shuffle(INKS.slice(), ctx.rnd).slice(0, kinds);
@@ -12137,11 +12189,17 @@ const MODES = {
       const paint = i => {
         const v = slots[i], e = els[i];
         e.classList.toggle('full', !!v);
-        e.classList.remove('sel','tangled','hint');
-        if (v){
-          e.dataset.hex = v.ink.hex;
-          e.innerHTML = PIECE.sock(v.ink);
-          e.setAttribute('aria-label', inkName(v.ink));
+        e.classList.remove('sel','tangled','hint','wild','lint','inside');
+        if (v && v.lint){
+          delete e.dataset.hex; e.classList.add('lint'); e.innerHTML = LINT;
+          e.setAttribute('aria-label', t('a.tumbleLint'));
+        } else if (v){
+          const shown = v.wild ? WILD : v.inside ? GREY : v.ink;
+          if (v.wild) e.classList.add('wild');
+          if (v.inside) e.classList.add('inside');
+          e.dataset.hex = v.wild ? 'wild' : v.inside ? 'inside' : v.ink.hex;
+          e.innerHTML = PIECE.sock(shown);
+          e.setAttribute('aria-label', v.wild ? t('a.tumbleWild') : v.inside ? t('a.tumbleInside') : inkName(v.ink));
         } else {
           delete e.dataset.hex;
           e.innerHTML = '';
@@ -12150,18 +12208,42 @@ const MODES = {
       };
       /* Always a PAIR, never a single. An odd item left on the board would make
          the round unwinnable through no fault of the player. */
+      let added = 0;
       const addPair = () => {
         const open = free();
         if (open.length < 2) return false;
+        added++;
+        /* Striped ones come two at a time, so a striped sock left alone at the end always has a partner or nothing to take. */
+        const wild = hasWild && added % 5 === 3;
+        const inside = !wild && hasInside && added % 3 === 2;
         const ink = pal[Math.floor(ctx.rnd()*pal.length)];
-        shuffle(open, ctx.rnd).slice(0,2).forEach(i => { slots[i] = { ink }; paint(i); });
+        shuffle(open, ctx.rnd).slice(0,2).forEach(i => { slots[i] = wild ? { wild: true } : { ink, inside }; paint(i); });
         return true;
+      };
+      /* Lint never fills the last spaces: the drum is lost to socks, not fluff. */
+      let fills = 0;
+      const addLint = () => {
+        if (!hasLint || ++fills % 3) return;
+        const open = free();
+        if (open.length < 4) return;
+        const i = open[Math.floor(ctx.rnd()*open.length)];
+        slots[i] = { lint: true }; paint(i);
       };
       for (let i=0;i<startPairs;i++) addPair();
 
-      let sel = -1, done = false, tangles = 0, lastPair = 0, chain = 0;
-      const left = () => slots.filter(Boolean).length;
-      const say = () => ctx.prompt(t('p.tumble', { n: left() }));
+      let sel = -1, done = false, tangles = 0, lastPair = 0, chain = 0, run = 0, runInk = null, pairs = 0;
+      const left = () => slots.filter(v => v && !v.lint).length;
+      /* The newest rule rides on the count until the first pair: taught in the prompt, never in a tutorial. */
+      const teach = hasInside ? 'p.tumbleInside' : hasLint ? 'p.tumbleLint' : hasWild ? 'p.tumbleWild' : 'p.tumbleRun';
+      const say = () => ctx.prompt(t(pairs ? 'p.tumble' : teach, { n: left() }));
+      const runChip = mk('div','parchip tumrun');
+      const paintRun = () => {
+        runChip.innerHTML = '';
+        runChip.classList.toggle('made', run >= 2);
+        if (runInk){ const dot = mk('i','tumdot'); dot.style.background = runInk.hex; runChip.appendChild(dot); }
+        runChip.appendChild(document.createTextNode(t('tumble.run', { n: run })));
+        grid.dataset.run = run; grid.dataset.runInk = runInk ? runInk.hex : '';
+      };
 
       /* Two holds a round: the drum waits five seconds. The delicate cycle. */
       let holds = 2, heldUntil = 0;
@@ -12172,7 +12254,7 @@ const MODES = {
           done = true;
           return ctx.miss(els[0]);          /* the drum won */
         }
-        addPair();
+        addPair(); addLint();
         say();
         ctx.after(fillEvery, fill);
       };
@@ -12184,21 +12266,36 @@ const MODES = {
       const go = i => {
         const e = els[i];
         if (done || !slots[i] || e.classList.contains('tangled')) return;
+        /* Lint is tapped away; a grey sock is turned the right way out. Neither picks anything up or puts it down. */
+        if (slots[i].lint){ slots[i] = null; paint(i); if (sel >= 0) els[sel].classList.add('sel'); sfx.tap(); return; }
+        if (slots[i].inside){ slots[i].inside = false; paint(i); if (sel >= 0) els[sel].classList.add('sel'); sfx.tap(); return; }
         if (sel === i){ sel = -1; e.classList.remove('sel'); return; }
         if (sel < 0){ sel = i; e.classList.add('sel'); sfx.tap(); return; }
         const a = slots[sel], bItem = slots[i];
-        if (a.ink === bItem.ink){
+        if (a.ink === bItem.ink || a.wild || bItem.wild){
           const was = sel;
-          slots[was] = null; slots[i] = null;
-          paint(was); paint(i);
-          sel = -1;
+          /* A striped sock takes the whole pair of the colour it was put with: the sock it touched and that sock's partner. */
+          let ink = a.wild && bItem.wild ? null : (a.wild ? bItem : a).ink;
+          const gone = [was, i];
+          if ((a.wild || bItem.wild) && ink){
+            const mate = slots.findIndex((v, k) => v && !v.lint && !v.wild && v.ink === ink && !gone.includes(k));
+            if (mate >= 0) gone.push(mate);
+          }
+          gone.forEach(k => { slots[k] = null; paint(k); });
+          sel = -1; pairs++;
+          /* The run: the same colour as last time adds to it, another colour starts a new one; two striped socks leave it be. */
+          if (ink){ run = ink === runInk ? run + 1 : 1; runInk = ink; }
+          paintRun();
           sfx.good(1); buzz('good');
           /* Every pair pays: ten points, and a pair made within a couple of seconds of the one before adds five more each time (up to twenty),
              so a quick hand is worth more than a slow one. Paid before the win, which closes the round. */
           const now = performance.now();
           chain = now - lastPair < 2500 / spd() ? Math.min(chain + 1, 4) : 0; lastPair = now;
-          ctx.points(10 + chain*5, e);
-          if (cozyAdds > 0 && free().length >= 2){ cozyAdds--; addPair(); }
+          ctx.points(10 + chain*5 + Math.min(40, Math.max(0, run - 1)*10), e);
+          if (run >= 2 && ink) floatPts(e, t('fx.tumbleRun', { n: run }), run >= 4 ? 3 : 2);
+          if (cozyAdds > 0 && free().length >= 2){ cozyAdds--; addPair(); addLint(); }
+          /* A striped sock left on its own, with nothing left to take, folds itself away. */
+          if (left() === 1){ const k = slots.findIndex(v => v && v.wild); if (k >= 0){ slots[k] = null; paint(k); } }
           if (left() === 0){ done = true; return ctx.win(e); }
           say();
         } else {
@@ -12227,8 +12324,9 @@ const MODES = {
       hintB.classList.add('aid'); onTap(hintB, () => {
         if (hints <= 0 || done) return;
         const by = new Map();
-        slots.forEach((v, i) => { if (v && !els[i].classList.contains('tangled')){ if (!by.has(v.ink)) by.set(v.ink, []); by.get(v.ink).push(i); } });
-        const pair = Array.from(by.values()).find(a => a.length >= 2);
+        slots.forEach((v, i) => { if (v && !v.lint && !v.wild && !v.inside && !els[i].classList.contains('tangled')){ if (!by.has(v.ink)) by.set(v.ink, []); by.get(v.ink).push(i); } });
+        /* the run's colour first, if it has a pair showing */
+        const pair = (runInk && by.get(runInk) && by.get(runInk).length >= 2) ? by.get(runInk) : Array.from(by.values()).find(a => a.length >= 2);
         if (!pair) return;
         hints--; paintHold(); sfx.tap();
         const two = pair.slice(0, 2);
@@ -12242,7 +12340,9 @@ const MODES = {
       });
       /* a hold stops a clock, and Cozy has none */
       if (!ctx.untimed) tools.appendChild(hold); else hintB.style.marginLeft = '0';
-      tools.appendChild(hintB); col.appendChild(tools);
+      tools.appendChild(hintB); tools.insertBefore(runChip, tools.firstChild); col.appendChild(tools);
+      paintRun();
+      grid._slots = () => slots.map(v => v ? (v.lint ? 'lint' : v.wild ? 'wild' : v.inside ? 'in:' + v.ink.hex : v.ink.hex) : null);
       say();
     }
   },
@@ -12464,7 +12564,13 @@ const MODES = {
   haunt: {
     name:'Peekaboo', blurb:'Watch the baskets — where did the cats end up?', cat:'focus', par:8000, bonus:2600,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 11.2 L4.6 2.4 L10 6.3 Q12 5.9 14 6.3 L19.4 2.4 L20.4 11.2 Q20.8 20.2 12 20.2 Q3.2 20.2 3.6 11.2Z" fill="#FFB067"/><ellipse cx="8.6" cy="12" rx="1.25" ry="1.8" fill="#0D0918"/><ellipse cx="15.4" cy="12" rx="1.25" ry="1.8" fill="#0D0918"/><path d="M11 15.2 L13 15.2 L12 16.4Z" fill="#0D0918"/></svg>',
+    /* Since 0.184.0 the watching is a choice. When the set swaps are over the cats keep moving, and every move you sit through
+       puts more in the pot; call it whenever you are sure, and a clean find pays the pot (half of it after a wrong basket). From
+       level 6 two cats can move in one beat. From 12 one cat wears a bell, and finding her first pays. From 20 one move happens
+       in the dark: only the two baskets it joined light up, and where the cats were tells you which way it went. */
     build(ctx){
+      const lv = ctx.level;
+      const twins = lv >= 6, hasBell = lv >= 12, hasDark = lv >= 20;
       const g = ctx.level < 5 ? 4 : ctx.level < 12 ? 5 : 6;
       const n = g*g;
       const ghosts = clamp(1 + Math.floor(ctx.level/5), 1, Math.max(1, Math.floor(n/4)));
@@ -12483,7 +12589,7 @@ const MODES = {
       for (let i=0;i<n;i++){
         const b = mk('button','cell crypt'); b.type='button';
         b.innerHTML = '<span class="gh"><svg viewBox="0 0 24 24" aria-hidden="true">'
-          + '<path d="M3.6 11.2 L4.6 2.4 L10 6.3 Q12 5.9 14 6.3 L19.4 2.4 L20.4 11.2 Q20.8 20.2 12 20.2 Q3.2 20.2 3.6 11.2Z"/><ellipse cx="8.6" cy="12" rx="1.25" ry="1.8" class="eye"/><ellipse cx="15.4" cy="12" rx="1.25" ry="1.8" class="eye"/><path d="M11 15.2 L13 15.2 L12 16.4Z" class="eye"/><path d="M6.2 14.6 L1.8 13.8 M6.2 16.2 L2.2 17.4 M17.8 14.6 L22.2 13.8 M17.8 16.2 L21.8 17.4" class="whisk"/></svg></span>';
+          + '<path d="M3.6 11.2 L4.6 2.4 L10 6.3 Q12 5.9 14 6.3 L19.4 2.4 L20.4 11.2 Q20.8 20.2 12 20.2 Q3.2 20.2 3.6 11.2Z"/><ellipse cx="8.6" cy="12" rx="1.25" ry="1.8" class="eye"/><ellipse cx="15.4" cy="12" rx="1.25" ry="1.8" class="eye"/><path d="M11 15.2 L13 15.2 L12 16.4Z" class="eye"/><path d="M6.2 14.6 L1.8 13.8 M6.2 16.2 L2.2 17.4 M17.8 14.6 L22.2 13.8 M17.8 16.2 L21.8 17.4" class="whisk"/><path d="M7.4 18.4q4.6 2.2 9.2 0" class="collar"/><circle cx="12" cy="20.1" r="1.6" class="bellball"/></svg></span>';
         b.setAttribute('aria-label', t('a.tile', { n: i+1 }));
         els.push(b); grid.appendChild(b);
       }
@@ -12494,8 +12600,18 @@ const MODES = {
       /* One peek a round, while you are picking: the cats show themselves for a moment and go back. */
       const tools = mk('div','sumtools'), peek = mk('button','sumtool'); peek.type = 'button';
       peek.textContent = t('chalk.peek') + ' 1'; peek.disabled = true;
-      tools.appendChild(peek); col.appendChild(tools);
-      const reveal = on => els.forEach((e,i) => e.classList.toggle('open', on && where.includes(i)));
+      /* Call it: lit once the set swaps are over, and worth more for every move you watch after that. */
+      const callBtn = mk('button','sumtool'); callBtn.type = 'button'; callBtn.style.marginLeft = '10px'; callBtn.disabled = true;
+      let pot = 0, called = false, wrongs = 0, bellPaid = false, firstFound = true, startPick = () => {};
+      const potStep = 8 + Math.floor(lv/2), extraMax = 6;
+      const paintCall = () => { callBtn.textContent = t('haunt.call', { p: pot }); };
+      paintCall();
+      tools.appendChild(peek); tools.appendChild(callBtn); col.appendChild(tools);
+      const reveal = on => els.forEach((e,i) => {
+        e.classList.toggle('open', on && where.includes(i));
+        e.classList.toggle('bell', on && hasBell && where[0] === i);
+      });
+      const darkAt = hasDark ? 1 + Math.floor(ctx.rnd() * Math.max(1, swaps - 1)) : -1;
 
       /* A swap you cannot see is not a swap, it is a flash. This sends a ghost
          across the gap between the two tiles at the pace of the round, so the
@@ -12518,41 +12634,64 @@ const MODES = {
       };
 
       reveal(true);
-      ctx.prompt(t('p.hauntLook', { n: ghosts }));
+      /* The newest rule is said while the cats are showing: taught in the prompt, never in a tutorial. */
+      ctx.prompt(t(hasDark ? 'p.hauntDark' : hasBell ? 'p.hauntBell' : twins && ghosts > 1 ? 'p.hauntTwin' : 'p.hauntLook', { n: ghosts }));
 
       ctx.after(clamp(1300 - ctx.level*25, 650, 1300), () => {
         reveal(false);
         ctx.prompt(t('p.hauntTrack'));
-        let k = 0;
-        const step = () => {
-          if (k++ >= swaps){
-            phase = 'pick';
-            try { if (localStorage.getItem('dd.probe')) grid.dataset.where = JSON.stringify(where); } catch(e){}
-            peek.disabled = false;
-            ctx.prompt(t('p.hauntPick', { n: ghosts }));
-            return;
-          }
-          /* Move a tile that actually holds a ghost, into one that does not.
-             This used to pick both tiles at random out of all n, so with one
-             ghost in sixteen tiles almost every swap carried nothing: the board
-             flashed on a pair that did not matter and the ghost stayed put.
-             There was no thread to lose, which is why it read as the screen
-             flashing at random — it was. Every swap moves a ghost now. */
-          const from = where[Math.floor(ctx.rnd()*where.length)];
+        let k = 0, extra = 0;
+        startPick = () => {
+          if (phase === 'pick') return;
+          phase = 'pick'; callBtn.disabled = true; grid.classList.remove('dark');
+          try { if (localStorage.getItem('dd.probe')){ grid.dataset.where = JSON.stringify(where); grid.dataset.pot = pot; grid.dataset.bell = hasBell ? where[0] : -1; } } catch(e){}
+          peek.disabled = false;
+          ctx.prompt(t('p.hauntPick', { n: ghosts }));
+        };
+        callBtn.classList.add('aid'); onTap(callBtn, () => {
+          if (phase !== 'call' || called) return;
+          called = true; sfx.tap(); startPick();
+        });
+        /* One cat to an empty basket. `not` keeps a second move in the same beat off the baskets the first one used. */
+        const moveOne = (not, dark) => {
+          const cats = where.filter(w => !not.includes(w));
+          if (!cats.length) return null;
+          const from = cats[Math.floor(ctx.rnd()*cats.length)];
           const free = [];
-          for (let i=0;i<n;i++) if (!where.includes(i)) free.push(i);
-          if (!free.length) return ctx.after(pace, step);
+          for (let i=0;i<n;i++) if (!where.includes(i) && !not.includes(i)) free.push(i);
+          if (!free.length) return null;
           const to = free[Math.floor(ctx.rnd()*free.length)];
           where = where.map(w => w === from ? to : w);
-          drift(from, to);
-          /* Clear the marker after the animation. Left on, it accumulates across
-             the sequence until most of the board is wearing it, and the swap
-             stops being the one thing moving. */
+          if (!dark) drift(from, to);
           [from,to].forEach(i => {
             els[i].classList.remove('crswap'); void els[i].offsetWidth; els[i].classList.add('crswap');
             ctx.after(360, () => els[i].classList.remove('crswap'));
           });
+          return [from, to];
+        };
+        const step = () => {
+          if (called || phase === 'pick') return;
+          if (k >= swaps){
+            if (phase !== 'call'){
+              /* The set swaps are done: from here on, every move you watch is worth more. A breath first, to call it at nothing. */
+              phase = 'call'; callBtn.disabled = false; ctx.prompt(t('p.hauntCall'));
+              return ctx.after(Math.round(pace * 1.6), step);
+            }
+            if (extra >= extraMax) return startPick();
+            extra++;
+            const m = moveOne([], false);
+            if (m){ pot += potStep; paintCall(); ctx.grace(pace + 200); }
+            sfx.tap();
+            return ctx.after(pace, step);
+          }
+          const dark = k === darkAt;
+          grid.classList.toggle('dark', dark);
+          const m1 = moveOne([], dark);
+          /* Two in one beat, every third beat, once there are two cats to move. */
+          if (m1 && twins && where.length > 1 && k % 3 === 2) moveOne(m1, dark);
+          k++;
           sfx.tap();
+          if (dark) ctx.after(pace, () => grid.classList.remove('dark'));
           ctx.after(pace, step);
         };
         ctx.after(260, step);
@@ -12565,17 +12704,28 @@ const MODES = {
         ctx.after(700, () => els.forEach((e, i) => { if (!picked.has(i)) e.classList.remove('open'); }));
       });
       els.forEach((b,i) => onTap(b, () => {
+        /* A basket tapped while the cats are still moving calls it there and then. */
+        if (phase === 'call' && !called){ called = true; startPick(); }
         if (phase !== 'pick' || picked.has(i)) return;
         picked.add(i);
         if (!where.includes(i)){
-          b.classList.add('wrong');
+          b.classList.add('wrong'); wrongs++;
           /* A wrong tile takes a paw and stays marked; the ghosts are still out there. */
           if (paws.use(b)){ sfx.tap(); buzz('bad'); ctx.prompt(t('paws.again')); }
           return;
         }
         b.classList.add('open','found');
         sfx.good(picked.size); buzz('good');
-        if (where.every(w => picked.has(w))) return ctx.win(b);
+        /* The belled cat, found before any other: she rings. */
+        if (firstFound && hasBell && where[0] === i){
+          bellPaid = true; b.classList.add('bell'); grid.dataset.bellPaid = '1';
+          ctx.points(15 + Math.min(30, lv), b); floatPts(b, t('fx.hauntBell'), 2);
+        }
+        firstFound = false;
+        if (where.every(w => picked.has(w))){
+          if (pot){ const paid = wrongs ? Math.round(pot/2) : pot; ctx.points(paid, b); grid.dataset.paid = paid; floatPts(b, '+' + paid, paid >= 40 ? 3 : 2); }
+          return ctx.win(b);
+        }
         ctx.prompt(t('p.hauntPick', { n: ghosts - picked.size }));
       }));
     }
@@ -15405,41 +15555,101 @@ const MODES = {
   latch: {
     name:'Latch Hook', blurb:'Turn the rows until every hook lines up', cat:'make', par:14000, bonus:4100,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.6v10.4a4.2 4.2 0 0 0 8.4 0" fill="none" stroke="#C08BFF" stroke-width="2.3" stroke-linecap="round"/><path d="M4 20.5h16" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="3.4" r="1.9" fill="#C08BFF"/></svg>',
+    /* Since 0.182.0 the rows stop being strangers, one rule at a time. From level 6 a row can be linked to the one below it: turn
+       it and the one below turns too (the same way, or from level 12 the other way). From 12 one row has two hooks, and either can
+       be the one that lines up. From 20 a row has a ratchet and turns only one way. The least turns is worked out exactly, so a
+       round finished in that many pays extra. */
     build(ctx){
       /* A lock, taken apart. Braid reorders a set and Weave flips one; this
          turns rows past each other until they agree, and it does not care WHICH
          column they agree on — which is the whole puzzle, because the cheapest
          column to meet in is rarely the one any single row is already at. */
-      const rows = 4 + Math.min(2, Math.floor(ctx.level/8));
-      const cols = ctx.level < 6 ? 6 : ctx.level < 16 ? 8 : 10;
+      const lv = ctx.level;
+      /* Six rows do not fit a short phone's board with the tools under them (320x568): five there. */
+      const rows = 4 + Math.min(ctx.surface.getBoundingClientRect().height < 400 ? 1 : 2, Math.floor(lv/8));
+      const cols = lv < 6 ? 6 : lv < 16 ? 8 : 10;
+      const R = k => Math.floor(ctx.rnd() * k);
 
-      const home = Math.floor(ctx.rnd() * cols);
+      /* link[r]: 0, or +1 / -1, how row r+1 turns when row r does. */
+      const link = new Array(rows).fill(0);
+      const nLinks = lv >= 12 ? 2 : lv >= 6 ? 1 : 0;
+      for (let k = 0, tries = 0; k < nLinks && tries < 20; tries++){
+        const r = R(rows - 1);
+        if (link[r] || (r > 0 && link[r-1]) || link[r+1]) continue;     /* no chains of three: one turn moves two rows at most */
+        link[r] = lv >= 12 && ctx.rnd() < 0.5 ? -1 : 1; k++;
+      }
+      /* The double hook sits on a row of its own, half way round from its other hook or near it. */
+      const twin = lv >= 12 ? R(rows) : -1, twinOff = twin >= 0 ? 2 + R(cols - 3) : 0;
+      /* A ratchet row turns one way only: +1 right, -1 left. */
+      const rat = new Array(rows).fill(0);
+      if (lv >= 20){ const r = R(rows); rat[r] = ctx.rnd() < 0.5 ? 1 : -1; }
+
       const at = [];
-      for (let r = 0; r < rows; r++)
-        at.push((home + Math.floor(ctx.rnd() * cols)) % cols);
+      const home = R(cols);
+      for (let r = 0; r < rows; r++) at.push((home + R(cols)) % cols);
+      const md = v => ((v % cols) + cols) % cols;
+      const notches = r => r === twin ? [at[r], md(at[r] + twinOff)] : [at[r]];
+      const lined = () => { for (let c = 0; c < cols; c++) if (at.every((v, r) => notches(r).includes(c))) return true; return false; };
       /* A board that starts solved is not a board. */
-      if (at.every(v => v === at[0])) at[0] = (at[0] + 1 + Math.floor(ctx.rnd() * (cols - 1))) % cols;
+      for (let g = 0; lined() && g < 30; g++) at[0] = md(at[0] + 1 + R(cols - 1));
 
-      /* The allowance is the cost of the CHEAPEST column to meet in, worked out
-         over every column rather than assumed to be the one it was built from —
-         scrambling can easily leave a better meeting point than the original. */
-      const turns = (a, c) => Math.min((a - c + cols) % cols, (c - a + cols) % cols);
-      const costAt = c => at.reduce((n, a) => n + turns(a, c), 0);
-      let least = Infinity;
-      for (let c = 0; c < cols; c++) least = Math.min(least, costAt(c));
+      /* The least turns, exactly. Turning row r by k moves row r+1 by link[r]*k, so working down from the top each row's turn is
+         fixed by the column chosen and the turn above it; the only choices are the column and, on the twin row, which hook. */
+      const cost = (r, k) => rat[r] > 0 ? md(k) : rat[r] < 0 ? md(-k) : Math.min(md(k), md(-k));
+      const plan = c => {
+        let best = null;
+        for (const h of (twin >= 0 ? [0, twinOff] : [0])){
+          let sum = 0, carry = 0; const ks = [];
+          for (let r = 0; r < rows; r++){
+            const from = md(at[r] + carry + (r === twin ? h : 0));
+            let k = md(c - from);
+            if (!rat[r] && md(-k) < k) k = -md(-k);
+            else if (rat[r] < 0) k = -md(-k);
+            ks.push(k); sum += cost(r, k);
+            carry = link[r] * k;
+          }
+          if (!best || sum < best.sum) best = { sum, ks, c };
+        }
+        return best;
+      };
+      let least = Infinity, meetAt = 0;
+      for (let c = 0; c < cols; c++){ const q = plan(c); if (q.sum < least){ least = q.sum; meetAt = c; } }
 
       const wrap = mk('div','ltcwrap');
       ctx.surface.appendChild(wrap);
 
       const budget = moveBudget(ctx, least);
-      let done = false;
-      const lined = () => at.every(v => v === at[0]);
+      let done = false, used = 0;
       /* Every turn can be taken back, and the move comes back with it. */
       const history = [];
-      let hints = 2, meetAt = 0;
-      for (let c = 1; c < cols; c++) if (costAt(c) < costAt(meetAt)) meetAt = c;
+      let hints = 2;
+      const teach = rat.some(Boolean) ? 'p.latchRat' : twin >= 0 ? 'p.latchTwin' : nLinks ? 'p.latchLink' : '';
 
       const rowEls = [];
+      const turn = (r, k) => {
+        history.push({ prev: at.slice(), used });
+        at[r] = md(at[r] + k);
+        if (link[r]) at[r+1] = md(at[r+1] + link[r] * k);
+        used += Math.abs(k);
+        sfx.tap(); buzz('tap'); paint();
+        const lead = rowEls[r].strip;
+        if (lined()){ finish(lead); return true; }
+        return false;
+      };
+      const finish = node => {
+        done = true; paintTools();
+        wrap.classList.add('good');
+        if (used <= least){
+          wrap.classList.add('exact'); par.classList.add('made');
+          ctx.points(20 + Math.min(40, lv*2), wrap);
+          floatPts(node, t('fx.latchExact'), 3);
+        }
+        ctx.win(node);
+      };
+      const nope = (r, btn) => {
+        const row = rowEls[r].row; row.classList.add('nope'); sfx.tap(); ctx.prompt(t('p.latchRatNo'));
+        ctx.after(320, () => row.classList.remove('nope'));
+      };
       for (let r = 0; r < rows; r++){
         const row = mk('div','ltcrow');
         const left = mk('button','ltcturn');
@@ -15452,9 +15662,19 @@ const MODES = {
         right.type = 'button';
         right.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
         row.appendChild(left); row.appendChild(strip); row.appendChild(right);
+        /* The link to the row below: a short chain between the two strips, crossed when the row below turns the other way. */
+        if (link[r]){
+          const ch = mk('span','ltclink' + (link[r] < 0 ? ' flip' : ''));
+          ch.innerHTML = link[r] > 0
+            ? '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="1.5" width="8" height="11" rx="4" fill="none" stroke="#FFC53D" stroke-width="2.4"/><rect x="8" y="11.5" width="8" height="11" rx="4" fill="none" stroke="#FFC53D" stroke-width="2.4"/></svg>'
+            : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v14l-3-3M7 17l3-3M17 21V7l3 3M17 7l-3 3" fill="none" stroke="#FF7E96" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          row.appendChild(ch); row.classList.add('linked');
+        }
+        if (rat[r]){ row.classList.add('ratchet'); (rat[r] > 0 ? left : right).classList.add('stuck'); (rat[r] > 0 ? left : right).setAttribute('aria-disabled', 'true'); }
+        if (r === twin) row.classList.add('twin');
         wrap.appendChild(row);
         const cells = [];
-        for (let c = 0; c < cols; c++){ const e = mk('i','ltccell'); strip.appendChild(e); cells.push(e); }
+        for (let c = 0; c < cols; c++){ const e2 = mk('i','ltccell'); strip.appendChild(e2); cells.push(e2); }
         rowEls.push({ row, strip, cells, left, right });
         /* Or take hold of the row and slide it: every cell's width is one turn, and however far you take it is one move. */
         strip.style.touchAction = 'none';
@@ -15462,25 +15682,22 @@ const MODES = {
         strip.addEventListener('pointerdown', ev => {
           if (done || ev.button || grip) return;
           grip = { id: ev.pointerId, x0: ev.clientX, w: strip.getBoundingClientRect().width / cols, steps: 0 };
-          try { strip.setPointerCapture(ev.pointerId); } catch (e) {}
+          try { strip.setPointerCapture(ev.pointerId); } catch (e2) {}
         });
         strip.addEventListener('pointermove', ev => {
           if (!grip || ev.pointerId !== grip.id) return;
-          const st = Math.round((ev.clientX - grip.x0) / grip.w);
+          let st = Math.round((ev.clientX - grip.x0) / grip.w);
+          if (rat[r] && Math.sign(st) === -rat[r]) st = 0;          /* a ratchet will not go back, not even a little */
           if (st === grip.steps) return;
           grip.steps = st;
-          const to = ((at[r] + st) % cols + cols) % cols;
-          cells.forEach((e, c) => e.classList.toggle('notch', c === to));
+          cells.forEach((e2, c) => e2.classList.toggle('notch', c === md(at[r] + st) || (r === twin && c === md(at[r] + st + twinOff))));
         });
         const release = ev => {
           if (!grip || (ev && ev.pointerId !== grip.id)) return;
           const g2 = grip; grip = null;
-          try { strip.releasePointerCapture(g2.id); } catch (e) {}
-          const to = ((at[r] + g2.steps) % cols + cols) % cols;
-          if (to === at[r]){ paint(); return; }
-          history.push({ r, prev: at[r] });
-          at[r] = to; sfx.tap(); buzz('tap'); paint();
-          if (lined()){ done = true; paintTools(); wrap.classList.add('good'); return ctx.win(strip); }
+          try { strip.releasePointerCapture(g2.id); } catch (e2) {}
+          if (md(g2.steps) === 0){ paint(); return; }
+          if (turn(r, g2.steps)) return;
           budget.spend(strip); paintTools();
         };
         strip.addEventListener('pointerup', release);
@@ -15489,53 +15706,56 @@ const MODES = {
           btn.setAttribute('aria-label', t(dir < 0 ? 'latch.left' : 'latch.right', { n: r + 1 }));
           onTap(btn, () => {
             if (done) return;
-            history.push({ r, prev: at[r] });
-            at[r] = (at[r] + dir + cols) % cols;
-            paint();
-            if (lined()){
-              done = true; paintTools();
-              wrap.classList.add('good');
-              return ctx.win(btn);
-            }
+            if (rat[r] && dir !== rat[r]) return nope(r, btn);
+            if (turn(r, dir)) return;
             budget.spend(btn); paintTools();
           });
         });
       }
 
-      const tools = mk('div','sumtools'), undo = mk('button','sumtool'), hint = mk('button','sumtool');
+      const tools = mk('div','sumtools'), undo = mk('button','sumtool'), hint = mk('button','sumtool'), par = mk('div','parchip');
       undo.type = 'button'; hint.type = 'button'; undo.style.marginRight = '10px';
-      tools.appendChild(undo); tools.appendChild(hint); wrap.appendChild(tools);
+      tools.appendChild(par); tools.appendChild(undo); tools.appendChild(hint); wrap.appendChild(tools);
       const paintTools = () => {
         undo.textContent = t('latch.undo'); undo.disabled = done || !history.length;
         hint.textContent = t('latch.hint') + ' ' + hints; hint.disabled = done || hints <= 0;
+        par.textContent = t('latch.least', { m: used, p: least }); par.classList.toggle('over', used > least);
       };
       undo.classList.add('aid'); onTap(undo, () => {
         const h = history.pop(); if (done || !h) return;
-        at[h.r] = h.prev; sfx.tap(); buzz('tap'); budget.refund(); paint(); paintTools();
+        h.prev.forEach((v, r) => { at[r] = v; }); used = h.used;
+        sfx.tap(); buzz('tap'); budget.refund(); paint(); paintTools();
       });
-      /* A hint marks the column that is cheapest to meet in, for a moment. */
+      /* A hint marks the column that is cheapest to meet in from where the rows are now, for a moment. */
       hint.classList.add('aid'); onTap(hint, () => {
         if (done || hints <= 0) return;
         hints--; sfx.tap(); paintTools();
-        rowEls.forEach(re => re.cells[meetAt].classList.add('meet'));
+        let c0 = 0, q0 = plan(0);
+        for (let c = 1; c < cols; c++){ const q = plan(c); if (q.sum < q0.sum){ q0 = q; c0 = c; } }
+        rowEls.forEach(re => re.cells[c0].classList.add('meet'));
         ctx.prompt(t('latch.meet'));
-        ctx.after(2800, () => { rowEls.forEach(re => re.cells[meetAt].classList.remove('meet')); if (!done) paint(); });
+        ctx.after(2800, () => { rowEls.forEach(re => re.cells[c0].classList.remove('meet')); if (!done) paint(); });
       });
 
       const paint = () => {
         const agree = lined();
         rowEls.forEach((re, r) => {
-          re.cells.forEach((e, c) => e.classList.toggle('notch', c === at[r]));
-          re.strip.setAttribute('aria-label', t('latch.row', { n: r + 1, c: at[r] + 1 }));
+          const ns = notches(r);
+          re.cells.forEach((e2, c) => e2.classList.toggle('notch', ns.includes(c)));
+          re.strip.setAttribute('aria-label', t('latch.row', { n: r + 1, c: ns.map(v => v + 1).join(' / ') }));
           re.row.classList.toggle('lined', agree);
         });
         /* How many rows are already on the best column to meet at — the number
            that actually tells you whether the last turn helped. */
         let best = 0;
         for (let c = 0; c < cols; c++)
-          best = Math.max(best, at.reduce((n, a) => n + (a === c ? 1 : 0), 0));
-        ctx.prompt(t('p.latch', { n: rows - best }));
+          best = Math.max(best, at.reduce((n, a2, r) => n + (notches(r).includes(c) ? 1 : 0), 0));
+        /* The newest rule rides on the count until the first turn: taught in the prompt, never in a tutorial. */
+        ctx.prompt(t(teach && !history.length ? teach : 'p.latch', { n: rows - best }));
+        wrap.dataset.lv = lv; wrap.dataset.least = least; wrap.dataset.used = used; wrap.dataset.meet = meetAt;
+        wrap.dataset.link = link.join(','); wrap.dataset.rat = rat.join(','); wrap.dataset.twin = twin; wrap.dataset.off = twinOff;
       };
+      wrap._plan = () => { let q0 = plan(0); for (let c = 1; c < cols; c++){ const q = plan(c); if (q.sum < q0.sum) q0 = q; } return q0; };
       paint(); paintTools();
     }
   },
@@ -17187,12 +17407,18 @@ const MODES = {
   halve: {
     name:'Even Skeins', blurb:'Move skeins until both baskets weigh the same', cat:'numbers', par:15000, bonus:4200,
     glyph:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5h18" stroke="#FFC53D" stroke-width="2.4" stroke-linecap="round"/><path d="M12 9.5v9.5M7.5 19h9" stroke="#6C6191" stroke-width="2" stroke-linecap="round"/><circle cx="6.2" cy="5.6" r="2.7" fill="#FFC53D"/><circle cx="17.8" cy="5.6" r="2.7" fill="#FFC53D"/></svg>',
+    /* Since 0.183.0 the skeins stop being loose, one rule at a time. From level 6 two skeins are tied and move as one (two pairs
+       from 16). From 12 the cat sits in the left basket and her weight counts. From 20 one skein is pinned where it lies. The
+       fewest moves is worked out over every split, and a round finished in that many pays extra. */
     build(ctx){
       /* Sum Snap is two numbers hitting a target and Count Fast is one number
          under a clock. This is the whole set at once: not "which two" but
          "which ones", which is a different question and the only one of the
          four that has you weighing a group against a group. */
-      const n = 8 + Math.min(4, Math.floor(ctx.level/5));
+      const lv = ctx.level;
+      const nTies = lv >= 16 ? 2 : lv >= 6 ? 1 : 0, hasCat = lv >= 12, hasPin = lv >= 20;
+      /* The cat is one of the skeins, taken out: so the board still balances with her in it. */
+      let n = 8 + Math.min(4, Math.floor(lv/5)) + (hasCat ? 1 : 0);
 
       /* Built as two groups that already balance, then dealt out at random —
          so a perfect split is guaranteed to exist rather than hoped for. */
@@ -17213,7 +17439,7 @@ const MODES = {
         }
         if (!fine || left < 2 || left > 18) continue;
         b.push(left);
-        vals = shuffle(a.concat(b), ctx.rnd);
+        vals = shuffle(a.map(v => ({ v, g: 0 })).concat(b.map(v => ({ v, g: 1 }))), ctx.rnd);
       }
       /* Two mirrored groups, merged down to the piece count asked for. Merging
          two pieces into their sum keeps the group's total, so the two sides
@@ -17222,30 +17448,66 @@ const MODES = {
         const a = Array.from({ length: Math.ceil(n/2) }, (_, i) => 2 + i*2);
         const b = a.slice();
         while (a.length + b.length > n && b.length > 1) b.push(b.pop() + b.pop());
-        vals = shuffle(a.concat(b), ctx.rnd);
+        vals = shuffle(a.map(v => ({ v, g: 0 })).concat(b.map(v => ({ v, g: 1 }))), ctx.rnd);
       }
+      let catW = 0, catG = 0;
+      if (hasCat){
+        let ci = vals.findIndex(o => o.v >= 3 && o.v <= 12);
+        if (ci < 0) ci = 0;
+        catW = vals[ci].v; catG = vals[ci].g; vals.splice(ci, 1);
+      }
+      const grp = vals.map(o => o.g);
+      vals = vals.map(o => o.v);
+      n = vals.length;
+      /* Which basket each group belongs in for the split the board was built from: the cat's group goes left, with her. */
+      const homeOf = i => grp[i] === catG ? 0 : 1;
+      /* Ties are between two skeins of one group, so the built split still works; the pinned skein is never tied. */
+      const unit = vals.map((_, i) => i), tie = new Array(n).fill(-1);
+      for (let k = 0, tries = 0; k < nTies && tries < 40; tries++){
+        const i = Math.floor(ctx.rnd()*n), j = Math.floor(ctx.rnd()*n);
+        if (i === j || grp[i] !== grp[j] || unit[i] !== i || unit[j] !== j || tie[i] >= 0 || tie[j] >= 0) continue;
+        unit[j] = i; tie[i] = tie[j] = k; k++;
+      }
+      let pin = -1;
+      if (hasPin) for (let tries = 0; tries < 40 && pin < 0; tries++){ const i = Math.floor(ctx.rnd()*n); if (tie[i] < 0) pin = i; }
+      const members = u => vals.map((_, i) => i).filter(i => unit[i] === u);
+      const units = vals.map((_, i) => i).filter(i => unit[i] === i);
 
       const sum = vals.reduce((x,y) => x+y, 0);
-      const half = sum / 2;
+      const half = (sum + catW) / 2;
 
       /* Deal them out, but never onto a board that is already balanced. */
-      let side = vals.map(() => ctx.rnd() < 0.5 ? 1 : 0);
-      const totalOf = w => vals.reduce((x,v,i) => x + (side[i] === w ? v : 0), 0);
-      for (let guard = 0; guard < 40 && totalOf(0) === totalOf(1); guard++)
-        side[Math.floor(ctx.rnd()*n)] ^= 1;
+      const side = new Array(n).fill(0);
+      units.forEach(u => { const w = u === pin ? homeOf(u) : ctx.rnd() < 0.5 ? 1 : 0; members(u).forEach(i => { side[i] = w; }); });
+      const totalOf = w => vals.reduce((x,v,i) => x + (side[i] === w ? v : 0), 0) + (w === 0 ? catW : 0);
+      const free = units.filter(u => u !== pin);
+      /* Never all the skeins in one basket: no more than two over half on either side, so a crowded basket still fits. */
+      const lim = Math.ceil(n/2) + 2, count = w => side.filter(v => v === w).length;
+      for (let guard = 0; guard < 60 && (totalOf(0) === totalOf(1) || count(0) > lim || count(1) > lim); guard++){
+        const heavy = count(0) > lim ? 0 : count(1) > lim ? 1 : -1;
+        const pool = heavy < 0 ? free : free.filter(u => side[u] === heavy);
+        const u = pool[Math.floor(ctx.rnd()*pool.length)]; members(u).forEach(i => { side[i] ^= 1; });
+      }
+      /* The fewest moves from here to any split that balances: a tied pair moves as one, the pinned skein not at all. */
+      const bestFrom = () => {
+        let best = { cost: 1e9, mask: -1 };
+        for (let mask = 0; mask < (1 << units.length); mask++){
+          let sm = catW, c = 0, ok = true;
+          for (let k = 0; k < units.length; k++){
+            const u = units[k], w = (mask >> k) & 1;
+            if (u === pin && w !== side[u]){ ok = false; break; }
+            if (w === 0) for (const i of members(u)) sm += vals[i];
+            if (w !== side[u]) c++;
+          }
+          if (ok && sm === half && c < best.cost) best = { cost: c, mask };
+        }
+        return best;
+      };
 
       /* The allowance is the fewest pieces that have to move, over EVERY split
          that balances — not just the one the board was built from. */
-      let least = n;
-      for (let mask = 0; mask < (1 << n); mask++){
-        let s = 0;
-        for (let i = 0; i < n; i++) if (mask & (1 << i)) s += vals[i];
-        if (s !== half) continue;
-        let moves = 0;
-        for (let i = 0; i < n; i++) if (((mask >> i) & 1) !== side[i]) moves++;
-        least = Math.min(least, moves);
-      }
-      if (!isFinite(least) || least < 1) least = 1;
+      let least = bestFrom().cost;
+      if (!isFinite(least) || least < 1 || least > n) least = 1;
 
       const wrap = mk('div','hlvwrap');
       const trays = [0,1].map(w => {
@@ -17256,6 +17518,12 @@ const MODES = {
         wrap.appendChild(tray);
         return { tray, grid, tot };
       });
+      let catEl = null;
+      if (hasCat){
+        const c = mk('div','hlvcat'); c.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11 4 4l5.5 3.5M19 11l1-7-5.5 3.5" fill="#F6EBD9" stroke="#2A1B4D" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="13.5" r="8" fill="#F6EBD9" stroke="#2A1B4D" stroke-width="1.6"/><path d="M7.5 13q1.8 1.8 3.6 0M12.9 13q1.8 1.8 3.6 0" fill="none" stroke="#2A1B4D" stroke-width="1.5" stroke-linecap="round"/><path d="M11 16.5h2l-1 1.2z" fill="#FF7E96"/></svg><b>' + catW + '</b>';
+        c.setAttribute('role','img'); c.setAttribute('aria-label', t('a.halveCat', { w: catW }));
+        catEl = c;
+      }
       const col = mk('div','sumcol');
       col.appendChild(wrap);
       ctx.surface.appendChild(col);
@@ -17265,12 +17533,22 @@ const MODES = {
       const history = [];
       const flip = (i, b) => {
         if (done) return;
-        side[i] ^= 1; history.push(i);
+        if (i === pin){
+          b.classList.add('nope'); sfx.tap(); ctx.prompt(t('p.halvePinned'));
+          ctx.after(320, () => b.classList.remove('nope')); return;
+        }
+        const u = unit[i];
+        members(u).forEach(k => { side[k] ^= 1; }); history.push(u);
         sfx.tap(); buzz('tap');
         paint();
         if (totalOf(0) === totalOf(1)){
           done = true; paintHint();
           wrap.classList.add('good');
+          if (history.length <= least){
+            wrap.classList.add('exact'); par.classList.add('made');
+            ctx.points(20 + Math.min(40, lv*2), wrap);
+            floatPts(b, t('fx.halveExact'), 3);
+          }
           return ctx.win(b);
         }
         budget.spend(b);
@@ -17281,6 +17559,8 @@ const MODES = {
         b.type = 'button';
         b.textContent = String(v);
         b._i = i;
+        if (tie[i] >= 0) b.classList.add('tied', 'tie' + tie[i]);
+        if (i === pin){ b.classList.add('pin'); b.setAttribute('aria-disabled', 'true'); }
         return b;
       });
       /* A skein is moved by tapping it, or by picking it up and letting go of it over the other basket. */
@@ -17289,44 +17569,45 @@ const MODES = {
         land: (from, to) => { const w = trays.findIndex(tr => tr.tray === to); if (w >= 0 && side[from._i] !== w) flip(from._i, from); } });
       const tools = mk('div','sumtools'), undo = mk('button','sumtool'); undo.type = 'button';
       undo.textContent = t('chalk.undo'); undo.disabled = true;
-      undo.classList.add('aid'); onTap(undo, () => { const i = history.pop(); if (i === undefined || done) return; side[i] ^= 1; sfx.tap(); budget.refund(); paint(); undo.disabled = !history.length; });
+      undo.classList.add('aid'); onTap(undo, () => { const u = history.pop(); if (u === undefined || done) return; members(u).forEach(k => { side[k] ^= 1; }); sfx.tap(); budget.refund(); paint(); undo.disabled = !history.length; });
       /* A hint points at one skein to move: the first step of the shortest way from where the baskets are now to a split that balances. */
       let hints = 2;
       const hint = mk('button','sumtool'); hint.type = 'button'; hint.style.marginLeft = '10px';
-      const paintHint = () => { hint.textContent = t('halve.hint') + ' ' + hints; hint.disabled = hints <= 0 || done; };
+      const par = mk('div','parchip');
+      const paintHint = () => { hint.textContent = t('halve.hint') + ' ' + hints; hint.disabled = hints <= 0 || done;
+        par.textContent = t('halve.least', { m: history.length, p: least }); par.classList.toggle('over', history.length > least); };
       hint.classList.add('aid'); onTap(hint, () => {
         if (done || hints <= 0) return;
-        let bestMask = -1, bestCost = 1e9;
-        for (let mask = 0; mask < (1 << n); mask++){
-          let sm = 0;
-          for (let i = 0; i < n; i++) if (mask & (1 << i)) sm += vals[i];
-          if (sm !== half) continue;
-          let c = 0; for (let i = 0; i < n; i++) if (((mask >> i) & 1) !== side[i]) c++;
-          if (c < bestCost){ bestCost = c; bestMask = mask; }
-        }
-        const i = bestMask < 0 ? -1 : vals.findIndex((_, k) => ((bestMask >> k) & 1) !== side[k]);
-        if (i < 0) return;
+        const best = bestFrom();
+        const k0 = best.mask < 0 ? -1 : units.findIndex((u, k) => ((best.mask >> k) & 1) !== side[u]);
+        if (k0 < 0) return;
         hints--; paintHint(); sfx.tap();
-        chips[i].classList.add('hint');
-        ctx.after(2200, () => chips[i].classList.remove('hint'));
+        const lit = members(units[k0]);
+        lit.forEach(i => chips[i].classList.add('hint'));
+        ctx.after(2200, () => lit.forEach(i => chips[i].classList.remove('hint')));
       });
-      tools.appendChild(undo); tools.appendChild(hint); col.appendChild(tools);
+      tools.appendChild(par); tools.appendChild(undo); tools.appendChild(hint); col.appendChild(tools);
       paintHint();
 
       const paint = () => {
         trays.forEach((tr, w) => {
           /* biggest first, so a basket reads at a glance */
           const mine = chips.filter((_, i) => side[i] === w).sort((a, b) => vals[b._i] - vals[a._i] || a._i - b._i);
-          tr.grid.replaceChildren.apply(tr.grid, mine);
+          tr.grid.replaceChildren.apply(tr.grid, w === 0 && catEl ? [catEl].concat(mine) : mine);
           const total = totalOf(w);
           tr.tot.textContent = String(total);
           tr.tray.classList.toggle('heavy', total > totalOf(1-w));
           tr.tray.classList.toggle('level', total === totalOf(1-w));
         });
         chips.forEach((b, i) => b.setAttribute('aria-label',
-          t('halve.chip', { v: vals[i], s: side[i] + 1 })));
-        ctx.prompt(t('p.halve', { n: Math.abs(totalOf(0) - totalOf(1)) }));
+          t('halve.chip', { v: vals[i], s: side[i] + 1 }) + (i === pin ? ', ' + t('a.halvePin') : tie[i] >= 0 ? ', ' + t('a.halveTied') : '')));
+        paintHint();
+        wrap.dataset.lv = lv; wrap.dataset.least = least; wrap.dataset.moves = history.length;
+        /* The newest rule rides on the gap until the first move: taught in the prompt, never in a tutorial. */
+        const teach = hasPin ? 'p.halvePin' : hasCat ? 'p.halveCat' : nTies ? 'p.halveTie' : 'p.halve';
+        ctx.prompt(t(history.length ? 'p.halve' : teach, { n: Math.abs(totalOf(0) - totalOf(1)), w: catW }));
       };
+      wrap._state = () => ({ vals: vals.slice(), side: side.slice(), unit: unit.slice(), pin, catW, least, best: bestFrom() });
       paint();
     }
   },

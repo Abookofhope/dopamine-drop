@@ -7,6 +7,10 @@
  *      levels (one cat, a few, the most).
  *   3. A wrong basket takes a paw and the round goes on; the Peek shows the cats still to find.
  *
+ *   4. (0.184.0) Call it lights at +0 when the set moves end; watching on grows the pot and a clean find pays all of it; the
+ *      newest rule is said while the cats show; two move at once from level 6, a belled cat found first rings from 12, and a
+ *      dimmed move from 20, and following every move still finds them.
+ *
  *   PORT=8502 SITE=/path/to/built node tools/probe/peekaboo.mjs
  */
 import { chromium } from 'playwright';
@@ -93,6 +97,54 @@ for (const [label, prof] of [['a beginner', { xp: 0, runs: 3, solved: 5 }], ['th
   await page.waitForTimeout(150);
   const peeked = await page.evaluate(() => [...document.querySelectorAll('#surface .cell.crypt')].map((e, i) => e.classList.contains('open') ? i : -1).filter(i => i >= 0));
   check(peeked.length === where.length && peeked.every(i => where.includes(i)), `the Peek shows the cats still to find (${peeked.join(',')})`);
+  await page.close();
+}
+
+/* ── 4 (0.184.0): watch on for a pot, call it, the bell, the move in the dark ── */
+const state = page => page.evaluate(() => { const g = document.querySelector('#surface .crypts'); const b = [...document.querySelectorAll('#surface .sumtool')];
+  return { where: g && g.dataset.where ? JSON.parse(g.dataset.where) : null, pot: g ? +g.dataset.pot || 0 : 0, bell: g ? +(g.dataset.bell ?? -1) : -1, paid: g ? +g.dataset.paid || 0 : 0,
+    bellPaid: g ? g.dataset.bellPaid === '1' : false, call: b[1] ? { off: b[1].disabled, text: b[1].textContent.trim() } : null, prompt: document.getElementById('prompt').textContent.trim(),
+    dark: g ? g.classList.contains('dark') : false }; });
+for (const [label, prof, want] of [['a beginner', { xp: 0, runs: 3, solved: 5 }, { word: null, bell: false }], ['level 11', { xp: 4000, runs: 40, solved: 600 }, { word: /two can move/, bell: false }],
+  ['level 19', { xp: 30000, runs: 40, solved: 600 }, { word: /belled/, bell: true }], ['level 23', { xp: 60000, runs: 40, solved: 600 }, { word: /dark/, bell: true }]]){
+  const page = await open(prof);
+  await page.waitForFunction(() => /cats? ·|cats? —|cat —|cats —|watch/i.test(document.getElementById('prompt').textContent), null, { timeout: 8000, polling: 50 }).catch(() => {});
+  const first = (await state(page)).prompt;
+  check(!want.word || want.word.test(first), `${label}: the newest rule is said while the cats show (${first})`);
+  if (want.word && /dark/.test(want.word.source)){
+    const sawDark = await page.waitForFunction(() => { const g = document.querySelector('#surface .crypts'); return g && g.classList.contains('dark'); }, null, { timeout: 15000, polling: 30 }).then(() => true).catch(() => false);
+    check(sawDark, `${label}: one move happens with the baskets dimmed`);
+  }
+  /* wait for the call, let two moves pass, call it */
+  await page.waitForFunction(() => { const b = [...document.querySelectorAll('#surface .sumtool')][1]; return b && !b.disabled; }, null, { timeout: 20000, polling: 50 });
+  const c0 = await state(page);
+  check(/call it|watching/i.test(c0.prompt) && /\+0/.test(c0.call.text), `${label}: when the set moves are over, Call it lights at +0 (${c0.call.text}; ${c0.prompt})`);
+  await page.waitForFunction(() => /\+[1-9]\d*/.test([...document.querySelectorAll('#surface .sumtool')][1].textContent) && (+[...document.querySelectorAll('#surface .sumtool')][1].textContent.match(/\d+/)[0]) >= 2 * (8 + 1), null, { timeout: 15000, polling: 50 }).catch(() => {});
+  const c1 = await state(page);
+  await page.evaluate(() => [...document.querySelectorAll('#surface .sumtool')][1].click()); await page.waitForTimeout(120);
+  const c2 = await state(page);
+  check(!!c2.where && c2.pot > 0 && c2.call.off, `${label}: watching on grows the pot, and calling it starts the pick (pot ${c2.pot}, ${c1.call.text})`);
+  check(want.bell === (c2.bell >= 0), `${label}: a belled cat ${want.bell ? 'is' : 'is not'} in the round`);
+  const seen = await page.evaluate(() => window.__seen);
+  let pos = (seen.shown || []).slice();
+  for (let k = 0; k + 1 < seen.swaps.length; k += 2){ const [a, b] = [seen.swaps[k], seen.swaps[k + 1]]; pos = pos.map(p => p === a ? b : p === b ? a : p); }
+  check(pos.length === c2.where.length && pos.every(p => c2.where.includes(p)), `${label}: followed through every move, two at once and the dark one too, the cats are where you watched them go`);
+  const order = want.bell ? [c2.bell, ...c2.where.filter(w => w !== c2.bell)] : c2.where;
+  /* the round ends on the last cat and the next board replaces this one: keep hold of this one to read what it paid */
+  await page.evaluate(() => { window.__g = document.querySelector('#surface .crypts'); });
+  for (const p of order){ const c = await tileAt(page, p); await page.mouse.click(c.x, c.y); await page.waitForTimeout(150); }
+  await page.waitForTimeout(250); const end = await page.evaluate(() => ({ paid: +window.__g.dataset.paid || 0, bellPaid: window.__g.dataset.bellPaid === '1' }));
+  check(end.paid === c2.pot, `${label}: a clean find pays the whole pot (${end.paid} of ${c2.pot})`);
+  if (want.bell) check(end.bellPaid, `${label}: and the belled cat found first rings`);
+  await page.close();
+}
+/* a basket tapped while they still move calls it */
+{
+  const page = await open({ xp: 4000, runs: 40, solved: 600 });
+  await page.waitForFunction(() => { const b = [...document.querySelectorAll('#surface .sumtool')][1]; return b && !b.disabled; }, null, { timeout: 20000, polling: 50 });
+  const c = await tileAt(page, 0); await page.mouse.click(c.x, c.y); await page.waitForTimeout(150);
+  const st = await state(page);
+  check(!!st.where && st.call.off, 'a basket tapped while the cats still move calls it there and then, and counts as a pick');
   await page.close();
 }
 

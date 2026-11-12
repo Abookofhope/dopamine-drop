@@ -193,7 +193,7 @@ if (!only || only.includes('halve')){
   const n = await page.evaluate(() => document.querySelectorAll('.hlvchip').length);
   check(n >= 8, `there are at least eight skeins (${n})`);
   const w0 = await where();
-  const a = await centre(page, '.hlvtray:nth-child(1) .hlvchip', 0), t2 = await centre(page, '.hlvtray:nth-child(2)', 0);
+  const a = await centre(page, '.hlvtray:nth-child(1) .hlvchip:not(.tied):not(.pin)', 0), t2 = await centre(page, '.hlvtray:nth-child(2)', 0);
   const r = await drag(page, a, { x: t2.x, y: t2.y + t2.h * 0.3 });
   check(r.mid.ghost && r.mid.lifted, 'the skein lifts a copy under the finger');
   check(r.over, 'and the basket under it lights up');
@@ -201,12 +201,12 @@ if (!only || only.includes('halve')){
   const w1 = await where();
   check(w1[0].split(',').filter(Boolean).length === w0[0].split(',').filter(Boolean).length - 1 && w1[1].split(',').filter(Boolean).length === w0[1].split(',').filter(Boolean).length + 1, 'letting go over the other basket moves it there');
   /* and into the basket it is already in, nothing */
-  const b = await centre(page, '.hlvtray:nth-child(2) .hlvchip', 0), t2b = await centre(page, '.hlvtray:nth-child(2)', 0);
+  const b = await centre(page, '.hlvtray:nth-child(2) .hlvchip:not(.tied):not(.pin)', 0), t2b = await centre(page, '.hlvtray:nth-child(2)', 0);
   await drag(page, b, { x: t2b.x, y: t2b.y + t2b.h * 0.4 }); await page.waitForTimeout(150);
   check(JSON.stringify(await where()) === JSON.stringify(w1), 'letting go over its own basket changes nothing');
   await page.locator('.sumtool').first().click({ position: { x: 20, y: 18 } }); await page.waitForTimeout(100);
   check(JSON.stringify(await where()) === JSON.stringify(w0), 'Undo puts it back');
-  const tapped = await centre(page, '.hlvtray:nth-child(1) .hlvchip', 0); await page.mouse.click(tapped.x, tapped.y); await page.waitForTimeout(120);
+  const tapped = await centre(page, '.hlvtray:nth-child(1) .hlvchip:not(.pin)', 0); await page.mouse.click(tapped.x, tapped.y); await page.waitForTimeout(120);
   check(JSON.stringify(await where()) !== JSON.stringify(w0), 'and a plain tap still moves a skein');
   await page.close();
 }

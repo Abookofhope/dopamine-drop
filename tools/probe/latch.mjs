@@ -5,6 +5,9 @@
  *   - turning each row the short way to the marked column wins; a finger dragged along a row slides it
  *   - on a 320px phone everything still fits, and in French the new buttons are in French
  *
+ *   - 0.182.0: a link turns the row below (level 6, the other way from 12), a double hook (12), a ratchet row that will not turn
+ *     back (20); the least turns is shown and is exact: that plan, by taps, wins and is marked
+ *
  *   node tools/probe/latch.mjs
  */
 import { chromium } from 'playwright';
@@ -94,6 +97,46 @@ let target = null;
   const want = (r.at + 2) % s.cols;
   await page.mouse.move(x, y); await page.mouse.down(); await page.mouse.move(x + step * 2, y, { steps: 8 }); await page.mouse.up(); await page.waitForTimeout(200);
   check((await read(page)).rows[1].at === want, `dragging a row two places along slides it two places (${r.at} -> ${want})`);
+  await page.close();
+}
+
+/* ── its own rules (0.182.0): links, a double hook, a ratchet, and the least turns, worked out exactly ─────────────── */
+const st = page => page.evaluate(() => { const w = document.querySelector('.ltcwrap'); if (!w) return { gone: true }; const d = w.dataset;
+  const rows = [...w.querySelectorAll('.ltcrow')].map(r => [...r.querySelectorAll('.ltccell')].map((c, i) => c.classList.contains('notch') ? i : -1).filter(i => i >= 0));
+  return { lv: +d.lv, least: +d.least, used: +d.used, link: d.link.split(',').map(Number), rat: d.rat.split(',').map(Number), twin: +d.twin, rows,
+    chains: w.querySelectorAll('.ltclink').length, stuck: w.querySelectorAll('.ltcturn.stuck').length, good: w.classList.contains('good'), exact: w.classList.contains('exact'),
+    chip: (w.querySelector('.parchip') || {}).textContent || '', prompt: document.getElementById('prompt').textContent.trim(), plan: w._plan() }; });
+for (const [xp, label, want, vp] of [[0, 'level 2', { links: 0, twin: false, rat: false }], [4000, 'level 11', { links: 1, twin: false, rat: false, word: /chained/ }],
+  [30000, 'level 19', { links: 2, twin: true, rat: false, word: /two hooks/ }], [60000, 'level 23', { links: 2, twin: true, rat: true, word: /one way/ }],
+  [60000, 'level 23 on a 320px phone', { links: 2, twin: true, rat: true, word: /one way/ }, { width: 320, height: 568 }]]){
+  const page = await open(xp, vp); let s = await st(page);
+  const nl = s.link.filter(Boolean).length;
+  check(nl === want.links && (s.twin >= 0) === want.twin && s.rat.some(Boolean) === want.rat && s.chains === nl && s.stuck === (want.rat ? 1 : 0),
+    `${label}: the rules on the board are the ones for the level (level ${s.lv}: ${nl} links, twin ${s.twin >= 0}, ratchet ${s.rat.some(Boolean)})`);
+  check(s.link.every((v, r) => !v || !s.link[r + 1]), `${label}: no link chains three rows`);
+  check(!want.word || want.word.test(s.prompt), `${label}: the prompt teaches the newest rule (${s.prompt})`);
+  check(s.plan.sum === s.least && new RegExp(`0\\D+${s.least}$`).test(s.chip), `${label}: the chip shows the least turns (${s.chip})`);
+  if (vp){ const g = await read(page); check(g.rows.every(r => r.y >= g.surface.y - 1 && r.y + r.h <= g.surface.y + g.surface.h + 1) && g.tools.every(t => t.y + t.h <= g.surface.y + g.surface.h + 1), `${label}: every row and button is on the board (${g.n} rows)`); }
+  const btn = async (r, dir) => { const g = await read(page); const b = dir < 0 ? g.rows[r].left : g.rows[r].right; await page.mouse.click(b.x + b.w / 2, b.y + b.h / 2); await page.waitForTimeout(70); };
+  if (nl){
+    const r = s.link.findIndex(Boolean), below = s.rows[r + 1][0];
+    await btn(r, s.rat[r] || 1); const a = await st(page);
+    const d = s.rat[r] || 1, cols = (await read(page)).cols;
+    check(a.rows[r + 1][0] === ((below + s.link[r] * d) % cols + cols) % cols, `${label}: turning a linked row turns the one below it, ${s.link[r] > 0 ? 'the same way' : 'the other way'}`);
+    const g = await read(page); await page.mouse.click(g.tools[0].x + g.tools[0].w / 2, g.tools[0].y + g.tools[0].h / 2); await page.waitForTimeout(80);
+    s = await st(page); check(s.used === 0, `${label}: and Undo puts both back`);
+  }
+  if (want.rat){
+    const r = s.rat.findIndex(Boolean), before = JSON.stringify(s.rows);
+    await btn(r, -s.rat[r]); const a = await st(page);
+    check(JSON.stringify(a.rows) === before && /other way/.test(a.prompt) && a.used === 0, `${label}: the ratchet row will not turn back, says so, and costs nothing (${a.prompt})`);
+  }
+  /* the exact plan, by taps */
+  s = await st(page); const plan = s.plan;
+  for (let r = 0; r < plan.ks.length; r++){ const k = plan.ks[r]; for (let i = 0; i < Math.abs(k); i++){ if ((await st(page)).gone) break; await btn(r, Math.sign(k)); } }
+  await page.waitForTimeout(250); const end = await st(page);
+  check(end.gone || end.good, `${label}: the least-turns plan, by taps alone, lines every row up (${plan.sum} turns)`);
+  if (!end.gone) check(end.exact && end.used === end.least, `${label}: and finishing in the least turns is marked (${end.used} of ${end.least})`);
   await page.close();
 }
 
